@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:44 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-15 19:43:09 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -31,9 +31,11 @@ include ffl/crc.fs
 ." Testing: crc" cr 
   
 hex
-t{ crc-init s" An Arbitrary String" rot crc-update32 crc-finish32         6FBEAAE7 ?u }t
-t{ crc-init s" ZYXWVUTSRQPONMLKJIHGFEDBCA" rot crc-update32 crc-finish32  99CDFDB2 ?u }t
-t{ crc-init s" 123456789" rot crc-update32 crc-finish32                   CBF43926 ?u }t
+t{ crc-create c1 }t
+
+t{                s" An Arbitrary String"        c1 crc-update c1 crc-finish  6FBEAAE7 ?u }t
+t{ c1 crc-start   s" ZYXWVUTSRQPONMLKJIHGFEDBCA" c1 crc-update c1 crc-finish  99CDFDB2 ?u }t
+t{ c1 crc-start   s" 123456789"                  c1 crc-update c1 crc-finish  CBF43926 ?u }t
 decimal
 
 
