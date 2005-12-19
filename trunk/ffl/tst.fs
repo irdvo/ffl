@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:44 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-19 19:51:27 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -29,6 +29,10 @@ include ffl/config.fs
 
 
 [UNDEFINED] tst.version [IF]
+
+
+( tst = Unit testing )
+( The tst module implements an unit testing framework.)
 
 
 1 constant tst.version
@@ -42,7 +46,7 @@ variable tst-tests
 
 ( Private words )
 
-: tst-empty-stack  ( ... -  -- Empty the stack )
+: tst-empty-stack  ( ... -  = Empty the stack )
   depth dup 0> IF            \ if stack-depth > 0 then
     0 DO
       drop                   \    remove the extra's
@@ -61,7 +65,7 @@ variable tst-tests
 ;  
 
 
-: tst-report-error ( w:caddr u - -- Report an error with the current source line )
+: tst-report-error ( w:caddr u - = Report an error with the current source line )
   type                       \ report error
   source type cr             \ report current source line
   tst-empty-stack
@@ -69,7 +73,7 @@ variable tst-tests
 ;
 
 
-: tst-depth?       ( .. - f -- Check for a value on the stack )
+: tst-depth?       ( .. - f = Check for a value on the stack )
   depth 0= dup IF
     s" stack underflow: " tst-report-error
   THEN
@@ -77,7 +81,7 @@ variable tst-tests
 ;
 
 
-: tst-fdepth?   ( .. - f -- Check for a value on the float stack )
+: tst-fdepth?   ( .. - f = Check for a value on the float stack )
   fdepth 0= dup IF
     s" float stack underflow: " tst-report-error
   THEN
@@ -85,19 +89,19 @@ variable tst-tests
 ;
 
 
-: tst-report-mismatch   ( f - -- Report an mismatch error )
+: tst-report-mismatch   ( f - = Report an mismatch error )
   IF s" stack contents mismatch: " tst-report-error THEN
 ;
   
 
 ( Public words )
 
-: t{           ( - -- Start the test )
+: t{           ( - = Start a test )
   tst-tests 1+!
 ;
 
 
-: }t           ( .. - -- Check for stack overflow )
+: }t           ( .. - = Check for stack overflow )
   depth 0> IF
     s" stack overflow: " tst-report-error
   THEN
@@ -107,47 +111,49 @@ variable tst-tests
 ;
 
 
-: ?s           ( s s - -- Check for signed value on stack )
+: ?s           ( s s - = Check for signed value on stack )
   tst-depth? IF
     <> tst-report-mismatch
   THEN
 ;
 
 
-: ?u           ( u u - -- Check for unsigned value on stack )
+: ?u           ( u u - = Check for unsigned value on stack )
   tst-depth? IF
     u<> tst-report-mismatch
   THEN
 ;
 
 
-: ?0           ( n - -- Check for zero value on stack )
+: ?0           ( n - = Check for zero value on stack )
   tst-depth? IF
     0<> tst-report-mismatch
   THEN
 ;
 
-: ?nil         ( w - -- Check for nil value on stack )
+
+: ?nil         ( w - = Check for nil value on stack )
   tst-depth? IF
     nil<> tst-report-mismatch
   THEN
 ;
 
-: ?true        ( f - -- Check for true value on stack )
+
+: ?true        ( f - = Check for true value on stack )
   tst-depth? IF
     0= tst-report-mismatch
   THEN
 ;
 
 
-: ?false       ( f - -- Check for false value on stack )
+: ?false       ( f - = Check for false value on stack )
   tst-depth? IF
     tst-report-mismatch
   THEN
 ;
 
 
-: ?r           ( r r - -- Check for float value on stack )
+: ?r           ( r r - = Check for float value on stack )
   tst-fdepth? IF
     f<> IF
       s" float stack contents mismatch: " tst-report-error
@@ -156,13 +162,13 @@ variable tst-tests
 ;
 
 
-: tst-reset-tests ( - -- Reset the test results )
+: tst-reset-tests ( - = Reset the test results )
   tst-errors 0!
   tst-tests  0!
 ;
 
 
-: tst-get-result  ( - u:tests u:errors -- Get the test result )
+: tst-get-result  ( - u:tests u:errors = Get the test results )
   tst-tests @ tst-errors @
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-15 19:43:09 $ $Revision: 1.2 $
+\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -36,12 +36,16 @@ cell 4 = [IF]
 include ffl/stc.fs
 
 
+( crc = 32-bit Cyclical Redundancy Check )
+( The crc module implements a 32-bit cyclical redundancy check calculation. )
+
+
 1 constant crc.version
 
 
-( Private structure )
+( Public structure )
 
-struct: crc%
+struct: crc%       ( - n = Get the required space for the crc structure )
   cell: crc>value
   cell: crc>poly
   cell: crc>table
@@ -51,7 +55,7 @@ struct: crc%
 ( Private database )
 
 hex
-create crc.table ( polynomial: EDB88320 )
+create crc.table  \ polynomial: EDB88320 
   00000000 , 77073096 , EE0E612C , 990951BA , 
   076DC419 , 706AF48F , E963A535 , 9E6495A3 ,
   0EDB8832 , 79DCB8A4 , E0D5E91E , 97D2D988 ,
@@ -121,29 +125,29 @@ decimal
 
 ( Public words )
 
-: crc-start    ( w:crc -- Start/restart a crc calculation )
+: crc-start    ( w:crc - = Start/restart a crc calculation )
   -1 swap crc>value !
 ;
 
 
-: crc-init     ( w:crc -- Initialise a CRC )
+: crc-init     ( w:crc - = Initialise the crc structure)
   crc.table over crc>table !
   crc-start
 ;
 
 
-: crc-create   ( "name" -- -- Create a CRC in the dictionary )
+: crc-create   ( C: "name" - R: - w = Create a named crc in the dictionary )
   create 
     here  crc% allot  crc-init
 ;
 
 
-: crc-new      ( -- w:crc -- Create a CRC on the heap )
+: crc-new      ( - w:crc = Create a new crc on the heap )
   crc% allocate throw  dup crc-init
 ;
 
 
-: scr-free     ( w:crc -- -- Free a CRC on the heap )
+: scr-free     ( w:crc - = Free a crc from the heap )
   dup crc>table @ dup
   crc.table <> IF            \ If not default crc table then
     free throw               \  free the table
@@ -154,7 +158,7 @@ decimal
 ;
 
 
-: crc-use-poly ( u:poly w:crc -- Use the polynomial for the CRC )
+: crc-poly! ( u:poly w:crc - = Set the polynomial for the crc structure)
   crc.table over crc>table @ = IF \ If default table then
     256 cells allocate throw      \   create new table
     over crc>table !
@@ -176,7 +180,12 @@ decimal
 ;
 
 
-: crc-update   ( c-addr u w:crc -- -- Update the CRC with more data )
+: crc-poly@   ( w:crc - u:poly = Get the polynomial in the crc )
+  crc>poly @
+;
+
+
+: crc-update   ( c-addr u w:crc - = Update the crc structure with more byte data )
   dup crc>value @ swap
   2swap bounds ?DO            
     over I c@                     
@@ -189,12 +198,12 @@ decimal
 ;
 
 
-: crc-finish   ( w:crc -- w:crc32 -- Finish the calculation of the CRC32 )
+: crc-finish   ( w:crc - w:crc32 = Finish the calculation for the CRC32 )
   crc>value @ invert
 ;
 
 
-: crc-calc-poly ( u1 .. un n -- u -- Calculate the polynomial )
+: crc-calc-poly ( u1 .. un n - u = Calculate the polynomial )
   0 swap 0 ?DO
     swap 
     31 xor
@@ -204,12 +213,12 @@ decimal
 ;
 
 
-: crc-calc-crc  ( c-addr u -- u:crc32 -- Calculate the CRC32 for byte data )
+: crc-calc-crc  ( c-addr u - u:crc32 = Calculate directly the CRC32 for byte data with default crc32 table)
   -1 -rot
   bounds ?DO                 \ Do for data
     I c@
     over   xor 255 and
-    cells  crc.table  + @       \  use default table
+    cells  crc.table  + @    \  use default table
     swap 8 rshift xor
   LOOP
 ;

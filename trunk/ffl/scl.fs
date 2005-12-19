@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:44 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,12 +34,16 @@ include ffl/stc.fs
 include ffl/scn.fs
 
 
+( scl = Single Linked Cell List )
+( The scl module implements a single linked list that can store cell wide data.)
+
+
 1 constant scl.version
 
 
-( Private structure )
+( Public structure )
 
-struct: scl%
+struct: scl%       ( - n = Get the required space for the scl data structure )
   cell: scl>first
   cell: scl>last
   cell: scl>length
@@ -48,7 +52,7 @@ struct: scl%
 
 ( Private words )
 
-: scl-add      ( w w:scl w:prev - -- Add new node after prev in list )
+: scl-add      ( w w:scl w:prev - = Add new node after prev in list )
   swap >r                     
   swap scn-new               \ Create new scn
   
@@ -77,14 +81,22 @@ struct: scl%
 ;
 
 
-: scl-del    ( w:scl w:prev - -- Delete the element after prev in the list )
+: scl-del    ( w:scl w:prev - = Delete the element after prev in the list )
   dup nil= IF                \ if prev = nil then
     drop
     dup scl>first
     dup @
     dup scn>next @           \   first = first->next
     rot !                    \   free first
+    
+    over scl>first @ nil= IF \   if first = nil then
+      over scl>last nil!     \     last = nil
+    THEN
   ELSE                       \ else
+    2dup scn>next @ swap scl>last @ = IF  \ if last = prev->next then
+      2dup swap scl>last !                \   last = prev
+    THEN
+    
     scn>next
     dup @
     dup scn>next @
@@ -92,16 +104,11 @@ struct: scl%
   THEN                       \   free prev->next
   scn-free
   
-  dup scl>first @ nil= IF
-    dup scl>last nil!
-  THEN
-  
   scl>length 1-!
-  \ ToDo: update last..  
 ;
 
 
-: scl-offset ( n w:scl - n -- Determine offset from index, incl. validation )
+: scl-offset ( n w:scl - n = Determine offset from index, incl. validation )
   scl>length @
   
   over 0< IF                 \ if index < 0 then
@@ -114,7 +121,7 @@ struct: scl%
 ;
 
 
-: scl-node     ( n w:scl - w:scn-prev w:scn-cur -- Get the nth element in the list )
+: scl-node     ( n w:scl - w:scn-prev w:scn-cur = Get the nth element in the list )
   nil -rot                   \ prev = nil
   scl>first @                \ cur  = first
   
@@ -130,7 +137,7 @@ struct: scl%
 ;
 
 
-: scl-search   ( w w:scl - w:scn-prev w:scn-cur -- Search for the first element )
+: scl-search   ( w w:scl - w:scn-prev w:scn-cur = Search for the first element )
   nil -rot                   \ prev = nil
   scl>first @                \ walk = first
   
@@ -148,29 +155,27 @@ struct: scl%
   nip
 ;
 
-    
-
 
 ( Public words )
 
-: scl-init     ( w:scl - -- init list )
+: scl-init     ( w:scl - = Initialise the scl-list )
   dup scl>first  nil!
   dup scl>last   nil!
       scl>length   0!
 ;
 
 
-: scl-create   ( "name" - -- Create list in dictionary )
+: scl-create   ( "name" - = Create a named scl-list in the dictionary )
   create   here   scl% allot   scl-init
 ;
 
 
-: scl-new      ( - w:scl -- Create list on heap )
+: scl-new      ( - w:scl = Create a new scl-list on the heap )
   scl% allocate  throw  dup scl-init
 ;
 
 
-: scl-delete-all ( w:scl - -- Delete all cells in the list )
+: scl-delete-all ( w:scl - = Delete all nodes in the list )
   BEGIN
     dup scl>first @ nil<>    \ while first<>nil 
   WHILE
@@ -180,34 +185,34 @@ struct: scl%
 ;
 
 
-: scl-free     ( w:scl - -- Free list from heap )
+: scl-free     ( w:scl - = Free the list from the heap )
   dup scl-delete-all
   
   free  throw
 ;
 
 
-: scl-empty?   ( w:scl - f -- Check for empty list )
+: scl-empty?   ( w:scl - f = Check for empty list )
   scl>length @ 0=  
 ;
 
 
-: scl-length@  ( w:scl - u -- Return number elements in list )
+: scl-length@  ( w:scl - u = Get the number of nodes in the list )
   scl>length @
 ;
 
 
-: scl-append   ( w w:scl - -- Append cell in list )
+: scl-append   ( w w:scl - = Append the cell in the list )
   dup scl>last @  scl-add
 ;
 
 
-: scl-prepend  ( w w:scl - -- Prepend cell in list )
+: scl-prepend  ( w w:scl - = Prepend the cell in the list )
   nil scl-add
 ;
 
 
-: scl-count    ( w w:scl - u -- Count cells in list )
+: scl-count    ( w w:scl - u = Count the occurences of cell data in the list )
   0 >r                       \ count = 0
   scl>first @                \ walk = first
   BEGIN
@@ -224,16 +229,17 @@ struct: scl%
 ;
 
 
-: scl-delete   ( n:index w:scl - w -- Delete indexth element from list )
+: scl-delete   ( n:index w:scl - w = Delete the indexth node from the list )
   tuck scl-offset over       \ index > offset
   scl-node                   \ offet > prev + curr
-  drop                       \ 
-  \ ToDo: return cell
-  scl-del                    \ delete curr
+  
+  -rot scl-del               \ delete curr (via prev)
+  
+  scn>cell @
 ;
 
 
-: scl-remove   ( w w:scl - f -- Remove first cell from list )
+: scl-remove   ( w w:scl - f = Remove the first occurence of the cell data from the list )
   dup scl-search             \ cell > prev + curr
   nil<> IF                   \ if curr <> nil then
     scl-del                  \  delete curr
@@ -245,7 +251,7 @@ struct: scl%
 ;
 
 
-: scl-execute  ( xt w:scl - -- Execute xt for every element in list )
+: scl-execute  ( xt w:scl - = Execute xt for every cell data in list )
   scl>first @                \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -260,7 +266,7 @@ struct: scl%
 ;
 
 
-: scl-set      ( w n:index w:scl - -- Set indexth element in list )
+: scl-set      ( w n:index w:scl - = Set the cell data in the indexth node in the list )
   tuck scl-offset swap       \ index > offset
   scl-node                   \ offset > prev + curr
   nip                        \ 
@@ -268,7 +274,7 @@ struct: scl%
 ;
 
 
-: scl-get      ( n:index w:scl -- w -- Get indexth element from list )
+: scl-get      ( n:index w:scl = w = Get the cell data from the indexth node from the list )
   tuck scl-offset swap       \ index > offset
   scl-node                   \ offset > element
   scn>cell @                 \ element > cell
@@ -276,14 +282,14 @@ struct: scl%
 ;
 
 
-: scl-insert   ( w n:index w:scl - -- Insert cell at indexth element in list )
+: scl-insert   ( w n:index w:scl - = Insert cell data at the indexth node in the list )
   tuck scl-offset over
   scl-node
   drop scl-add  
 ;
 
 
-: scl-find     ( w w:scl - n:index -- Find first index for cell in list, -1 = not found )
+: scl-find     ( w w:scl - n:index = Find the first index for cell data in the list, -1 for not found )
   0 -rot                     \ index = 0
   scl>first @                \ walk = first
   
@@ -305,12 +311,12 @@ struct: scl%
 ;
 
 
-: scl-has?     ( w w:scl - f -- Check if cell is present in list )
+: scl-has?     ( w w:scl - f = Check if the cell data is present in the list )
   scl-find 0>=
 ;
 
 
-: scl-insert-sorted   ( w w:scl - -- Insert in list sorted )
+: scl-insert-sorted   ( w w:scl - = Insert the cell data sorted in the list )
   tuck
   nil -rot                   \ prev = nil
   scl>first @                \ walk = first
@@ -330,7 +336,7 @@ struct: scl%
 ;
 
 
-: scl-reverse  ( w:scl - -- Reverse the list )
+: scl-reverse  ( w:scl - = Reverse or mirror the list )
   nil over
   scl>first @                \ walk = first
   
@@ -351,7 +357,7 @@ struct: scl%
 ;
 
 
-: scl-dump     ( w:scl - -- Dump the list )
+: scl-dump     ( w:scl - = Dump the list )
   ." scl:" dup . cr
   ."  first :" dup scl>first ?  cr
   ."  last  :" dup scl>last  ?  cr

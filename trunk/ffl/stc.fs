@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:43 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,68 +30,72 @@ include ffl/config.fs
 [UNDEFINED] stc.version [IF]
 
 
+( stc = Struct module )
+( The stc module implements a simple struct mechanism for forth. )
+
+
 1 constant stc.version
 
 
 ( Public words )
 
-: struct:      ( "name" - w 0 -- Start a struct definition )
+: struct:      ( C: "name" - w 0 R: - n = Start a named struct definition, leave the size on stack )
   create 
     here  1 cells allot  dup 0! 0
-  does>        ( - n -- Return size of struct )
+  does>
     @
 ;
 
 
-: ;struct      ( w n - -- End a struct definition )
+: ;struct      ( w n - = End a struct definition )
   swap !
 ;
 
 
-: field:       ( w n "name" - w -- Create a sized structure field )
+: field:       ( C: w n "name" - w R: w - w = Create a named structure field, add offset to address )
   create 
     over , + 
-  does>        ( w - w -- Determine address with offset )
+  does>
     @ +
 ;
 
 
-: char:        ( w "name" - w -- Create a char structure field )
+: char:        ( C: w "name" - w R: w - w = Create a named char structure field, add offset to address )
   1 chars field:
 ;
 
 
-: chars:       ( w n "name" - w -- Create char array structure field )
+: chars:       ( C: w n "name" - w R: w - w = Create named char array structure field, add offset to address )
   chars field:
 ;
 
 
-: cell:        ( w "name" - w -- Create a cell structure field )
+: cell:        ( C: w "name" - w R: w - w = Create a named cell structure field, add offset to address )
   aligned  1 cells field:
 ;
 
 
-: cells:       ( w n "name" - w -- Create cell array structure field )
+: cells:       ( C: w n "name" - w R: w - w = Create named cell array structure field, add offset to address )
   swap aligned swap  cells field:
 ;
 
 
-: double:      ( w "name" - w -- Create double structure field )
+: double:      ( C: w "name" - w R: w - w = Create named double structure field, add offset to address )
   aligned  2 cells field:
 ;
 
 
-: doubles:     ( w n "name" - w -- Create double array structure field )
+: doubles:     ( C: w n "name" - w R: w - w = Create named double array structure field, add offset to address )
   swap aligned swap 2* cells field:
 ;
 
 
-: float:       ( w "name" - w -- Create a float structure field )
+: float:       ( C: w "name" - w R: w - w = Create a named float structure field, add offset to address )
   faligned  1 floats field:
 ;
 
 
-: floats:      ( w n "name" - w -- Create float array structure field )
+: floats:      ( C: w n "name" - w R: w - w = Create named float array structure field, add offset to address )
   swap faligned swap  floats field:
 ;
  
