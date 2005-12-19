@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:43 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,38 +33,40 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
+( scn = Single Linked Cell Node )
+( The scn module implements the node in the scl-list.)
+
+
 1 constant scn.version
 
 
-( Private structure )
+( Public structure )
 
-struct: scn%
+struct: scn%       ( - n = Get the required space for a scn structure )
   cell: scn>cell
   cell: scn>next
 ;struct 
 
 
-( Private words )
+( Public words )
 
-: scn-init     ( w w:scn - -- init record )
+: scn-init     ( w w:scn - = Initialise the node with cell data )
   tuck scn>cell     !
        scn>next  nil!
 ;
 
 
-( Public words )
-
-: scn-new      ( w - w:scn -- Create record on heap )
+: scn-new      ( w - w:scn = Create a new node on the heap )
   scn% allocate  throw  tuck scn-init
 ;
 
 
-: scn-free     ( w:scn - -- Free list from heap )
+: scn-free     ( w:scn - = Free the node from the heap )
   free throw
 ;
 
 
-: scn-dump     ( w:scn - -- Dump the record )
+: scn-dump     ( w:scn - = Dump the node )
   ." scn:" dup . cr
   ."  cell :" dup scn>cell  ?  cr
   ."  next :"     scn>next  ?  cr
