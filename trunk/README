@@ -22,6 +22,9 @@ In case of gforth the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/share/gforth/site-forth 
 
+In case of bigforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/lib/bigforth/src
 
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.

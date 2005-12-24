@@ -1,3 +1,8 @@
+0.2.0
+* str: new module (Text string)
+* scl: compare field for flexible sorting
+* scl: execute removes 'own' stack contents before executing xt
+* bigforth config.fs/make.fs added
 0.1.0
 * crc: new module (Cyclic Redundancy Check)
 * chr: new module (Char module)

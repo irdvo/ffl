@@ -74,7 +74,7 @@ gzp - GZip module
 lnx - Linux kernel traps
 md5 - MD5 module
 rnd - Pseudo Random module
-rex - Regex module
+rgx - Regex module
 sha - SHA1/2 module
 tmr - Timer module
 xml - XML module

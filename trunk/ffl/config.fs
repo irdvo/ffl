@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.2 $
+\  $Date: 2005-12-24 08:38:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000100 constant ffl.version
+000200 constant ffl.version
 
 
 ( Public Settings )
