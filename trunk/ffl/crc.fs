@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\        crc - the 32-bit Cyclical Redundancy Check module in the ffl
+\        crc - the 32-bit Cyclic Redundancy Check module in the ffl
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.3 $
+\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ cell 4 = [IF]
 include ffl/stc.fs
 
 
-( crc = 32-bit Cyclical Redundancy Check )
-( The crc module implements a 32-bit cyclical redundancy check calculation. )
+( crc = 32-bit Cyclic Redundancy Check )
+( The crc module implements a 32-bit cyclic redundancy check calculation. )
 
 
 1 constant crc.version
@@ -130,10 +130,13 @@ decimal
 ;
 
 
+hex
 : crc-init     ( w:crc - = Initialise the crc structure)
   crc.table over crc>table !
+  EDB88320  over crc>poly  !
   crc-start
 ;
+decimal
 
 
 : crc-create   ( C: "name" - R: - w = Create a named crc in the dictionary )
@@ -175,8 +178,9 @@ decimal
       THEN
     LOOP
     
-    over crc>table I cells + !
+    over crc>table @ I cells + !
   LOOP
+  drop
 ;
 
 
@@ -213,7 +217,7 @@ decimal
 ;
 
 
-: crc-calc-crc  ( c-addr u - u:crc32 = Calculate directly the CRC32 for byte data with default crc32 table)
+: crc-calc-crc32  ( c-addr u - u:crc32 = Calculate directly the CRC32 for byte data with default crc32 table)
   -1 -rot
   bounds ?DO                 \ Do for data
     I c@
@@ -221,6 +225,7 @@ decimal
     cells  crc.table  + @    \  use default table
     swap 8 rshift xor
   LOOP
+  invert
 ;
 
          

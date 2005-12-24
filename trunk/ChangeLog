@@ -1,7 +1,5 @@
 0.1.0
-* size: 10244 bytes
 * crc: new module (Cyclic Redundancy Check)
-* size: 8260 bytes
 * chr: new module (Char module)
 * tst: new module (Word test module)
 * stc: new module (Struct module)

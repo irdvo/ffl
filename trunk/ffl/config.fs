@@ -20,24 +20,26 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:43 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
-\ This file contains ffc global settings and missing words for the forth engine.
-\ Only this file should be engine specific.
-\
 \ This file is for gforth.
+\
 \ ==============================================================================
 
 
 s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 
+( config = Forth system specific words )
+( The config module contains the extension and missing words for a forth system.)
+
+
 000100 constant ffl.version
 
 
-( Settings )
+( Public Settings )
 
 
 ( Public words )
@@ -57,84 +59,82 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 \ ;
 
 
-: 2+ ( n - n+2 -- Add two to tos)
+: 2+               ( n - n+2 = Add two to tos)
   1+ 1+
 ;
 
 
-\ : cell ( - n -- Cell size)
+\ : cell           ( - n = Cell size)
 \   1 cells
 \ ;
 
 
-\ : >= ( n1 n2 - n1>=n1 -- Greater equal)
+\ : >=             ( n1 n2 - n1>=n1 = Greater equal)
 \   < not
 \ ;
 
 
-\ : 0>= ( n - f -- Greater equal 0 )
+\ : 0>=            ( n - f = Greater equal 0 )
 \   0 >=
 \ ;
 
 
-\ : on ( w - -- Set boolean variable to true)
+\ : on             ( w - = Set boolean variable to true)
 \   true swap !
 \ ;
 
 
-\ : off ( w - -- Set boolean variable to false)
+\ : off            ( w - = Set boolean variable to false)
 \   false swap !
 \ ;
 
 
-\ 0 constant nil
+\ 0 constant nil   ( - w = Nil address )
 
 
-: 0! ( w - -- Set zero in address )
+: 0!               ( w - = Set zero in address )
   0 swap !
 ;
 
 
-: nil! ( w - -- Set nil in address )
+: nil!             ( w - = Set nil in address )
   nil swap !
 ;
 
 
-: nil= ( w - f -- Check for nil )
+: nil=             ( w - f = Check for nil )
   nil =
 ;
 
 
-: nil<> ( w - f -- Check for unequal nil )
+: nil<>            ( w - f = Check for unequal to nil )
   nil <>
 ;
 
 
-: 1+! ( w - -- Increase contents of address by 1 )
+: 1+!              ( w - = Increase contents of address by 1 )
   1 swap +!
 ;
 
 
-: 1-! ( w - -- Decrease contents of address by 1 )
+: 1-!              ( w - = Decrease contents of address by 1 )
   -1 swap +!
 ;
-
-
 
 
 ( Public Exceptions )
 
 \ variable exp-next  -2050 exp-next !
 \
-\ : exception ( w:addr u - n -- add an exception
+\ : exception      ( w:addr u - n = add an exception )
 \   2drop
 \   exp-next @ 
 \   -1 exp-next +!
 \ ;
 
 
-s" Index out of range" exception constant exp-index-out-of-range
-s" Invalid state"      exception constant exp-invalid-state
+s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
+s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
 
 [ELSE]
   drop
