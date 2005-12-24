@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.3 $
+\  $Date: 2005-12-24 08:19:35 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,9 +36,10 @@ include ffl/scn.fs
 
 ( scl = Single Linked Cell List )
 ( The scl module implements a single linked list that can store cell wide data.)
+( Note: sort xt compare t/f or 0< 0= 0>  ** ToDo **)
+  
 
-
-1 constant scl.version
+2 constant scl.version
 
 
 ( Public structure )
@@ -47,6 +48,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   cell: scl>first
   cell: scl>last
   cell: scl>length
+  cell: scl>compare
 ;struct
 
 
@@ -159,9 +161,10 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ( Public words )
 
 : scl-init     ( w:scl - = Initialise the scl-list )
-  dup scl>first  nil!
-  dup scl>last   nil!
-      scl>length   0!
+  dup scl>first   nil!
+  dup scl>last    nil!
+  dup scl>length    0!
+  ['] >= swap scl>compare ! 
 ;
 
 
@@ -199,6 +202,16 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 : scl-length@  ( w:scl - u = Get the number of nodes in the list )
   scl>length @
+;
+
+
+: scl-compare!     ( xt w:scl - = Set the compare execution token for the sorting the list )
+  scl>compare !
+;
+
+
+: scl-compare@     ( w:scl - xt = Get the compare execution token for the sorting the list )
+  scl>compare @
 ;
 
 
@@ -251,15 +264,15 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-execute  ( xt w:scl - = Execute xt for every cell data in list )
+: scl-execute      ( ... xt w:scl - ... = Execute xt for every cell data in list )
   scl>first @                \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
   WHILE
-    dup scn>cell @           \   
-    swap >r                  \ 
-    over execute             \  execute xt with cell
-    r>
+    dup >r scn>cell @
+    swap 
+    dup >r execute           \  execute xt with cell
+    r> r>
     scn>next @               \  walk = walk->next
   REPEAT
   2drop
@@ -317,13 +330,15 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 
 : scl-insert-sorted   ( w w:scl - = Insert the cell data sorted in the list )
+  dup scl>compare @ >r       \ save the sort execution token
+  
   tuck
   nil -rot                   \ prev = nil
   scl>first @                \ walk = first
   
   BEGIN
     dup nil<> IF             \ while walk <> nil and walk->cell <= w do
-      2dup scn>cell @ >=
+      2dup scn>cell @  r@ execute
     ELSE
       false
     THEN
@@ -333,6 +348,8 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   REPEAT
   
   drop -rot scl-add          \ add the node
+  
+  rdrop
 ;
 
 
