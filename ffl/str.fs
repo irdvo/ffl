@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 08:38:48 $ $Revision: 1.1 $
+\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -52,6 +52,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 ( Private database )
+
 8 value str.extra   ( - w = the initial extra space )
 
 
@@ -143,33 +144,39 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-set          ( c-addr u w:str - = Set a string in the string )
-;
-
-
-: str-set"         ( ") ( w:str - = Set a string in the string )
+  2dup str-size!             \ check the space
+  2dup str>length !          \ set the length
+  str>data @ swap chars cmove \ move the string
 ;
 
 
 : str-append       ( c-addr u w:str - = Append a string to the string )
+  2dup 
+  tuck str>length @ +        \ len' = str>length + u
+  swap 
+  2dup str-size!             \ check space
+  str>length @!              \ save the new length
+  
+  chars swap str>data @ +    \ move the string at the end
+  swap cmove
 ;
 
 
-: str-append"      ( ") ( w:str - = Append a string to the string )
-;
-
-: str-prepend      ( w:str - = Prepend a string to the string )
-;
-
-
-: str-prepend"     ( ") ( w:str - = Prepend a string to the string )
+: str-prepend      ( c-addr u w:str - = Prepend a string to the string )
+  2dup
+  tuck str>length @ +        \ len' = str>length + u
+  swap
+  2dup str-size!             \ check space
+  str>length @!              \ save the new length
+  
+  >r 2dup str>data @
+  swap chars over + r> cmove> \ move away the current string
+  
+  str>data @ swap cmove      \ move the new string at the begin
 ;
 
 
 : str-insert       ( c-addr u w:start w:str - = Insert a string in the string )
-;
-
-
-: str-insert"      ( ") ( w:start w:str - = Insert a string in the string )
 ;
 
 
@@ -178,6 +185,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-get          ( w:str - c-addr u = Get the string )
+  dup  str>data @
+  swap str>length @
 ;
 
 
@@ -186,33 +195,59 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-set-cstring  ( c-addr w:str - = Set a zero terminated string in the string )
+  over 0 swap                \ length = 0
+  BEGIN
+    dup c@ 0<>               \ while [str] <> 0 do
+  WHILE
+    swap 1+ swap             \  increase length
+    1 chars +                \  increase str
+  REPEAT
+  drop
+  swap str-set               \ set in string
 ;
 
 
 : str-get-cstring  ( w:str - c-addr = Get the string as zero terminated string )
+  dup str>length @ chars
+  swap str>data @
+  tuck + 0 swap c!           \ store null at end of string
 ;
 
 
 : str^move         ( w:str2 w:str1 - Move str2 in str1 )
+  >r str-get r> str-set
 ;
 
 
 ( Character words )
 
-: str-push         ( c w:str - = Push a character at the end of the string )
+: str-push-char    ( c w:str - = Push a character at the end of the string )
+  dup str>length @ 1+        \ len' = str>length + 1
+  over 
+  2dup str-size!
+  str>length @!              \ check space
+  
+  chars swap str>data @ + c! \ store char at end of string
 ;
 
 
-: str-pop          ( w:str - c = Pop a character from the end of the string )
+: str-pop-char     ( w:str - c = Pop a character from the end of the string )
+  dup str>length dup @ dup 0> IF
+    1- tuck swap !
+    chars swap str>data @ + c@
+  ELSE
+    exp-no-data throw
+  THEN
 ;
 
 
-: str-enqueue      ( c w:str - = Place a character at the start of the string )
+: str-enqueue-char ( c w:str - = Place a character at the start of the string )
 ;
 
 
-: str-dequeue      ( c w:str - = Get the character at the end of the string )
-;
+: str-dequeue-char ( c w:str - = Get the character at the end of the string )
+  postpone str-pop-char
+; immediate
 
 
 : str-set-char     ( c n w:str - = Set the character on the nth position in the string )
@@ -232,6 +267,13 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-execute      ( ... xt w:str - ... = Execute the xt token for every character in the string )
+  str-get bounds ?DO         \ Do for string
+    I c@
+    swap dup >r
+    execute                  \  Execute token for character with stack cleared
+    r>
+    1 chars +LOOP
+  drop
 ;
 
 
@@ -300,15 +342,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-icompare"    ( ") ( w:str - n = compare case-insensitive a string with the string )
-;
-
-
 : str-ccompare     ( c-addr u w:str - n = Compare case-sensitive a string with the string )
-;
-
-
-: str-ccompare"    ( ") ( w:str - n = compare case-sensitive a string the string )
 ;
 
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.3 $
+\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,7 +33,7 @@ tst-reset-tests
 include chr_test.fs
 include crc_test.fs
 include scl_test.fs
-
+include str_test.fs
 
 ." Forth Foundation Library Test: " tst-get-result .  ." errors in " . ." tests" cr
   

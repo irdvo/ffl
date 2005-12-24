@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 08:38:48 $ $Revision: 1.3 $
+\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 \
@@ -122,6 +122,11 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ;
 
 
+: @!               ( w a - w = First fetch the contents and then store the new value )
+  dup @ -rot !
+;
+
+
 ( Public Exceptions )
 
 \ variable exp-next  -2050 exp-next !
@@ -135,6 +140,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
+s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
 
 [ELSE]
   drop
