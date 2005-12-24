@@ -5,11 +5,11 @@
 
 The Forth Foundation Library is a general purpose forth library. It gives you
 a collection of words written in (ANS) Forth, in areas such as data types,
-collections, development support, interfaces and more modules. The
+collections, development support, interfaces and compound modules. The
 library is developped with gforth.
 
-At the moment the library is still under development. The FFL library and the test 
-words are licensed under the GNU GPL.
+At the moment the library is still under development. The FFL library and the 
+test files are licensed under the GNU GPL.
 
 
 Installation
@@ -18,44 +18,52 @@ Installation
 Copy the directory 'ffl' and its contents to directory where the forth
 system will look for sources. 
 
-In case of gforth the 'ffl' directory should be copied to:
+In case of gforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/share/gforth/site-forth 
+
+
+If your forth only looks in the current directory for forth sources, then copy 
+the directory 'ffl' and its contents to the current directory.
 
 
 Testing
 -------
 
 After installing the sources files the unit test sources in the 'test'
-directory  can be started by (for gforth):
+directory can be started by (for gforth):
 
 gforth ffl_test.fs
 
 The program will tell you which modules are tested and if there are any
-errors. If you sell: 'Forth Foundation Modules Test: 0 errors in xxx tests.'
-than all went well.
+errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxx tests.'
+then all went well.
 
 
-Using the library
------------------
+Documentation
+-------------
 
-
+In the directory 'html' there is the HTML documentation of the library. The
+file 'index.html' contains an overview of all the modules in the library. In 
+the file 'words.html' all words of the libary are alphabetically listed.
 
 
 Porting to other forth systems
 ------------------------------
 
-The library is developped with gforth. The intention is that only two files
+The library is developped on gforth. The intention is that only two files
 are dependant of the forth system:
 
  ./ffl/config.fs
  ./ffl/make.fs
 
-All other source files should use ANS words or extensions that are definied
-in the config.fs.
+All other source files should only use ANS words or extensions that are 
+definied in the config.fs.
 
-If you change these files to make the library work on a certain forth system,
-let me know, then I can add the changed files to the distribution. Also if
-there are any specific details concerning installation or testing for a 
-perticular forth system, let me know. I will add it in the README.
+If you change these files to make the library work on a particular forth 
+system, let me know, then I can add the changed files to the distribution. 
+Also if there are any specific details concerning installation or testing 
+for a particular forth system, let me know. I will add it to the README.
 
 
 Bugs

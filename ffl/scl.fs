@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
+\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -233,14 +233,14 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   tuck scl-offset over       \ index > offset
   scl-node                   \ offet > prev + curr
   
-  -rot scl-del               \ delete curr (via prev)
+  scn>cell @                 \ save curr->cell
   
-  scn>cell @
+  -rot scl-del               \ delete curr (via prev)
 ;
 
 
 : scl-remove   ( w w:scl - f = Remove the first occurence of the cell data from the list )
-  dup scl-search             \ cell > prev + curr
+  tuck scl-search            \ cell > prev + curr
   nil<> IF                   \ if curr <> nil then
     scl-del                  \  delete curr
     true

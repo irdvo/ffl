@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:44 $ $Revision: 1.1.1.1 $
+\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -88,16 +88,16 @@ t{    l2 scl-free   }t
 
 \ Iterator test
 
-t{ 1  l1 scl-append   }t
-t{ 2  l1 scl-append   }t
-t{ 4  l1 scl-append   }t
-t{ 4  l1 scl-append   }t
-t{ 5  l1 scl-append   }t
-t{ 6  l1 scl-append   }t
+t{ 1  l1 scl-append              }t
+t{ 2  l1 scl-append              }t
+t{ 4  l1 scl-append              }t
+t{ 4  l1 scl-append              }t
+t{ 5  l1 scl-append              }t
+t{ 6  l1 scl-append              }t
 
-t{    l1 scl-empty?   ?false }t
+t{    l1 scl-empty?   ?false     }t
 
-t{    l1 sci-create i1   }t
+t{    l1 sci-create i1           }t
 
 t{    i1 sci-first    ?true 1 ?s }t
 t{    i1 sci-first?   ?true      }t
@@ -132,6 +132,36 @@ t{    i1 sci-next     ?true 3 ?s }t
 t{    i1 sci-next     ?true 2 ?s }t
 t{    i1 sci-next     ?true 1 ?s }t
 t{    i1 sci-next     ?false     }t
+
+t{    l1 scl-delete-all          }t
+
+t{ 1  l1 scl-append              }t
+t{ 2  l1 scl-append              }t
+t{ 3  l1 scl-append              }t
+t{ 4  l1 scl-append              }t
+t{ 5  l1 scl-append              }t
+
+\ scl-delete test
+
+t{ 2  l1 scl-delete         3 ?s }t
+t{ 0  l1 scl-delete         1 ?s }t
+t{ 2  l1 scl-delete         5 ?s }t
+
+t{ 0  l1 scl-prepend             }t
+t{ 6  l1 scl-append              }t
+
+t{    i1 sci-first    ?true 0 ?s }t
+t{    i1 sci-next     ?true 2 ?s }t
+t{    i1 sci-next     ?true 4 ?s }t
+t{    i1 sci-next     ?true 6 ?s }t
+t{    i1 sci-next     ?false     }t
+
+t{ 5  l1 scl-remove   ?false     }t
+t{ 6  l1 scl-remove   ?true      }t
+
+t{ ' drop l1 scl-execute         }t
+
+t{    l1 scl-delete-all          }t
 
 \ ==============================================================================
 
