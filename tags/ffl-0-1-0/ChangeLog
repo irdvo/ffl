@@ -1,0 +1,8 @@
+0.1.0
+* crc: new module (Cyclic Redundancy Check)
+* chr: new module (Char module)
+* tst: new module (Word test module)
+* stc: new module (Struct module)
+* sci: new module (Single linked cell list iterator)
+* scn: new module (Single linked cell list node)
+* scl: new module (Single linked cell list)

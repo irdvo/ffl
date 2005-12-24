@@ -1,0 +1,20 @@
+#/bin/sh
+
+package=ffl
+version=0.1.0
+
+dest=${package}-${version}
+
+mkdir ${dest}
+mkdir ${dest}/ffl
+mkdir ${dest}/test
+mkdir ${dest}/html
+
+cp AUTHORS COPYING NEWS README ChangeLog ${dest}
+cp  ffl/*.fs   ${dest}/ffl
+cp test/*.fs   ${dest}/test
+cp html/*.html ${dest}/html
+
+tar cvzf ${package}-${version}.tar.gz ${dest} 
+
+rm -rf ${dest}
