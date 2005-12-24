@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.2 $
+\  $Date: 2005-12-24 08:38:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -159,7 +159,24 @@ t{    i1 sci-next     ?false     }t
 t{ 5  l1 scl-remove   ?false     }t
 t{ 6  l1 scl-remove   ?true      }t
 
-t{ ' drop l1 scl-execute         }t
+t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
+
+t{    l1 scl-delete-all          }t
+
+t{ ' < l1 scl-compare!           }t
+
+t{ 5  l1 scl-insert-sorted       }t
+t{ 1  l1 scl-insert-sorted       }t
+t{ 9  l1 scl-insert-sorted       }t
+t{ 7  l1 scl-insert-sorted       }t
+t{ 7  l1 scl-insert-sorted       }t
+
+t{    i1 sci-first    ?true 9 ?s }t
+t{    i1 sci-next     ?true 7 ?s }t
+t{    i1 sci-next     ?true 7 ?s }t
+t{    i1 sci-next     ?true 5 ?s }t
+t{    i1 sci-next     ?true 1 ?s }t
+t{    i1 sci-next     ?false     }t
 
 t{    l1 scl-delete-all          }t
 

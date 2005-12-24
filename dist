@@ -10,12 +10,16 @@ mkdir ${dest}/ffl
 mkdir ${dest}/test
 mkdir ${dest}/html
 mkdir ${dest}/forths
+mkdir ${dest}/forths/gforth
+mkdir ${dest}/forths/bigforth
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp     ffl/*.fs   ${dest}/ffl
 cp    test/*.fs   ${dest}/test
 cp    html/*.html ${dest}/html
-cp -r forths/*    ${dest}/forths
+
+cp  forths/gforth/*.fs   ${dest}/forths/gforth
+cp  forths/bigforth/*.fs ${dest}/forths/bigforth
 
 tar cvzf ${package}-${version}.tar.gz ${dest} 
 
