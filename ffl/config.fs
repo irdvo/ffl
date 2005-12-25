@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.4 $
+\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -86,6 +86,11 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 \ : off            ( w - = Set boolean variable to false)
 \   false swap !
+\ ;
+
+
+\ : bounds         ( c-addr u - c-addr+u c-addr = Get end and start address for ?do )
+\   over + swap
 \ ;
 
 
