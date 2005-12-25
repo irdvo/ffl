@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.1 $
+\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -76,5 +76,20 @@ t{ s1 str-pop-char   char  a ?s }t
 t{ s1 str-length@          0 ?s }t
 
 t{ s2 str-free                  }t
+
+t{ s" Hallo" s1 str-set         }t
+t{ char h 0 s1 str-set-char     }t
+t{ 0 s1 str-get-char  char h ?s }t
+t{ -1 s1 str-get-char char o ?s }t
+t{ char O -1 s1 str-set-char    }t
+t{ -1 s1 str-get-char char O ?s }t
+
+\ str-prepend-chars
+\ str-append-chars
+
+\ str-cap-words -> compare
+\ str-capatilize -> compare
+\ str-upper
+\ str-lower
 
 \ ==============================================================================

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 22:03:07 $ $Revision: 1.2 $
+\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -58,6 +58,17 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Private words )
 
+: str-offset       ( n w:scl - n = Determine offset from index, incl. validation )
+  str>length @
+  
+  over 0< IF                 \ if index < 0 then
+    tuck + swap              \   index = index + length
+  THEN
+  
+  over <= over 0< OR IF      \ if index < 0 or index >= length
+    exp-index-out-of-range throw 
+  THEN
+;
 
 
 ( Public words )
@@ -150,12 +161,20 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-append       ( c-addr u w:str - = Append a string to the string )
-  2dup 
+( Private words )
+
+: str-length+      ( u w:str - u = Increase the length, return the previous length )
   tuck str>length @ +        \ len' = str>length + u
-  swap 
+  swap
   2dup str-size!             \ check space
-  str>length @!              \ save the new length
+  str>length @!              \ fetch and store the new length
+;
+
+
+( Public words )
+
+: str-append       ( c-addr u w:str - = Append a string to the string )
+  2dup str-length+           \ increase the length
   
   chars swap str>data @ +    \ move the string at the end
   swap cmove
@@ -163,16 +182,30 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-prepend      ( c-addr u w:str - = Prepend a string to the string )
-  2dup
-  tuck str>length @ +        \ len' = str>length + u
-  swap
-  2dup str-size!             \ check space
-  str>length @!              \ save the new length
+  2dup str-length+           \ increase the length
   
   >r 2dup str>data @
   swap chars over + r> cmove> \ move away the current string
   
   str>data @ swap cmove      \ move the new string at the begin
+;
+
+
+: str-append-chars   ( c u w:str - = Append a number of characters )
+  2dup str-length+           \ increase the length
+  
+  chars swap str>data @ +    \ fill the characters at the end
+  -rot swap fill
+;
+
+
+: str-prepend-chars  ( c u w:str - = Prepend a number of characters )
+  2dup str-length+           \ increase the length
+  
+  >r 2dup str>data @
+  swap chars over + r> cmove>  \ move away the current string
+  
+  str>data @ -rot swap fill  \ fill the characters at the begin
 ;
 
 
@@ -188,6 +221,11 @@ struct: str%       ( - n = Get the required space for the str data structure )
   dup  str>data @
   swap str>length @
 ;
+
+
+: str-bounds       ( w:str - c-addr+u c-addr = Get the bounds of the string )
+  str-get bounds
+;  
 
 
 : str-delete       ( w:start w:end w:str - = Delete a range from the string )
@@ -222,10 +260,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ( Character words )
 
 : str-push-char    ( c w:str - = Push a character at the end of the string )
-  dup str>length @ 1+        \ len' = str>length + 1
-  over 
-  2dup str-size!
-  str>length @!              \ check space
+  1 over str-length+
   
   chars swap str>data @ + c! \ store char at end of string
 ;
@@ -251,10 +286,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-set-char     ( c n w:str - = Set the character on the nth position in the string )
+  tuck str-offset 
+  chars swap str>data @ + c!
 ;
 
 
 : str-get-char     ( n w:str - c = Get the character from the nth position in the string )
+  tuck str-offset
+  chars swap str>data @ + c@
 ;
 
 
@@ -267,7 +306,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-execute      ( ... xt w:str - ... = Execute the xt token for every character in the string )
-  str-get bounds ?DO         \ Do for string
+  str-bounds ?DO             \ Do for string
     I c@
     swap dup >r
     execute                  \  Execute token for character with stack cleared
@@ -277,29 +316,72 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( Special changes )
+( Special manipulation )
 
 : str-capatilize   ( w:str - = Capatilize the first word in the string )
+  str-bounds ?DO             \ Do for the string
+    I c@
+    chr-alpha? IF            \   If alpha character then
+      I c@ chr-upper I c!    \     Convert to upper
+      LEAVE                  \     Done
+    THEN
+    1 chars 
+  +LOOP
 ;
 
-
+  
 : str-cap-words    ( w:str - = Capatilize all words in the string )
+  false swap str-bounds ?DO  \ Do for the string
+    I c@ 
+    chr-alpha? tuck IF       \   If alpha character then
+      0= IF                  \     If previous was not then
+        I c@ chr-upper I c!  \       Convert to upper
+      THEN
+    ELSE
+      drop
+    THEN
+    1 chars
+  +LOOP
+  drop
 ;
 
 
 : str-center       ( u w:str - = Center the string in u width )
+  dup >r str>length @ - dup 0> IF
+    dup 2/ swap over -
+    32 swap r@ str-append-chars  \ ToDo: space
+    32 swap r@ str-prepend-chars
+  ELSE
+    drop
+  THEN
+  rdrop
 ;
 
 
 : str-ljust        ( u w:str - = Left justify the string )
+  tuck str>length @ - dup 0> IF
+    32 -rot swap str-append-chars \ ToDo: space
+  ELSE
+    2drop
+  THEN
 ;
 
 
 : str-rjust        ( u w:str - = Right justify the string )
+  tuck str>length @ - dup 0> IF
+    32 -rot swap str-prepend-chars \ ToDo: space
+  ELSE
+    2drop
+  THEN
 ;
 
 
 : str-zfill        ( u w:str - = Right justify the string with leading zero's )
+  tuck str>length @ - dup 0> IF
+    [char] 0 -rot swap str-prepend-chars
+  ELSE
+    2drop
+  THEN
 ;
 
 
@@ -316,10 +398,18 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-lower        ( w:str - = Convert the string to lower case )
+  str-bounds ?DO
+    I c@ chr-lower I c!
+    1 chars
+  +LOOP
 ;
 
 
 : str-upper        ( w:str - = Convert the string to upper case )
+  str-bounds ?DO
+    I c@ chr-upper I c!
+    1 chars
+  +LOOP
 ;
 
 
