@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-27 19:15:26 $ $Revision: 1.4 $
+\  $Date: 2005-12-27 19:52:55 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -277,7 +277,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-set-cstring  ( c-addr w:str - = Set a zero terminated string in the string )
   over 0 swap                \ length = 0
   BEGIN
-    dup c@ 0<>               \ while [str] <> 0 do
+    dup c@ chr.nul <>        \ while [str] <> 0 do
   WHILE
     swap 1+ swap             \  increase length
     1 chars +                \  increase str
@@ -290,7 +290,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-get-cstring  ( w:str - c-addr = Get the string as zero terminated string )
   dup str>length @ chars
   swap str>data @
-  tuck + 0 swap c!           \ store null at end of string
+  tuck + chr.nul swap c!     \ store nul at end of string
 ;
 
 
@@ -400,8 +400,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-center       ( u w:str - = Center the string in u width )
   dup >r str>length @ - dup 0> IF
     dup 2/ swap over -
-    32 swap r@ str-append-chars  \ ToDo: space
-    32 swap r@ str-prepend-chars
+    chr.sp swap r@ str-append-chars  
+    chr.sp swap r@ str-prepend-chars
   ELSE
     drop
   THEN
@@ -411,7 +411,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 : str-ljust        ( u w:str - = Left justify the string )
   tuck str>length @ - dup 0> IF
-    32 -rot swap str-append-chars \ ToDo: space
+    chr.sp -rot swap str-append-chars
   ELSE
     2drop
   THEN
@@ -420,7 +420,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 : str-rjust        ( u w:str - = Right justify the string )
   tuck str>length @ - dup 0> IF
-    32 -rot swap str-prepend-chars \ ToDo: space
+    chr.sp -rot swap str-prepend-chars
   ELSE
     2drop
   THEN
@@ -467,14 +467,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
 \ ToDo: not okee
 : str-expand-tabs  ( u w:str - = Expand the tabs to u spaces in the string )
   dup str>length @ 0 ?DO                    \ Do for the string
-    I over str-get-char 9 = IF              \  If current char = tab then ToDo: constant
+    I over str-get-char chr.ht = IF         \  If current char = tab then ToDo: constant
       over 1 = IF                           \    If replace by one char
         32 over I swap str-set-char         \      Set the char
       ELSE                                  \    Else
         1 over I swap str-delete            \      Delete the tab
         over 0> IF                          \      If replace by more space
-          2dup I swap ~~ str-insert-space   \        Insert space and fill with blanks
-          ~~ swap blank
+          2dup I swap str-insert-space      \        Insert space and fill with blanks
+          swap blank
         THEN
       THEN
     THEN

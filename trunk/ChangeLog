@@ -1,4 +1,5 @@
 0.2.0
+* chr: constants for ascii 0 till 31 and 127
 * str: new module (Text string)
 * scl: compare field for flexible sorting
 * scl: execute removes 'own' stack contents before executing xt
