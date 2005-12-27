@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
+\  $Date: 2005-12-27 19:52:55 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,45 @@ include ffl/config.fs
 ( converting upper to lower case and v.v.                                      )
   
 
-1 constant chr.version
+2 constant chr.version
 
+
+( Public constants )
+
+0   constant chr.nul         ( - c = the null character )
+1   constant chr.soh         ( - c = the soh character )
+2   constant chr.stx         ( - c = the stx character )
+3   constant chr.etx         ( - c = the etx character )
+4   constant chr.eot         ( - c = the eot character )
+5   constant chr.enq         ( - c = the enq character )
+6   constant chr.ack         ( - c = the ack character )
+7   constant chr.bel         ( - c = the bel character )
+8   constant chr.bs          ( - c = the backspace character )
+9   constant chr.ht          ( - c = the horz. tab character )
+10  constant chr.lf          ( - c = the line feed character )
+11  constant chr.vt          ( - c = the vert. tab character )
+12  constant chr.ff          ( - c = the formfeed character )
+13  constant chr.cr          ( - c = the carriage return character )
+14  constant chr.sm          ( - c = the sm character )
+15  constant chr.si          ( - c = the si character )
+16  constant chr.dle         ( - c = the dle character )
+17  constant chr.dc1         ( - c = the dc1 character )
+18  constant chr.dc2         ( - c = the dc2 character )
+19  constant chr.dc3         ( - c = the dc3 character )
+20  constant chr.dc4         ( - c = the dc4 character )
+21  constant chr.nak         ( - c = the nak character )
+22  constant chr.syn         ( - c = the syn character )
+23  constant chr.etb         ( - c = the etc character )
+24  constant chr.can         ( - c = the cancel character )
+25  constant chr.em          ( - c = the em character )
+26  constant chr.sub         ( - c = the sub character )
+27  constant chr.esc         ( - c = the escape character )
+28  constant chr.fs          ( - c = the fs character )
+29  constant chr.gs          ( - c = the gs character )
+30  constant chr.rs          ( - c = the rs character )
+31  constant chr.us          ( - c = the us character )
+32  constant chr.sp          ( - c = the space character )
+127 constant chr.del         ( - c = the delete character )
 
 ( Public words )
 
@@ -71,17 +108,17 @@ include ffl/config.fs
 
 
 : chr-ascii?   ( c - f = Check for an ascii character )
-  0 127 chr-range?
+  chr.nul chr.del chr-range?
 ;
 
 
 : chr-blank?   ( c - f = Check for a blank character, space or tab )
-  dup bl = swap 9 = OR
+  dup chr.sp = swap chr.ht = OR
 ;
 
 
 : chr-cntrl?   ( c - f = Check for a control character, 0 till 31 )
-  0 31 chr-range?
+  chr.nul chr.us chr-range?
 ;
 
 
@@ -101,7 +138,7 @@ include ffl/config.fs
 
 
 : chr-space?   ( c - f = Check for a white-space: space, lf, vt, ff, cr )
-  dup bl = swap 9 13 chr-range? OR
+  dup chr.sp = swap chr.ht chr.cr chr-range? OR
 ;
 
 
