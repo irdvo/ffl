@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.3 $
+\  $Date: 2005-12-27 19:15:26 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -171,6 +171,21 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+: str-insert-space ( u n w:str - u w:data = Insert u chars at nth index )
+  tuck str-offset                \ Index -> offset
+  >r 2dup str-length+ r>         \ Increase the length
+  tuck -                         \ Calculate move length
+  >r chars swap str>data @ + r>  \ Calculate start of insert space
+  over >r dup 0> IF              \ If move length > 0 then
+    >r over chars over + r>      \   Calculate destination of insert space
+    cmove>                       \   Move the characters
+  ELSE
+    2drop
+  THEN
+  r>                             \ Return the start of the insert space
+;
+
+
 ( Public words )
 
 : str-append       ( c-addr u w:str - = Append a string to the string )
@@ -209,7 +224,17 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-insert       ( c-addr u w:start w:str - = Insert a string in the string )
+: str-insert       ( c-addr u n:start w:str - = Insert a string in the string )
+  str-insert-space           \ Insert space in the string
+  
+  swap cmove                 \ Move the string
+;
+
+
+: str-insert-chars ( c u n:start w:str - = Insert a number of characters )
+  str-insert-space           \ Insert space in the string
+  
+  -rot swap fill             \ fill it with the characters
 ;
 
 
@@ -228,7 +253,24 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;  
 
 
-: str-delete       ( w:start w:end w:str - = Delete a range from the string )
+: str-delete       ( u n w:str - = Delete a substring from nth index and length u from the string )
+  >r
+  2dup + r@ str>length @ <= IF    \ If index + length <= length then 
+    r@ str-offset                 \   Index -> offset
+    r@ str>data @ over chars +    \   Calculate destination of move
+    rot 2dup chars +              \   Calculate source of move
+    swap r@ str>length @ swap -   \   Reduce length
+    dup r@ str>length !
+    2swap >r - r>                 \   Calculate length of move
+    swap dup 0> IF                \   If length of move > 0 then
+      cmove                       \     Move the data
+    ELSE
+      drop 2drop
+    THEN
+  ELSE
+    exp-no-data throw
+  THEN
+  rdrop
 ;
 
 
@@ -277,6 +319,10 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-enqueue-char ( c w:str - = Place a character at the start of the string )
+  >r 1 0 r>
+  
+  str-insert-space
+  nip c!
 ;
 
 
@@ -298,10 +344,15 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-insert-char  ( c n w:str - = Insert the character on the nth position in the string )
+  2>r 1 2r> 
+  str-insert-space
+  nip c!
 ;
 
 
-: str-delete-char  ( c n w:str - = Delete the character on the nth position in the string )
+: str-delete-char  ( n w:str - = Delete the character on the nth position in the string )
+  2>r 1 2r>
+  str-delete
 ;
 
 
@@ -413,7 +464,21 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-expand-tabs  ( u w:str - = Expand the tabs in the string )
+\ ToDo: not okee
+: str-expand-tabs  ( u w:str - = Expand the tabs to u spaces in the string )
+  dup str>length @ 0 ?DO                    \ Do for the string
+    I over str-get-char 9 = IF              \  If current char = tab then ToDo: constant
+      over 1 = IF                           \    If replace by one char
+        32 over I swap str-set-char         \      Set the char
+      ELSE                                  \    Else
+        1 over I swap str-delete            \      Delete the tab
+        over 0> IF                          \      If replace by more space
+          2dup I swap ~~ str-insert-space   \        Insert space and fill with blanks
+          ~~ swap blank
+        THEN
+      THEN
+    THEN
+  1 chars +LOOP
 ;
 
 
