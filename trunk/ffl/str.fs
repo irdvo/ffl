@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-30 20:36:27 $ $Revision: 1.6 $
+\  $Date: 2005-12-30 21:25:45 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -492,20 +492,47 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Comparison )
 
-
-: str^icompare     ( w:str w:str - n = Compare case-insensitive two strings )
+: <=>              ( n n - n = Compare two numbers resulting in -1, 0 or 1 ) 
+  2dup < IF 
+    2drop -1 
+  ELSE 
+    > IF 
+      1 
+    ELSE
+      0
+    THEN
+  THEN
 ;
 
-
-: str^ccompare     ( w:str w:str - n = Compare case-sensitive two strings )
-;
-
-
+  
 : str-icompare     ( c-addr u w:str - n = Compare case-insensitive a string with the string )
+  str-get
+  rot swap 2swap 2over
+  min 0 ?DO
+    over c@ chr-upper over c@ chr-upper <=> ?dup IF
+      nip nip
+      unloop 
+      exit
+    THEN
+    1 chars + swap 1 chars + swap
+  LOOP
+  2drop
+  -
 ;
 
 
 : str-ccompare     ( c-addr u w:str - n = Compare case-sensitive a string with the string )
+  str-get compare
+;
+
+
+: str^icompare     ( w:str w:str - n = Compare case-insensitive two strings )
+  >r str-get r> str-icompare
+;
+
+
+: str^ccompare     ( w:str w:str - n = Compare case-sensitive two strings )
+  >r str-get r> str-ccompare
 ;
 
 
