@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-27 19:52:55 $ $Revision: 1.5 $
+\  $Date: 2005-12-30 20:36:27 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -238,7 +238,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-substring    ( w:start w:end w:str - w:str = Get a substring as a new string )
+: str-substring    ( u n:start w:str - w:str2 = Get a substring from start u chars long as a new dyn. string )
 ;
 
 
@@ -254,9 +254,9 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-delete       ( u n w:str - = Delete a substring from nth index and length u from the string )
-  >r
-  2dup + r@ str>length @ <= IF    \ If index + length <= length then 
-    r@ str-offset                 \   Index -> offset
+  dup >r
+  str-offset                      \ Index -> offset
+  2dup + r@ str>length @ <= IF    \ If offset + length <= length then 
     r@ str>data @ over chars +    \   Calculate destination of move
     rot 2dup chars +              \   Calculate source of move
     swap r@ str>length @ swap -   \   Reduce length
@@ -464,21 +464,29 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-\ ToDo: not okee
 : str-expand-tabs  ( u w:str - = Expand the tabs to u spaces in the string )
-  dup str>length @ 0 ?DO                    \ Do for the string
-    I over str-get-char chr.ht = IF         \  If current char = tab then ToDo: constant
-      over 1 = IF                           \    If replace by one char
-        32 over I swap str-set-char         \      Set the char
-      ELSE                                  \    Else
-        1 over I swap str-delete            \      Delete the tab
-        over 0> IF                          \      If replace by more space
-          2dup I swap str-insert-space      \        Insert space and fill with blanks
+  >r 0                                 \ Offset = 0
+  BEGIN
+    dup r@ str>length @ <              \ While offset < length do
+  WHILE
+    dup r@ str-get-char chr.ht = IF    \   If str[offset] = tab then
+      over 1 = IF                      \     If replace by one space then
+        chr.sp over r@ str-set-char    \       Set the space
+        1 chars +
+      ELSE                             \     Else
+        over 0> IF                     \       If replace by more spaces then
+          2dup r@ str-insert-space     \         Insert space and fill with blanks
           swap blank
+          over chars +
         THEN
+        1 over r@ str-delete           \       Delete the tab
       THEN
+    ELSE
+      1 chars +
     THEN
-  1 chars +LOOP
+  REPEAT
+  2drop
+  rdrop
 ;
 
 
