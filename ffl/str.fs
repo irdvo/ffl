@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-30 21:25:45 $ $Revision: 1.7 $
+\  $Date: 2006-01-01 19:21:44 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -436,15 +436,46 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-strip        ( w:str - = Strip leading and trailing spaces in the string )
-;
-
-
 : str-lstrip       ( w:str - = Strip leading spaces in the string )
+  0 over str-bounds ?DO
+    I c@ chr-blank? IF       \ Count the number of leading spaces
+      1+
+    ELSE
+      LEAVE
+    THEN
+    1 chars 
+  +LOOP
+  
+  ?dup IF                   
+    swap 0 swap str-delete   \ Delete the spaces
+  ELSE
+    drop
+  THEN
 ;
 
 
 : str-rstrip       ( w:str - = Strip trailing spaces in the string )
+  0 over str-bounds swap
+  BEGIN
+    1 chars -
+    2dup <= dup IF
+      drop dup c@ chr-blank?   \ Count the number of trailing spaces
+    THEN
+  WHILE
+    rot 1+ -rot
+  REPEAT
+  
+  2drop ?dup IF
+    negate swap str>length +!  \ Delete the spaces by reducing the length
+  ELSE
+    drop
+  THEN
+;
+
+
+: str-strip        ( w:str - = Strip leading and trailing spaces in the string )
+  dup str-lstrip
+      str-rstrip
 ;
 
 
@@ -537,6 +568,21 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-count        ( c-addr u w:str - u = Count the number of occurences of a string in the string )
+  >r 0 -rot 
+  r> str-get
+  rot
+  tuck - 1+                  \ Determine the maximum length for full string
+  dup 0<= IF
+    2drop 2drop
+  ELSE
+    >r swap r> bounds DO
+      2dup I over compare 0= IF  \ Test all substrings for success ..
+        rot 1+ -rot              \ .. and count them
+      THEN
+      1 chars
+    +LOOP
+    2drop
+  THEN
 ;
 
 
