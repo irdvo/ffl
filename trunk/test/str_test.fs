@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.2 $
+\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ t{ str-create s1                }t
 t{ s1 str-length@        0 ?s   }t
 t{ s1 str-empty?         ?true  }t
 
-t{ s" hallo" s1 str-set         }t
+t{ s" hello" s1 str-set         }t
 t{ s1 str-length@        5 ?s   }t
 t{ s1 str-empty?         ?false }t
 t{ s1 str-get         5 ?s drop }t
@@ -43,13 +43,14 @@ t{ s1 str-clear                 }t
 t{ s1 str-length@        0 ?s   }t
 t{ s1 str-empty?         ?true  }t
 
-t{ s" hallo" s1 str-set         }t
+t{ s" hello" s1 str-set         }t
 t{ s" after" s1 str-append      }t
 t{ s1 str-length@         10 ?s }t
 t{ s" before" s1 str-prepend    }t
 t{ s1 str-length@         16 ?s }t
+t{ s" beforehelloafter" s1 str-icompare ?0 }t
 
-t{ 0 ' + s1 str-execute 1685 ?s }t  \ ToDo: check
+t{ 0 ' + s1 str-execute 1689 ?s }t
 
 \ str-set-cstring
 \ str-get-cstring
@@ -65,6 +66,7 @@ t{ char a s1 str-push-char      }t
 t{ char b s1 str-push-char      }t
 t{ char c s1 str-push-char      }t
 t{ s1 str-length@          3 ?s }t
+t{ s" abc" s1 str-icompare   ?0 }t
 
 t{ s1 str-pop-char   char  c ?s }t
 t{ s1 str-pop-char   char  b ?s }t
@@ -75,21 +77,181 @@ t{ s1 str-pop-char   char  d ?s }t
 t{ s1 str-pop-char   char  a ?s }t
 t{ s1 str-length@          0 ?s }t
 
-t{ s2 str-free                  }t
 
-t{ s" Hallo" s1 str-set         }t
+t{ s" Hello" s1 str-set         }t
 t{ char h 0 s1 str-set-char     }t
 t{ 0 s1 str-get-char  char h ?s }t
 t{ -1 s1 str-get-char char o ?s }t
 t{ char O -1 s1 str-set-char    }t
 t{ -1 s1 str-get-char char O ?s }t
 
-\ str-prepend-chars
-\ str-append-chars
+t{ s" Hello" s1 str-set                }t
+t{ chr.sp 3 s1 str-append-chars        }t
+t{ char - 4 s1 str-prepend-chars       }t
 
-\ str-cap-words -> compare
-\ str-capatilize -> compare
-\ str-upper
-\ str-lower
+t{ s" ----Hello   " s1 str-icompare ?0 }t
+
+\ str-extra@
+\ str-extra!
+\ str+extra@
+\ str+extra!
+
+
+t{ s" Hello" s1 str-set             }t
+t{ s" io" 4 s1 str-insert           }t
+t{ s" Ha" 0 s1 str-insert           }t
+t{ s" HaHellioo" s1 str-ccompare ?0 }t
+
+
+t{ s" Hello" s1 str-set             }t
+t{ char ? 2 3 s1 str-insert-chars   }t
+t{ s" Hel??lo" s1 str-ccompare   ?0 }t
+
+
+
+t{ 6 -6 s1 str-get-substring s2 str-set  }t
+t{ s" el??lo" s2 str-ccompare ?0      }t
+
+
+t{ s1 str-get s" Hel??lo" compare ?0 }t
+
+t{ 3 0 s1 str-delete                 }t
+t{ s" ??lo" s1 str-ccompare ?0       }t
+t{ 2 2 s1 str-delete                 }t
+t{ s" ??" s1 str-ccompare ?0         }t
+
+t{ s" Hello" s1 str-set              }t
+t{ char ! s1 str-enqueue-char        }t
+t{ s" !Hello" s1 str-ccompare ?0     }t 
+t{ s1 str-dequeue-char char o ?s     }t
+t{ char + 0 s1 str-insert-char       }t
+t{ char - 5 s1 str-insert-char       }t
+t{ char ) 7 s1 str-insert-char       }t
+t{ 3 s1 str-delete-char              }t
+t{ s" +!Hl+l)o" s1 str-ccompare ?0   }t
+
+0 [IF]
+
+\ capatilize
+t{ s" 1. title" s1 str-set           }t
+t{ s1 str-capatilize                 }t
+t{ s" 1. Title" s1 str-ccompare      }t
+
+
+\ cap words
+t{ s" this is a test string" s1 str-set         }t
+t{ s1 str-cap-words                             }t
+t{ s" This Is A Test String" s1 str-ccompare ?0 }t
+
+
+\ center, ljust, rjust
+t{ s" Hello" s1 str-set                 }t
+t{ 4 s1 str-ljust                       }t
+t{ s" Hello" s1 str-ccompare ?0         }t
+t{ 7 s1 str-ljust                       }t
+t{ s" Hello  " s1 str-ccompare ?0       }t
+
+t{ s" Hello" s1 str-set                 }t
+t{ 2 s1 str-rjust                       }t
+t{ s" Hello" s1 str-ccompare ?0         }t
+t{ 8 s1 str-ljust                       }t
+t{ s" Hello   " s1 str-ccompare ?0      }t
+
+t{ s" Hello" s1 str-set                 }t
+t{ 1 s1 str-center                      }t
+t{ s" Hello" s1 str-ccompare ?0         }t
+t{ 10 s1 str-center                      }t
+t{ s" Hello   " s1 str-ccompare ?0      }t
+
+
+\ zfill
+t{ s" 52" s1 str-set                    }t
+t{ 0 s1 str-zfill                       }t
+t{ s" 52" s1 str-ccompare  ?0           }t
+t{ 1 s1 str-zfill                       }t
+t{ s" 52" s1 str-ccompare  ?0           }t
+t{ 2 s1 str-zfill                       }t
+t{ s" 52" s1 str-ccompare  ?0           }t
+t{ 4 s1 str-zfill                       }t
+t{ s" 0052" s1 str-ccompare  ?0         }t
+
+
+
+\ strip
+t{ s"    Hello   " s1 str-set           }t
+t{ s1 str-lstrip                        }t
+t{ s" Hello   " s1 str-ccompare  ?0     }t
+t{ s"    Hello   " s1 str-set           }t
+t{ s1 str-rstrip                        }t
+t{ s"    Hello" s1 str-ccompare ?0      }t
+t{ s"    Hello   " s1 str-set           }t
+t{ s1 str-strip                         }t
+t{ s"   Hello   " s1 str-ccompare ?0    }t
+
+
+\ upper and lower
+t{ s" hello" s1 str-set                 }t
+
+t{ s1 str-upper                         }t
+t{ s" HELLO" s1 str-ccompare ?0         }t
+
+t{ s1 str-lower                         }t
+t{ s" hello" s1 str-ccompare ?0         }t
+
+
+\ expand tabs
+t{ s2 str-clear                         }t
+t{ s" Hello" s2 str-append              }t
+t{ chr.ht s2 str-push-char              }t
+t{ s" Bye" s2 str-append                }t
+t{ chr.ht s2 str-push-char              }t
+
+t{ s2 s1 str^move                       }t
+t{ 0 s1 str-expand-tabs                 }t
+t{ s" HelloBye" s1 str-ccompare ?0      }t
+
+t{ s2 s1 str^move                       }t
+t{ 1 s1  str-expand-tabs                }t
+t{ s" Hello Bye " s1 str-ccompare ?0    }t
+
+t{ s2 s1 str^move                       }t
+t{ 3 s1  str-expand-tabs                }t
+t{ s" Hello   Bye   " s1 str-ccompare ?0 }t
+
+
+t{ s" Hello" s1 str-set                }t
+t{ s" hello" s2 str-set                }t
+t{ s1 s2 str^icompare ?0               }t
+t{ s1 s2 str^ccompare 0> ?true         }t
+t{ s2 s1 str^ccompare 0< ?true         }t
+t{ s" hallo" s1 str-set                }t
+t{ s" hello" s2 str-set                }t
+t{ s1 s2 str^icompare 0< ?true         }t
+t{ s2 s1 str^icompare 0> ?true         }t
+t{ s1 s2 str^ccompare 0< ?true         }t
+t{ s2 s1 str^ccompare 0> ?true         }t
+
+\ count
+t{ s" This is a longish string" s1 str-set }t
+t{ s" this" s1 str-count  0 ?s         }t
+t{ s" This" s1 str-count  1 ?s         }t
+t{ s" is"   s1 str-count  3 ?s         }t
+t{ s" i"    s1 str-count  4 ?s         }t
+
+\ find
+t{ s" is" 0  s1 str-find   2 ?s        }t
+t{ s" is" 3  s1 str-find   5 ?s        }t
+t{ s" is" 6  s1 str-find  14 ?s        }t
+t{ s" is" 15 s1 str-find  -1 ?s        }t
+
+\ replace
+t{ s" g" s" ng" s1 str-replace         }t
+t{ s" This is a logish strig" s1 str-ccompare ?0 }t
+t{ s" iii" s" i" s1 str-replace        }t
+t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
+
+[THEN]
+
+t{ s2 str-free                  }t
 
 \ ==============================================================================

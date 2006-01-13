@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-01 19:21:44 $ $Revision: 1.8 $
+\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -238,7 +238,12 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-substring    ( u n:start w:str - w:str2 = Get a substring from start u chars long as a new dyn. string )
+: str-get-substring   ( u n:start w:str - w:str2 = Get a substring from start u chars long as a new dyn. string )
+  dup >r str-offset          \ Index -> offset
+  2dup + r@ str-length@ >    \ If not enough data then exception
+    exp-no-data and throw
+  chars r> str>data @ +      \ Make the substring
+  swap
 ;
 
 
@@ -587,10 +592,46 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-find         ( c-addr u n w:str - n = Find the first occurence of a string from nth position in the string )
+  dup >r str-offset                    \ Index -> offset
+  over r@ str-length@ swap -          
+  over - 1+                            \ Determine the remaing length
+  over r> str>data @ swap chars +      \ Determine the start of data with the offset
+  -rot dup 0<= IF                      \ Check for sufficient remaining length
+    2drop
+  ELSE
+    over + swap DO                     \ Search the string from offset till end
+      over 2over 2over compare 0= IF   \ If found then
+        2drop 2drop
+        I UNLOOP EXIT                  \  Return the index
+      THEN
+      drop
+      1 chars +
+    LOOP
+  THEN
+  2drop drop
+  -1
 ;
 
-
-: str-replace      ( c-addr u c-addr u w:str - n = Replace the occurences of the first string with the second string in the string )
+  
+: str-replace      ( c-addr u c-addr u w:str - = Replace the occurences of the second string with the first string in the string )
+  >r 0
+  BEGIN
+    dup r@ str-length@ < dup IF   \ If index is lower than the length
+      drop
+      >r 2dup r>
+      r@ str-find                 \   Find the search string in the string
+      dup -1 <>
+    THEN
+  WHILE                           \ While found do
+    >r 2swap 2dup r>
+    r@ over
+    >r str-insert dup r> +        \   Insert the new string in the string
+    >r 2swap dup r>
+    r@ over
+    >r str-delete r>              \   Delete the search string
+  REPEAT
+  drop 2drop 2drop
+  rdrop
 ;
 
 
