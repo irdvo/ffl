@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.9 $
+\  $Date: 2006-01-13 19:24:04 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -332,8 +332,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-dequeue-char ( c w:str - = Get the character at the end of the string )
-  postpone str-pop-char
-; immediate
+  str-pop-char
+;
 
 
 : str-set-char     ( c n w:str - = Set the character on the nth position in the string )
@@ -546,14 +546,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
   rot swap 2swap 2over
   min 0 ?DO
     over c@ chr-upper over c@ chr-upper <=> ?dup IF
-      nip nip
+      >r 2drop 2drop r>
       unloop 
       exit
     THEN
     1 chars + swap 1 chars + swap
   LOOP
   2drop
-  -
+  <=>
 ;
 
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.3 $
+\  $Date: 2006-01-13 19:24:04 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -28,7 +28,7 @@ include ffl/tst.fs
 include ffl/str.fs
 
 
-." Testing: str" cr 
+.( Testing: str ) cr 
   
 t{ str-create s1                }t
 t{ s1 str-length@        0 ?s   }t
@@ -124,25 +124,22 @@ t{ s" Hello" s1 str-set              }t
 t{ char ! s1 str-enqueue-char        }t
 t{ s" !Hello" s1 str-ccompare ?0     }t 
 t{ s1 str-dequeue-char char o ?s     }t
+
 t{ char + 0 s1 str-insert-char       }t
 t{ char - 5 s1 str-insert-char       }t
-t{ char ) 7 s1 str-insert-char       }t
+t{ char ) 6 s1 str-insert-char       }t
 t{ 3 s1 str-delete-char              }t
-t{ s" +!Hl+l)o" s1 str-ccompare ?0   }t
-
-0 [IF]
+t{ s" +!Hl-)l" s1 str-ccompare ?0    }t
 
 \ capatilize
 t{ s" 1. title" s1 str-set           }t
 t{ s1 str-capatilize                 }t
-t{ s" 1. Title" s1 str-ccompare      }t
-
+t{ s" 1. Title" s1 str-ccompare ?0   }t
 
 \ cap words
 t{ s" this is a test string" s1 str-set         }t
 t{ s1 str-cap-words                             }t
 t{ s" This Is A Test String" s1 str-ccompare ?0 }t
-
 
 \ center, ljust, rjust
 t{ s" Hello" s1 str-set                 }t
@@ -154,15 +151,14 @@ t{ s" Hello  " s1 str-ccompare ?0       }t
 t{ s" Hello" s1 str-set                 }t
 t{ 2 s1 str-rjust                       }t
 t{ s" Hello" s1 str-ccompare ?0         }t
-t{ 8 s1 str-ljust                       }t
-t{ s" Hello   " s1 str-ccompare ?0      }t
+t{ 8 s1 str-rjust                       }t
+t{ s"    Hello" s1 str-ccompare ?0      }t
 
 t{ s" Hello" s1 str-set                 }t
 t{ 1 s1 str-center                      }t
 t{ s" Hello" s1 str-ccompare ?0         }t
-t{ 10 s1 str-center                      }t
-t{ s" Hello   " s1 str-ccompare ?0      }t
-
+t{ 10 s1 str-center                     }t
+t{ s"   Hello   " s1 str-ccompare ?0    }t
 
 \ zfill
 t{ s" 52" s1 str-set                    }t
@@ -175,8 +171,6 @@ t{ s" 52" s1 str-ccompare  ?0           }t
 t{ 4 s1 str-zfill                       }t
 t{ s" 0052" s1 str-ccompare  ?0         }t
 
-
-
 \ strip
 t{ s"    Hello   " s1 str-set           }t
 t{ s1 str-lstrip                        }t
@@ -186,8 +180,7 @@ t{ s1 str-rstrip                        }t
 t{ s"    Hello" s1 str-ccompare ?0      }t
 t{ s"    Hello   " s1 str-set           }t
 t{ s1 str-strip                         }t
-t{ s"   Hello   " s1 str-ccompare ?0    }t
-
+t{ s" Hello" s1 str-ccompare ?0         }t
 
 \ upper and lower
 t{ s" hello" s1 str-set                 }t
@@ -197,7 +190,6 @@ t{ s" HELLO" s1 str-ccompare ?0         }t
 
 t{ s1 str-lower                         }t
 t{ s" hello" s1 str-ccompare ?0         }t
-
 
 \ expand tabs
 t{ s2 str-clear                         }t
@@ -218,12 +210,11 @@ t{ s2 s1 str^move                       }t
 t{ 3 s1  str-expand-tabs                }t
 t{ s" Hello   Bye   " s1 str-ccompare ?0 }t
 
-
 t{ s" Hello" s1 str-set                }t
 t{ s" hello" s2 str-set                }t
 t{ s1 s2 str^icompare ?0               }t
-t{ s1 s2 str^ccompare 0> ?true         }t
-t{ s2 s1 str^ccompare 0< ?true         }t
+t{ s1 s2 str^ccompare 0< ?true         }t
+t{ s2 s1 str^ccompare 0> ?true         }t
 t{ s" hallo" s1 str-set                }t
 t{ s" hello" s2 str-set                }t
 t{ s1 s2 str^icompare 0< ?true         }t
@@ -249,8 +240,6 @@ t{ s" g" s" ng" s1 str-replace         }t
 t{ s" This is a logish strig" s1 str-ccompare ?0 }t
 t{ s" iii" s" i" s1 str-replace        }t
 t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
-
-[THEN]
 
 t{ s2 str-free                  }t
 
