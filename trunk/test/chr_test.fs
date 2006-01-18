@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-14 19:27:44 $ $Revision: 1.1.1.1 $
+\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -167,5 +167,26 @@ t{ char Z chr-lower     char z ?s }t
 t{ char Y chr-lower     char y ?s }t
 t{ char { chr-lower     char { ?s }t
 t{      7 chr-lower     7      ?s }t
+
+\ decimal
+t{ char 0 chr-base ?true ?0       }t
+t{ char / chr-base ?false         }t
+t{ char 9 chr-base ?true 9 ?s     }t
+t{ char a chr-base ?false         }t
+
+hex
+t{ char 0 chr-base ?true ?0       }t
+t{ char / chr-base ?false         }t
+t{ char 9 chr-base ?true 9 ?s     }t
+t{ char a chr-base ?true A ?s     }t
+t{ char A chr-base ?true A ?s     }t
+t{ char g chr-base ?false         }t
+
+2 base !
+t{ char 0 chr-base ?true ?0       }t
+t{ char 1 chr-base ?true 1 ?s     }t
+t{ char 2 chr-base ?false         }t
+
+decimal
 
 \ ==============================================================================

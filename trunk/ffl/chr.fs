@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-27 19:52:55 $ $Revision: 1.3 $
+\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -165,6 +165,24 @@ include ffl/config.fs
 : chr-lower    ( c - c = Convert character to lowercase )
   dup chr-upper? IF
     [ char a char A - ] literal +
+  THEN
+;
+
+
+: chr-base     ( c - false | u true = Convert a character within the current base )
+  dup chr-alnum? IF
+    dup chr-alpha? IF
+      chr-upper
+      [ char A 10 - ] literal -
+    ELSE
+      [char] 0 -
+    THEN
+    
+    dup base @ u< dup 0= IF
+      nip
+    THEN
+  ELSE
+    drop false
   THEN
 ;
 
