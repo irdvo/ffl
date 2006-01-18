@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-30 20:36:27 $ $Revision: 1.1 $
+\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -86,12 +86,15 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
+  dup tis>offset @ swap tis>input str-length@ >=
 ;
 
 
 ( Read from text input stream )
 
 : tis-read-char    ( w:tis - c = Read character from the stream)
+  dup tis-eof? exp-no-data and throw
+  
 ;
 
 

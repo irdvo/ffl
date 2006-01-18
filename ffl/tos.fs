@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-30 21:25:45 $ $Revision: 1.1 $
+\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -86,7 +86,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Read to text output stream )
+( Write to text output stream )
 
 : tos-write-char    ( c w:tos - = Write character to the stream )
 ;
