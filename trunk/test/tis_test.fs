@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 08:11:58 $ $Revision: 1.1 $
+\  $Date: 2006-01-28 19:48:40 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -43,6 +43,28 @@ t{ t1 tis-tell 2 ?s }t
 t{ 3 t1 tis-read-string s" cde" compare ?0 }t
 t{ t1 tis-tell 5 ?s }t
 
+t{ char g t1 tis-cmatch-char ?false }t
+t{ char F t1 tis-cmatch-char ?false }t
+t{ char f t1 tis-cmatch-char ?true  }t
+
+t{ char h t1 tis-imatch-char ?false }t
+t{ char G t1 tis-imatch-char ?true  }t
+t{ char h t1 tis-imatch-char ?true  }t
+
+t{ s" abcd" t1 tis-cmatch-chars ?false }t
+t{ s" abid" t1 tis-cmatch-chars ?true char i ?s }t
+t{ s" JjKk" t1 tis-cmatch-chars ?true char j ?s }t
+
+t{ s" lmno" t1 tis-cmatch-string ?false }t
+t{ s" Klmn" t1 tis-cmatch-string ?false }t
+t{ s" kLmn" t1 tis-cmatch-string ?false }t
+t{ s" klmn" t1 tis-cmatch-string ?true }t
+
+t{ s" qrst" t1 tis-imatch-string ?false }t
+t{ s" O"    t1 tis-imatch-string ?true }t
+t{ s" pq"   t1 tis-imatch-string ?true }t
+t{ s" rSt"  t1 tis-imatch-string ?true }t
+
 \ other tests
 
 t{ 20 t1 tis-seek-start ?true }t
@@ -60,5 +82,19 @@ t{ t1 tis-read-char ?true char v ?s }t
 
 t{ 26 t1 tis-seek-start ?false }t
 t{ 27 t1 tis-seek-end ?false }t
+
+t{ s" ab   cd" t1 str-set }t
+t{ t1 tis-reset }t
+
+t{ chr.cr t1 str-push-char }t
+t{ s" ef" t1 str-append }t
+t{ chr.lf t1 str-push-char }t
+
+t{ 2 t1 tis-read-string s" ab" compare ?0 }t
+t{ t1 tis-skip-spaces 3 ?s }t
+t{ t1 tis-read-line s" cd" compare ?0 }t
+t{ t1 tis-read-line s" ef" compare ?0 }t
+t{ t1 tis-read-line ?0 }t
+
 
 \ ==============================================================================
