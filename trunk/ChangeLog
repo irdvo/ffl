@@ -1,4 +1,5 @@
 0.2.0
+* chr: new word: chr-string?
 * chr: new word: chr-base
 * tos: new module (Text output stream)
 * tis: new module (Text input stream)

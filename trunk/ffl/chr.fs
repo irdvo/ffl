@@ -2,7 +2,7 @@
 \
 \                   chr - the char module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\             Copyright (C) 2005-2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.4 $
+\  $Date: 2006-01-28 18:38:00 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -152,6 +152,18 @@ include ffl/config.fs
 
 : chr-octdigit? ( c - f = Check for an octal character )
   [char] 0 [char] 7 chr-range?
+;
+
+
+: chr-string?  ( c-addr u c - f = Check if the characters is in the string )
+  -rot bounds ?DO
+    dup I c@ = IF
+      drop true
+      UNLOOP EXIT
+    THEN
+    1 chars 
+  +LOOP
+  drop false
 ;
 
 
