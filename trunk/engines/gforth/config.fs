@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.1 $
+\  $Date: 2006-01-28 08:11:57 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
@@ -54,8 +54,13 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 \ ; immediate
 
 
+\ : rdrop ( - )
+\   r> r> drop >r
+\ ;
+
+
 \ : 2rdrop ( - ) 
-\   2r> 2drop
+\   r> 2r> 2drop >r
 \ ;
 
 
@@ -70,7 +75,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 
 \ : >=             ( n1 n2 - n1>=n1 = Greater equal)
-\   < not
+\   < 0=
 \ ;
 
 

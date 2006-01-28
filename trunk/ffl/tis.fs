@@ -2,7 +2,7 @@
 \
 \              tis - the text input stream module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
+\  $Date: 2006-01-28 08:11:57 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -55,6 +55,50 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Private words )
 
+: tis-next         ( w:tis - = Move the offset in the input stream )
+  tis>offset 1+!
+;
+
+
+: tis-get          ( w:tis - addr = Get address of offset in text stream )
+  dup str>data @
+  swap tis>offset @ 
+  chars +
+;
+
+
+: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
+  dup tis>offset @ over str-length@ over >= IF
+    chars swap str>data @ + c@
+    true
+  ELSE
+    false
+  THEN
+;
+
+
+: tis-next-char    ( w:tis - = Move the offset one character after fetch-char )
+  tis>offset 1+!
+;
+
+
+: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
+  >r
+  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length, limit between 0 and requested chars
+  min 0 max
+  
+  dup 0> IF
+    r@ tis>offset @ chars
+    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
+: tis-next-chars   ( n w:tis - = Move the offset n characters after fetch-chars )
+  tis>offset +!
+;
 
 
 ( Public words )
@@ -92,29 +136,65 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Read from text input stream )
 
-: tis-read-char    ( w:tis - c = Read character from the stream)
-  dup tis-eof? exp-no-data and throw
+: tis-read-char    ( w:tis - false | c true = Read character from the stream )
+  dup tis-fetch-char IF
+    swap tis-next-char
+    true
+  ELSE
+    drop 
+    false
+  THEN
+;
+
+
+: tis-read-string  ( n w:tis - 0 | c-addr n = Read u characters from the stream )
+  >r
+  r@ tis-fetch-chars
+  dup 0> IF
+    dup r@ tis-next-chars
+  THEN
+  rdrop
+;
+
+
+: tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr/lf )
+  >r
+  r@ tis-fetch-chars dup 0> IF   \ ToDo: comment
+    BEGIN
+      r@ tis-fetch-char IF
+        dup  chr.cr <>
+        swap chr.lf <> AND
+      ELSE
+        false
+      THEN
+    WHILE
+      1+
+      r@ tis-next-char
+    REPEAT  
+  THEN
+  
+  r@ tis-fetch-char IF              \ ToDo: tis-cmatch-char
+    chr.cr = IF
+      r@ tis-next-char
+    THEN
+  THEN
+  
+  r@ tis-fetch-char IF
+    chr.lf = IF
+      r@ tis-next-char
+    THEN
+  THEN
+  
+  rdrop
+;
+    
+
+: tis-read-cell    ( w:tis - false | n true = Read a cell value in the current base )
   
 ;
 
 
-: tis-read-string  ( n w:tis - c-addr n = Read n characters from the stream )
-;
-
-
-: tis-read-line    ( w:tis - c-addr n = Read characters till cr/lf )
-;
-
-
-: tis-read-cell    ( w:tis - n = Read binary a cell )
-;
-
-
-: tis-read-double  ( w:tis - d = Read binary a double )
-;
-
-
-: tis-read-float   ( w:tis - f = Read binary a float )
+: tis-read-double  ( w:tis - false | d true = Read a double value in the current base )
 ;
 
 
@@ -132,7 +212,38 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-imatch-string  ( c-addr n w:tis - f = Match case-insensitive a string )
+: tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
+;
+
+
+: tis-cmatch-char  ( c w:tis - f = Match case-sensitive a character )
+  >r
+  r@ tis-fetch-char IF
+    = dup IF
+      r@ tis-next-char
+    THEN
+  ELSE
+    drop false
+  THEN
+  rdrop
+;
+
+
+: tis-imatch-chars ( c-addr n w:tis - false | c true = Match one of the characters case-insensitive )
+  >r
+  chr-lower
+  r@ tis-fetch-char IF
+    chr-lower = dup IF
+      r@ tis-next-char
+    THEN
+  ELSE
+    drop false
+  THEN
+  rdrop
+;
+
+
+: tis-match-chars ( c-addr n w:tis - false | c true = Match one of the characters case-sensitive )
 ;
 
 
@@ -141,24 +252,53 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
+  >r 0
+  BEGIN
+    r@ tis-fetch-char IF        \ ToDo: comment
+      chr-blank?
+    ELSE
+      false
+    THEN
+  WHILE
+    1+
+    r@ tis-next-char
+  REPEAT
+  rdrop
 ;
 
 
 ( Position in the stream )
 
 : tis-tell         ( w:tis - u = Tell the current position )
+  tis>offset @
 ;
 
 
-: tis-seek-start   ( u w:tis - = Seek the u position from start )
+: tis-seek-start   ( u w:tis - f = Seek the u position from start )
+  2dup str-length@ u< IF
+    tis>offset !
+    true
+  ELSE
+    2drop
+    false
+  THEN
 ;
 
 
-: tis-seek-current ( u w:tis - = Seek the u position from current )
+: tis-seek-current ( u w:tis - f = Seek the u position from current )
+  tuck tis>offset @ +
+  swap tis-seek-start
 ;
 
 
-: tis-seek-end     ( u w:tis - = Seek the u position from end )
+: tis-seek-end     ( u w:tis - f = Seek the u position from end )
+  tuck str-length@ 
+  swap - dup 0>= IF
+    swap tis-seek-start
+  ELSE
+    2drop
+    false
+  THEN
 ;
 
 [THEN]
