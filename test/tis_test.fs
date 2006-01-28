@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\            ffl_test - the test-all source file in the ffl
+\          chr_test - the test words for the chr module in ffl
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
@@ -20,25 +20,45 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 08:11:58 $ $Revision: 1.5 $
+\  $Date: 2006-01-28 08:11:58 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-
 include ffl/tst.fs
+include ffl/tis.fs
 
-tst-reset-tests
 
-\ the test sources
-include chr_test.fs
-include crc_test.fs
-include scl_test.fs
-include str_test.fs
-include tis_test.fs
-
-." Forth Foundation Library Test: " tst-get-result .  ." errors in " . ." tests" cr
+.( Testing: tis ) cr 
   
-bye
+t{ tis-create t1                }t
+
+t{ s" abcdefghijklmnopqrstuvwxyz" t1 str-set }t
+
+t{ t1 tis-eof? ?false }t
+t{ t1 tis-read-char ?true char a ?s }t
+t{ t1 tis-read-char ?true char b ?s }t
+
+t{ t1 tis-tell 2 ?s }t
+
+t{ 3 t1 tis-read-string s" cde" compare ?0 }t
+t{ t1 tis-tell 5 ?s }t
+
+\ other tests
+
+t{ 20 t1 tis-seek-start ?true }t
+t{ t1 tis-read-char ?true char u ?s }t
+
+t{ 3  t1 tis-seek-current ?true }t
+t{ 4  t1 tis-read-string s" yz" compare ?0 }t
+t{ t1 tis-eof? ?true }t
+
+t{ 3  t1 tis-read-string ?0 }t
+
+t{ 5  t1 tis-seek-end ?true }t
+t{ t1 tis-tell 21 ?s }t
+t{ t1 tis-read-char ?true char v ?s }t
+
+t{ 26 t1 tis-seek-start ?false }t
+t{ 27 t1 tis-seek-end ?false }t
 
 \ ==============================================================================
-
