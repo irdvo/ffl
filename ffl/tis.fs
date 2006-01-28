@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 08:11:57 $ $Revision: 1.3 $
+\  $Date: 2006-01-28 19:48:40 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -134,6 +134,81 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
+( Match characters in the stream)
+
+: tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
+  >r
+  chr-lower
+  r@ tis-fetch-char IF
+    chr-lower = dup IF
+      r@ tis-next-char
+    THEN
+  ELSE
+    drop false
+  THEN
+  rdrop
+;
+
+
+: tis-cmatch-char  ( c w:tis - f = Match case-sensitive a character )
+  >r
+  r@ tis-fetch-char IF
+    = dup IF
+      r@ tis-next-char
+    THEN
+  ELSE
+    drop false
+  THEN
+  rdrop
+;
+
+
+: tis-cmatch-chars ( c-addr n w:tis - false | c true = Match one of the characters case-sensitive )
+  >r
+  r@ tis-fetch-char IF
+    dup >r chr-string? r> over IF
+      r@ tis-next-char
+      swap
+    ELSE
+      drop
+    THEN
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
+: tis-cmatch-string  ( c-addr n w:tis - f = Match case-sensitive a string )
+  >r
+  dup r@ tis-fetch-chars ?dup IF
+    dup >r compare 0= r> over IF
+      r@ tis-next-chars
+    ELSE
+      drop
+    THEN
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
+: tis-imatch-string  ( c-addr n w:tis - f = Match case-insensitive a string )
+  >r
+  dup r@ tis-fetch-chars ?dup IF
+    dup >r icompare 0= r> over IF
+      r@ tis-next-chars
+    ELSE
+      drop
+    THEN
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
 ( Read from text input stream )
 
 : tis-read-char    ( w:tis - false | c true = Read character from the stream )
@@ -159,7 +234,9 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr/lf )
   >r
-  r@ tis-fetch-chars dup 0> IF   \ ToDo: comment
+  1 r@ tis-fetch-chars dup 0> IF   \ ToDo: comment
+    drop 0
+    
     BEGIN
       r@ tis-fetch-char IF
         dup  chr.cr <>
@@ -170,19 +247,14 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
     WHILE
       1+
       r@ tis-next-char
-    REPEAT  
-  THEN
-  
-  r@ tis-fetch-char IF              \ ToDo: tis-cmatch-char
-    chr.cr = IF
-      r@ tis-next-char
+    REPEAT
+    
+    dup 0= IF
+      nip
     THEN
-  THEN
-  
-  r@ tis-fetch-char IF
-    chr.lf = IF
-      r@ tis-next-char
-    THEN
+    
+    chr.cr r@ tis-cmatch-char drop
+    chr.lf r@ tis-cmatch-char drop
   THEN
   
   rdrop
@@ -212,43 +284,6 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
-;
-
-
-: tis-cmatch-char  ( c w:tis - f = Match case-sensitive a character )
-  >r
-  r@ tis-fetch-char IF
-    = dup IF
-      r@ tis-next-char
-    THEN
-  ELSE
-    drop false
-  THEN
-  rdrop
-;
-
-
-: tis-imatch-chars ( c-addr n w:tis - false | c true = Match one of the characters case-insensitive )
-  >r
-  chr-lower
-  r@ tis-fetch-char IF
-    chr-lower = dup IF
-      r@ tis-next-char
-    THEN
-  ELSE
-    drop false
-  THEN
-  rdrop
-;
-
-
-: tis-match-chars ( c-addr n w:tis - false | c true = Match one of the characters case-sensitive )
-;
-
-
-: tis-cmatch-string  ( c-addr n w:tis - f = Match case-sensitive a string )
-;
 
 
 : tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
