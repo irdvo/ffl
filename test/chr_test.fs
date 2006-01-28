@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
+\  $Date: 2006-01-28 18:38:00 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -153,6 +153,11 @@ t{ char 7 chr-octdigit?   ?true    }t
 t{ char 8 chr-octdigit?   ?false   }t
 t{ char a chr-octdigit?   ?false   }t
 t{ char @ chr-octdigit?   ?false   }t
+
+t{ s" abc" char d chr-string? ?false }t
+t{ s" abc" char a chr-string? ?true  }t
+t{ s" abc" char b chr-string? ?true  }t
+t{ s" abc" char c chr-string? ?true  }t
 
 t{ char a chr-upper   char A ?s   }t
 t{ char A chr-upper   char A ?s   }t
