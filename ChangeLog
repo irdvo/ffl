@@ -1,4 +1,5 @@
 0.2.0
+* tst: new words: ?d and ?ud for tests on doubles
 * chr: new word: chr-string?
 * chr: new word: chr-base
 * tos: new module (Text output stream)

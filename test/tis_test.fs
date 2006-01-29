@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-29 08:52:05 $ $Revision: 1.3 $
+\  $Date: 2006-01-29 20:14:14 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -101,6 +101,8 @@ t{ t1 tis-read-char ?true char v ?s }t
 t{ 26 t1 tis-seek-start ?false }t
 t{ 27 t1 tis-seek-end ?false }t
 
+\ Read
+
 t{ s" ab   cd" t1 str-set }t
 t{ t1 tis-reset }t
 
@@ -108,13 +110,50 @@ t{ chr.cr t1 str-push-char }t
 t{ s" ef" t1 str-append }t
 t{ chr.lf t1 str-push-char }t
 
-\ Read
-
 t{ 2 t1 tis-read-string s" ab" compare ?0 }t
 t{ t1 tis-skip-spaces 3 ?s }t
 t{ t1 tis-read-line s" cd" compare ?0 }t
 t{ t1 tis-read-line s" ef" compare ?0 }t
 t{ t1 tis-read-line ?0 }t
 
+
+t{ s" -1257abc" t1 str-set t1 tis-reset }t
+
+t{ t1 tis-read-number ?true -1257 ?s }t
+t{ t1 tis-read-char ?true char a ?s }t
+
+hex
+t{ s" ba1z" t1 str-set t1 tis-reset }t
+
+t{ t1 tis-read-number ?true decimal 2977 ?s }t
+t{ t1 tis-read-char ?true char z ?s }t
+decimal
+
+t{ s" -abc" t1 str-set t1 tis-reset }t
+
+t{ t1 tis-read-number ?false }t
+t{ t1 tis-read-char ?true char - ?s }t
+
+t{ s" +abc" t1 str-set t1 tis-reset }t
+
+t{ t1 tis-read-number ?false }t
+t{ t1 tis-read-char ?true char + ?s }t
+
+t{ s" abc" t1 str-set t1 tis-reset }t
+t{ 3 t1 tis-read-string 3 ?s drop }t
+t{ t1 tis-read-number ?false }t
+
+
+t{ s" -1231231123123abc" t1 str-set t1 tis-reset }t
+t{ t1 tis-read-double ?true -1231231123123. ?d }t
+t{ t1 tis-read-char ?true char a ?s }t
+
+t{ s" 9899898989898998abc" t1 str-set t1 tis-reset }t
+t{ t1 tis-read-double ?true 9899898.989898998 ?d }t
+t{ t1 tis-read-char ?true char a ?s }t
+
+t{ s" -abc" t1 str-set t1 tis-reset }t
+t{ t1 tis-read-double ?false }t
+t{ t1 tis-read-char ?true char - ?s }t
 
 \ ==============================================================================
