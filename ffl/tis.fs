@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 19:48:40 $ $Revision: 1.4 $
+\  $Date: 2006-01-29 08:51:56 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -54,18 +54,6 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 ( Private words )
-
-: tis-next         ( w:tis - = Move the offset in the input stream )
-  tis>offset 1+!
-;
-
-
-: tis-get          ( w:tis - addr = Get address of offset in text stream )
-  dup str>data @
-  swap tis>offset @ 
-  chars +
-;
-
 
 : tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
   dup tis>offset @ over str-length@ over >= IF
@@ -101,6 +89,20 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
+: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream )
+  >r
+  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length
+  0 max
+  
+  dup 0> IF
+    r@ tis>offset @ chars
+    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
 ( Public words )
 
 : tis-init         ( w:tis - = Initialise the empty input stream )
@@ -130,7 +132,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
-  dup tis>offset @ swap tis>input str-length@ >=
+  dup tis>offset @ swap str-length@ >=
 ;
 
 
@@ -273,17 +275,76 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ( Scan the text input stream )
 
 : tis-scan-char    ( c w:tis - false | c-addr u true = Read characters till c )
+  >r
+  0 swap
+  r@ tis-get ?dup IF                   \ If there are still characters in the stream
+    bounds ?DO                         \ Do for all remaining characters
+      dup I c@ = IF                    \  If scan character found then
+        drop
+        unloop
+        r@ tis-get drop swap           \   Return start of character
+        dup 1+ r> tis-next-chars       \   Set characters processed
+        true exit
+      THEN
+      swap 1+ swap
+      1 chars
+    +LOOP
+  THEN
+  2drop rdrop
+  false
 ;
 
 
 : tis-scan-chars   ( c-addr n w:tis - false | c-addr u c true = Read characters till one of characters )
+  >r
+  0 -rot
+  r@ tis-get ?dup IF                   \ If there are remaing characters in the stream
+    bounds ?DO                         \ Do for the remaing characters
+      2dup I c@ chr-string? IF         \  If character in the string then
+        2drop
+        I c@
+        unloop
+        swap
+        r@ tis-get drop swap           \   Return the start of the remaining characters
+        dup 1+ r> tis-next-chars       \   Set characters processed
+        rot
+        true exit
+      THEN
+      rot 1+ -rot
+      1 chars
+    +LOOP
+  THEN
+  2drop drop rdrop
+  false
 ;
 
 
 : tis-scan-string  ( c-addr n w:tis - false | c-addr u true = Read characters till the string )
+  >r
+  0 -rot
+  r@ tis-get ?dup IF                   \ Check if there are remaing characters
+    swap >r over - r> swap             \ Calculate the number of remaining characters that can fit the string
+    dup 0> IF
+      bounds ?DO                       \ Do for the remaing character that can fit the string
+        2dup I over compare 0= IF      \  If the remaining characters has the string Then
+          nip
+          unloop
+          over +
+          r@ tis-get drop              \   Return the start of the remaing characters
+          swap r> tis-next-chars       \   Set characters processed
+          swap 
+          true exit
+        THEN
+        rot 1+ -rot
+        1 chars
+      +LOOP
+    ELSE
+      2drop
+    THEN
+  THEN
+  2drop drop rdrop
+  false
 ;
-
-
 
 
 : tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
