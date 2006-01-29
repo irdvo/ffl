@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:27 $ $Revision: 1.2 $
+\  $Date: 2006-01-29 19:56:21 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -121,6 +121,20 @@ variable tst-tests
 : ?u           ( u u - = Check for unsigned value on stack )
   tst-depth? IF
     u<> tst-report-mismatch
+  THEN
+;
+
+
+: ?d           ( d d - = Check for a signed double on stack )
+  tst-depth? IF
+    d<> tst-report-mismatch
+  THEN
+;
+
+
+: ?ud          ( ud ud - = Check for an unsigned double on stack )
+  tst-depth? IF
+    du<> tst-report-mismatch
   THEN
 ;
 
