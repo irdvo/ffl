@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 19:48:40 $ $Revision: 1.2 $
+\  $Date: 2006-01-29 08:52:05 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -42,6 +42,8 @@ t{ t1 tis-tell 2 ?s }t
 
 t{ 3 t1 tis-read-string s" cde" compare ?0 }t
 t{ t1 tis-tell 5 ?s }t
+
+\ Match
 
 t{ char g t1 tis-cmatch-char ?false }t
 t{ char F t1 tis-cmatch-char ?false }t
@@ -65,7 +67,23 @@ t{ s" O"    t1 tis-imatch-string ?true }t
 t{ s" pq"   t1 tis-imatch-string ?true }t
 t{ s" rSt"  t1 tis-imatch-string ?true }t
 
-\ other tests
+\ Scan
+
+t{ t1 tis-reset }t
+t{ char 0 t1 tis-scan-char ?false }t
+t{ char c t1 tis-scan-char ?true s" ab" compare ?0 }t
+t{ char f t1 tis-scan-char ?true s" de" compare ?0 }t
+
+t{ s" ab" t1 tis-scan-chars ?false }t
+t{ s" ik" t1 tis-scan-chars ?true char i ?s s" gh" compare ?0 }t
+t{ s" lL" t1 tis-scan-chars ?true char l ?s s" jk" compare ?0 }t
+
+t{ s" ab" t1 tis-scan-string ?false }t
+t{ s" stu" t1 tis-scan-string ?true s" mnopqr" compare ?0 }t
+t{ s" x"  t1 tis-scan-string ?true s" vw" compare ?0 }t
+t{ s" abc" t1 tis-scan-string ?false }t
+
+\ Seek
 
 t{ 20 t1 tis-seek-start ?true }t
 t{ t1 tis-read-char ?true char u ?s }t
@@ -89,6 +107,8 @@ t{ t1 tis-reset }t
 t{ chr.cr t1 str-push-char }t
 t{ s" ef" t1 str-append }t
 t{ chr.lf t1 str-push-char }t
+
+\ Read
 
 t{ 2 t1 tis-read-string s" ab" compare ?0 }t
 t{ t1 tis-skip-spaces 3 ?s }t
