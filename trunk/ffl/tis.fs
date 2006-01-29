@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-29 08:51:56 $ $Revision: 1.5 $
+\  $Date: 2006-01-29 20:14:14 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -136,6 +136,41 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
+( Position in the stream )
+
+: tis-tell         ( w:tis - u = Tell the current position )
+  tis>offset @
+;
+
+
+: tis-seek-start   ( u w:tis - f = Seek the u position from start )
+  2dup str-length@ u< IF
+    tis>offset !
+    true
+  ELSE
+    2drop
+    false
+  THEN
+;
+
+
+: tis-seek-current ( u w:tis - f = Seek the u position from current )
+  tuck tis>offset @ +
+  swap tis-seek-start
+;
+
+
+: tis-seek-end     ( u w:tis - f = Seek the u position from end )
+  tuck str-length@ 
+  swap - dup 0>= IF
+    swap tis-seek-start
+  ELSE
+    2drop
+    false
+  THEN
+;
+
+
 ( Match characters in the stream)
 
 : tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
@@ -236,11 +271,11 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr/lf )
   >r
-  1 r@ tis-fetch-chars dup 0> IF   \ ToDo: comment
+  1 r@ tis-fetch-chars dup 0> IF
     drop 0
     
     BEGIN
-      r@ tis-fetch-char IF
+      r@ tis-fetch-char IF             \ Read the string till cr/lf
         dup  chr.cr <>
         swap chr.lf <> AND
       ELSE
@@ -255,20 +290,96 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
       nip
     THEN
     
-    chr.cr r@ tis-cmatch-char drop
-    chr.lf r@ tis-cmatch-char drop
+    chr.cr r@ tis-cmatch-char drop     \ Process cr
+    chr.lf r@ tis-cmatch-char drop     \ Process lf
   THEN
   
   rdrop
 ;
     
 
-: tis-read-cell    ( w:tis - false | n true = Read a cell value in the current base )
+: tis-read-number  ( w:tis - false | n true = Read a cell number in the current base )
+  >r
+  r@ tis-tell
+  false                                \ Process leading +/-
+  [char] - r@ tis-cmatch-char IF
+    0=
+  ELSE
+    [char] + r@ tis-cmatch-char drop
+  THEN
   
+  r@ tis-fetch-char IF
+    chr-base IF
+      r@ tis-next-char
+      
+      BEGIN                            \ Process digits
+        r@ tis-fetch-char IF
+          chr-base
+        ELSE
+          false
+        THEN
+      WHILE
+        swap base @ * +                \ Calculate the number
+        r@ tis-next-char
+      REPEAT
+      
+      swap IF
+        negate
+      THEN
+      nip
+      true
+    ELSE
+      drop r@ tis-seek-start drop
+      false
+    THEN
+  ELSE
+    drop r@ tis-seek-start drop
+    false
+  THEN
+  rdrop
 ;
 
 
 : tis-read-double  ( w:tis - false | d true = Read a double value in the current base )
+  >r
+  r@ tis-tell
+  false                                \ Process leading +/-
+  [char] - r@ tis-cmatch-char IF
+    0=
+  ELSE
+    [char] + r@ tis-cmatch-char drop
+  THEN
+  
+  r@ tis-fetch-char IF
+    chr-base IF
+      s>d
+      r@ tis-next-char
+      
+      BEGIN
+        r@ tis-fetch-char IF
+          chr-base                     \ Process the digits
+        ELSE
+          false
+        THEN
+      WHILE
+        >r base @ 1 m*/ r> m+          \ Calculate the number
+        r@ tis-next-char
+      REPEAT
+      
+      2swap IF
+        >r dnegate r>
+      THEN
+      drop
+      true
+    ELSE
+      drop r@ tis-seek-start drop
+      false
+    THEN
+  ELSE
+    drop r@ tis-seek-start drop
+    false
+  THEN
+  rdrop
 ;
 
 
@@ -350,8 +461,8 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 : tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
   >r 0
   BEGIN
-    r@ tis-fetch-char IF        \ ToDo: comment
-      chr-blank?
+    r@ tis-fetch-char IF
+      chr-blank?                       \ Process the spaces
     ELSE
       false
     THEN
@@ -362,40 +473,6 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   rdrop
 ;
 
-
-( Position in the stream )
-
-: tis-tell         ( w:tis - u = Tell the current position )
-  tis>offset @
-;
-
-
-: tis-seek-start   ( u w:tis - f = Seek the u position from start )
-  2dup str-length@ u< IF
-    tis>offset !
-    true
-  ELSE
-    2drop
-    false
-  THEN
-;
-
-
-: tis-seek-current ( u w:tis - f = Seek the u position from current )
-  tuck tis>offset @ +
-  swap tis-seek-start
-;
-
-
-: tis-seek-end     ( u w:tis - f = Seek the u position from end )
-  tuck str-length@ 
-  swap - dup 0>= IF
-    swap tis-seek-start
-  ELSE
-    2drop
-    false
-  THEN
-;
 
 [THEN]
 
