@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-29 20:14:14 $ $Revision: 1.6 $
+\  $Date: 2006-01-30 18:54:15 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,13 @@ include ffl/str.fs
 ( tis = Text input stream )
 ( The tis module implements a text input stream. It extends the str module, )
 ( so all words from the str module, can be used on the tis data structure.  )
-
+( There are seven basic methods: fetch = fetch the data, the stream pointer )
+( is not updated; next = after a fetch, the stream pointer is updated; seek )
+( = move the stream pointer; match = match data, if matched then the stream )
+( pointer is updated, read = read data, if data is returned then the stream )
+( pointer is updated; scan = scan for data, if the data is found then the   )
+( leading text is returned and the stream pointer is moved after the        )
+( scanned data; skip = move the stream pointer after the skipped data.      )  
 
 1 constant tis.version
 
@@ -44,7 +50,7 @@ include ffl/str.fs
 ( Public structure )
 
 struct: tis%       ( - n = Get the required space for the tis data structure )
-  str% field: tis>input
+  str% field: tis>text
        cell:  tis>offset
 ;struct
 
@@ -52,55 +58,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ( Private database )
 
 
-
 ( Private words )
-
-: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
-  dup tis>offset @ over str-length@ over >= IF
-    chars swap str>data @ + c@
-    true
-  ELSE
-    false
-  THEN
-;
-
-
-: tis-next-char    ( w:tis - = Move the offset one character after fetch-char )
-  tis>offset 1+!
-;
-
-
-: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
-  >r
-  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length, limit between 0 and requested chars
-  min 0 max
-  
-  dup 0> IF
-    r@ tis>offset @ chars
-    r@ str>data   @ +                  \ Determine start of remaining chars in stream
-    swap
-  THEN
-  rdrop
-;
-
-
-: tis-next-chars   ( n w:tis - = Move the offset n characters after fetch-chars )
-  tis>offset +!
-;
-
-
-: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream )
-  >r
-  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length
-  0 max
-  
-  dup 0> IF
-    r@ tis>offset @ chars
-    r@ str>data   @ +                  \ Determine start of remaining chars in stream
-    swap
-  THEN
-  rdrop
-;
 
 
 ( Public words )
@@ -136,9 +94,67 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-( Position in the stream )
+\ Fetch and next words
 
-: tis-tell         ( w:tis - u = Tell the current position )
+: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
+  dup tis>offset @ over str-length@ over >= IF
+    chars swap str>data @ + c@
+    true
+  ELSE
+    false
+  THEN
+;
+
+
+: tis-next-char    ( w:tis - = Move the stream pointer one character after fetch-char )
+  tis>offset 1+!
+;
+
+
+: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
+  >r
+  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length, limit between 0 and requested chars
+  min 0 max
+  
+  dup 0> IF
+    r@ tis>offset @ chars
+    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
+: tis-next-chars   ( n w:tis - = Move the stream pointer n characters after fetch-chars )
+  tis>offset +!
+;
+
+
+\ Set and get words
+
+: tis-set          ( c-addr u w:tis - = Set the string in the stream, reset the stream pointer )
+  dup tis-reset
+  str-set
+;
+
+
+: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
+  >r
+  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length
+  0 max
+  
+  dup 0> IF
+    r@ tis>offset @ chars
+    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
+( Seek and tell words: position in the stream )
+
+: tis-tell         ( w:tis - u = Tell the stream pointer )
   tis>offset @
 ;
 
@@ -171,7 +187,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-( Match characters in the stream)
+( Match words: check for starting data)
 
 : tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
   >r
@@ -383,7 +399,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-( Scan the text input stream )
+( Scan words: look for data in the stream )
 
 : tis-scan-char    ( c w:tis - false | c-addr u true = Read characters till c )
   >r
