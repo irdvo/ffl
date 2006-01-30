@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
+\  $Date: 2006-01-30 18:58:00 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -69,7 +69,7 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 ;
 
 
-: sci-free     ( w:sci - = Free list from heap )
+: sci-free     ( w:sci - = Free iterator from heap )
   free throw
 ;
 
