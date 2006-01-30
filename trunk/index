@@ -5,6 +5,9 @@ ffl - Forth Foundation Library
     - Data type
 --- - ------------------------------------------------
 chr - Char 
+str - Text string module
+tis - Text Input Stream
+tos - Text Output Stream
 --- - ------------------------------------------------
     - Collection
 --- - ------------------------------------------------
@@ -36,7 +39,6 @@ clr - Color module
 cpl - Complex module
 dtm - Datetime module
 frc - Fraction module
-str - Text string module
 --- - ------------------------------------------------
     - Collection
 --- - ------------------------------------------------
