@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 19:48:40 $ $Revision: 1.11 $
+\  $Date: 2006-01-31 20:26:34 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -306,10 +306,22 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Character words )
 
-: str-push-char    ( c w:str - = Push a character at the end of the string )
+: str-append-char    ( c w:str - = Append a character at the end of the string )
   1 over str-length+
   
   chars swap str>data @ + c! \ store char at end of string
+;
+
+: str-prepend-char ( c w:str - = Prepend a character at the start of the string )
+  >r 1 0 r>
+  
+  str-insert-space
+  nip c!
+;
+
+
+: str-push-char    ( c w:str - = Push a character at the end of the string )
+  str-append-char
 ;
 
 
@@ -324,10 +336,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-enqueue-char ( c w:str - = Place a character at the start of the string )
-  >r 1 0 r>
-  
-  str-insert-space
-  nip c!
+  str-prepend-char  
 ;
 
 

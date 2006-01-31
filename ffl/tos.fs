@@ -2,7 +2,7 @@
 \
 \              tos - the text output stream module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2005-2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-18 19:01:44 $ $Revision: 1.2 $
+\  $Date: 2006-01-31 20:26:35 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -44,8 +44,8 @@ include ffl/str.fs
 ( Public structure )
 
 struct: tos%       ( - n = Get the required space for the tos data structure )
-  str% field: tos>output
-       cell:  tos>offset
+  str% field: tos>text
+       cell:  tos>pntr
 ;struct
 
 
@@ -55,13 +55,17 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Private words )
 
+: tos-sync         ( w:tos - = Synchronize the string length and the alignment start pointer )
+  dup  str-length@
+  swap tos>pntr !
+;
 
 
 ( Public words )
 
 : tos-init         ( w:tos - = Initialise the empty output stream )
-  dup tos>output  str-init   \ Initialise the base string data structure
-      tos>offset  0!
+  dup tos>text   str-init   \ Initialise the base string data structure
+      tos-sync
 ;
 
 
@@ -81,52 +85,124 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 
 : tos-rewrite      ( w:tos - = Rewrite the output stream )
-  dup tos>output str-clear
-      tos>offset 0!
+  dup tos>text   str-clear
+      tos-sync
 ;
 
 
 ( Write to text output stream )
 
 : tos-write-char    ( c w:tos - = Write character to the stream )
+  dup tos-sync
+  str-append-char
 ;
 
 
-: tos-write-string  ( c-addr n w:tos - = Write string to the stream )
+: tos-write-chars   ( c u w:tos - = Write u characters to the stream )
+  dup tos-sync
+  str-append-chars
 ;
 
 
-: tos-write-line    ( c-addr n w:tos - = Write string and cr/lf to the stream )
+: tos-write-string  ( c-addr u w:tos - = Write string to the stream )
+  dup tos-sync
+  str-append
 ;
 
 
-: tos-write-cell    ( w w:tos - = Write binary a cell to the stream )
+: tos-write-line    ( w:tos - = Write cr/lf to the stream, not alignable )
+  \ ToDo
+  tos-sync
 ;
 
 
-: tos-write-double  ( d w:tos - = Write binary a double to the stream )
+: tos-write-number  ( n w:tos - = Write a number to the stream )
+  dup tos-sync
 ;
 
 
-: tos-write-float   ( f w:tos - = Write binary a float to the stream )
+: tos-write-double  ( d w:tos - = Write a double to the stream )
+  dup tos-sync
 ;
 
 
-( Position in the stream )
+( Align the previous written text )
 
-: tos-tell         ( w:tos - u = Tell the current position )
+: tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written text )
+  >r
+  r@ tos>pntr @ r@ str-length@ < IF   \ ToDo: exception ??
+    >r over r>
+    
+    ?dup IF                            \ Insert the leading spaces
+      r@ tos>pntr @ r@ str-insert-chars
+    ELSE
+      drop
+    THEN
+    
+    ?dup IF                            \ Insert the trailing spaces
+      r@ str-append-chars
+    ELSE
+      drop
+    THEN
+    
+  ELSE
+    drop 2drop
+  THEN
+  
+  rdrop
 ;
 
 
-: tos-seek-start   ( u w:tos - = Seek the u position from start )
+: tos-align-left   ( c:pad u:width w:tos - = Align left the previous written text )
+  >r
+  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  - dup 0> IF                          \ If width > length previous written text then
+    0 r@ tos-align                     \   Align with trailing chars
+  ELSE
+    2drop
+  THEN
+  rdrop
 ;
 
 
-: tos-seek-current ( u w:tos - = Seek the u position from current )
+: tos-align-right  ( c:pad u:width w:tos - = Align right the previous written text )
+  >r
+  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  - dup 0> IF                          \ If width > length previous written text then
+    0 swap r@ tos-align                \   Align with leading chars
+  ELSE
+    2drop
+  THEN
+  rdrop
 ;
 
 
-: tos-seek-end     ( u w:tos - = Seek the u position from end )
+: tos-center       ( c:pad u:width w:tos - = Center the previous written text )
+  >r
+  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  - dup 0> IF                          \ If width > length previous written text then
+    dup 2/ swap over - r@ tos-align    \   Align with leading and trailing chars
+  ELSE
+    2drop
+  THEN
+  rdrop
+;
+
+
+\ Alignment start pointer words
+
+: tos-tell         ( w:tos - u = Tell the current alignment start pointer )
+  tos>pntr @
+;
+
+
+: tos-seek-start  ( u w:tos - f = Set the alignment start pointer )
+;
+
+
+\ Inspection
+
+: tos-dump         ( w:tos - = Dump the text output stream )
 ;
 
 [THEN]
