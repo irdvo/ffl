@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-31 20:26:35 $ $Revision: 1.3 $
+\  $Date: 2006-02-01 20:05:00 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -61,10 +61,48 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
+0 [IF]
+: tos-number-info ( n - f:neg n:width = Determine the sign and width of a number )
+  dup 0< tuck IF
+    negate 2 
+  ELSE
+    1 
+  THEN
+  swap
+  
+  BEGIN
+    base @ / ?dup
+  WHILE
+    swap 1+ swap
+  REPEAT
+;
+
+
+: tos-double-info ( d - f:neg n:width = Determine the sign and width of a double )
+  2dup d0< IF
+    true -rot
+    dnegate 
+    2 
+  ELSE
+    false -rot
+    1
+  THEN
+  -rot
+  
+  BEGIN
+    base @ m/ 2dup d0<>
+  WHILE
+    rot 1+ -rot
+  REPEAT
+  2drop
+;
+[THEN]
+
+
 ( Public words )
 
 : tos-init         ( w:tos - = Initialise the empty output stream )
-  dup tos>text   str-init   \ Initialise the base string data structure
+  dup str-init               \ Initialise the base string data structure
       tos-sync
 ;
 
@@ -90,7 +128,24 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Write to text output stream )
+( Alignment start pointer words )
+
+: tos-pntr@       ( w:tos - u = Get the current alignment start pointer )
+  tos>pntr @
+;
+
+
+: tos-pntr!       ( u w:tos - f = Set the alignment start pointer )
+  2dup str-length@ u<= IF
+    tos>pntr !
+    true
+  ELSE
+    2drop
+    false
+  THEN
+;
+
+( Write to the text output stream )
 
 : tos-write-char    ( c w:tos - = Write character to the stream )
   dup tos-sync
@@ -111,22 +166,58 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 
 : tos-write-line    ( w:tos - = Write cr/lf to the stream, not alignable )
-  \ ToDo
+  [DEFINED] sys-win32 [IF]
+  chr.cr over tos-write-char
+  chr.lf over tos-write-char
+  [THEN]
+  [DEFINED] sys-unix [IF]
+  chr.lf over tos-write-char
+  [THEN]
   tos-sync
 ;
 
 
-: tos-write-number  ( n w:tos - = Write a number to the stream )
-  dup tos-sync
+: tos-write-number  ( n w:tos - = Write a number in the current base to the stream )
+  dup tos-sync swap
+  s>d
+  swap over dabs
+  <# #s rot sign #>
+  rot str-append
 ;
 
 
-: tos-write-double  ( d w:tos - = Write a double to the stream )
-  dup tos-sync
+0 [IF]
+  dup tos-number-info                  \ Determine sign and width of number
+  chr.sp swap r@ tos-write-chars       \ Write width spaces in the stream
+  swap
+  r> str-bounds drop 1 chars -         \ Determine the start address
+  swap
+  
+  BEGIN
+    base @ /mod tos-convert-digit      \ Determine a digit from the number
+    -rot over c!                       \ Store the digit
+    1 chars -
+    swap
+    ?dup 0=                            \ Until the whole number is converted
+  UNTIL
+  
+  swap IF                              \ If negative Then
+    char - swap c!                     \   Prepend a sign
+  ELSE
+    drop
+  THEN
+[THEN]
+
+
+: tos-write-double  ( d w:tos - = Write a double in the current base to the stream )
+  dup tos-sync -rot
+  swap over dabs
+  <# #s rot sign #>
+  rot str-append
 ;
 
 
-( Align the previous written text )
+( Align the text )
 
 : tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written text )
   >r
@@ -155,7 +246,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-align-left   ( c:pad u:width w:tos - = Align left the previous written text )
   >r
-  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
     0 r@ tos-align                     \   Align with trailing chars
   ELSE
@@ -167,7 +258,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-align-right  ( c:pad u:width w:tos - = Align right the previous written text )
   >r
-  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
     0 swap r@ tos-align                \   Align with leading chars
   ELSE
@@ -179,7 +270,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-center       ( c:pad u:width w:tos - = Center the previous written text )
   >r
-  r@ str-length@ r@ tos>pntr @ -       \ Determine length previous written text
+  r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
     dup 2/ swap over - r@ tos-align    \   Align with leading and trailing chars
   ELSE
@@ -189,18 +280,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-\ Alignment start pointer words
-
-: tos-tell         ( w:tos - u = Tell the current alignment start pointer )
-  tos>pntr @
-;
-
-
-: tos-seek-start  ( u w:tos - f = Set the alignment start pointer )
-;
-
-
-\ Inspection
+( Inspection )
 
 : tos-dump         ( w:tos - = Dump the text output stream )
 ;
