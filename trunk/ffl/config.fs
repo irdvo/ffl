@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-25 19:53:12 $ $Revision: 1.5 $
+\  $Date: 2006-02-01 20:05:00 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -40,6 +40,10 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 
 ( Public Settings )
+
+1 constant sys-unix
+
+\ 1 constant sys-win32
 
 
 ( Public words )
