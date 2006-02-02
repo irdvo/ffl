@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-30 18:54:15 $ $Revision: 1.7 $
+\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -51,7 +51,7 @@ include ffl/str.fs
 
 struct: tis%       ( - n = Get the required space for the tis data structure )
   str% field: tis>text
-       cell:  tis>offset
+       cell:  tis>pntr
 ;struct
 
 
@@ -60,12 +60,23 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Private words )
 
+: tis-pntr?!       (  n w:tos - = Update the stream pointer after range check )
+  2dup str-length@ 
+  over > swap 0>= and IF          \ Check for pointer range
+    tis>pntr !
+    true
+  ELSE
+    2drop
+    false
+  THEN
+;
+
 
 ( Public words )
 
 : tis-init         ( w:tis - = Initialise the empty input stream )
   dup str-init               \ Initialise the base string data structure
-      tis>offset  0!
+      tis>pntr  0!
 ;
 
 
@@ -80,25 +91,25 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-free         ( w:tis - = Free the input stream from the heap )
-  free  throw
+  str-free
 ;
 
 
 : tis-reset        ( w:tis - = Reset the input stream )
-  tis>offset 0!
+  tis>pntr 0!
 ;
 
 
 : tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
-  dup tis>offset @ swap str-length@ >=
+  dup tis>pntr @ swap str-length@ >=
 ;
 
 
-\ Fetch and next words
+( Fetch and next words )
 
 : tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
-  dup tis>offset @ over str-length@ over >= IF
-    chars swap str>data @ + c@
+  dup tis>pntr @ over str-length@ over >= IF
+    chars swap str-data@ + c@
     true
   ELSE
     false
@@ -107,17 +118,17 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-next-char    ( w:tis - = Move the stream pointer one character after fetch-char )
-  tis>offset 1+!
+  tis>pntr 1+!
 ;
 
 
 : tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
   >r
-  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length, limit between 0 and requested chars
+  r@ str-length@ r@ tis>pntr @ -     \ Determine remaining length, limit between 0 and requested chars
   min 0 max
   
   dup 0> IF
-    r@ tis>offset @ chars
+    r@ tis>pntr @ chars
     r@ str>data   @ +                  \ Determine start of remaining chars in stream
     swap
   THEN
@@ -126,11 +137,11 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 
 : tis-next-chars   ( n w:tis - = Move the stream pointer n characters after fetch-chars )
-  tis>offset +!
+  tis>pntr +!
 ;
 
 
-\ Set and get words
+( Set and get words )
 
 : tis-set          ( c-addr u w:tis - = Set the string in the stream, reset the stream pointer )
   dup tis-reset
@@ -140,11 +151,11 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
   >r
-  r@ str-length@ r@ tis>offset @ -     \ Determine remaining length
+  r@ str-length@ r@ tis>pntr @ -     \ Determine remaining length
   0 max
   
   dup 0> IF
-    r@ tis>offset @ chars
+    r@ tis>pntr @ chars
     r@ str>data   @ +                  \ Determine start of remaining chars in stream
     swap
   THEN
@@ -154,36 +165,26 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Seek and tell words: position in the stream )
 
-: tis-tell         ( w:tis - u = Tell the stream pointer )
-  tis>offset @
+: tis-pntr@        ( w:tis - u = Get the stream pointer )
+  tis>pntr @
 ;
 
 
-: tis-seek-start   ( u w:tis - f = Seek the u position from start )
-  2dup str-length@ u< IF
-    tis>offset !
-    true
-  ELSE
-    2drop
-    false
+: tis-pntr!        ( n w:tis - f = Set the stream pointer from start {>=0} or from end {<0} )
+  over 0< IF
+    tuck str-length@ +            \ Determine new pointer for negative value
+    swap
   THEN
+  
+  tis-pntr?!
 ;
 
 
-: tis-seek-current ( u w:tis - f = Seek the u position from current )
-  tuck tis>offset @ +
-  swap tis-seek-start
-;
-
-
-: tis-seek-end     ( u w:tis - f = Seek the u position from end )
-  tuck str-length@ 
-  swap - dup 0>= IF
-    swap tis-seek-start
-  ELSE
-    2drop
-    false
-  THEN
+: tis-pntr+!       ( n w:tis - f = Add an offset to the stream pointer )
+  tuck tis-pntr@ +
+  swap 
+  
+  tis-pntr?!
 ;
 
 
@@ -285,7 +286,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr/lf )
+: tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr and/or lf )
   >r
   1 r@ tis-fetch-chars dup 0> IF
     drop 0
@@ -316,7 +317,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-read-number  ( w:tis - false | n true = Read a cell number in the current base )
   >r
-  r@ tis-tell
+  r@ tis-pntr@
   false                                \ Process leading +/-
   [char] - r@ tis-cmatch-char IF
     0=
@@ -345,11 +346,11 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
       nip
       true
     ELSE
-      drop r@ tis-seek-start drop
+      drop r@ tis-pntr! drop
       false
     THEN
   ELSE
-    drop r@ tis-seek-start drop
+    drop r@ tis-pntr! drop
     false
   THEN
   rdrop
@@ -358,7 +359,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-read-double  ( w:tis - false | d true = Read a double value in the current base )
   >r
-  r@ tis-tell
+  r@ tis-pntr@
   false                                \ Process leading +/-
   [char] - r@ tis-cmatch-char IF
     0=
@@ -388,11 +389,11 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
       drop
       true
     ELSE
-      drop r@ tis-seek-start drop
+      drop r@ tis-pntr! drop
       false
     THEN
   ELSE
-    drop r@ tis-seek-start drop
+    drop r@ tis-pntr! drop
     false
   THEN
   rdrop
@@ -487,6 +488,15 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
     r@ tis-next-char
   REPEAT
   rdrop
+;
+
+
+( Inspection )
+
+: tis-dump         ( w:tis - = Dump the text input stream )
+  ." tis:" dup . cr
+  dup tis>text str-dump
+  ."  pntr  :" tis>pntr ? cr
 ;
 
 

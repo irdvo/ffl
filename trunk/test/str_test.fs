@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-13 19:24:04 $ $Revision: 1.4 $
+\  $Date: 2006-02-02 18:45:43 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -44,9 +44,9 @@ t{ s1 str-length@        0 ?s   }t
 t{ s1 str-empty?         ?true  }t
 
 t{ s" hello" s1 str-set         }t
-t{ s" after" s1 str-append      }t
+t{ s" after" s1 str-append-string }t
 t{ s1 str-length@         10 ?s }t
-t{ s" before" s1 str-prepend    }t
+t{ s" before" s1 str-prepend-string }t
 t{ s1 str-length@         16 ?s }t
 t{ s" beforehelloafter" s1 str-icompare ?0 }t
 
@@ -98,8 +98,8 @@ t{ s" ----Hello   " s1 str-icompare ?0 }t
 
 
 t{ s" Hello" s1 str-set             }t
-t{ s" io" 4 s1 str-insert           }t
-t{ s" Ha" 0 s1 str-insert           }t
+t{ s" io" 4 s1 str-insert-string    }t
+t{ s" Ha" 0 s1 str-insert-string    }t
 t{ s" HaHellioo" s1 str-ccompare ?0 }t
 
 
@@ -143,15 +143,15 @@ t{ s" This Is A Test String" s1 str-ccompare ?0 }t
 
 \ center, ljust, rjust
 t{ s" Hello" s1 str-set                 }t
-t{ 4 s1 str-ljust                       }t
+t{ 4 s1 str-align-left                  }t
 t{ s" Hello" s1 str-ccompare ?0         }t
-t{ 7 s1 str-ljust                       }t
+t{ 7 s1 str-align-left                  }t
 t{ s" Hello  " s1 str-ccompare ?0       }t
 
 t{ s" Hello" s1 str-set                 }t
-t{ 2 s1 str-rjust                       }t
+t{ 2 s1 str-align-right                 }t
 t{ s" Hello" s1 str-ccompare ?0         }t
-t{ 8 s1 str-rjust                       }t
+t{ 8 s1 str-align-right                 }t
 t{ s"    Hello" s1 str-ccompare ?0      }t
 
 t{ s" Hello" s1 str-set                 }t
@@ -173,10 +173,10 @@ t{ s" 0052" s1 str-ccompare  ?0         }t
 
 \ strip
 t{ s"    Hello   " s1 str-set           }t
-t{ s1 str-lstrip                        }t
+t{ s1 str-strip-leading                 }t
 t{ s" Hello   " s1 str-ccompare  ?0     }t
 t{ s"    Hello   " s1 str-set           }t
-t{ s1 str-rstrip                        }t
+t{ s1 str-strip-trailing                }t
 t{ s"    Hello" s1 str-ccompare ?0      }t
 t{ s"    Hello   " s1 str-set           }t
 t{ s1 str-strip                         }t
@@ -193,9 +193,9 @@ t{ s" hello" s1 str-ccompare ?0         }t
 
 \ expand tabs
 t{ s2 str-clear                         }t
-t{ s" Hello" s2 str-append              }t
+t{ s" Hello" s2 str-append-string       }t
 t{ chr.ht s2 str-push-char              }t
-t{ s" Bye" s2 str-append                }t
+t{ s" Bye" s2 str-append-string         }t
 t{ chr.ht s2 str-push-char              }t
 
 t{ s2 s1 str^move                       }t
@@ -241,6 +241,6 @@ t{ s" This is a logish strig" s1 str-ccompare ?0 }t
 t{ s" iii" s" i" s1 str-replace        }t
 t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
 
-t{ s2 str-free                  }t
+t{ s2 str-free }t
 
 \ ==============================================================================

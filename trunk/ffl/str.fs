@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-31 20:26:34 $ $Revision: 1.12 $
+\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -71,6 +71,11 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+: str-data@        ( w:str - a = Get the start of the string )
+  str>data @
+;
+
+
 ( Public words )
 
 : str-init         ( w:str - = Initialise the empty string )
@@ -92,7 +97,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-free         ( w:str - = Free the string from the heap )
-  free  throw
+  dup str-data@
+  dup nil<> IF               \ If data <> nil Then
+    free throw               \   free data
+  ELSE
+    drop
+  THEN
+  
+  free  throw                \ Free struct
 ;
 
 
@@ -107,7 +119,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-size!        ( u w:str - = Insure the size of the string )
-  dup str>data @ nil= IF     \ if data = nil then
+  dup str-data@ nil= IF      \ if data = nil then
     tuck str>extra @ +       \   size = requested + extra
     2dup swap str>size !
     1+ chars allocate throw  \ 
@@ -117,7 +129,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
       tuck str>extra @ +     \   size = requested + extra
       2dup swap str>size !
       1+ chars
-      over str>data @ swap   \   reserve extra character for zero terminated string
+      over str-data@ swap    \   reserve extra character for zero terminated string
       resize throw        
       swap str>data !    
     ELSE
@@ -157,14 +169,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-set          ( c-addr u w:str - = Set a string in the string )
   2dup str-size!             \ check the space
   2dup str>length !          \ set the length
-  str>data @ swap chars cmove \ move the string
+  str-data@ swap chars cmove \ move the string
 ;
 
 
 ( Private words )
 
-: str-length+      ( u w:str - u = Increase the length, return the previous length )
-  tuck str>length @ +        \ len' = str>length + u
+: str-length+!     ( u w:str - u = Increase the length, return the previous length )
+  tuck str-length@ +         \ len' = str>length + u
   swap
   2dup str-size!             \ check space
   str>length @!              \ fetch and store the new length
@@ -173,9 +185,9 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 : str-insert-space ( u n w:str - u w:data = Insert u chars at nth index )
   tuck str-offset                \ Index -> offset
-  >r 2dup str-length+ r>         \ Increase the length
+  >r 2dup str-length+! r>        \ Increase the length
   tuck -                         \ Calculate move length
-  >r chars swap str>data @ + r>  \ Calculate start of insert space
+  >r chars swap str-data@ + r>   \ Calculate start of insert space
   over >r dup 0> IF              \ If move length > 0 then
     >r over chars over + r>      \   Calculate destination of insert space
     cmove>                       \   Move the characters
@@ -188,43 +200,43 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Public words )
 
-: str-append       ( c-addr u w:str - = Append a string to the string )
-  2dup str-length+           \ increase the length
+: str-append-string    ( c-addr u w:str - = Append a string to the string )
+  2dup str-length+!          \ increase the length
   
-  chars swap str>data @ +    \ move the string at the end
+  chars swap str-data@ +     \ move the string at the end
   swap cmove
 ;
 
 
-: str-prepend      ( c-addr u w:str - = Prepend a string to the string )
-  2dup str-length+           \ increase the length
+: str-prepend-string   ( c-addr u w:str - = Prepend a string to the string )
+  2dup str-length+!           \ increase the length
   
-  >r 2dup str>data @
+  >r 2dup str-data@
   swap chars over + r> cmove> \ move away the current string
   
-  str>data @ swap cmove      \ move the new string at the begin
+  str-data@ swap cmove        \ move the new string at the begin
 ;
 
 
 : str-append-chars   ( c u w:str - = Append a number of characters )
-  2dup str-length+           \ increase the length
+  2dup str-length+!          \ increase the length
   
-  chars swap str>data @ +    \ fill the characters at the end
+  chars swap str-data@ +     \ fill the characters at the end
   -rot swap fill
 ;
 
 
 : str-prepend-chars  ( c u w:str - = Prepend a number of characters )
-  2dup str-length+           \ increase the length
+  2dup str-length+!            \ increase the length
   
-  >r 2dup str>data @
+  >r 2dup str-data@
   swap chars over + r> cmove>  \ move away the current string
   
-  str>data @ -rot swap fill  \ fill the characters at the begin
+  str-data@ -rot swap fill     \ fill the characters at the begin
 ;
 
 
-: str-insert       ( c-addr u n:start w:str - = Insert a string in the string )
+: str-insert-string  ( c-addr u n:start w:str - = Insert a string in the string )
   str-insert-space           \ Insert space in the string
   
   swap cmove                 \ Move the string
@@ -242,14 +254,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
   dup >r str-offset          \ Index -> offset
   2dup + r@ str-length@ >    \ If not enough data then exception
     exp-no-data and throw
-  chars r> str>data @ +      \ Make the substring
+  chars r> str-data@ +       \ Make the substring
   swap
 ;
 
 
 : str-get          ( w:str - c-addr u = Get the string )
-  dup  str>data @
-  swap str>length @
+  dup  str-data@
+  swap str-length@
 ;
 
 
@@ -261,10 +273,10 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-delete       ( u n w:str - = Delete a substring from nth index and length u from the string )
   dup >r
   str-offset                      \ Index -> offset
-  2dup + r@ str>length @ <= IF    \ If offset + length <= length then 
-    r@ str>data @ over chars +    \   Calculate destination of move
+  2dup + r@ str-length@ <= IF     \ If offset + length <= length then 
+    r@ str-data@ over chars +     \   Calculate destination of move
     rot 2dup chars +              \   Calculate source of move
-    swap r@ str>length @ swap -   \   Reduce length
+    swap r@ str-length@ swap -    \   Reduce length
     dup r@ str>length !
     2swap >r - r>                 \   Calculate length of move
     swap dup 0> IF                \   If length of move > 0 then
@@ -293,8 +305,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-get-cstring  ( w:str - c-addr = Get the string as zero terminated string )
-  dup str>length @ chars
-  swap str>data @
+  dup str-length@ chars
+  swap str-data@
   tuck + chr.nul swap c!     \ store nul at end of string
 ;
 
@@ -307,10 +319,11 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ( Character words )
 
 : str-append-char    ( c w:str - = Append a character at the end of the string )
-  1 over str-length+
+  1 over str-length+!
   
-  chars swap str>data @ + c! \ store char at end of string
+  chars swap str-data@ + c! \ store char at end of string
 ;
+
 
 : str-prepend-char ( c w:str - = Prepend a character at the start of the string )
   >r 1 0 r>
@@ -328,7 +341,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-pop-char     ( w:str - c = Pop a character from the end of the string )
   dup str>length dup @ dup 0> IF
     1- tuck swap !
-    chars swap str>data @ + c@
+    chars swap str-data@ + c@
   ELSE
     exp-no-data throw
   THEN
@@ -347,13 +360,13 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 : str-set-char     ( c n w:str - = Set the character on the nth position in the string )
   tuck str-offset 
-  chars swap str>data @ + c!
+  chars swap str-data@ + c!
 ;
 
 
 : str-get-char     ( n w:str - c = Get the character from the nth position in the string )
   tuck str-offset
-  chars swap str>data @ + c@
+  chars swap str-data@ + c@
 ;
 
 
@@ -412,7 +425,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-center       ( u w:str - = Center the string in u width )
-  dup >r str>length @ - dup 0> IF
+  dup >r str-length@ - dup 0> IF
     dup 2/ swap over -
     chr.sp swap r@ str-append-chars  
     chr.sp swap r@ str-prepend-chars
@@ -423,8 +436,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-ljust        ( u w:str - = Left justify the string )
-  tuck str>length @ - dup 0> IF
+: str-align-left   ( u w:str - = Align left the string in u width )
+  tuck str-length@ - dup 0> IF
     chr.sp -rot swap str-append-chars
   ELSE
     2drop
@@ -432,8 +445,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-rjust        ( u w:str - = Right justify the string )
-  tuck str>length @ - dup 0> IF
+: str-align-right  ( u w:str - = Align right the string in u width )
+  tuck str-length@ - dup 0> IF
     chr.sp -rot swap str-prepend-chars
   ELSE
     2drop
@@ -442,7 +455,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-zfill        ( u w:str - = Right justify the string with leading zero's )
-  tuck str>length @ - dup 0> IF
+  tuck str-length@ - dup 0> IF
     [char] 0 -rot swap str-prepend-chars
   ELSE
     2drop
@@ -450,7 +463,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-lstrip       ( w:str - = Strip leading spaces in the string )
+: str-strip-leading  ( w:str - = Strip leading spaces in the string )
   0 over str-bounds ?DO
     I c@ chr-blank? IF       \ Count the number of leading spaces
       1+
@@ -468,7 +481,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-rstrip       ( w:str - = Strip trailing spaces in the string )
+: str-strip-trailing  ( w:str - = Strip trailing spaces in the string )
   0 over str-bounds swap
   BEGIN
     1 chars -
@@ -488,8 +501,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-strip        ( w:str - = Strip leading and trailing spaces in the string )
-  dup str-lstrip
-      str-rstrip
+  dup str-strip-leading
+      str-strip-trailing
 ;
 
 
@@ -512,7 +525,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-expand-tabs  ( u w:str - = Expand the tabs to u spaces in the string )
   >r 0                                 \ Offset = 0
   BEGIN
-    dup r@ str>length @ <              \ While offset < length do
+    dup r@ str-length@ <               \ While offset < length do
   WHILE
     dup r@ str-get-char chr.ht = IF    \   If str[offset] = tab then
       over 1 = IF                      \     If replace by one space then
@@ -537,22 +550,10 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Comparison )
 
-: <=>              ( n n - n = Compare two numbers resulting in -1, 0 or 1 ) 
-  2dup < IF 
-    2drop -1 
-  ELSE 
-    > IF 
-      1 
-    ELSE
-      0
-    THEN
-  THEN
-;
-
 : icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
   rot swap 2swap 2over
   min 0 ?DO
-    over c@ chr-upper over c@ chr-upper <=> ?dup IF
+    over c@ chr-upper over c@ chr-upper - sgn ?dup IF
       >r 2drop 2drop r>
       unloop 
       exit
@@ -560,7 +561,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
     1 chars + swap 1 chars + swap
   LOOP
   2drop
-  <=>
+  - sgn
 ;
   
   
@@ -607,7 +608,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
   dup >r str-offset                    \ Index -> offset
   over r@ str-length@ swap -          
   over - 1+                            \ Determine the remaing length
-  over r> str>data @ swap chars +      \ Determine the start of data with the offset
+  over r> str-data@ swap chars +       \ Determine the start of data with the offset
   -rot dup 0<= IF                      \ Check for sufficient remaining length
     2drop
   ELSE
@@ -637,7 +638,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
   WHILE                           \ While found do
     >r 2swap 2dup r>
     r@ over
-    >r str-insert dup r> +        \   Insert the new string in the string
+    >r str-insert-string dup r> + \   Insert the new string in the string
     >r 2swap dup r>
     r@ over
     >r str-delete r>              \   Delete the search string
@@ -646,6 +647,16 @@ struct: str%       ( - n = Get the required space for the str data structure )
   rdrop
 ;
 
+
+( Inspection )
+
+: str-dump         ( w:str - = Dump the string )
+  ." str:" dup . cr
+  ."  data  :" dup str>data ? cr
+  ."  length:" dup str>length ? cr
+  ."  size  :" dup str>size ? cr
+  ."  extra :" str>extra ? cr
+;
 
 [THEN]
 
