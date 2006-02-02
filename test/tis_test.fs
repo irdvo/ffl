@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-30 18:54:15 $ $Revision: 1.5 $
+\  $Date: 2006-02-02 18:45:43 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -38,10 +38,10 @@ t{ t1 tis-eof? ?false }t
 t{ t1 tis-read-char ?true char a ?s }t
 t{ t1 tis-read-char ?true char b ?s }t
 
-t{ t1 tis-tell 2 ?s }t
+t{ t1 tis-pntr@ 2 ?s }t
 
 t{ 3 t1 tis-read-string s" cde" compare ?0 }t
-t{ t1 tis-tell 5 ?s }t
+t{ t1 tis-pntr@ 5 ?s }t
 
 \ Match
 
@@ -85,28 +85,28 @@ t{ s" abc" t1 tis-scan-string ?false }t
 
 \ Seek
 
-t{ 20 t1 tis-seek-start ?true }t
+t{ 20 t1 tis-pntr! ?true }t
 t{ t1 tis-read-char ?true char u ?s }t
 
-t{ 3  t1 tis-seek-current ?true }t
+t{ 3  t1 tis-pntr+! ?true }t
 t{ 4  t1 tis-read-string s" yz" compare ?0 }t
 t{ t1 tis-eof? ?true }t
 
 t{ 3  t1 tis-read-string ?0 }t
 
-t{ 5  t1 tis-seek-end ?true }t
-t{ t1 tis-tell 21 ?s }t
+t{ -5  t1 tis-pntr! ?true }t
+t{ t1 tis-pntr@ 21 ?s }t
 t{ t1 tis-read-char ?true char v ?s }t
 
-t{ 26 t1 tis-seek-start ?false }t
-t{ 27 t1 tis-seek-end ?false }t
+t{ 26 t1 tis-pntr! ?false }t
+t{ -27 t1 tis-pntr! ?false }t
 
 \ Read
 
 t{ s" ab   cd" t1 tis-set }t
 
 t{ chr.cr t1 str-push-char }t
-t{ s" ef" t1 str-append }t
+t{ s" ef" t1 str-append-string }t
 t{ chr.lf t1 str-push-char }t
 
 t{ 2 t1 tis-read-string s" ab" compare ?0 }t

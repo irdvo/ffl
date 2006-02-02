@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-01 20:05:00 $ $Revision: 1.4 $
+\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -61,42 +61,16 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-0 [IF]
-: tos-number-info ( n - f:neg n:width = Determine the sign and width of a number )
-  dup 0< tuck IF
-    negate 2 
+: tos-pntr?!       ( n w:tos - = Update the alignment start pointer after range check )
+  2dup str-length@ 
+  over > swap 0>= and IF          \ Check for pointer range
+    tos>pntr !
+    true
   ELSE
-    1 
+    2drop
+    false
   THEN
-  swap
-  
-  BEGIN
-    base @ / ?dup
-  WHILE
-    swap 1+ swap
-  REPEAT
 ;
-
-
-: tos-double-info ( d - f:neg n:width = Determine the sign and width of a double )
-  2dup d0< IF
-    true -rot
-    dnegate 
-    2 
-  ELSE
-    false -rot
-    1
-  THEN
-  -rot
-  
-  BEGIN
-    base @ m/ 2dup d0<>
-  WHILE
-    rot 1+ -rot
-  REPEAT
-  2drop
-;
-[THEN]
 
 
 ( Public words )
@@ -118,7 +92,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 
 : tos-free         ( w:tos - = Free the output stream from the heap )
-  free  throw
+  str-free
 ;
 
 
@@ -135,15 +109,23 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr!       ( u w:tos - f = Set the alignment start pointer )
-  2dup str-length@ u<= IF
-    tos>pntr !
-    true
-  ELSE
-    2drop
-    false
+: tos-pntr!        ( n w:tis - f = Set the stream pointer from start {>=0} or from end {<0} )
+  over 0< IF
+    tuck str-length@ +            \ Determine new pointer for negative value
+    swap
   THEN
+  
+  tos-pntr?!
 ;
+
+
+: tos-pntr+!       ( n w:tis - f = Add an offset to the start alignment pointer )
+  tuck tos-pntr@ +
+  swap
+  
+  tos-pntr?!
+;
+
 
 ( Write to the text output stream )
 
@@ -161,7 +143,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-write-string  ( c-addr u w:tos - = Write string to the stream )
   dup tos-sync
-  str-append
+  str-append-string
 ;
 
 
@@ -182,38 +164,15 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
   s>d
   swap over dabs
   <# #s rot sign #>
-  rot str-append
+  rot str-append-string
 ;
-
-
-0 [IF]
-  dup tos-number-info                  \ Determine sign and width of number
-  chr.sp swap r@ tos-write-chars       \ Write width spaces in the stream
-  swap
-  r> str-bounds drop 1 chars -         \ Determine the start address
-  swap
-  
-  BEGIN
-    base @ /mod tos-convert-digit      \ Determine a digit from the number
-    -rot over c!                       \ Store the digit
-    1 chars -
-    swap
-    ?dup 0=                            \ Until the whole number is converted
-  UNTIL
-  
-  swap IF                              \ If negative Then
-    char - swap c!                     \   Prepend a sign
-  ELSE
-    drop
-  THEN
-[THEN]
 
 
 : tos-write-double  ( d w:tos - = Write a double in the current base to the stream )
   dup tos-sync -rot
   swap over dabs
   <# #s rot sign #>
-  rot str-append
+  rot str-append-string
 ;
 
 
@@ -283,6 +242,9 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ( Inspection )
 
 : tos-dump         ( w:tos - = Dump the text output stream )
+  ." tos:" dup . cr
+  dup tos>text str-dump
+  ."  pntr  :" tos>pntr ? cr
 ;
 
 [THEN]
