@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 18:38:00 $ $Revision: 1.5 $
+\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -32,13 +32,13 @@ include ffl/config.fs
 
 ( chr = Char Data Type )
 ( The chr module implements words for checking ranges of characters and for    )
-( converting upper to lower case and v.v.                                      )
+( converting characters.                                                       )
   
 
 2 constant chr.version
 
 
-( Public constants )
+( ASCII constants )
 
 0   constant chr.nul         ( - c = the null character )
 1   constant chr.soh         ( - c = the soh character )
@@ -75,7 +75,8 @@ include ffl/config.fs
 32  constant chr.sp          ( - c = the space character )
 127 constant chr.del         ( - c = the delete character )
 
-( Public words )
+
+( Character class checking words )
 
 : chr-range?   ( c c:min c:max - f = Check if character is in an including range )
   1+ within                  \ !or!   -rot over <= -rot >= AND   !or!   >r over <= swap r> <= AND
@@ -166,6 +167,8 @@ include ffl/config.fs
   drop false
 ;
 
+
+( Character conversion words )
 
 : chr-upper    ( c - c = Convert character to uppercase )
   dup chr-lower? IF

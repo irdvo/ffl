@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.5 $
+\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,10 @@ include ffl/str.fs
 ( tos = Text output stream )
 ( The tos module implements a text output stream. It extends the str module, )
 ( so all words from the str module, can be used on the tos data structure.   )
+( The data written to the stream is always appended. Alignment is normally   )
+( done for the last written data. By using the start alignment pointers      )
+( the start of the alignment can be changed. The end of the alignment is     )
+( always the end of the stream.                                              )
 
 
 1 constant tos.version
@@ -127,7 +131,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Write to the text output stream )
+( Write data words )
 
 : tos-write-char    ( c w:tos - = Write character to the stream )
   dup tos-sync
@@ -176,7 +180,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Align the text )
+( Align words )
 
 : tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written text )
   >r
