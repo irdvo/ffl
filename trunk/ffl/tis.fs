@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.8 $
+\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -263,7 +263,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-( Read from text input stream )
+( Read data words )
 
 : tis-read-char    ( w:tis - false | c true = Read character from the stream )
   dup tis-fetch-char IF

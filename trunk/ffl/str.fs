@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-02 18:45:37 $ $Revision: 1.13 $
+\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/chr.fs
 
 
 ( str = Character string )
-( The str module implements a character string.)
+( The str module implements a text string.)
 
 
 1 constant str.version
@@ -158,7 +158,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( String manipulation )
+( String manipulation words )
 
 
 : str-clear        ( w:str - = Clear the string )
@@ -394,7 +394,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( Special manipulation )
+( Special manipulation words )
 
 : str-capatilize   ( w:str - = Capatilize the first word in the string )
   str-bounds ?DO             \ Do for the string
@@ -548,7 +548,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( Comparison )
+( Comparison words )
 
 : icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
   rot swap 2swap 2over
