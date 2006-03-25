@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.9 $
+\  $Date: 2006-03-25 07:40:02 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -38,11 +38,11 @@ include ffl/str.fs
 ( so all words from the str module, can be used on the tis data structure.  )
 ( There are seven basic methods: fetch = fetch the data, the stream pointer )
 ( is not updated; next = after a fetch, the stream pointer is updated; seek )
-( = move the stream pointer; match = match data, if matched then the stream )
-( pointer is updated, read = read data, if data is returned then the stream )
-( pointer is updated; scan = scan for data, if the data is found then the   )
-( leading text is returned and the stream pointer is moved after the        )
-( scanned data; skip = move the stream pointer after the skipped data.      )  
+( = move the stream pointer; match = try to match data, if there is a match,)
+( the stream pointer is updated, read = read data, if data is returned then )
+( the stream pointer is updated; scan = scan for data, if the data is found )
+( then the leading text is returned and the stream pointer is moved after   )
+( the scanned data; skip = move the stream pointer after the skipped data.  )  
 
 1 constant tis.version
 
@@ -124,7 +124,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
   >r
-  r@ str-length@ r@ tis>pntr @ -     \ Determine remaining length, limit between 0 and requested chars
+  r@ str-length@ r@ tis>pntr @ -       \ Determine remaining length, limit between 0 and requested chars
   min 0 max
   
   dup 0> IF
@@ -151,7 +151,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
   >r
-  r@ str-length@ r@ tis>pntr @ -     \ Determine remaining length
+  r@ str-length@ r@ tis>pntr @ -       \ Determine remaining length
   0 max
   
   dup 0> IF
@@ -172,7 +172,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-pntr!        ( n w:tis - f = Set the stream pointer from start {>=0} or from end {<0} )
   over 0< IF
-    tuck str-length@ +            \ Determine new pointer for negative value
+    tuck str-length@ +                 \ Determine new pointer for negative value
     swap
   THEN
   
