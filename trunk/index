@@ -18,7 +18,7 @@ scn - Single linked cell node
     - Development
 --- - ------------------------------------------------
 stc - Struct definition
-tst - Word test
+tst - Unit tests
 --- - ------------------------------------------------
     - Interface
 --- - ------------------------------------------------
@@ -67,13 +67,11 @@ env - Environment queries
 --- - ------------------------------------------------
     - Interface
 --- - ------------------------------------------------
-bsd - (free) BSD kernel traps
 bzf - BZip2 file module
 bzp - BZip2 module
 dbm - DBM module
 gzf - GZip file module
 gzp - GZip module
-lnx - Linux kernel traps
 md5 - MD5 module
 rnd - Pseudo Random module
 rgx - Regex module

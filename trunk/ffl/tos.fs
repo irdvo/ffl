@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.6 $
+\  $Date: 2006-03-25 07:40:02 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -38,8 +38,8 @@ include ffl/str.fs
 ( so all words from the str module, can be used on the tos data structure.   )
 ( The data written to the stream is always appended. Alignment is normally   )
 ( done for the last written data. By using the start alignment pointers      )
-( the start of the alignment can be changed. The end of the alignment is     )
-( always the end of the stream.                                              )
+( words the start of the alignment can be changed. The end of the alignment  )
+( is always the end of the stream.                                           )
 
 
 1 constant tos.version
@@ -113,7 +113,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr!        ( n w:tis - f = Set the stream pointer from start {>=0} or from end {<0} )
+: tos-pntr!        ( n w:tis - f = Set the alignment pointer from start [n>=0] or from end [n<0] )
   over 0< IF
     tuck str-length@ +            \ Determine new pointer for negative value
     swap
@@ -123,7 +123,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr+!       ( n w:tis - f = Add an offset to the start alignment pointer )
+: tos-pntr+!       ( n w:tis - f = Add an offset to the alignment pointer )
   tuck tos-pntr@ +
   swap
   
@@ -180,9 +180,9 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Align words )
+( Alignment words )
 
-: tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written text )
+: tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written data )
   >r
   r@ tos>pntr @ r@ str-length@ < IF   \ ToDo: exception ??
     >r over r>
@@ -207,7 +207,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-align-left   ( c:pad u:width w:tos - = Align left the previous written text )
+: tos-align-left   ( c:pad u:width w:tos - = Align left the previous written data )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
@@ -219,7 +219,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-align-right  ( c:pad u:width w:tos - = Align right the previous written text )
+: tos-align-right  ( c:pad u:width w:tos - = Align right the previous written data )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
@@ -231,7 +231,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-center       ( c:pad u:width w:tos - = Center the previous written text )
+: tos-center       ( c:pad u:width w:tos - = Center the previous written data )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
