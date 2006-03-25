@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-01 20:05:00 $ $Revision: 1.6 $
+\  $Date: 2006-03-25 21:12:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 \
@@ -150,6 +150,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
 s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
+s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
 
 [ELSE]
   drop
