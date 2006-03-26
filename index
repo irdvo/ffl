@@ -4,7 +4,8 @@ ffl - Forth Foundation Library
 --- - ------------------------------------------------
     - Data type
 --- - ------------------------------------------------
-chr - Char 
+bar - Bit array module
+chr - Char module
 str - Text string module
 tis - Text Input Stream
 tos - Text Output Stream
@@ -34,7 +35,6 @@ crc - 32-bit Cyclic Redundancy Check
 --- - ------------------------------------------------
     - Data type
 --- - ------------------------------------------------
-bta - Bit array module
 clr - Color module
 cpl - Complex module
 dtm - Datetime module

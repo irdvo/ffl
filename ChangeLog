@@ -1,5 +1,5 @@
 0.2.0
-* bta: new module (Bit array)
+* bar: new module (Bit array)
 * tst: new words: ?d and ?ud for tests on doubles
 * chr: new word: chr-string?
 * chr: new word: chr-base
