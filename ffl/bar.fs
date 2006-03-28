@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-26 17:33:37 $ $Revision: 1.1 $
+\  $Date: 2006-03-28 06:47:58 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -48,7 +48,6 @@ include ffl/stc.fs
 ( Public structure )
 
 struct: bar%       ( - n = Get the required space for the bar data structure )
-  cell:  bar>start
   cell:  bar>length
   cell:  bar>size            \ the size of bits
   cell:  bar>bits
@@ -61,11 +60,9 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Public words )
 
-: bar-init         ( u:number n:start w:bar - = Initialise the bit array )
+: bar-init         ( n:length w:bar - = Initialise the bit array )
   >r
-  swap dup 0= IF             \ at least one bit in the array
-    1+
-  THEN
+  1 max                      \ at least one bit in the array
   
   dup 8 /mod swap 0<> IF     \ 8 bits in a byte
     1+
@@ -75,20 +72,19 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   
   dup allocate throw         \ allocate the array
   
-  tuck swap 0 fill           \ erase the array
+  tuck swap 0 fill           \ reset all bits
   
   r@ bar>bits   !
-  r@ bar>length !
-  r> bar>start  !
+  r> bar>length !
 ;
 
 
-: bar-create       ( C: u:number n:start "name" - R: - w:bar = Create a bit array in the dictionary )
+: bar-create       ( C: n:length "name" - R: - w:bar = Create a bit array in the dictionary )
   create  here  bar% allot  bar-init
 ;
 
 
-: bar-new          ( u:max u:min - w:bar = Create a bit array [min..max] inclusive on the heap )
+: bar-new          ( n:length - w:bar = Create a bit array [min..max] inclusive on the heap )
   bar% allocate throw  dup >r bar-init r> 
 ;
 
@@ -100,25 +96,29 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 
 
-( Member words )
+( Private words )
 
-: bar-start@       ( w:bar - u = Get the start index of the bit array )
-  bar>start @
+: bar-index        ( n w:bar - n = Get the array index [0..length> from the index <-length..length> )
+  swap
+  dup 0< IF
+    swap bar>length @ +
+  ELSE
+    nip
+  THEN
 ;
-
+  
+( Member words )
 
 : bar-length@      ( w:bar - u = Get the number of bits in the bit array )
   bar>length @
 ;
 
 
-: bar-end@         ( w:bar - u = Get the end index of the bit array )
-  dup bar-start@ swap bar-length@ + 1-
-;
 
-
-: bar-index?       ( n w:bar - f == Check if the index is valid )
-  dup bar-start@ swap bar-length@ over + within
+: bar-index?       ( n w:bar - f == Check if the index is valid in the bit array )
+  tuck bar-index
+  
+  swap 0 swap bar-length@ within
 ;
 
 
@@ -128,8 +128,10 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   2dup bar-index?   
   
   0= exp-index-out-of-range AND throw
-    
-  tuck bar-start@ - 8 /mod
+  
+  tuck bar-index
+  
+  8 /mod                     \ 8 bits in a byte
   
   swap 1 swap lshift         \ Convert remainder to bit mask
   
@@ -147,7 +149,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-equal-address?   ( u:mask w:addr u:mask w:addr - f = Are the first address equal to the second address ? )
+: bar-end-address?   ( u:mask w:addr u:mask w:addr - f = Has the first address reached the second, end address ? )
   rot
   2dup < IF                  \ first byte address is smaller than the second address
     2drop 2drop false
@@ -160,23 +162,9 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   THEN
 ;
 
-    
-( Arithmetic words )
 
-: bar^and          ( w:bar w:bar - = And two bit arrays )
-  \ Bitwise or byte wise -> bitwise ??
-;
-
-
-: bar^or           ( w:bar w:bar - = Or two bit arrays )
-;
-
-
-: bar^xor          ( w:bar w:bar - = Xor two bit arrays )
-;
-
-
-: bar-not          ( w:bar - = Invert all bits in the bit array )
+: bar-emit-bit     ( f - = Emit the state of the flag )
+  1 AND [char] 0 + emit
 ;
 
 
@@ -206,7 +194,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
       tuck c@ OR
       swap c!
       
-      2over 2over bar-equal-address? 0=
+      2over 2over bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -243,7 +231,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
       swap invert over c@ AND
       swap c!
       
-      2over 2over bar-equal-address? 0=
+      2over 2over bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -255,61 +243,114 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 
 
+( Bit invert words )
+
+: bar-invert-bit   ( n w:bar - = Invert the indexth bit )
+  bar-address
+  tuck c@ XOR
+  swap c!
+;
+
+
+: bar-invert-bits  ( u:number n:start w:bar - = Invert a range of bits )
+  >r
+  over 0<> IF
+    tuck + 1- r@ bar-address      \ Determine end and start address and mask
+    rot r@ bar-address
+    
+    BEGIN                         \ Loop throught the addresses
+      2dup 
+      tuck c@ XOR
+      swap c!
+      
+      2over 2over bar-end-address? 0=
+    WHILE
+      bar-next-bit
+    REPEAT
+    2drop 2drop
+    
+  THEN
+  r>
+;
+
+
+: bar-invert-all   ( w:bar - = Invert all bits in the bit array )
+  dup bar-length@
+  swap 0
+  swap bar-invert-bits
+;
+
+
+
 ( Bit check words )
 
-: bar-has-bit      ( n w:bar - f = Check if the indexth bit is set )
+: bar-get-bit      ( n w:bar - f = Check if the indexth bit is set )
   bar-address
   c@ AND 0<>
 ;
 
 
 : bar-count-bits   ( n:number n:start w:bar - u = Count the number of bits set in the range )
-;
-
-: bar-count-all   ( w:bar - u = Count the number of bits set )
-  0 >r
-  >r r@ bar-end@   r@ bar-address
-     r@ bar-start@ r> bar-address
-  BEGIN
-    2dup c@ AND IF
-      r> 1+ >r
-    THEN
-    
-    2over 2over bar-equal-address? 0=
-  WHILE
-    bar-next-bit
-  REPEAT
-  2drop 2drop
+  0 >r                       \ count = 0
+  -rot over 0<> IF           \ number > 0
+    tuck + 1-                \ end index
+    rot tuck bar-address     \ end address
+    2swap bar-address        \ start address
+    BEGIN
+      2dup c@ AND IF
+        r> 1+ >r             \ increase counter if bit set
+      THEN
+      
+      2over 2over bar-end-address? 0=
+    WHILE
+      bar-next-bit
+    REPEAT
+    2drop 2drop
+  ELSE
+    2drop drop
+  THEN
   
   r>
 ;
 
+: bar-count-all   ( w:bar - u = Count the number of bits set )
+  dup bar-length@
+  swap 0
+  swap bar-count-bits
+;
+
+
+
+: bar-execute      ( xt w:bar - = Execute xt for every bit in the bit array )
+  -1 over bar-address               \ end address
+  rot 0 swap bar-address            \ start address
+  
+  BEGIN
+    2swap
+    2>r 2>r                         \ clear the stack for execute
+    
+    2r@ c@ AND 0<>                  \ fetch the bit
+    
+    swap dup >r execute r>          \ execute the token with the flag
+    
+    2r> 2r>                         \ restore the stack
+    2swap
+    
+    2over 2over bar-end-address? 0=
+  WHILE
+    bar-next-bit
+  REPEAT
+  2drop 2drop
+;
 
 
 ( Inspection )
 
 : bar-dump         ( w:bar - = Dump the text output stream )
   ." bar:" dup . cr
-  ."  start :" dup bar>start  ? cr
   ."  length:" dup bar>length ? cr
   ."  size  :" dup bar>size   ? cr
-  ."  bits  :" 
-  >r r@ bar-end@   r@ bar-address
-     r@ bar-start@ r> bar-address
-  BEGIN
-    2dup c@ AND IF
-      [char] 1
-    ELSE
-      [char] 0
-    THEN
-    emit
-    
-    2over 2over bar-equal-address? 0=
-  WHILE
-    bar-next-bit
-  REPEAT
-  2drop 2drop
-  cr
+  ."  bits  :" ['] bar-emit-bit swap bar-execute cr
 ;
 
 [THEN]
