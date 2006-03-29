@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-31 20:26:35 $ $Revision: 1.6 $
+\  $Date: 2006-03-29 06:56:53 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -30,6 +30,7 @@ include ffl/tst.fs
 tst-reset-tests
 
 \ the test sources
+include bar_test.fs
 include chr_test.fs
 include crc_test.fs
 include scl_test.fs
@@ -37,7 +38,7 @@ include str_test.fs
 include tis_test.fs
 include tos_test.fs
 
-." Forth Foundation Library Test: " tst-get-result .  ." errors in " . ." tests" cr
+.( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests) cr
   
 bye
 
