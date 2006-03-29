@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-28 06:47:58 $ $Revision: 1.2 $
+\  $Date: 2006-03-29 06:56:46 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -84,13 +84,13 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-new          ( n:length - w:bar = Create a bit array [min..max] inclusive on the heap )
+: bar-new          ( n:length - w:bar = Create a bit array on the heap )
   bar% allocate throw  dup >r bar-init r> 
 ;
 
 
 : bar-free         ( w:bar - = Free the bit array from the heap )
-  dup bar>bits free throw
+  dup bar>bits @ free throw
   free throw
 ;
 
@@ -98,7 +98,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Private words )
 
-: bar-index        ( n w:bar - n = Get the array index [0..length> from the index <-length..length> )
+: bar-offset       ( n w:bar - n = Get the array offset [0..length> from the index <-length..length> )
   swap
   dup 0< IF
     swap bar>length @ +
@@ -106,7 +106,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
     nip
   THEN
 ;
-  
+
+
+: bar-offset?      ( n w:bar - f = Check if the offset is valid in the bit array )
+  0 swap bar>length @ within
+;
+
+
+
 ( Member words )
 
 : bar-length@      ( w:bar - u = Get the number of bits in the bit array )
@@ -114,22 +121,20 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-
-: bar-index?       ( n w:bar - f == Check if the index is valid in the bit array )
-  tuck bar-index
-  
-  swap 0 swap bar-length@ within
+: bar-index?       ( n w:bar - f = Check if the index is valid in the bit array )
+  tuck bar-offset swap bar-offset?
 ;
+
 
 
 ( Private words )
 
 : bar-address      ( n w:bar - u:mask w:addr = Determine address and bit mask for index )
-  2dup bar-index?   
+  tuck bar-offset
+  
+  2dup swap bar-offset?
   
   0= exp-index-out-of-range AND throw
-  
-  tuck bar-index
   
   8 /mod                     \ 8 bits in a byte
   
@@ -171,11 +176,6 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Bit set words )
 
-: bar-set-all      ( w:bar - = Set all bits in the bit array )
-  dup bar>bits @ swap bar>size @ 255 fill
-;
-
-
 : bar-set-bit      ( n w:bar - = Set the indexth bit )
   bar-address
   tuck c@ OR
@@ -205,13 +205,13 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-
-( Bit reset words )
-
-: bar-reset-all    ( w:bar - = Reset all bits in the bit array )
-  dup bar>bits @ swap bar>size @ 0 fill
+: bar-set          ( w:bar - = Set all bits in the bit array )
+  dup bar>bits @ swap bar>size @ 255 fill
 ;
 
+
+
+( Bit reset words )
 
 : bar-reset-bit    ( n w:bar - = Reset the indexth bit )
   bar-address
@@ -239,6 +239,11 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
     
   THEN
   r>
+;
+
+
+: bar-reset        ( w:bar - = Reset all bits in the bit array )
+  dup bar>bits @ swap bar>size @ 0 fill
 ;
 
 
@@ -274,7 +279,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-invert-all   ( w:bar - = Invert all bits in the bit array )
+: bar-invert       ( w:bar - = Invert all bits in the bit array )
   dup bar-length@
   swap 0
   swap bar-invert-bits
@@ -313,12 +318,12 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   r>
 ;
 
-: bar-count-all   ( w:bar - u = Count the number of bits set )
+
+: bar-count        ( w:bar - u = Count the number of bits set in the bit array )
   dup bar-length@
   swap 0
   swap bar-count-bits
 ;
-
 
 
 : bar-execute      ( xt w:bar - = Execute xt for every bit in the bit array )
