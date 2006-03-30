@@ -1,4 +1,5 @@
 0.2.0
+* car: new module (Cell array)
 * bar: new module (Bit array)
 * tst: new words: ?d and ?ud for tests on doubles
 * chr: new word: chr-string?
