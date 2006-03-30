@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-29 06:56:53 $ $Revision: 1.1 $
+\  $Date: 2006-03-30 17:25:40 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -75,6 +75,66 @@ t{ b2 bar-count 5 ?s }t
 t{  6 b2 bar-set-bit }t
 t{ -1 b2 bar-get-bit ?true }t
 t{ -2 b2 bar-get-bit ?false }t
+
+\ bit reset,get
+
+t{ b2 bar-set }t
+t{ 6  b2 bar-reset-bit }t
+t{ 6  b2 bar-get-bit ?false }t
+t{ 0  b2 bar-get-bit ?true  }t
+t{ 5  b2 bar-get-bit ?true  }t
+t{ b2 bar-count 6 ?s }t
+t{ 6  b2 bar-reset-bit }t
+t{ b2 bar-count 6 ?s }t
+t{ 0  b2 bar-reset-bit }t
+t{ -2 b2 bar-reset-bit }t
+t{ b2 bar-count 4 ?s }t
+
+\ bit invert,get
+
+t{ b2 bar-set }t
+t{  4 b2 bar-invert-bit }t
+t{  4 b2 bar-get-bit ?false }t
+t{  3 b2 bar-get-bit ?true  }t
+t{  5 b2 bar-get-bit ?true  }t
+t{ b2 bar-count 6 ?s }t
+t{  4 b2 bar-invert-bit }t
+t{  4 b2 bar-get-bit ?true  }t
+t{  3 b2 bar-get-bit ?true  }t
+t{  5 b2 bar-get-bit ?true  }t
+t{ b2 bar-count 7 ?s }t
+
+\ bit ranges
+t{ b2 bar-reset }t
+t{ 5  1 b2 bar-set-bits }t
+t{ b2 bar-count 5 ?s }t
+t{ 0  1 b2 bar-reset-bits }t
+t{ b2 bar-count 5 ?s }t
+t{ 3 -5 b2 bar-reset-bits }t
+t{ b2 bar-count 2 ?s }t
+t{ 0 -5 b2 bar-set-bits }t
+t{ b2 bar-count 2 ?s }t
+t{ 7  0 b2 bar-invert-bits }t
+t{ b2 bar-count 5 ?s }t
+t{ 0  0 b2 bar-invert-bits }t
+t{ b2 bar-count 5 ?s }t
+t{ 0 b2 bar-get-bit ?true  }t
+t{ 1 b2 bar-get-bit ?false }t
+t{ 2 b2 bar-get-bit ?true  }t
+t{ 3 b2 bar-get-bit ?true  }t
+t{ 4 b2 bar-get-bit ?true  }t
+t{ 5 b2 bar-get-bit ?false }t
+t{ 6 b2 bar-get-bit ?true  }t
+t{ 4 0 b2 bar-count-bits 3 ?s }t
+
+
+\ execute
+
+: bar-test ( n f - n )
+  2 AND 1+ +
+;
+
+t{ 0 ' bar-test b2 bar-execute 17 ?s }t
 
 t{ b2 bar-free }t
 

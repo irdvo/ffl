@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-29 06:56:46 $ $Revision: 1.3 $
+\  $Date: 2006-03-30 17:25:39 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -199,9 +199,10 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
       bar-next-bit
     REPEAT
     2drop 2drop
-    
+  ELSE
+    2drop
   THEN
-  r>
+  rdrop
 ;
 
 
@@ -236,9 +237,10 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
       bar-next-bit
     REPEAT
     2drop 2drop
-    
+  ELSE
+    2drop
   THEN
-  r>
+  rdrop
 ;
 
 
@@ -273,9 +275,10 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
       bar-next-bit
     REPEAT
     2drop 2drop
-    
+  ELSE
+    2drop
   THEN
-  r>
+  rdrop
 ;
 
 
@@ -326,7 +329,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-execute      ( xt w:bar - = Execute xt for every bit in the bit array )
+: bar-execute      ( ... xt w:bar - ... = Execute xt for every bit in the bit array )
   -1 over bar-address               \ end address
   rot 0 swap bar-address            \ start address
   
@@ -345,7 +348,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   WHILE
     bar-next-bit
   REPEAT
-  2drop 2drop
+  drop 2drop 2drop
 ;
 
 
