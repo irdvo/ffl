@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-29 06:56:53 $ $Revision: 1.7 $
+\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ tst-reset-tests
 
 \ the test sources
 include bar_test.fs
+include car_test.fs
 include chr_test.fs
 include crc_test.fs
 include scl_test.fs

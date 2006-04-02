@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-30 17:25:40 $ $Revision: 1.1 $
+\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -48,6 +48,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
   cell:  car>size
   cell:  car>extra
   cell:  car>cells
+  cell:  car>compare
 ;struct
 
 
@@ -73,7 +74,8 @@ struct: car%       ( - n = Get the required space for the car data structure )
   tuck swap cells erase
   r@ car>cells !
   r@ car>length !
-  car.extra r> car>extra !
+  car.extra r@   car>extra !
+  ['] >= r> car>compare !
 ;
 
 
@@ -95,15 +97,6 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 
 ( Private words )
-
-: index2offset     ( n:index n:length - n:offset = Convert an index <-length..length> into an offset [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
 
 : car-offset?      ( n w:car - f = Check if the offset is valid in the bit array )
   0 swap car>length @ within
@@ -169,6 +162,17 @@ struct: car%       ( - n = Get the required space for the car data structure )
 : car+extra!       ( u - = Set the initial extra space allocated during resizing of the array )
   1 max to car.extra
 ;
+
+
+: car-compare@     ( w:car - xt = Get the compare execution token for sorting the array )
+  car>compare @
+;
+
+
+: car-compare!     ( xt w:car - = Set the compare execution token for sorting the array )
+  car>compare !
+;
+
 
 
 ( Private words )
@@ -249,13 +253,47 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-insert-sorted ( w w:car - = Insert the cell sorted )
+: car-insert-sorted ( w w:car - = Insert the cell sorted in an already sorted array)
+;
+
+
+( Fifo/Lifo words )
+
+: car-tos          ( w:car - w = Get the cell value at the top of the stack )
+  dup car-length@
+  
+  dup 0= exp-no-data AND throw
+  
+  1- cells swap car-cells@ + @
+;  
+
+
+: car-push         ( w w:car - = Push a cell value at the end of the array )
+  car-append
+;
+
+
+: car-pop          ( w:car - w = Pop a cell value from the end of the array )
+  dup car-tos
+  
+  swap car>length 1-!
+;
+
+
+
+: car-enqueue      ( w w:car - = Enqueue a cell value at the begin of the array )
+  car-prepend
+;
+
+
+: car-dequeue      ( w:car - w = Dequeue a cell value from the end of the array )
+  car-pop
 ;
 
 
 ( Special words )
 
-: car-count        ( w w:car - u = Count the occurences of the cell in the array )
+: car-count        ( w w:car - u = Count the occurences of the cell value in the array )
   0 -rot
   dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
     2dup @ = IF                             \ If the contents is the cell Then
@@ -297,15 +335,20 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
+: car-sort         ( w:car - = Sort the array using the compare execution token [heap sort] )
+;
+
+
 
 ( Inspection )
 
 : car-dump         ( w:car - = Dump the cell array )
   ." car:" dup . cr
-  ."  length:" dup car>length ? cr
-  ."  size  :" dup car>size   ? cr
-  ."  extra :" dup car>extra  ? cr
-  ."  cells :" ['] . swap car-execute 
+  ."  length :" dup car>length ? cr
+  ."  size   :" dup car>size   ? cr
+  ."  extra  :" dup car>extra  ? cr
+  ."  compare:" dup car>compare ? cr
+  ."  cells  :" ['] . swap car-execute 
 ;
 
 [THEN]
