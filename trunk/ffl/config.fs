@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-25 21:12:48 $ $Revision: 1.7 $
+\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 \
@@ -133,6 +133,15 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 : @!               ( w a - w = First fetch the contents and then store the new value )
   dup @ -rot !
+;
+
+
+: index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
+  over 0< IF
+    +
+  ELSE
+    drop
+  THEN
 ;
 
 
