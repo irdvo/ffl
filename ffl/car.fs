@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-04 05:41:13 $ $Revision: 1.3 $
+\  $Date: 2006-04-04 17:42:04 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -61,6 +61,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Public words )
 
+\ Todo
 : car-init         ( n:length w:car - = Initialise the cell array with an initial length )
   >r
   0 max                      \ length >= 0
@@ -103,7 +104,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-offset       ( n w:car - n = Get the array offset [0..length> from the index <-length..length> with checking )
+: car-offset       ( n w:car - n = Get the array offset [0..length> from the index [-length..length> with checking )
   tuck car>length @ index2offset
   
   dup rot car-offset?
@@ -144,12 +145,12 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-extra@       ( w:car - u = Get the extra heap space allocated during resizing of the array )
+: car-extra@       ( w:car - u = Get the extra array space allocated during resizing of the array )
   car>extra @
 ;
 
 
-: car-extra!       ( u w:car - = Set the extra heap space allocated during resizing of the array )
+: car-extra!       ( u w:car - = Set the extra array space allocated during resizing of the array )
   swap 1 max swap car>extra !
 ;
 
@@ -271,7 +272,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
   r@ car-cells@
   swap cells over + @ 
   >r swap cells + @ r>
-  r> car>compare @ execute
+  r> car-compare@ execute
 ;
 
 
@@ -300,6 +301,8 @@ struct: car%       ( - n = Get the required space for the car data structure )
   rdrop
 ;
 
+
+
 ( Sorting words )
 
 : car-sort         ( w:car - = Sort the array using the compare execution token [heap sort] )
@@ -326,10 +329,44 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array)
+: car-find-sorted  ( w w:car - n f = Find the cell value in the already sorted array [binary search] )
+  swap >r >r
+  r@ car-length@ 1- 0
+  BEGIN
+    2dup >=
+  WHILE
+    2dup + 2/
+    r> r@ swap >r
+    over cells r@ car-cells@ + @
+    r@ car-compare@ execute
+    dup 0< IF
+      drop 1- rot drop swap
+    ELSE
+      0> IF
+        1+ nip
+      ELSE
+        rdrop rdrop
+        nip nip
+        true
+        exit
+      THEN
+    THEN
+  REPEAT
+  
+  rdrop rdrop
+  nip
+  false
 ;
 
 
+: car-has-sorted?  ( w w:car - f = Check if a cell value is present in an already sorted array )
+  car-find-sorted nip
+;
+
+      
+: car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array)
+  \ ToDo: check  
+;
 
 
 
@@ -365,6 +402,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 : car-dequeue      ( w:car - w = Dequeue a cell value from the end of the array )
   car-pop
 ;
+
 
 
 ( Special words )
