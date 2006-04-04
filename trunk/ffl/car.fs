@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.2 $
+\  $Date: 2006-04-04 05:41:13 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -75,7 +75,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
   r@ car>cells !
   r@ car>length !
   car.extra r@   car>extra !
-  ['] >= r> car>compare !
+  ['] - r> car>compare !
 ;
 
 
@@ -84,12 +84,12 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-new          ( n:length - w:car = Create a cell array with an initial length bit array on the heap )
+: car-new          ( n:length - w:car = Create a cell array with an initial length on the heap )
   car% allocate throw  dup >r car-init r> 
 ;
 
 
-: car-free         ( w:car - = Free the bit array from the heap )
+: car-free         ( w:car - = Free the array from the heap )
   dup car>cells @ free throw
   free throw
 ;
@@ -98,7 +98,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Private words )
 
-: car-offset?      ( n w:car - f = Check if the offset is valid in the bit array )
+: car-offset?      ( n w:car - f = Check if the offset is valid in the array )
   0 swap car>length @ within
 ;
 
@@ -193,25 +193,25 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-set          ( w n:index w:car - = Set the cell at the indexth position )
+: car-set          ( w n:index w:car - = Set the cell value at the indexth position )
   tuck car-offset
   cells swap car-cells@ + !
 ;
 
 
-: car-get          ( n:index w:car - w = Get the cell at the indexth position )
+: car-get          ( n:index w:car - w = Get the cell value at the indexth position )
   tuck car-offset
   cells swap car-cells@ + @
 ;
 
 
-: car-append       ( w w:car - = Append the cell in the array )
+: car-append       ( w w:car - = Append the cell value in the array )
   1 over car-length+!        \ increase length (and size)
   cells swap car-cells@ + !  \ put cell at the end
 ;
 
 
-: car-prepend      ( w w:car - = Prepend the cell in the array )
+: car-prepend      ( w w:car - = Prepend the cell value in the array )
   1 over car-length+!        \ increase the length (and size)
   >r
   dup car-cells@ dup cell+   \ source = start, dest = start+1
@@ -220,7 +220,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-insert       ( w n:index w:car - = Insert the cell at the indexth position )
+: car-insert       ( w n:index w:car - = Insert the cell value at the indexth position )
   tuck car-offset
   over 1 swap car-length+!             \ Increase the length (and size)
   over - 
@@ -234,7 +234,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-delete       ( n:index w:car - w = Delete the cell at the indexth position )
+: car-delete       ( n:index w:car - w = Delete the cell value at the indexth position )
   tuck car-offset
   2dup cells swap car-cells@ + @ >r  \ Fetch the cell info
   over car-length@                   \ Calculate the number of elements to move
@@ -253,8 +253,84 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-insert-sorted ( w w:car - = Insert the cell sorted in an already sorted array)
+
+( Private sorting words )
+
+: car-sort-exchange  ( n n w:car - = Exchange the values in the array for the two offsets )
+  car-cells@
+  swap cells over + >r       \ Convert first offset to an address
+  swap cells +               \ Convert second offset to an address
+  r@ @                       \ Fetch value from first address
+  swap dup @ >r              \ Fetch value from second address
+  ! r> r> !                  \ Store contents exchanged
 ;
+
+
+: car-sort-compare  ( n n w:car - n = Compare both offsets with the compare word )
+  >r
+  r@ car-cells@
+  swap cells over + @ 
+  >r swap cells + @ r>
+  r> car>compare @ execute
+;
+
+
+: car-sift-down    ( n:bottom n:root w:car - = Sift down during heap sort )
+  >r
+  tuck 2* 1+
+  BEGIN
+    2dup >
+  WHILE
+    2dup 1+ > IF
+      dup 1+ over r@ car-sort-compare 0> IF
+        1+
+      THEN
+    THEN
+    
+    rot
+    2dup swap r@ car-sort-compare 0>= IF
+      -rot drop dup
+    ELSE
+      2dup r@ car-sort-exchange
+      drop
+      tuck 2* 1+
+    THEN
+  REPEAT
+  2drop drop
+  rdrop
+;
+
+( Sorting words )
+
+: car-sort         ( w:car - = Sort the array using the compare execution token [heap sort] )
+  >r
+  r@ car-length@ 2/ 1-
+  BEGIN
+    dup 0>= 
+  WHILE
+    r@ car-length@ over r@ car-sift-down
+    1-
+  REPEAT
+  drop
+  
+  r@ car-length@
+  BEGIN
+    dup 1 >
+  WHILE
+    1-
+    dup 0 r@ car-sort-exchange
+    dup 0 r@ car-sift-down
+  REPEAT
+  drop
+  rdrop
+;
+
+
+: car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array)
+;
+
+
+
 
 
 ( Fifo/Lifo words )
@@ -293,7 +369,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Special words )
 
-: car-count        ( w w:car - u = Count the occurences of the cell value in the array )
+: car-count        ( w w:car - u = Count the occurences of a cell value in the array )
   0 -rot
   dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
     2dup @ = IF                             \ If the contents is the cell Then
@@ -306,7 +382,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-find         ( w w:car - n:index = Find the first occurence of the cell in the array, -1 if not found )
+: car-find         ( w w:car - n:index = Find the first occurence of a cell value in the array, -1 if not found )
   dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
     2dup @ = IF                             \ If contents is the cell Then
       2drop                                 \   Return index and exit
@@ -319,7 +395,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-has?         ( w w:car - f = Check if the cell is present in the array )
+: car-has?         ( w w:car - f = Check if a cell value is present in the array )
   car-find 0>=
 ;
 
@@ -335,8 +411,6 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-sort         ( w:car - = Sort the array using the compare execution token [heap sort] )
-;
 
 
 
@@ -350,6 +424,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
   ."  compare:" dup car>compare ? cr
   ."  cells  :" ['] . swap car-execute 
 ;
+
 
 [THEN]
 

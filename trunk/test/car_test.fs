@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.1 $
+\  $Date: 2006-04-04 05:41:13 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,7 +30,7 @@ include ffl/car.fs
 
 .( Testing: car ) cr 
 
-t{ 26 car-create c4 }t
+t{ 10 car-create c4 }t
 
 t{ 40 car-new value c2 }t
 
@@ -39,17 +39,17 @@ t{  0 car-new value c3 }t
 \ index check
 
 t{  0  c4 car-index? ?true }t
-t{ -26 c4 car-index? ?true }t
-t{ -27 c4 car-index? ?false }t
-t{  25 c4 car-index? ?true }t
-t{  26 c4 car-index? ?false }t
+t{ -10 c4 car-index? ?true }t
+t{ -11 c4 car-index? ?false }t
+t{  9  c4 car-index? ?true }t
+t{  10 c4 car-index? ?false }t
 t{  0  c3 car-index? ?false }t
 t{ -1  c3 car-index? ?false }t
 t{  1  c3 car-index? ?false }t
 
 \ length
 
-t{  c4 car-length@ 26 ?s }t
+t{  c4 car-length@ 10 ?s }t
 t{  c2 car-length@ 40 ?s }t
 t{  c3 car-length@ ?0 }t
 
@@ -139,6 +139,75 @@ t{ c3 car-dequeue 1 ?s }t
 t{ c3 car-dequeue 2 ?s }t
 t{ c3 car-dequeue 3 ?s }t
 
+( Sorting )
+t{ c4 car-clear }t
+t{ 5 0 c4 car-set }t
+t{ 3 1 c4 car-set }t
+t{ 1 2 c4 car-set }t
+t{ 9 3 c4 car-set }t
+t{ 7 4 c4 car-set }t
+t{ 8 5 c4 car-set }t
+t{ 4 6 c4 car-set }t
+t{ 6 7 c4 car-set }t
+t{ 2 8 c4 car-set }t
+t{ 0 9 c4 car-set }t
+
+t{ c4 car-sort }t
+
+t{ 0 c4 car-get 0 ?s }t
+t{ 1 c4 car-get 1 ?s }t
+t{ 2 c4 car-get 2 ?s }t
+t{ 3 c4 car-get 3 ?s }t
+t{ 4 c4 car-get 4 ?s }t
+t{ 5 c4 car-get 5 ?s }t
+t{ 6 c4 car-get 6 ?s }t
+t{ 7 c4 car-get 7 ?s }t
+t{ 8 c4 car-get 8 ?s }t
+t{ 9 c4 car-get 9 ?s }t
+
+: car-test-compare ( n n - n = Compare word for reverse sorting )
+  - negate
+;
+
+t{ ' car-test-compare c4 car-compare! }t
+
+t{ c4 car-sort }t
+
+t{ 0 c4 car-get 9 ?s }t
+t{ 1 c4 car-get 8 ?s }t
+t{ 2 c4 car-get 7 ?s }t
+t{ 3 c4 car-get 6 ?s }t
+t{ 4 c4 car-get 5 ?s }t
+t{ 5 c4 car-get 4 ?s }t
+t{ 6 c4 car-get 3 ?s }t
+t{ 7 c4 car-get 2 ?s }t
+t{ 8 c4 car-get 1 ?s }t
+t{ 9 c4 car-get 0 ?s }t
+
+\ Specials
+
+t{ c4 car-clear }t
+t{ 2 0 c4 car-set }t
+t{ 4 2 c4 car-set }t
+t{ 2 4 c4 car-set }t
+t{ 5 6 c4 car-set }t
+t{ 2 8 c4 car-set }t
+
+t{ 3 c4 car-has? ?false }t
+t{ 5 c4 car-has? ?true  }t
+
+t{ 2 c4 car-count 3 ?s }t
+t{ 4 c4 car-count 1 ?s }t
+t{ 3 c4 car-count ?0 }t
+
+t{ 4 c4 car-find 2 ?s }t
+t{ 7 c4 car-find -1 ?s }t
+
+: car-test-add ( n n - n )
+  +
+;
+
+t{ 0 ' car-test-add c4 car-execute 15 ?s }t
 
 \ free
 
