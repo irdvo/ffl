@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-04 05:41:13 $ $Revision: 1.2 $
+\  $Date: 2006-04-05 17:10:27 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -139,51 +139,6 @@ t{ c3 car-dequeue 1 ?s }t
 t{ c3 car-dequeue 2 ?s }t
 t{ c3 car-dequeue 3 ?s }t
 
-( Sorting )
-t{ c4 car-clear }t
-t{ 5 0 c4 car-set }t
-t{ 3 1 c4 car-set }t
-t{ 1 2 c4 car-set }t
-t{ 9 3 c4 car-set }t
-t{ 7 4 c4 car-set }t
-t{ 8 5 c4 car-set }t
-t{ 4 6 c4 car-set }t
-t{ 6 7 c4 car-set }t
-t{ 2 8 c4 car-set }t
-t{ 0 9 c4 car-set }t
-
-t{ c4 car-sort }t
-
-t{ 0 c4 car-get 0 ?s }t
-t{ 1 c4 car-get 1 ?s }t
-t{ 2 c4 car-get 2 ?s }t
-t{ 3 c4 car-get 3 ?s }t
-t{ 4 c4 car-get 4 ?s }t
-t{ 5 c4 car-get 5 ?s }t
-t{ 6 c4 car-get 6 ?s }t
-t{ 7 c4 car-get 7 ?s }t
-t{ 8 c4 car-get 8 ?s }t
-t{ 9 c4 car-get 9 ?s }t
-
-: car-test-compare ( n n - n = Compare word for reverse sorting )
-  - negate
-;
-
-t{ ' car-test-compare c4 car-compare! }t
-
-t{ c4 car-sort }t
-
-t{ 0 c4 car-get 9 ?s }t
-t{ 1 c4 car-get 8 ?s }t
-t{ 2 c4 car-get 7 ?s }t
-t{ 3 c4 car-get 6 ?s }t
-t{ 4 c4 car-get 5 ?s }t
-t{ 5 c4 car-get 4 ?s }t
-t{ 6 c4 car-get 3 ?s }t
-t{ 7 c4 car-get 2 ?s }t
-t{ 8 c4 car-get 1 ?s }t
-t{ 9 c4 car-get 0 ?s }t
-
 \ Specials
 
 t{ c4 car-clear }t
@@ -209,9 +164,95 @@ t{ 7 c4 car-find -1 ?s }t
 
 t{ 0 ' car-test-add c4 car-execute 15 ?s }t
 
+
+\ Sorting 
+
+t{ c4 car-clear }t
+t{ 50 0 c4 car-set }t
+t{ 30 1 c4 car-set }t
+t{ 10 2 c4 car-set }t
+t{ 90 3 c4 car-set }t
+t{ 70 4 c4 car-set }t
+t{ 80 5 c4 car-set }t
+t{ 40 6 c4 car-set }t
+t{ 60 7 c4 car-set }t
+t{ 20 8 c4 car-set }t
+t{ 00 9 c4 car-set }t
+
+t{ c4 car-sort }t
+
+t{ 0 c4 car-get 00 ?s }t
+t{ 1 c4 car-get 10 ?s }t
+t{ 2 c4 car-get 20 ?s }t
+t{ 3 c4 car-get 30 ?s }t
+t{ 4 c4 car-get 40 ?s }t
+t{ 5 c4 car-get 50 ?s }t
+t{ 6 c4 car-get 60 ?s }t
+t{ 7 c4 car-get 70 ?s }t
+t{ 8 c4 car-get 80 ?s }t
+t{ 9 c4 car-get 90 ?s }t
+
+t{  10 c4 car-find-sorted ?true   1 ?s }t
+t{  15 c4 car-find-sorted ?false  2 ?s }t
+t{ -10 c4 car-find-sorted ?false  0 ?s }t
+t{  50 c4 car-find-sorted ?true   5 ?s }t
+t{  95 c4 car-find-sorted ?false 10 ?s }t
+
+t{  60 c4 car-has-sorted? ?true }t
+t{  91 c4 car-has-sorted? ?false }t
+
+: car-test-compare ( n n - n = Compare word for reverse sorting )
+  - negate
+;
+
+t{ ' car-test-compare c4 car-compare! }t
+
+t{ c4 car-sort }t
+
+t{ 0 c4 car-get 90 ?s }t
+t{ 1 c4 car-get 80 ?s }t
+t{ 2 c4 car-get 70 ?s }t
+t{ 3 c4 car-get 60 ?s }t
+t{ 4 c4 car-get 50 ?s }t
+t{ 5 c4 car-get 40 ?s }t
+t{ 6 c4 car-get 30 ?s }t
+t{ 7 c4 car-get 20 ?s }t
+t{ 8 c4 car-get 10 ?s }t
+t{ 9 c4 car-get 00 ?s }t
+
+t{  10 c4 car-find-sorted ?true   8 ?s }t
+t{  15 c4 car-find-sorted ?false  8 ?s }t
+t{ -10 c4 car-find-sorted ?false 10 ?s }t
+t{  50 c4 car-find-sorted ?true   4 ?s }t
+t{  95 c4 car-find-sorted ?false  0 ?s }t
+
+t{  95 c4 car-insert-sorted }t
+t{  70 c4 car-insert-sorted }t
+t{  75 c4 car-insert-sorted }t
+t{  00 c4 car-insert-sorted }t
+t{  -5 c4 car-insert-sorted }t
+
+t{ c4 car-length@ 15 ?s }t
+
+t{  0 c4 car-get 95 ?s }t
+t{  1 c4 car-get 90 ?s }t
+t{  2 c4 car-get 80 ?s }t
+t{  3 c4 car-get 75 ?s }t
+t{  4 c4 car-get 70 ?s }t
+t{  5 c4 car-get 70 ?s }t
+t{  6 c4 car-get 60 ?s }t
+t{  7 c4 car-get 50 ?s }t
+t{  8 c4 car-get 40 ?s }t
+t{  9 c4 car-get 30 ?s }t
+t{ 10 c4 car-get 20 ?s }t
+t{ 11 c4 car-get 10 ?s }t
+t{ 12 c4 car-get 00 ?s }t
+t{ 13 c4 car-get 00 ?s }t
+t{ 14 c4 car-get -5 ?s }t
+
 \ free
 
-\ t{ c2 car-free }t
-\ t{ c3 car-free }t
+t{ c2 car-free }t
+t{ c3 car-free }t
 
 \ ==============================================================================

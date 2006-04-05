@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-04 17:42:04 $ $Revision: 1.4 $
+\  $Date: 2006-04-05 17:10:27 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -61,22 +61,23 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Public words )
 
-\ Todo
 : car-init         ( n:length w:car - = Initialise the cell array with an initial length )
   >r
-  0 max                      \ length >= 0
-  dup 
+  car.extra r@ car>extra !
+  ['] - r@ car>compare !
+  
+  0 max dup r@ car>length !  \ length >= 0
+  
   dup 0= IF                  \ size = length or car.extra
     drop car.extra
   THEN
-  
   dup r@ car>size !
-  dup cells allocate throw   \ allocate the array
-  tuck swap cells erase
-  r@ car>cells !
-  r@ car>length !
-  car.extra r@   car>extra !
-  ['] - r> car>compare !
+  
+  cells dup allocate throw   \ allocate the array
+  
+  dup r> car>cells !
+  
+  swap erase
 ;
 
 
@@ -365,7 +366,12 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
       
 : car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array)
-  \ ToDo: check  
+  2dup car-find-sorted
+  drop over car-length@ over <= IF
+    drop car-append
+  ELSE
+    swap car-insert
+  THEN
 ;
 
 
@@ -391,7 +397,6 @@ struct: car%       ( - n = Get the required space for the car data structure )
   
   swap car>length 1-!
 ;
-
 
 
 : car-enqueue      ( w w:car - = Enqueue a cell value at the begin of the array )
@@ -427,7 +432,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
       I unloop exit
     THEN
     
-    cell +
+    cell+
   LOOP
   2drop -1                                  \ Not found, return -1
 ;
@@ -443,12 +448,10 @@ struct: car%       ( - n = Get the required space for the car data structure )
     2dup 2>r                                \ Clear the stack
     @ swap execute                          \ Execute the token with the array contents
     2r>
-    cell +
+    cell+
   LOOP
   2drop
 ;
-
-
 
 
 
@@ -462,7 +465,6 @@ struct: car%       ( - n = Get the required space for the car data structure )
   ."  compare:" dup car>compare ? cr
   ."  cells  :" ['] . swap car-execute 
 ;
-
 
 [THEN]
 
