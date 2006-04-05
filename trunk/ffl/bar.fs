@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-30 17:25:39 $ $Revision: 1.4 $
+\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -98,16 +98,6 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Private words )
 
-: bar-offset       ( n w:bar - n = Get the array offset [0..length> from the index <-length..length> )
-  swap
-  dup 0< IF
-    swap bar>length @ +
-  ELSE
-    nip
-  THEN
-;
-
-
 : bar-offset?      ( n w:bar - f = Check if the offset is valid in the bit array )
   0 swap bar>length @ within
 ;
@@ -121,16 +111,17 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-index?       ( n w:bar - f = Check if the index is valid in the bit array )
-  tuck bar-offset swap bar-offset?
+: bar-index?       ( n w:bar - f = Check if an index is valid in the bit array )
+  tuck bar-length@ index2offset 
+  swap bar-offset?
 ;
 
 
 
 ( Private words )
 
-: bar-address      ( n w:bar - u:mask w:addr = Determine address and bit mask for index )
-  tuck bar-offset
+: bar-address      ( n w:bar - u:mask w:addr = Determine address and bit mask for an index )
+  tuck bar-length@ index2offset
   
   2dup swap bar-offset?
   
@@ -298,7 +289,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-count-bits   ( n:number n:start w:bar - u = Count the number of bits set in the range )
+: bar-count-bits   ( n:number n:start w:bar - u = Count the number of bits set in a range )
   0 >r                       \ count = 0
   -rot over 0<> IF           \ number > 0
     tuck + 1-                \ end index
@@ -354,7 +345,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Inspection )
 
-: bar-dump         ( w:bar - = Dump the text output stream )
+: bar-dump         ( w:bar - = Dump the bit array )
   ." bar:" dup . cr
   ."  length:" dup bar>length ? cr
   ."  size  :" dup bar>size   ? cr

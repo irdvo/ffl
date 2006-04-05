@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 08:19:35 $ $Revision: 1.4 $
+\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -287,7 +287,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-get      ( n:index w:scl = w = Get the cell data from the indexth node from the list )
+: scl-get      ( n:index w:scl - w = Get the cell data from the indexth node from the list )
   tuck scl-offset swap       \ index > offset
   scl-node                   \ offset > element
   scn>cell @                 \ element > cell

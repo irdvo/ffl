@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:10:27 $ $Revision: 1.5 $
+\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -100,12 +100,12 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Private words )
 
-: car-offset?      ( n w:car - f = Check if the offset is valid in the array )
+: car-offset?      ( n w:car - f = Check if an offset is valid in the array )
   0 swap car>length @ within
 ;
 
 
-: car-offset       ( n w:car - n = Get the array offset [0..length> from the index [-length..length> with checking )
+: car-offset       ( n w:car - n = Get the array offset [0..length> from an index [-length..length> with checking )
   tuck car>length @ index2offset
   
   dup rot car-offset?
@@ -127,7 +127,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-index?       ( n w:car - f = Check if the index is valid in the array )
+: car-index?       ( n w:car - f = Check if an index is valid in the array )
   tuck car-length@  index2offset  swap car-offset?
 ;
 
@@ -146,12 +146,12 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-extra@       ( w:car - u = Get the extra array space allocated during resizing of the array )
+: car-extra@       ( w:car - u = Get the extra space allocated during resizing of the array )
   car>extra @
 ;
 
 
-: car-extra!       ( u w:car - = Set the extra array space allocated during resizing of the array )
+: car-extra!       ( u w:car - = Set the extra space allocated during resizing of the array )
   swap 1 max swap car>extra !
 ;
 
@@ -201,19 +201,19 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-get          ( n:index w:car - w = Get the cell value at the indexth position )
+: car-get          ( n:index w:car - w = Get the cell value from the indexth position )
   tuck car-offset
   cells swap car-cells@ + @
 ;
 
 
-: car-append       ( w w:car - = Append the cell value in the array )
+: car-append       ( w w:car - = Append the cell value at the end of the array )
   1 over car-length+!        \ increase length (and size)
   cells swap car-cells@ + !  \ put cell at the end
 ;
 
 
-: car-prepend      ( w w:car - = Prepend the cell value in the array )
+: car-prepend      ( w w:car - = Prepend the cell value before the start of the array )
   1 over car-length+!        \ increase the length (and size)
   >r
   dup car-cells@ dup cell+   \ source = start, dest = start+1
@@ -236,7 +236,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-delete       ( n:index w:car - w = Delete the cell value at the indexth position )
+: car-delete       ( n:index w:car - w = Delete the cell value at the indexth position, return the previous cell value )
   tuck car-offset
   2dup cells swap car-cells@ + @ >r  \ Fetch the cell info
   over car-length@                   \ Calculate the number of elements to move
@@ -306,7 +306,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Sorting words )
 
-: car-sort         ( w:car - = Sort the array using the compare execution token [heap sort] )
+: car-sort         ( w:car - = Sort the array using the compare execution token using heap sort )
   >r
   r@ car-length@ 2/ 1-
   BEGIN
@@ -330,7 +330,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-find-sorted  ( w w:car - n f = Find the cell value in the already sorted array [binary search] )
+: car-find-sorted  ( w w:car - n f = Find the cell value in the already sorted array using binary search )
   swap >r >r
   r@ car-length@ 1- 0
   BEGIN
@@ -365,7 +365,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
       
-: car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array)
+: car-insert-sorted ( w w:car - = Insert the cell value sorted in an already sorted array )
   2dup car-find-sorted
   drop over car-length@ over <= IF
     drop car-append
@@ -378,7 +378,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 ( Fifo/Lifo words )
 
-: car-tos          ( w:car - w = Get the cell value at the top of the stack )
+: car-tos          ( w:car - w = Get the cell value at the end of the array )
   dup car-length@
   
   dup 0= exp-no-data AND throw
@@ -399,7 +399,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 ;
 
 
-: car-enqueue      ( w w:car - = Enqueue a cell value at the begin of the array )
+: car-enqueue      ( w w:car - = Enqueue a cell value at the start of the array )
   car-prepend
 ;
 

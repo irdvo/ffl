@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-25 07:40:02 $ $Revision: 1.10 $
+\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -156,7 +156,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   dup 0> IF
     r@ tis>pntr @ chars
-    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    r@ str>data @ +                    \ Determine start of remaining chars in stream
     swap
   THEN
   rdrop

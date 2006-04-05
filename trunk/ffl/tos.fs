@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-03-25 07:40:02 $ $Revision: 1.7 $
+\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -184,7 +184,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written data )
   >r
-  r@ tos>pntr @ r@ str-length@ < IF   \ ToDo: exception ??
+  r@ tos>pntr @ r@ str-length@ < IF    \ Something to align ?
     >r over r>
     
     ?dup IF                            \ Insert the leading spaces
