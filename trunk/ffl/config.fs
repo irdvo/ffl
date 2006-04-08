@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-02 06:45:37 $ $Revision: 1.8 $
+\  $Date: 2006-04-08 08:00:10 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 \
@@ -39,11 +39,11 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 000200 constant ffl.version
 
 
-( Public Settings )
+( System Settings )
 
-1 constant sys-unix
-
-\ 1 constant sys-win32
+create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
+  1 c, 10 c,         \ unix: lf
+\ 2 c, 13 c, 10 c,   \ dos:  cr lf
 
 
 ( Public words )
