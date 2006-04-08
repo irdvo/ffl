@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.14 $
+\  $Date: 2006-04-08 08:25:01 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -58,16 +58,17 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Private words )
 
-: str-offset       ( n w:scl - n = Determine offset from index, incl. validation )
-  str>length @
+: str-offset?      ( n w:str - f = Check if an offset is valid in the string )
+  0 swap str>length @ within
+;
+
+
+: str-offset       ( n w:str - n = Determine offset from index, incl. validation )
+  tuck str>length @ index2offset
   
-  over 0< IF                 \ if index < 0 then
-    tuck + swap              \   index = index + length
-  THEN
+  dup rot str-offset?
   
-  over <= over 0< OR IF      \ if index < 0 or index >= length
-    exp-index-out-of-range throw 
-  THEN
+  0= exp-index-out-of-range AND throw
 ;
 
 
@@ -108,13 +109,18 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-empty?       ( w:str - f = Check for empty string )
+: str-empty?       ( w:str - f = Check for an empty string )
   str>length @ 0=  
 ;
 
 
 : str-length@      ( w:str - u = Get the length of the string )
   str>length @
+;
+
+
+: str-index?       ( n w:str - f = Check if an index is valid in the string )
+  tuck str-length@  index2offset  swap str-offset?
 ;
 
 
@@ -183,7 +189,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-insert-space ( u n w:str - u w:data = Insert u chars at nth index )
+: str-insert-space ( u n w:str - u w:data = Insert u chars at indexth position )
   tuck str-offset                \ Index -> offset
   >r 2dup str-length+! r>        \ Increase the length
   tuck -                         \ Calculate move length
@@ -250,10 +256,10 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-get-substring   ( u n:start w:str - w:str2 = Get a substring from start u chars long as a new dyn. string )
+: str-get-substring   ( u n:start w:str - c-addr u = Get a substring from start,  u chars long )
   dup >r str-offset          \ Index -> offset
   2dup + r@ str-length@ >    \ If not enough data then exception
-    exp-no-data and throw
+    exp-no-data AND throw
   chars r> str-data@ +       \ Make the substring
   swap
 ;
@@ -291,7 +297,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-set-cstring  ( c-addr w:str - = Set a zero terminated string in the string )
+: str-set-zstring  ( c-addr w:str - = Set a zero terminated string in the string )
   over 0 swap                \ length = 0
   BEGIN
     dup c@ chr.nul <>        \ while [str] <> 0 do
@@ -304,7 +310,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-get-cstring  ( w:str - c-addr = Get the string as zero terminated string )
+: str-get-zstring  ( w:str - c-addr = Get the string as zero terminated string )
   dup str-length@ chars
   swap str-data@
   tuck + chr.nul swap c!     \ store nul at end of string
@@ -386,8 +392,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-execute      ( ... xt w:str - ... = Execute the xt token for every character in the string )
   str-bounds ?DO             \ Do for string
     I c@
-    swap dup >r
-    execute                  \  Execute token for character with stack cleared
+    swap dup >r              \  Clear the stack
+    execute                  \  Execute token for character
     r>
     1 chars +LOOP
   drop
@@ -448,15 +454,6 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-align-right  ( u w:str - = Align right the string in u width )
   tuck str-length@ - dup 0> IF
     chr.sp -rot swap str-prepend-chars
-  ELSE
-    2drop
-  THEN
-;
-
-
-: str-zfill        ( u w:str - = Right justify the string with leading zero's )
-  tuck str-length@ - dup 0> IF
-    [char] 0 -rot swap str-prepend-chars
   ELSE
     2drop
   THEN
