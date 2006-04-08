@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.8 $
+\  $Date: 2006-04-08 08:00:10 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -152,15 +152,12 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 
 : tos-write-line    ( w:tos - = Write cr/lf to the stream, not alignable )
-  [DEFINED] sys-win32 [IF]
-  chr.cr over tos-write-char
-  chr.lf over tos-write-char
-  [THEN]
-  [DEFINED] sys-unix [IF]
-  chr.lf over tos-write-char
-  [THEN]
+  sys.eol
+  count bounds ?DO
+    I c@ over tos-write-char
+  1 chars +LOOP
   tos-sync
-;
+;  
 
 
 : tos-write-number  ( n w:tos - = Write a number in the current base to the stream )
