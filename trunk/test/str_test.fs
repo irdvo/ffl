@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-02 18:45:43 $ $Revision: 1.5 $
+\  $Date: 2006-04-08 08:25:01 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -38,6 +38,12 @@ t{ s" hello" s1 str-set         }t
 t{ s1 str-length@        5 ?s   }t
 t{ s1 str-empty?         ?false }t
 t{ s1 str-get         5 ?s drop }t
+
+t{  0 s1 str-index? ?true       }t
+t{  4 s1 str-index? ?true       }t
+t{  5 s1 str-index? ?false      }t
+t{ -5 s1 str-index? ?true       }t
+t{ -6 s1 str-index? ?false      }t
 
 t{ s1 str-clear                 }t
 t{ s1 str-length@        0 ?s   }t
@@ -159,17 +165,6 @@ t{ 1 s1 str-center                      }t
 t{ s" Hello" s1 str-ccompare ?0         }t
 t{ 10 s1 str-center                     }t
 t{ s"   Hello   " s1 str-ccompare ?0    }t
-
-\ zfill
-t{ s" 52" s1 str-set                    }t
-t{ 0 s1 str-zfill                       }t
-t{ s" 52" s1 str-ccompare  ?0           }t
-t{ 1 s1 str-zfill                       }t
-t{ s" 52" s1 str-ccompare  ?0           }t
-t{ 2 s1 str-zfill                       }t
-t{ s" 52" s1 str-ccompare  ?0           }t
-t{ 4 s1 str-zfill                       }t
-t{ s" 0052" s1 str-ccompare  ?0         }t
 
 \ strip
 t{ s"    Hello   " s1 str-set           }t
