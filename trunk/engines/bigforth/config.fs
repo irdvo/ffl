@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-13 18:59:54 $ $Revision: 1.1 $
+\  $Date: 2006-04-08 08:50:45 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
@@ -36,32 +36,31 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000100 constant ffl.version
+000200 constant ffl.version
 
 
-( Public Settings )
 
+( Extra includes )
 
 import float
 
 float also
 
 
+
+( System Settings )
+
+create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
+  1 c, 10 c,         \ unix: lf
+\ 2 c, 13 c, 10 c,   \ dos:  cr lf
+
+
+
 ( Public words )
-
-\ : [DEFINED]   
-\   bl word find   nip 0<>   
-\ ; immediate
-
 
 : [UNDEFINED] 
   bl word find   nip 0= 
 ; immediate
-
-
-\ : 2rdrop ( - ) 
-\   2r> 2drop
-\ ;
 
 
 : 2+               ( n - n+2 = Add two to tos)
@@ -69,29 +68,22 @@ float also
 ;
 
 
-\ : cell           ( - n = Cell size)
-\   1 cells
-\ ;
+: d<>              ( d d - f = Check if two two double are unequal )
+  d= 0=
+;
 
 
-\ : >=             ( n1 n2 - n1>=n1 = Greater equal)
-\   < not
-\ ;
+: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
+  d<>
+;
 
 
-\ : 0>=            ( n - f = Greater equal 0 )
-\   0 >=
-\ ;
-
-
-\ : on             ( w - = Set boolean variable to true)
-\   true swap !
-\ ;
-
-
-\ : off            ( w - = Set boolean variable to false)
-\   false swap !
-\ ;
+: sgn              ( n - n = Determine the sign of the number )
+  dup 0= IF 
+    EXIT 
+  THEN
+  0< 2* 1+
+;
 
 
 0 constant nil     ( - w = Nil address )
@@ -132,6 +124,20 @@ float also
 ;
 
 
+: @!               ( w a - w = First fetch the contents and then store the new value )
+  dup @ -rot !
+;
+
+
+: index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
+  over 0< IF
+    +
+  ELSE
+    drop
+  THEN
+;
+
+
 ( Public Exceptions )
 
 variable exp-next  -2050 exp-next !
@@ -145,6 +151,8 @@ variable exp-next  -2050 exp-next !
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
+s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
+s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
 
 [ELSE]
   drop

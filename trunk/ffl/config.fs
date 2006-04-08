@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-08 08:00:10 $ $Revision: 1.9 $
+\  $Date: 2006-04-08 08:50:45 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 \
@@ -49,56 +49,10 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 ( Public words )
 
 \ : [DEFINED]   
-\   bl word find   nip 0<>   
-\ ; immediate
-
-
-\ : [UNDEFINED] 
-\   bl word find   nip 0= 
-\ ; immediate
-
-
-\ : 2rdrop ( - ) 
-\   2r> 2drop
-\ ;
-
 
 : 2+               ( n - n+2 = Add two to tos)
   1+ 1+
 ;
-
-
-\ : cell           ( - n = Cell size)
-\   1 cells
-\ ;
-
-
-\ : >=             ( n1 n2 - n1>=n1 = Greater equal)
-\   < not
-\ ;
-
-
-\ : 0>=            ( n - f = Greater equal 0 )
-\   0 >=
-\ ;
-
-
-\ : on             ( w - = Set boolean variable to true)
-\   true swap !
-\ ;
-
-
-\ : off            ( w - = Set boolean variable to false)
-\   false swap !
-\ ;
-
-
-\ : bounds         ( c-addr u - c-addr+u c-addr = Get end and start address for ?do )
-\   over + swap
-\ ;
-
-
-\ 0 constant nil   ( - w = Nil address )
 
 
 : 0!               ( w - = Set zero in address )
@@ -146,15 +100,6 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 
 
 ( Public Exceptions )
-
-\ variable exp-next  -2050 exp-next !
-\
-\ : exception      ( w:addr u - n = add an exception )
-\   2drop
-\   exp-next @ 
-\   -1 exp-next +!
-\ ;
-
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
