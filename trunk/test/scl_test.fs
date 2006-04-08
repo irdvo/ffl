@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 08:38:48 $ $Revision: 1.3 $
+\  $Date: 2006-04-08 07:39:01 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -163,7 +163,11 @@ t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
 
 t{    l1 scl-delete-all          }t
 
-t{ ' < l1 scl-compare!           }t
+: scl-test-compare
+  - negate
+;
+
+t{ ' scl-test-compare l1 scl-compare! }t
 
 t{ 5  l1 scl-insert-sorted       }t
 t{ 1  l1 scl-insert-sorted       }t

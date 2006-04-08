@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.5 $
+\  $Date: 2006-04-08 07:39:00 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -164,7 +164,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   dup scl>first   nil!
   dup scl>last    nil!
   dup scl>length    0!
-  ['] >= swap scl>compare ! 
+  ['] - swap scl>compare ! 
 ;
 
 
@@ -338,7 +338,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   
   BEGIN
     dup nil<> IF             \ while walk <> nil and walk->cell <= w do
-      2dup scn>cell @  r@ execute
+      2dup scn>cell @  r@ execute 0>=
     ELSE
       false
     THEN
