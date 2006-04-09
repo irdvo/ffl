@@ -30,6 +30,24 @@ If your forth only looks in the current directory for forth sources, then copy
 the directory 'ffl' and its contents to the current directory.
 
 
+Configuration
+-------------
+
+The default config.fs and make.fs are for gforth. So no further copying is 
+necessary for gforth.
+
+For bigforth the config.fs and make.fs files should be copied from the
+'engines/bigforth' directory to the 'fll' directory.
+
+
+The next step is editting the config.fs file for system settings.
+
+At the moment there is only one system setting: the word 'sys.eol'. This word 
+defines the ascii end of line as a counted string. For unix this is a linefeed,
+for dos systems it is carriage return and linefeed. You should change the 'sys.eol' 
+word if you work on a dos system. The default is for unix systems.
+
+
 Testing
 -------
 
@@ -38,7 +56,11 @@ directory can be started by (for gforth):
 
 gforth ffl_test.fs
 
-The program will tell you which modules are tested and if there are any
+or (bigforth):
+
+bigforth ffl_test.fs
+
+The program will tell you which modules are tested and if there were any
 errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxx tests.'
 then all went well.
 
