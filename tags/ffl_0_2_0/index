@@ -1,0 +1,86 @@
+Index of used prefices
+
+ffl - Forth Foundation Library
+--- - ------------------------------------------------
+    - Data type
+--- - ------------------------------------------------
+bar - Bit array module
+chr - Char module
+str - Text string module
+tis - Text Input Stream
+tos - Text Output Stream
+--- - ------------------------------------------------
+    - Collection
+--- - ------------------------------------------------
+sci - Single linked cell list iterator
+scl - Single linked cell list
+scn - Single linked cell node
+--- - ------------------------------------------------
+    - Development
+--- - ------------------------------------------------
+stc - Struct definition
+tst - Unit tests
+--- - ------------------------------------------------
+    - Interface
+--- - ------------------------------------------------
+crc - 32-bit Cyclic Redundancy Check
+--- - ------------------------------------------------
+    - Compound
+--- - ------------------------------------------------
+--- - ------------------------------------------------
+
+
+
+      ToDo
+--- - ------------------------------------------------
+    - Data type
+--- - ------------------------------------------------
+clr - Color module
+cpl - Complex module
+dtm - Datetime module
+frc - Fraction module
+--- - ------------------------------------------------
+    - Collection
+--- - ------------------------------------------------
+aci - Avl cell tree iterator module
+act - Avl cell tree module
+acn - Avl cell tree node
+bci - Binary cell tree iterator module
+bct - Binary cell tree module
+bcn - Binary cell tree node
+car - Cell Array module
+dci - Double linked cell list Iterator
+dcl - Double linked cell list module
+dcn - Double linked cell list node
+fsm - Finite state machine module
+grp - Graph module
+gre - GRaph edge module
+grn - GRaph node module
+hcb - Hash cell table module
+hci - Hash cell table iterator module
+hcn = Hash cell table node
+--- - ------------------------------------------------
+    - Development
+--- - ------------------------------------------------
+log - Logger module
+env - Environment queries
+--- - ------------------------------------------------
+    - Interface
+--- - ------------------------------------------------
+bzf - BZip2 file module
+bzp - BZip2 module
+dbm - DBM module
+gzf - GZip file module
+gzp - GZip module
+md5 - MD5 module
+rnd - Pseudo Random module
+rgx - Regex module
+sha - SHA1/2 module
+tmr - Timer module
+xml - XML module
+--- - ------------------------------------------------
+    - Compound
+--- - ------------------------------------------------
+arg - Argument parser
+cal - Calendar
+--- - ------------------------------------------------
