@@ -1,86 +1,91 @@
 Index of used prefices
 
-ffl - Forth Foundation Library
---- - ------------------------------------------------
-    - Data type
---- - ------------------------------------------------
-bar - Bit array module
-chr - Char module
-str - Text string module
-tis - Text Input Stream
-tos - Text Output Stream
---- - ------------------------------------------------
-    - Collection
---- - ------------------------------------------------
-sci - Single linked cell list iterator
-scl - Single linked cell list
-scn - Single linked cell node
---- - ------------------------------------------------
-    - Development
---- - ------------------------------------------------
-stc - Struct definition
-tst - Unit tests
---- - ------------------------------------------------
-    - Interface
---- - ------------------------------------------------
-crc - 32-bit Cyclic Redundancy Check
---- - ------------------------------------------------
-    - Compound
---- - ------------------------------------------------
---- - ------------------------------------------------
+ ffl  - Forth Foundation Library
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+2 bar - Bit array module
+2 car - Cell Array module
+1 chr - Char module
+2 str - Text string module
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+1 sci - Single linked cell list iterator
+1 scl - Single linked cell list
+1 scn - Single linked cell node
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+1 stc - Struct definition
+1 tst - Unit tests
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+1 crc - 32-bit Cyclic Redundancy Check
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+2 tis - Text Input Stream
+2 tos - Text Output Stream
+----- - ------------------------------------------------
 
 
 
       ToDo
---- - ------------------------------------------------
-    - Data type
---- - ------------------------------------------------
-clr - Color module
-cpl - Complex module
-dtm - Datetime module
-frc - Fraction module
---- - ------------------------------------------------
-    - Collection
---- - ------------------------------------------------
-aci - Avl cell tree iterator module
-act - Avl cell tree module
-acn - Avl cell tree node
-bci - Binary cell tree iterator module
-bct - Binary cell tree module
-bcn - Binary cell tree node
-car - Cell Array module
-dci - Double linked cell list Iterator
-dcl - Double linked cell list module
-dcn - Double linked cell list node
-fsm - Finite state machine module
-grp - Graph module
-gre - GRaph edge module
-grn - GRaph node module
-hcb - Hash cell table module
-hci - Hash cell table iterator module
-hcn = Hash cell table node
---- - ------------------------------------------------
-    - Development
---- - ------------------------------------------------
-log - Logger module
-env - Environment queries
---- - ------------------------------------------------
-    - Interface
---- - ------------------------------------------------
-bzf - BZip2 file module
-bzp - BZip2 module
-dbm - DBM module
-gzf - GZip file module
-gzp - GZip module
-md5 - MD5 module
-rnd - Pseudo Random module
-rgx - Regex module
-sha - SHA1/2 module
-tmr - Timer module
-xml - XML module
---- - ------------------------------------------------
-    - Compound
---- - ------------------------------------------------
-arg - Argument parser
-cal - Calendar
---- - ------------------------------------------------
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+6 clr - Color module
+5 cpl - Complex module
+3 dtm - Datetime module
+4 frc - Fraction module
+      - Big Cell module
+      - Big Float module
+      - Big Fraction module
+      - Big Complex module
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+5 aci - Avl cell tree iterator module
+5 act - Avl cell tree module
+5 acn - Avl cell tree node
+4 bci - Binary cell tree iterator module
+4 bct - Binary cell tree module
+4 bcn - Binary cell tree node
+6 dci - Double linked cell list Iterator
+6 dcl - Double linked cell list module
+6 dcn - Double linked cell list node
+7 fsm - Finite state machine module
+8 grp - Graph module
+8 gre - GRaph edge module
+8 grn - GRaph node module
+3 hcb - Hash cell table module
+3 hci - Hash cell table iterator module
+3 hcn - Hash cell table node
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+4 log - Logger module
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+8 bzf - BZip2 file module
+8 bzp - BZip2 module
+3 dbm - DBM module
+7 gzf - GZip file module
+7 gzp - GZip module
+5 htm - HTML module
+4 md5 - MD5 module
+4 rnd - Pseudo Random module
+6 rgx - Regex module
+6 sha - SHA1/2 module
+3 tmr - Timer module
+5 xml - XML module
+      - css module
+      - url module
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+5 arg - Argument parser
+----- - ------------------------------------------------
