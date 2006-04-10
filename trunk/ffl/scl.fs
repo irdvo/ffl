@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-08 07:39:00 $ $Revision: 1.6 $
+\  $Date: 2006-04-10 17:01:21 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,6 @@ include ffl/scn.fs
 
 ( scl = Single Linked Cell List )
 ( The scl module implements a single linked list that can store cell wide data.)
-( Note: sort xt compare t/f or 0< 0= 0>  ** ToDo **)
   
 
 2 constant scl.version
@@ -195,6 +194,9 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
+
+( Member words )
+
 : scl-empty?   ( w:scl - f = Check for empty list )
   scl>length @ 0=  
 ;
@@ -215,6 +217,9 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
+
+( List words )
+
 : scl-append   ( w w:scl - = Append the cell in the list )
   dup scl>last @  scl-add
 ;
@@ -225,20 +230,26 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-count    ( w w:scl - u = Count the occurences of cell data in the list )
-  0 >r                       \ count = 0
-  scl>first @                \ walk = first
-  BEGIN
-    dup nil<> 
-  WHILE                      \ while walk <> nil do
-    2dup
-    scn>cell @ = IF          \  if walk->cell = w then
-      r> 1+ >r               \   count++
-    THEN
-    scn>next @               \  walk = walk->next
-  REPEAT
-  2drop
-  r>
+: scl-set      ( w n:index w:scl - = Set the cell data in the indexth node in the list )
+  tuck scl-offset swap       \ index > offset
+  scl-node                   \ offset > prev + curr
+  nip                        \ 
+  scn>cell !                 \ cell -> curr
+;
+
+
+: scl-get      ( n:index w:scl - w = Get the cell data from the indexth node from the list )
+  tuck scl-offset swap       \ index > offset
+  scl-node                   \ offset > element
+  scn>cell @                 \ element > cell
+  nip
+;
+
+
+: scl-insert   ( w n:index w:scl - = Insert cell data at the indexth node in the list )
+  tuck scl-offset over
+  scl-node
+  drop scl-add  
 ;
 
 
@@ -264,6 +275,25 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
+
+( Special words )
+
+: scl-count    ( w w:scl - u = Count the occurences of cell data in the list )
+  0 >r                       \ count = 0
+  scl>first @                \ walk = first
+  BEGIN
+    dup nil<> 
+  WHILE                      \ while walk <> nil do
+    2dup
+    scn>cell @ = IF          \  if walk->cell = w then
+      r> 1+ >r               \   count++
+    THEN
+    scn>next @               \  walk = walk->next
+  REPEAT
+  2drop
+  r>
+;
+
 : scl-execute      ( ... xt w:scl - ... = Execute xt for every cell data in list )
   scl>first @                \ walk = first
   BEGIN
@@ -276,29 +306,6 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
     scn>next @               \  walk = walk->next
   REPEAT
   2drop
-;
-
-
-: scl-set      ( w n:index w:scl - = Set the cell data in the indexth node in the list )
-  tuck scl-offset swap       \ index > offset
-  scl-node                   \ offset > prev + curr
-  nip                        \ 
-  scn>cell !                 \ cell -> curr
-;
-
-
-: scl-get      ( n:index w:scl - w = Get the cell data from the indexth node from the list )
-  tuck scl-offset swap       \ index > offset
-  scl-node                   \ offset > element
-  scn>cell @                 \ element > cell
-  nip
-;
-
-
-: scl-insert   ( w n:index w:scl - = Insert cell data at the indexth node in the list )
-  tuck scl-offset over
-  scl-node
-  drop scl-add  
 ;
 
 
@@ -329,6 +336,30 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
+: scl-reverse  ( w:scl - = Reverse or mirror the list )
+  nil over
+  scl>first @                \ walk = first
+  
+  BEGIN
+    dup nil<>
+  WHILE                      \ while walk<>nil do
+    dup scn>next @
+    >r
+    tuck scn>next !          \  walk->next = prev
+    r>
+  REPEAT
+  2drop
+  
+  dup  scl>first @
+  over dup scl>last @       
+  swap scl>first !           \ first = last
+  swap scl>last  !           \ last  = first
+;
+
+
+
+( Sort words )
+
 : scl-insert-sorted   ( w w:scl - = Insert the cell data sorted in the list )
   dup scl>compare @ >r       \ save the sort execution token
   
@@ -353,26 +384,8 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-reverse  ( w:scl - = Reverse or mirror the list )
-  nil over
-  scl>first @                \ walk = first
-  
-  BEGIN
-    dup nil<>
-  WHILE                      \ while walk<>nil do
-    dup scn>next @
-    >r
-    tuck scn>next !          \  walk->next = prev
-    r>
-  REPEAT
-  2drop
-  
-  dup  scl>first @
-  over dup scl>last @       
-  swap scl>first !           \ first = last
-  swap scl>last  !           \ last  = first
-;
 
+( Inspection )
 
 : scl-dump     ( w:scl - = Dump the list )
   ." scl:" dup . cr
