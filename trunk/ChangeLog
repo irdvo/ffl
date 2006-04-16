@@ -1,3 +1,5 @@
+0.3.0:
+* dtm: new module (Date & Time)
 0.2.0
 * car: new module (Cell array)
 * bar: new module (Bit array)
