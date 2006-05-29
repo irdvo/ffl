@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-16 07:33:59 $ $Revision: 1.1 $
+\  $Date: 2006-05-29 19:04:01 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -57,10 +57,17 @@ struct: dtm%       ( - n = Get the required space for the dtm data structure )
 
 ( Private database )
 
-create dtm.days-in-month 31 , 28 , 31 , 30 , 31 , 30 , 31 , 31 , 30 , 31 , 30 , 31 ,
-
-create dtm.month-offsets  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 ,  5 ,
-
+create dtm.days-in-month 
+  31 , 28 , 31 , 30 , 31 , 30 , 31 , 31 , 30 , 31 , 30 , 31 ,
+does>              ( n:month - n:days = Get the number of days in a month )
+  swap 1- cells + @
+;
+  
+create dtm.month-offsets  
+  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 ,  5 ,
+does>              ( n:month - n:offset = Get the month offset for week day calculation )
+  swap 1- cells + @
+;
 
 
 ( Constants )
@@ -131,7 +138,7 @@ create dtm.month-offsets  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 , 
 : dtm+days-in-month ( n:month n:year - n = Get the number of days in a month )
   over 1 13 within 0= exp-invalid-parameters AND throw
   
-  over 1- cells dtm.days-in-month + @
+  over dtm.days-in-month
   
   -rot swap dtm.february = IF 
     dtm+leap-year? IF
@@ -168,12 +175,12 @@ create dtm.month-offsets  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 , 
 ;
 
 
-: dtm+month?        ( n:years n:months - f = Check if the months are valid )
+: dtm+month?        ( n:year n:month - f = Check if the month is valid )
   \ ToDo
 ;
 
 
-: dtm+year?        ( n:years - f = Check if the years are valid )
+: dtm+year?        ( n:year - f = Check if the year is valid )
   1970 >=
 ;
 
@@ -267,7 +274,7 @@ create dtm.month-offsets  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 , 
 
 
 : dtm-month!       ( n w:dtm - = Set the months )
-  swap 0 max 12 max swap dtm>month !
+  swap 0 max 12 min swap dtm>month !
 ;
 
 
@@ -451,8 +458,20 @@ create dtm.month-offsets  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 , 
 ;
 
 
-: dtm-get-weekday  ( w:dtm - n = Get the week day for the date )
-  \ ToDo
+: dtm-weekday  ( w:dtm - n = Get the week day for the date )
+  >r
+  3  
+  r@ dtm-year@ 100 / 4 mod - 2*              \   (3 - (century mod 4)) * 2
+  r@ dtm-year@ 100 mod dup 4 / +             \   (year + year / 4)
+  r@ dtm-year@ dtm+leap-year? IF
+    r@ dtm-month@ dtm.february <= IF
+      1-                                     \   change year offset for jan/feb in leap year
+    THEN
+  THEN
+  7 mod +                                    \ + year-offset mod 7
+  r@ dtm-month@ dtm.month-offsets +          \ + (month-offset[month])
+  r> dtm-day@ 7 mod +                        \ + day mod 7
+  7 mod                                      \ result mod 7
 ;
 
 
