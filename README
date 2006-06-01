@@ -40,7 +40,7 @@ For bigforth the config.fs and make.fs files should be copied from the
 'engines/bigforth' directory to the 'fll' directory.
 
 
-The next step is editting the config.fs file for system settings.
+The next step is editing the config.fs file for system settings.
 
 At the moment there is only one system setting: the word 'sys.eol'. This word 
 defines the ascii end of line as a counted string. For unix this is a linefeed,
@@ -51,7 +51,7 @@ word if you work on a dos system. The default is for unix systems.
 Testing
 -------
 
-After installing the sources files the unit test sources in the 'test'
+After installing the source files the unit test sources in the 'test'
 directory can be started by (for gforth):
 
 gforth ffl_test.fs
@@ -94,7 +94,7 @@ for a particular forth system, let me know. I will add it to the README.
 Bugs
 ----
 
-Because the library is still alpha it is not impossible that you will find bugs. 
+Because the library is still beta it is not impossible that you will find bugs. 
 You can send them or any suggestions to the email address which is listed 
 on the site: ffl.dvoudheusden.net. This is also the place for new versions, news, 
 documentation etc.

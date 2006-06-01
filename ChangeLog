@@ -1,4 +1,5 @@
 0.3.0:
+* dti: new module (Date & Time iterator)
 * dtm: new module (Date & Time)
 0.2.0
 * car: new module (Cell array)
