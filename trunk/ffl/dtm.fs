@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-05-29 19:04:01 $ $Revision: 1.2 $
+\  $Date: 2006-06-01 18:45:52 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -72,6 +72,8 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 ( Constants )
 
+1970 constant dtm.unix-epoch  ( - n = Unix epoch [1970] )
+
 0  constant dtm.sunday     ( - n = Sunday )
 1  constant dtm.monday     ( - n = Monday )
 2  constant dtm.tuesday    ( - n = Tuesday )
@@ -110,13 +112,13 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-create       ( C: "name" - R: - w:dtm = Create a date time structure with the current date and time )
+: dtm-create       ( C: "name" - R: - w:dtm = Create a date/time structure with the current date/time )
   create  here  dtm% allot  dtm-init
 ;
 
 
-: dtm-new          ( - w:dtm = Create a date time structure with the current date and time )
-  dtm% allocate throw  dup >r dtm-init r> 
+: dtm-new          ( - w:dtm = Allocate a date/time structure with the current date/time on the heap )
+  dtm% allocate throw  dup dtm-init
 ;
 
 
@@ -128,14 +130,25 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 ( Module words )
 
-: dtm+leap-year?    ( year - f = Check if the year is a leap year )
+: dtm+leap-year?   ( n:year - f = Check if the year is a leap year )
   dup  400 mod 0=
   over 100 mod 0<> OR
   swap 4   mod 0=  AND
 ;
 
 
-: dtm+days-in-month ( n:month n:year - n = Get the number of days in a month )
+: dtm+calc-leap-years  ( n:end n:start - n = Calculate the number of leap years in a year range )
+  1-
+  over 100 / over 100 / - 
+  >r
+  over 4   / over 4   / - 
+  r> - >r
+  swap 400 / swap 400 / -
+  r> +
+;
+
+
+: dtm+days-in-month  ( n:month n:year - n = Get the number of days in a month )
   over 1 13 within 0= exp-invalid-parameters AND throw
   
   over dtm.days-in-month
@@ -150,68 +163,38 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm+milli?        ( n - f = Check if milliseconds are valid )
+: dtm+milli?       ( n:millis - f = Check if milliseconds are valid )
   0 1000 within
 ;
 
 
-: dtm+second?       ( n - f = Check if seconds are valid )
+: dtm+second?      ( n:seconds - f = Check if seconds are valid )
   0 60 within
 ;
 
 
-: dtm+minute?       ( n - f = Check if minutes are valid )
+: dtm+minute?      ( n:minutes - f = Check if minutes are valid )
   0 60 within
 ;
 
 
-: dtm+hour?         ( n - f = Check if hours are valid )
+: dtm+hour?        ( n:hour - f = Check if hours are valid )
   0 24 within
 ;
 
 
-: dtm+day?          ( n:years n:months n:day - f = Check if the day is valid )
-  \ Todo
+: dtm+day?         ( n:year n:month n:day - f = Check if the day is valid )
+  \ ToDo
 ;
 
 
-: dtm+month?        ( n:year n:month - f = Check if the month is valid )
-  \ ToDo
+: dtm+month?       ( n:month - f = Check if the month is valid )
+  1 13 within
 ;
 
 
 : dtm+year?        ( n:year - f = Check if the year is valid )
-  1970 >=
-;
-
-
-: dtm+count-years  ( w:dtm w:dtm - n = Count the number of years between two dates )
-  \ ToDo
-;
-
-
-: dtm+count-months ( w:dtm w:dtm - n = Count the number of months between two dates )
-  \ ToDo
-;
-
-
-: dtm+count-days   ( w:dtm w:dtm - n = Count the number of days between two dates )
-  \ ToDo
-;
-
-
-: dtm+count-hours  ( w:dtm w:dtm - n = Count the number of hours between two dates )
-  \ ToDo
-;
-
-
-: dtm+count-minutes  ( w:dtm w:dtm - n = Count the number of minutes between two dates )
-  \ ToDo
-;
-
-
-: dtm+count-seconds  ( w:dtm w:dtm - n = Count the number of seconds between two dates )
-  \ ToDo
+  1583 >=
 ;
 
 
@@ -248,185 +231,49 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-hour@        ( w:dtm - n = Get the hours )
+: dtm-hour@        ( w:dtm - n = Get the hour )
   dtm>hour @
 ;
 
 
-: dtm-hour!        ( n w:dtm - = Set the hours )
+: dtm-hour!        ( n w:dtm - = Set the hour )
   swap 0 max 23 min swap dtm>hour !
 ;
 
 
-: dtm-day@         ( w:dtm - n = Get the days )
+: dtm-day@         ( w:dtm - n = Get the day )
   dtm>day @
 ;
 
 
-: dtm-day!         ( n w:dtm - = Set the days )
+: dtm-day!         ( n w:dtm - = Set the day )
   swap 0 max 31 min swap dtm>day ! \ ToDo: more checks ..
 ;
 
 
-: dtm-month@       ( w:dtm - n = Get the months )
+: dtm-month@       ( w:dtm - n = Get the month )
   dtm>month @
 ;
 
 
-: dtm-month!       ( n w:dtm - = Set the months )
+: dtm-month!       ( n w:dtm - = Set the month )
   swap 0 max 12 min swap dtm>month !
 ;
 
 
-: dtm-year@        ( w:dtm - n = Get the years )
+: dtm-year@        ( w:dtm - n = Get the year )
   dtm>year @
 ;
 
 
-: dtm-year!        ( n w:dtm - n = Set the years )
-  swap 1970 max swap dtm>year !
+: dtm-year!        ( n w:dtm - = Set the year )
+  swap 1583 max swap dtm>year !
 ;
-
-
-
-( Iterator words )
-
-: dtm-year-        ( w:dtm - = Decrease the date/time with one year )
-  dup dtm-year@
-  1- swap dtm-year!  \ ToDo: leap year ??
-;
-
-
-: dtm-year+        ( w:dtm - = Increase the date/time with one year )
-  dup dtm-year@
-  1+ swap dtm-year!
-;
-
-
-: dtm-month-       ( w:dtm - = Decrease the date/time with one months )
-  dup dtm-month@
-  1- dup 1 < IF
-    over dtm-year-
-    drop 12
-  THEN
-  swap dtm-month!
-;
-
-  
-: dtm-month+       ( w:dtm - = Increase the date/time with one months )
-  dup dtm-month@
-  1+ dup 12 > IF
-    over dtm-year+
-    drop 1
-  THEN
-  swap dtm-month!
-;
-
-
-: dtm-day-         ( w:dtm - = Decrease the date/time with one day )
-  dup dtm-day@
-  1- dup 1 < IF
-    over dtm-month-
-    drop 31                  \ ToDo: beter check
-  THEN
-  swap dtm-day!
-;
-
-
-: dtm-day+         ( w:dtm - = Increase the date/time with one day )
-  dup dtm-day@
-  1+ dup 31 > IF             \ ToDo: beter check
-    over dtm-month+
-    drop 1
-  THEN
-  swap dtm-day!
-;
-
-
-: dtm-hour-        ( w:dtm - = Decrease the date/time with one hour )
-  dup dtm-hour@
-  1- dup 0< IF
-    over dtm-day-
-    drop 23
-  THEN
-  swap dtm-hour!
-;
-
-
-: dtm-hour+        ( w:dtm - = Increase the date/time with one hour )
-  dup dtm-hour@
-  1+ dup 23 > IF
-    over dtm-day+
-    drop 0
-  THEN
-  swap dtm-hour!
-;
-
-
-: dtm-minute-      ( w:dtm - = Decrease the date/time with one minute )
-  dup dtm-minute@
-  1- dup 0< IF
-    over dtm-hour-
-    drop 59
-  THEN
-  swap dtm-minute!
-;
-
-
-: dtm-minute+      ( w:dtm - = Increase the date/time with one minute )
-  dup dtm-minute@
-  1+ dup 59 > IF
-    over dtm-hour+
-    drop 0
-  THEN
-  swap dtm-minute!
-;
-
-
-: dtm-second-      ( w:dtm - = Decrease the date/time with one second )
-  dup dtm-second@
-  1- dup 0< IF
-    over dtm-minute-
-    drop 59
-  THEN
-  swap dtm-second!
-;
-
-
-: dtm-second+      ( w:dtm - = Increase the date/time with one second )
-  dup dtm-second@
-  1+ dup 59 > IF
-    over dtm-minute+
-    drop 0
-  THEN
-  swap dtm-second!
-;
-
-
-: dtm-milli+       ( w:dtm - = Increase the date/time with one millisecond )
-  dup dtm-milli@
-  1+ dup 999 > IF
-    over dtm-second+
-    drop 0
-  THEN
-  swap dtm-milli!
-;
-
-
-: dtm-milli-       ( w:dtm - = Decrease the date/time with one millisecond )
-  dup dtm-milli@
-  1- dup 0< IF
-    over dtm-second-
-    drop 999
-  THEN
-  swap dtm-milli!
-;
-
 
 
 ( Set words )
 
-: dtm-set          ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - = Set the date and time )
+: dtm-set          ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - = Set the date/time )
   >r
   r@ dtm-year!
   r@ dtm-month!
@@ -437,16 +284,27 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
   r> dtm-milli!
 ;
 
-: dtm-set-now      ( w:dtm - = Set the date time with the current date time )
+
+: dtm-set-now      ( w:dtm - = Set the date time with the current date/time )
   >r
   0 time&date
   r> dtm-set
 ;
 
 
+: dtm-set-days-since-epoch ( d:days n:epoch w:dtm - = Set the date with days since epoch )
+  \ ToDo
+;
+
+
+: dtm-set-seconds-since-epoch ( d:secs n:epoch w:dtm - = Set the date/time with seconds since epoch )
+  \ ToDo
+;
+
+
 ( Get words )
 
-: dtm-get          ( w:dtm - n:mili n:sec n:min n:hour n:day n:month n:year = Get the date and time )
+: dtm-get          ( w:dtm - n:mili n:sec n:min n:hour n:day n:month n:year = Get the date/time )
   >r
   r@ dtm-milli@
   r@ dtm-second@
@@ -458,7 +316,7 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-weekday  ( w:dtm - n = Get the week day for the date )
+: dtm-get-weekday  ( w:dtm - n = Get the week day from the date )
   >r
   3  
   r@ dtm-year@ 100 / 4 mod - 2*              \   (3 - (century mod 4)) * 2
@@ -475,10 +333,24 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
+: dtm-get-weeknumber  ( w:dtm - n = Get the week number from the date )
+  \ ToDo
+;
+
+
+: dtm-get-days-since-epoch ( n:epoch w:dtm - d = Get the number of days since epoch from the date )
+  \ ToDo
+;
+
+
+: dtm-get-seconds-since-epoch ( n:epoch w:dtm - d = Get the number of seconds since epoch from the date/time )
+  \ ToDo
+;
+
 
 ( Inspection )
 
-: dtm-dump         ( w:dtm - = Dump the date time structure )
+: dtm-dump         ( w:dtm - = Dump the date/time structure )
   ." dtm:" dup . cr
   ."  year  :" dup dtm>year ? cr
   ."  month :" dup dtm>month ? cr

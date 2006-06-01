@@ -39,6 +39,8 @@ Index of used prefices
 6 clr - Color module
 5 cpl - Complex module
 3 dtm - Datetime module
+3 dti - Datetime interator
+4 dts - Datetime text stream
 4 frc - Fraction module
       - Big Cell module
       - Big Float module
@@ -80,7 +82,7 @@ Index of used prefices
 4 rnd - Pseudo Random module
 6 rgx - Regex module
 6 sha - SHA1/2 module
-3 tmr - Timer module
+4 tmr - Timer module
 5 xml - XML module
       - css module
       - url module
