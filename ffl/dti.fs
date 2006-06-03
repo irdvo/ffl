@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                 dti - the date time iterator in the ffl
+\               dti - the date time iterator in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-01 18:45:52 $ $Revision: 1.1 $
+\  $Date: 2006-06-03 05:46:29 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -47,19 +47,35 @@ include ffl/dtm.fs
 
 : dti-year-        ( w:dtm - = Decrease the date/time with one year )
   dup dtm-year@
-  1- swap dtm-year!  \ ToDo: leap year ??
+  dtm+leap-year? IF
+    dup dtm-month@ dtm.february = IF
+      dup dtm-day@ 29 = IF
+        dtm.march over dtm-month!
+        1         over dtm-day!
+      THEN
+    THEN
+  THEN
+  dup dtm-year@ 1- swap dtm-year!
 ;
 
 
 : dti-year+        ( w:dtm - = Increase the date/time with one year )
   dup dtm-year@
-  1+ swap dtm-year!
+  dtm+leap-year? IF
+    dup dtm-month@ dtm.february = IF
+      dup dtm-day@ 29 = IF
+        dtm.march over dtm-month!
+        1         over dtm-day!
+      THEN
+    THEN
+  THEN
+  dup dtm-year@ 1+ swap dtm-year!
 ;
 
 
 : dti-month-       ( w:dtm - = Decrease the date/time with one months )
   dup dtm-month@
-  1- dup 1 < IF
+  1- dup 1 < IF         \ ToDo: Day valid?
     over dti-year-
     drop 12
   THEN
@@ -69,7 +85,7 @@ include ffl/dtm.fs
   
 : dti-month+       ( w:dtm - = Increase the date/time with one months )
   dup dtm-month@
-  1+ dup 12 > IF
+  1+ dup 12 > IF       \ ToDo: day valid ?
     over dti-year+
     drop 1
   THEN
