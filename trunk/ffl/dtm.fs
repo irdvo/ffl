@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                 dtm - the date time module in the ffl
+\                dtm - the date time module in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-01 18:45:52 $ $Revision: 1.3 $
+\  $Date: 2006-06-03 05:46:29 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -58,13 +58,18 @@ struct: dtm%       ( - n = Get the required space for the dtm data structure )
 ( Private database )
 
 create dtm.days-in-month 
-  31 , 28 , 31 , 30 , 31 , 30 , 31 , 31 , 30 , 31 , 30 , 31 ,
+  31 , 28 , 31 , 30 , 31  , 30  , 31  , 31  , 30  , 31  , 30  , 31  ,
 does>              ( n:month - n:days = Get the number of days in a month )
   swap 1- cells + @
 ;
-  
+create dtm.days-till-month
+  0 ,  31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 ,
+does>
+  swap 1- cells + @
+;
+
 create dtm.month-offsets  
-  0 ,  3 ,  3 ,  6 ,  1 ,  4 ,  6 ,  2 ,  5 ,  0 ,  3 ,  5 ,
+  0 ,  3 ,  3  ,  6 ,  1  ,  4  ,  6  ,  2  ,  5  ,  0  ,  3  ,  5  ,
 does>              ( n:month - n:offset = Get the month offset for week day calculation )
   swap 1- cells + @
 ;
@@ -163,6 +168,21 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
+: dtm+days-till-month  ( n:month n:year - n = Get the number of days till the month )
+  over 1 13 within 0= exp-invalid-parameters AND throw
+  
+  over dtm.days-till-month
+  
+  -rot swap dtm.february > IF 
+    dtm+leap-year? IF
+      1+
+    THEN
+  ELSE
+    drop
+  THEN
+;
+
+
 : dtm+milli?       ( n:millis - f = Check if milliseconds are valid )
   0 1000 within
 ;
@@ -183,8 +203,8 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm+day?         ( n:year n:month n:day - f = Check if the day is valid )
-  \ ToDo
+: dtm+day?         ( n:day n:month n:year - f = Check if the day is valid )
+  dtm+days-in-month 1+ 1 swap within  
 ;
 
 
@@ -193,8 +213,8 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm+year?        ( n:year - f = Check if the year is valid )
-  1583 >=
+: dtm+year?        ( n:year - f = Check if the year [>1582] is valid )
+  1582 >
 ;
 
 
@@ -207,7 +227,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-milli!       ( n w:dtm - = Set the milliseconds )
-  swap 0 max 999 min swap dtm>milli !
+  swap 
+  dup dtm+milli?   0= exp-invalid-parameters AND throw
+  swap dtm>milli !
 ;
 
 
@@ -217,7 +239,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-second!      ( n w:dtm - = Set the seconds )
-  swap 0 max 59 min swap dtm>second !
+  swap 
+  dup dtm+second?   0= exp-invalid-parameters AND throw
+  swap dtm>second !
 ;
 
 
@@ -227,7 +251,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-minute!      ( n w:dtm - = Set the minutes )
-  swap 0 max 59 min swap dtm>minute !
+  swap 
+  dup dtm+minute?   0= exp-invalid-parameters AND throw
+  swap dtm>minute !
 ;
 
 
@@ -237,7 +263,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-hour!        ( n w:dtm - = Set the hour )
-  swap 0 max 23 min swap dtm>hour !
+  swap 
+  dup dtm+hour?   0= exp-invalid-parameters AND throw
+  swap dtm>hour !
 ;
 
 
@@ -247,7 +275,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-day!         ( n w:dtm - = Set the day )
-  swap 0 max 31 min swap dtm>day ! \ ToDo: more checks ..
+  >r 
+  dup r@ dtm>month @ r@ dtm>year @ dtm+day?  0= exp-invalid-parameters AND throw
+  r> dtm>day !
 ;
 
 
@@ -257,7 +287,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-month!       ( n w:dtm - = Set the month )
-  swap 0 max 12 min swap dtm>month !
+  swap 
+  dup dtm+month?   0= exp-invalid-parameters AND throw
+  swap dtm>month !
 ;
 
 
@@ -267,7 +299,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-year!        ( n w:dtm - = Set the year )
-  swap 1583 max swap dtm>year !
+  swap 
+  dup dtm+year?   0= exp-invalid-parameters AND throw
+  swap dtm>year !
 ;
 
 
@@ -292,12 +326,12 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-set-days-since-epoch ( d:days n:epoch w:dtm - = Set the date with days since epoch )
+: dtm-set-with-days  ( d:days n:epoch w:dtm - = Set the date with days since epoch )
   \ ToDo
 ;
 
 
-: dtm-set-seconds-since-epoch ( d:secs n:epoch w:dtm - = Set the date/time with seconds since epoch )
+: dtm-set-with-seconds ( d:secs n:epoch w:dtm - = Set the date/time with seconds since epoch )
   \ ToDo
 ;
 
@@ -316,7 +350,9 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-get-weekday  ( w:dtm - n = Get the week day from the date )
+( Special calculations )
+
+: dtm-calc-weekday  ( w:dtm - n = Calculate the week day from the date )
   >r
   3  
   r@ dtm-year@ 100 / 4 mod - 2*              \   (3 - (century mod 4)) * 2
@@ -333,18 +369,38 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-get-weeknumber  ( w:dtm - n = Get the week number from the date )
+: dtm-calc-daynumber   ( w:dtm - n = Calculate the day number [in the year] from the date )
+  dup dtm-month@ over dtm-year@ 
+  dtm+days-till-month
+  swap dtm-day@ +
+;
+
+
+: dtm-calc-weeknumber  ( w:dtm - n = Calculate the week number from the date )
   \ ToDo
 ;
 
 
-: dtm-get-days-since-epoch ( n:epoch w:dtm - d = Get the number of days since epoch from the date )
-  \ ToDo
+: dtm-calc-days-since-epoch  ( n:epoch w:dtm - d = Calculate the number of days since epoch from the date )
+  >r
+  r@ dtm-year@ swap
+  2dup - 365 m*                           \ days for the years
+  2swap dtm+calc-leap-years m+            \ add extra days for leap years
+  r@ dtm-month@ r@ dtm-year@ 
+  dtm+days-till-month m+                  \ add days for the months
+  r> dtm-day@ 1- m+                       \ add days for the day
 ;
 
 
-: dtm-get-seconds-since-epoch ( n:epoch w:dtm - d = Get the number of seconds since epoch from the date/time )
-  \ ToDo
+: dtm-calc-seconds-since-epoch ( n:epoch w:dtm - d = Calculate the number of seconds since epoch from the date/time )
+  >r
+  r@ dtm-calc-days-since-epoch            \ days
+  24 1 m*/
+  r@ dtm-hour@ m+                         \ hours
+  60 1 m*/
+  r@ dtm-minute@ m+                       \ minutes
+  60 1 m*/
+  r> dtm-second@ m+                       \ seconds
 ;
 
 
