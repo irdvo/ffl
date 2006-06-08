@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-19 19:51:26 $ $Revision: 1.2 $
+\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -89,6 +89,7 @@ include ffl/config.fs
   swap aligned swap 2* cells field:
 ;
 
+[DEFINED] faligned [IF]
 
 : float:       ( C: w "name" - w R: w - w = Create a named float structure field, add offset to address )
   faligned  1 floats field:
@@ -98,7 +99,8 @@ include ffl/config.fs
 : floats:      ( C: w n "name" - w R: w - w = Create named float array structure field, add offset to address )
   swap faligned swap  floats field:
 ;
- 
+[THEN]
+
 [THEN]
 
 \ ==============================================================================

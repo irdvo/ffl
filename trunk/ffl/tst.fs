@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-29 19:56:21 $ $Revision: 1.3 $
+\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -55,6 +55,7 @@ variable tst-tests
     drop
   THEN
   
+[DEFINED] fdepth [IF]
   fdepth dup 0> IF           \ if fstack-depth > 0 then
     0 DO
       fdrop                  \  remove extra's
@@ -62,6 +63,7 @@ variable tst-tests
   ELSE
     drop
   THEN
+[THEN]
 ;  
 
 
@@ -80,13 +82,14 @@ variable tst-tests
   0=
 ;
 
-
+[DEFINED] fdepth [IF]
 : tst-fdepth?   ( .. - f = Check for a value on the float stack )
   fdepth 0= dup IF
     s" float stack underflow: " tst-report-error
   THEN
   0=
 ;
+[THEN]
 
 
 : tst-report-mismatch   ( f - = Report an mismatch error )
@@ -105,9 +108,12 @@ variable tst-tests
   depth 0> IF
     s" stack overflow: " tst-report-error
   THEN
+    
+[DEFINED] fdepth [IF]
   fdepth 0> IF
     s" float stack overflow: " tst-report-error
   THEN
+[THEN]
 ;
 
 
@@ -166,7 +172,7 @@ variable tst-tests
   THEN
 ;
 
-
+[DEFINED] fdepth [IF]
 : ?r           ( r r - = Check for float value on stack )
   tst-fdepth? IF
     f<> IF
@@ -174,6 +180,7 @@ variable tst-tests
     THEN
   THEN
 ;
+[THEN]
 
 
 : tst-reset-tests ( - = Reset the test results )
