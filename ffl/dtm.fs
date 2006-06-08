@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-03 05:46:29 $ $Revision: 1.4 $
+\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -401,6 +401,57 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
   r@ dtm-minute@ m+                       \ minutes
   60 1 m*/
   r> dtm-second@ m+                       \ seconds
+;
+
+
+( Compare words )
+
+: dtm-compare      ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - n = Compare the date/time )
+  >r
+  r@ dtm-year@ - sgn
+  
+  ?dup 0= IF
+    r@ dtm-month@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  ?dup 0= IF
+    r@ dtm-day@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  ?dup 0= IF
+    r@ dtm-hour@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  ?dup 0= IF
+    r@ dtm-minute@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  ?dup 0= IF
+    r@ dtm-second@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  ?dup 0= IF
+    r@ dtm-milli@ - sgn
+  ELSE
+    nip
+  THEN
+  
+  rdrop
+;
+
+
+: dtm^compare      ( w:dtm w:dtm - n = Compare two date/times )
+  >r dtm-get r> dtm-compare
 ;
 
 

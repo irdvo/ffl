@@ -20,11 +20,11 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.2 $
+\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 \
-\ This file is base config file.
+\ This file is for pfe.
 \
 \ ==============================================================================
 
@@ -48,38 +48,17 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 
 ( Public words )
 
-: [DEFINED]   
-  bl word find   nip 0<>   
-; immediate
-
-
-: [UNDEFINED] 
-  bl word find   nip 0= 
-; immediate
-
-
-: rdrop            ( - ) 
+: rdrop            ( - )
   r> r> drop >r
 ;
-
-
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
-;
-
 
 : cell             ( - n = Cell size)
   1 cells
 ;
 
 
-: >=               ( n1 n2 - n1>=n1 = Greater equal)
-  < 0=
-;
-
-
-: 0>=              ( n - f = Greater equal 0 )
-  0 >=
+: u<>              ( u u - f = Check if two unsigned words are unequal )
+  <>
 ;
 
 
@@ -98,20 +77,6 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
     EXIT 
   THEN
   0< 2* 1+
-;
-
-: on               ( w - = Set boolean variable to true)
-  true swap !
-;
-
-
-: off              ( w - = Set boolean variable to false)
-  false swap !
-;
-
-
-: bounds           ( c-addr u - c-addr+u c-addr = Get end and start address for ?do )
-  over + swap
 ;
 
 

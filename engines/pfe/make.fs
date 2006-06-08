@@ -20,14 +20,12 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.5 $
+\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include tags.fs
-
 .( Forth Foundation Library: ) cr
-utime
+\ utime
 
 unused
 
@@ -38,9 +36,9 @@ unused -
 
 .( Compilation Size: ) . .( bytes) cr
   
-utime 2swap d- 1 1000 m*/
+\ utime 2swap d- 1 1000 m*/
 
-.( Compilation Time: ) d. .( msec) cr
+\ .( Compilation Time: ) d. .( msec) cr
 
 \ ==============================================================================
 
