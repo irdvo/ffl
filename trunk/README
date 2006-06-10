@@ -18,6 +18,7 @@ Installation
 Copy the directory 'ffl' and its contents to directory where the forth
 system will look for sources. 
 
+
 In case of gforth the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/share/gforth/site-forth 
@@ -25,6 +26,11 @@ In case of gforth the 'ffl' directory (and its contents) should be copied to:
 In case of bigforth the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/lib/bigforth/src
+
+In case of pfe the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/share/pfe
+
 
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.
@@ -36,8 +42,13 @@ Configuration
 The default config.fs and make.fs are for gforth. So no further copying is 
 necessary for gforth.
 
+
 For bigforth the config.fs and make.fs files should be copied from the
-'engines/bigforth' directory to the 'fll' directory.
+'engines/bigforth' directory to the 'ffl' directory.
+
+
+For pfe the config.fs and make.fs files should be copied from the 
+'engines/pfe' directory to the 'ffl' directory.
 
 
 The next step is editing the config.fs file for system settings.
@@ -52,13 +63,21 @@ Testing
 -------
 
 After installing the source files the unit test sources in the 'test'
-directory can be started by (for gforth):
+directory can be started by:
+
+
+(for gforth):
 
 gforth ffl_test.fs
 
-or (bigforth):
+(or bigforth):
 
 bigforth ffl_test.fs
+
+(or pfe)
+
+pfe ffl_test.fs
+
 
 The program will tell you which modules are tested and if there were any
 errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxx tests.'
@@ -83,12 +102,12 @@ are dependant of the forth system:
  ./ffl/make.fs
 
 All other source files should only use ANS words or extensions that are 
-definied in the config.fs.
+present on the forth engine or are definied in the config.fs.
 
 If you change these files to make the library work on a particular forth 
 system, let me know, then I can add the changed files to the distribution. 
 Also if there are any specific details concerning installation or testing 
-for a particular forth system, let me know. I will add it to the README.
+for a particular forth system, let me know. I will add them to the README.
 
 
 Bugs

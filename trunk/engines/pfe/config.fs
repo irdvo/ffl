@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.1 $
+\  $Date: 2006-06-10 05:08:26 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
@@ -37,6 +37,11 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 
 000200 constant ffl.version
+
+
+( Extra loads )
+
+s" floating-ext" environment? 2drop
 
 
 ( System Settings )

@@ -20,12 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.1 $
+\  $Date: 2006-06-10 05:08:27 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 .( Forth Foundation Library: ) cr
-\ utime
+  
+gettimeofday
 
 unused
 
@@ -36,9 +37,9 @@ unused -
 
 .( Compilation Size: ) . .( bytes) cr
   
-\ utime 2swap d- 1 1000 m*/
+gettimeofday 2swap d- 1 1000 m*/
 
-\ .( Compilation Time: ) d. .( msec) cr
+.( Compilation Time: ) d. .( msec) cr
 
 \ ==============================================================================
 

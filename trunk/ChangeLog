@@ -1,4 +1,6 @@
 0.3.0:
+* float words optional
+* pfe config.fs/make.fs added
 * dti: new module (Date & Time iterator)
 * dtm: new module (Date & Time)
 0.2.0
