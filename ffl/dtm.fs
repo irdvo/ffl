@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-14 15:58:49 $ $Revision: 1.6 $
+\  $Date: 2006-06-14 16:41:22 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -57,22 +57,20 @@ struct: dtm%       ( - n = Get the required space for the dtm data structure )
 
 ( Private database )
 
-create dtm.days-in-month 
-  31 , 28 , 31 , 30 , 31  , 30  , 31  , 31  , 30  , 31  , 30  , 31  ,
-does>              ( n:month - n:days = Get the number of days in a month )
-  swap 1- cells + @
-;
-create dtm.days-till-month
-  0 ,  31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 ,
-does>
-  swap 1- cells + @
+: dtm.create-month-table
+  create
+  does> 
+    swap 1- cells + @
 ;
 
-create dtm.month-offsets  
+dtm.create-month-table dtm.days-in-month    ( n:month - n:days = Get the number of days in a month )
+  31 , 28 , 31 , 30 , 31  , 30  , 31  , 31  , 30  , 31  , 30  , 31  ,
+  
+dtm.create-month-table dtm.days-till-month  ( n:month - n:days = Get the number of days till a month )
+  0 ,  31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 ,
+
+dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month offset for week day calculation )
   0 ,  3 ,  3  ,  6 ,  1  ,  4  ,  6  ,  2  ,  5  ,  0  ,  3  ,  5  ,
-does>              ( n:month - n:offset = Get the month offset for week day calculation )
-  swap 1- cells + @
-;
 
 
 ( Constants )
@@ -150,6 +148,11 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
   r> - >r
   swap 400 / swap 400 / -
   r> +
+;
+
+
+: dtm+days-in-year   ( n:year - n = Get the number of days in a year )
+  dtm+leap-year? IF 366 ELSE 365 THEN
 ;
 
 
@@ -329,22 +332,18 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 : dtm-set-with-days  ( d:days n:epoch w:dtm - = Set the date with days since epoch )
   >r >r
   BEGIN
-    2dup r@ dtm+leap-year? IF
-      366
-    ELSE
-      365
-    THEN
+    2dup r@ dtm+days-in-year
     s>d 2swap d<
   WHILE
-    2dup 366 fm/mod nip
+    2dup 366 fm/mod nip                     \ Guess the number of years
     dup 
     >r 365 m* d- r>
     r> tuck + dup >r
-    swap dtm+calc-leap-years negate m+
+    swap dtm+calc-leap-years negate m+      \ Calculate the actual number of days
   REPEAT
   r> r@ dtm-year!
   
-  d>s dtm.february
+  d>s dtm.february                          \ Look for the correct month
   BEGIN
     2dup r@ dtm-year@ dtm+days-till-month >
   WHILE
@@ -388,6 +387,18 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
+( Private words )
+
+: dtm+iso-weekday   ( n:yday n:wday - n = Calculate the iso-weekday )
+  over swap -                   \ yday - wday
+  4 +                           \ + iso-week1-wday
+  [ 366 7 / 2 + 7 * ] literal + \ + keep it positive
+  7 mod -                       \ yday - (yday - wday + iso-week1-wday + magic * 7) % 7
+  4 +                           \ + iso-week1-wday
+  1 -                           \ - monday
+;
+
+
 ( Special calculations )
 
 : dtm-calc-weekday  ( w:dtm - n = Calculate the week day from the date )
@@ -407,15 +418,36 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 ;
 
 
-: dtm-calc-daynumber   ( w:dtm - n = Calculate the day number [in the year] from the date )
+: dtm-calc-yearday   ( w:dtm - n = Calculate the day number [in the year] from the date )
   dup dtm-month@ over dtm-year@ 
   dtm+days-till-month
-  swap dtm-day@ +
+  swap dtm-day@ + 
 ;
 
 
-: dtm-calc-weeknumber  ( w:dtm - n = Calculate the week number from the date )
-  \ ToDo
+: dtm-calc-weeknumber  ( w:dtm - n:weeknumber n:year = Calculate the iso week number from the date )
+  >r
+  r@ dtm-year@
+  r@ dtm-calc-yearday 1-               \ Change range from 1..366 till 365
+  r> dtm-calc-weekday
+  2dup dtm+iso-weekday                 \ Calculate iso weekday
+  dup 0< IF                            \ If negative than week in previous year
+    drop
+    >r >r 1- dup dtm+days-in-year r> + r>
+    dtm+iso-weekday
+  ELSE
+    >r
+    >r >r dup dtm+days-in-year r> swap - r>
+    dtm+iso-weekday
+    r> swap
+    dup 0>= IF                         \ If positive than week in next year
+      nip
+      swap 1+ swap
+    ELSE
+      drop
+    THEN
+  THEN
+  7 / 1+ swap                          \ Calculate the week number from the days
 ;
 
 
