@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.5 $
+\  $Date: 2006-06-14 15:58:49 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -327,12 +327,50 @@ does>              ( n:month - n:offset = Get the month offset for week day calc
 
 
 : dtm-set-with-days  ( d:days n:epoch w:dtm - = Set the date with days since epoch )
-  \ ToDo
+  >r >r
+  BEGIN
+    2dup r@ dtm+leap-year? IF
+      366
+    ELSE
+      365
+    THEN
+    s>d 2swap d<
+  WHILE
+    2dup 366 fm/mod nip
+    dup 
+    >r 365 m* d- r>
+    r> tuck + dup >r
+    swap dtm+calc-leap-years negate m+
+  REPEAT
+  r> r@ dtm-year!
+  
+  d>s dtm.february
+  BEGIN
+    2dup r@ dtm-year@ dtm+days-till-month >
+  WHILE
+    1+
+  REPEAT
+  
+  1- dup r@ dtm-month!
+  
+  r@ dtm-year@ dtm+days-till-month -
+  1+ r> dtm-day!
 ;
 
 
 : dtm-set-with-seconds ( d:secs n:epoch w:dtm - = Set the date/time with seconds since epoch )
-  \ ToDo
+  swap >r >r
+  2dup 60 fm/mod drop             \ dtm.seconds = secs % 60
+  r@ dtm-second!
+  1 60 m*/                        
+  2dup 60 fm/mod drop             \ dtm.minutes = mins % 60
+  r@ dtm-minute!
+  1 60 m*/
+  2dup 24 fm/mod drop             \ dtm.hours   = hours % 24
+  r@ dtm-hour!
+  1 24 m*/                        \ days
+  r> r> swap
+  dtm-set-with-days
 ;
 
 
