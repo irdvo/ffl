@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-03 05:46:29 $ $Revision: 1.2 $
+\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -46,80 +46,87 @@ include ffl/dtm.fs
 ( Public words )
 
 : dti-year-        ( w:dtm - = Decrease the date/time with one year )
-  dup dtm-year@
-  dtm+leap-year? IF
-    dup dtm-month@ dtm.february = IF
-      dup dtm-day@ 29 = IF
-        dtm.march over dtm-month!
-        1         over dtm-day!
-      THEN
-    THEN
-  THEN
-  dup dtm-year@ 1- swap dtm-year!
+  >r
+  r@ dtm-year@ 1-
+  r@ dtm-day@ over
+  r@ dtm-month@ swap
+  dtm+days-in-month min
+  r@ dtm-day!
+  r> dtm-year!
 ;
 
 
 : dti-year+        ( w:dtm - = Increase the date/time with one year )
-  dup dtm-year@
-  dtm+leap-year? IF
-    dup dtm-month@ dtm.february = IF
-      dup dtm-day@ 29 = IF
-        dtm.march over dtm-month!
-        1         over dtm-day!
-      THEN
-    THEN
-  THEN
-  dup dtm-year@ 1+ swap dtm-year!
+  >r
+  r@ dtm-year@ 1+
+  r@ dtm-day@ over
+  r@ dtm-month@ swap
+  dtm+days-in-month min
+  r@ dtm-day!
+  r> dtm-year!
 ;
 
 
 : dti-month-       ( w:dtm - = Decrease the date/time with one months )
-  dup dtm-month@
+  >r 
+  r@ dtm-month@
   1- dup 1 < IF         \ ToDo: Day valid?
-    over dti-year-
+    r@ dti-year-
     drop 12
   THEN
-  swap dtm-month!
+  r@ dtm-day@ over                     \ Limit to number of days in new month
+  r@ dtm-year@ dtm+days-in-month min
+  r@ dtm-day!
+  r> dtm-month!
 ;
 
   
 : dti-month+       ( w:dtm - = Increase the date/time with one months )
-  dup dtm-month@
-  1+ dup 12 > IF       \ ToDo: day valid ?
-    over dti-year+
+  >r 
+  r@ dtm-month@
+  1+ dup 12 > IF       
+    r@ dti-year+
     drop 1
   THEN
-  swap dtm-month!
+  r@ dtm-day@ over                     \ Limit to number of days in new month
+  r@ dtm-year@ dtm+days-in-month min
+  r@ dtm-day!
+  r> dtm-month!
 ;
 
 
 : dti-day-         ( w:dtm - = Decrease the date/time with one day )
-  dup dtm-day@
+  >r
+  r@ dtm-day@
   1- dup 1 < IF
-    over dti-month-
-    drop 31                  \ ToDo: beter check
+    r@ dti-month-
+    drop r@ dtm-month@ r@ dtm-year@ dtm+days-in-month
   THEN
-  swap dtm-day!
-;
-
-
-: dti-days-        ( n:days w:dtm - = Decrease the date/time with n days )
-  \ ToDo
+  r> dtm-day!
 ;
 
 
 : dti-day+         ( w:dtm - = Increase the date/time with one day )
-  dup dtm-day@
-  1+ dup 31 > IF             \ ToDo: beter check
-    over dti-month+
+  >r
+  r@ dtm-day@
+  1+ dup r@ dtm-month@ r@ dtm-year@ dtm+days-in-month > IF
+    r@ dti-month+
     drop 1
   THEN
-  swap dtm-day!
+  r> dtm-day!
 ;
 
 
-: dti-days+        ( n:days w:dtm - = Increase the date/time with n days )
-  \ ToDo
+: dti-days+        ( d:days w:dtm - = Increase the date/time with d days )
+  >r
+  dtm.start-epoch r@ dtm-calc-days-since-epoch
+  d+
+  dtm.start-epoch r> dtm-set-with-days
+;
+
+
+: dti-days-        ( d:days w:dtm - = Decrease the date/time with d days )
+  >r dnegate r> dti-days+
 ;
 
 
@@ -173,11 +180,6 @@ include ffl/dtm.fs
 ;
 
 
-: dti-seconds-     ( d:seconds w:dtm - = Decrease the date/time with d seconds )
-  \ ToDo
-;
-
-
 : dti-second+      ( w:dtm - = Increase the date/time with one second )
   dup dtm-second@
   1+ dup 59 > IF
@@ -189,7 +191,15 @@ include ffl/dtm.fs
 
 
 : dti-seconds+     ( d:seconds w:dtm - = Increase the date/time with d seconds )
-  \ ToDo
+  >r
+  dtm.start-epoch r@ dtm-calc-seconds-since-epoch
+  d+
+  dtm.start-epoch r> dtm-set-with-seconds
+;
+
+
+: dti-seconds-     ( d:seconds w:dtm - = Decrease the date/time with d seconds )
+  >r dnegate r> dti-seconds+
 ;
 
 
