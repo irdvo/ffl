@@ -20,12 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.1 $
+\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/tst.fs
 include ffl/dtm.fs
+include ffl/dti.fs
 
 
 .( Testing: dtm and dti ) cr 
@@ -136,8 +137,154 @@ t{ d1 d2 dtm^compare 1 ?s }t
 
 t{ 234 46 35 7 4 dtm.june 2006 d2 dtm-set }t
 
-t{ d2 dtm-calc-weekday dtm.sunday ?s }t
-\ more dates
+t{ d2 dtm-weekday dtm.sunday ?s }t
+
+t{ 14 dtm.february 1920 d2 dtm-set-date }t
+
+t{ d2 dtm-weekday dtm.saturday ?s }t
+
+t{ 4 dtm.july 1776 d2 dtm-set-date }t
+
+t{ d2 dtm-weekday dtm.thursday ?s }t
+
+t{ 14 dtm.february 2020 d2 dtm-set-date }t
+
+t{ d2 dtm-weekday dtm.friday ?s }t
+
+t{ 1 dtm.january 2006 d2 dtm-set-date }t
+
+t{ d2 dtm-yearday 1 ?s }t
+
+t{ d2 dtm-iso-weeknumber 2005 ?s 52 ?s }t
+
+t{ 2 d2 dtm-day! }t
+
+t{ d2 dtm-yearday 2 ?s }t
+
+t{ d2 dtm-iso-weeknumber 2006 ?s 1 ?s }t
+
+t{ 31 dtm.december 2006 d2 dtm-set-date }t
+
+t{ d2 dtm-yearday 365 ?s }t
+
+t{ d2 dtm-iso-weeknumber 2006 ?s 52 ?s }t
+
+t{ 2007 d2 dtm-year! }t
+
+t{ d2 dtm-iso-weeknumber 2008 ?s 1 ?s }t
+
+t{ 2008 d2 dtm-year! }t
+
+t{ d2 dtm-yearday 366 ?s }t
+
+t{ 0 26 06 20 20 dtm.june 2006 d2 dtm-set }t
+
+t{ dtm.unix-epoch d2 dtm-calc-seconds-since-epoch 1150833986. ?d }t
+
+\ iterator
+
+
+t{ 999 59 59 23 31 dtm.december 2006 d2 dtm-set }t
+
+t{ d2 dti-milli+ }t
+
+t{   0  0  0  0  1 dtm.january 2007 d2 dtm-compare ?0 }t
+
+t{ d2 dti-milli- }t
+
+t{ 999 59 59 23 31 dtm.december 2006 d2 dtm-compare ?0 }t
+
+t{ 260 26 20 06 29 dtm.february 2008 d2 dtm-set }t
+
+
+t{ d2 dti-milli- }t
+
+t{ d2 dtm-milli@ 259 ?s }t
+
+t{ d2 dti-milli+ }t
+
+t{ d2 dtm-milli@ 260 ?s }t
+
+
+t{ d2 dti-second- }t
+
+t{ d2 dtm-second@ 25 ?s }t
+
+t{ d2 dti-second+ }t
+
+t{ d2 dtm-second@ 26 ?s }t
+
+
+t{ d2 dti-minute- }t
+
+t{ d2 dtm-minute@ 19 ?s }t
+
+t{ d2 dti-minute+ }t
+
+t{ d2 dtm-minute@ 20 ?s }t
+
+
+t{ d2 dti-hour- }t
+
+t{ d2 dtm-hour@ 5 ?s }t
+
+t{ d2 dti-hour+ }t
+
+t{ d2 dtm-hour@ 6 ?s }t
+
+
+t{ d2 dti-day- }t
+
+t{ d2 dtm-day@ 28 ?s }t
+
+t{ d2 dti-day+ }t
+
+t{ d2 dtm-day@ 29 ?s }t
+
+
+t{ d2 dti-month- }t
+
+t{ d2 dtm-month@ dtm.january ?s }t
+
+t{ d2 dti-month+ }t
+
+t{ d2 dtm-month@ dtm.february ?s }t
+
+
+t{ d2 dti-year- }t
+
+t{ d2 dtm-year@ 2007 ?s }t
+t{ d2 dtm-day@  28   ?s }t
+
+t{ d2 dti-year+ }t
+
+t{ d2 dtm-year@ 2008 ?s }t
+t{ d2 dtm-day@  28   ?s }t
+
+
+t{ dtm.march d2 dtm-month! }t
+t{ 31        d2 dtm-day!   }t
+
+t{ d2 dti-month+ }t
+
+t{ d2 dtm-month@ dtm.april ?s }t
+t{ d2 dtm-day@   30        ?s }t
+
+t{ 90061. d2 dti-seconds+ }t   \ 1 sec + 1 min + 1 hour + 1 day
+
+t{ 260 27 21 7 1 5 2008 d2 dtm-compare ?0 }t
+
+t{ 90061. d2 dti-seconds- }t
+
+t{ 260 26 20 6 30 4 2008 d2 dtm-compare ?0 }t
+
+t{ 366. d2 dti-days+ }t
+
+t{ 260 26 20 6 1 5 2009 d2 dtm-compare ?0 }t
+
+t{ 365. d2 dti-days- }t
+
+t{ 260 26 20 6 30 4 2008 d2 dtm-compare ?0 }t
 
 \ free
 

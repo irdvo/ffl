@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-14 16:41:22 $ $Revision: 1.7 $
+\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/stc.fs
 
 
 ( dtm = Date time module )
-( The dtm module implements words for using date and time. )
+( The dtm module implements words for using [gregorian] date and time. )
 
 
 1 constant dtm.version
@@ -76,6 +76,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ( Constants )
 
 1970 constant dtm.unix-epoch  ( - n = Unix epoch [1970] )
+1583 constant dtm.start-epoch ( - n = Start epoch [1583] )
 
 0  constant dtm.sunday     ( - n = Sunday )
 1  constant dtm.monday     ( - n = Monday )
@@ -217,7 +218,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 
 : dtm+year?        ( n:year - f = Check if the year [>1582] is valid )
-  1582 >
+  dtm.start-epoch >=
 ;
 
 
@@ -310,15 +311,26 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Set words )
 
-: dtm-set          ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - = Set the date/time )
+: dtm-set-date     ( n:day n:month n:year w:dtm - = Set the date )
   >r
   r@ dtm-year!
   r@ dtm-month!
-  r@ dtm-day!
+  r> dtm-day!
+;
+
+
+: dtm-set-time     ( n:mili n:sec n:min n:hour w:dtm - = Set the time )
+  >r
   r@ dtm-hour!
   r@ dtm-minute!
   r@ dtm-second!
   r> dtm-milli!
+;
+  
+: dtm-set          ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - = Set the date/time )
+  >r
+  r@ dtm-set-date
+  r> dtm-set-time
 ;
 
 
@@ -339,13 +351,13 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
     dup 
     >r 365 m* d- r>
     r> tuck + dup >r
-    swap dtm+calc-leap-years negate m+      \ Calculate the actual number of days
+    swap dtm+calc-leap-years negate m+      \ Calculate the actual number of days in the guessed years
   REPEAT
   r> r@ dtm-year!
   
   d>s dtm.february                          \ Look for the correct month
   BEGIN
-    2dup r@ dtm-year@ dtm+days-till-month >
+    2dup r@ dtm-year@ dtm+days-till-month >=
   WHILE
     1+
   REPEAT
@@ -373,6 +385,18 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
+( Private words )
+
+: dtm+iso-weekday   ( n:yday n:wday - n = Calculate the iso-weekday )
+  over swap -                   \ yday - wday
+  4 +                           \ + iso-week1-wday
+  [ 366 7 / 2 + 7 * ] literal + \ + keep it positive
+  7 mod -                       \ yday - (yday - wday + iso-week1-wday + magic * 7) % 7
+  4 +                           \ + iso-week1-wday
+  1 -                           \ - monday
+;
+
+
 ( Get words )
 
 : dtm-get          ( w:dtm - n:mili n:sec n:min n:hour n:day n:month n:year = Get the date/time )
@@ -387,21 +411,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-( Private words )
-
-: dtm+iso-weekday   ( n:yday n:wday - n = Calculate the iso-weekday )
-  over swap -                   \ yday - wday
-  4 +                           \ + iso-week1-wday
-  [ 366 7 / 2 + 7 * ] literal + \ + keep it positive
-  7 mod -                       \ yday - (yday - wday + iso-week1-wday + magic * 7) % 7
-  4 +                           \ + iso-week1-wday
-  1 -                           \ - monday
-;
-
-
-( Special calculations )
-
-: dtm-calc-weekday  ( w:dtm - n = Calculate the week day from the date )
+: dtm-weekday       ( w:dtm - n = Get the week day from the date )
   >r
   3  
   r@ dtm-year@ 100 / 4 mod - 2*              \   (3 - (century mod 4)) * 2
@@ -418,18 +428,18 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-calc-yearday   ( w:dtm - n = Calculate the day number [in the year] from the date )
+: dtm-yearday   ( w:dtm - n = Get the day number [in the year] from the date )
   dup dtm-month@ over dtm-year@ 
   dtm+days-till-month
   swap dtm-day@ + 
 ;
 
 
-: dtm-calc-weeknumber  ( w:dtm - n:weeknumber n:year = Calculate the iso week number from the date )
+: dtm-iso-weeknumber  ( w:dtm - n:weeknumber n:year = Get the iso week number from the date )
   >r
   r@ dtm-year@
-  r@ dtm-calc-yearday 1-               \ Change range from 1..366 till 365
-  r> dtm-calc-weekday
+  r@ dtm-yearday 1-                    \ Change range from 1..366 till 365
+  r> dtm-weekday
   2dup dtm+iso-weekday                 \ Calculate iso weekday
   dup 0< IF                            \ If negative than week in previous year
     drop
@@ -450,6 +460,10 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
   7 / 1+ swap                          \ Calculate the week number from the days
 ;
 
+
+
+
+( Epoch words )
 
 : dtm-calc-days-since-epoch  ( n:epoch w:dtm - d = Calculate the number of days since epoch from the date )
   >r
