@@ -1,0 +1,354 @@
+
+% Forth Quick Reference Card (part I)
+% Copyright (c) 2003 Dick van Oudheusden
+% TeX Format
+
+% Note: Comment the following line and Uncomment the three next for PDF
+% generation (command is pdftex vimqrc.tex).
+
+% Uncomment the following line for dvi/ps generation: tex forth-refcard1.tex; dvips -o forth-refcard1.ps forth-refcard1.dvi
+%\input outopt.tex
+
+% Uncomment the following three lines for PDF generation: pdftex forth-refcard.tex
+\pdfoutput=1
+\pdfpageheight=21cm
+\pdfpagewidth=29.7cm
+
+% Font definitions
+\font\bigbf=cmb12
+\font\smallrm=cmr8
+\font\smalltt=cmtt8
+\font\tinyit=cmmi5
+
+\def\cm#1#2{{\tt#1}\dotfill#2\par}
+\def\cn#1{\hfill$\lfloor$ #1\par}
+\def\sect#1{\vskip 0.5cm {\it#1}\par}
+\def\vsep{\vskip 4pt}
+
+% Characters definitions
+\def\bs{$\backslash$}
+\def\backspace{$\leftarrow$}
+\def\ctrl{{\rm\char94}\kern-1pt}
+\def\enter{$\hookleftarrow$}
+\def\or{\thinspace{\tinyit{or}}\thinspace}
+\def\key#1{$\langle${\rm{\it#1}}$\rangle$}
+\def\rapos{\char125}
+\def\lapos{\char123}
+\def\bs{\char92}
+\def\tild{\char126}
+
+% Three columns definitions
+\parindent 0pt
+\nopagenumbers
+\hoffset=-1.56cm
+\voffset=-1.54cm
+\newdimen\fullhsize
+\fullhsize=27.9cm
+\hsize=8.5cm
+\vsize=19cm
+\def\fullline{\hbox to\fullhsize}
+\let\lr=L
+\newbox\leftcolumn
+\newbox\midcolumn
+\output={
+  \if L\lr
+    \global\setbox\leftcolumn=\columnbox
+    \global\let\lr=M
+  \else\if M\lr
+    \global\setbox\midcolumn=\columnbox
+    \global\let\lr=R
+  \else
+    \tripleformat
+    \global\let\lr=L
+  \fi\fi
+  \ifnum\outputpenalty>-20000
+  \else
+    \dosupereject
+  \fi}
+\def\tripleformat{
+  \shipout\vbox{\fullline{\box\leftcolumn\hfil\box\midcolumn\hfil\columnbox}}
+  \advancepageno}
+\def\columnbox{\leftline{\pagebody}}
+
+% Card content
+% Header
+%\hrule\vskip 3pt
+\hfil{\bf FORTH QUICK REFERENCE CARD}\hfil\par
+\hfil{\bf Part I}\hfil\par
+\vskip 2pt\hrule
+
+\sect{Display strings and characters}
+ \cm{." {\it text}" ( - )}{Display text}
+ \cm{.( {\it text}) ( - )}{Display text during compilation}
+ \cm{cr ( - )}{Display cr}
+ \cm{space ( - )}{Display space}
+ \cm{spaces (u - )}{Dispay u spaces}
+ \cm{emit (c - )}{Display c character}
+ \cm{emit? ( - f)}{Chech for output ready}
+ \cm{at-xy (u1 u2 - )}{Move cursor u1 (x:0..) u2 (y:0..)}
+ \cm{page ( - )}{Clear screen}
+ \cm{type (C u - )}{Display string}
+
+\sect{Display numerical values}
+ \cm{. (n - )}{Display signed number}
+ \cm{.r (n1 n2 - )}{Display n1 right-aligned n2 wide}
+ \cm{u. (u - )}{Display unsigned number}
+ \cm{u.r (u n - )}{Display u right-aligned n wide}
+ \cm{d. (d - )}{Display signed double number}
+ \cm{d.r (d n - )}{Display d right-aligned n wide}
+ \cm{base ( - A)}{Base for number conversion}
+ \cm{decimal ( - )}{base = 10}
+ \cm{hex ( - )}{base = 16}
+
+\sect{Input}
+ \cm{accept (C u1 - u2)}{Read line}
+ \cm{ekey ( - u)}{Wait for system key, no display}
+ \cm{ekey? ( - f)}{Check for system key}
+ \cm{ekey>char (u - c f)}{System key to char}
+ \cm{expect (C n - )}{Read line}
+ \cm{key ( - c)}{Wait for key, no display}
+ \cm{key? ( - f)}{Check for key}
+ \cm{pad ( - C)}{Temporary data storage}
+ \cm{query ( - )}{Query for input}
+ \cm{span ( - A)}{Span: number of chars after expect}
+ \cm{tib ( - A)}{Terminal input buffer}
+ \cm{\#tib ( - A)}{Number of chars in tib}
+
+\eject
+\sect{Data Stack}
+ \cm{.s ( - )}{Display values on stack}
+ \cm{depth ( - n)}{Depth of data stack}
+ \cm{drop (w - )}{Drop}
+ \cm{dup (w - w w)}{Duplicate}
+ \cm{?dup (w - w w)}{Duplicate if non-zero}
+ \cm{nip (w1 w2 - w2)}{Drop 2nd}
+ \cm{over (w1 w2 - w1 w2 w1)}{Duplicate 2nd}
+ \cm{pick (w0..wu u - w0..wu w0)}{Duplicate uth}
+ \cm{roll (w0..wu u - w1..wu w0)}{Rotate uth}
+ \cm{rot (w1 w2 w3 - w2 w3 w1)}{Rotate 3rd right}
+ \cm{swap (w1 w2 - w2 w1)}{Swap}
+ \cm{tuck (w1 w2 - w2 w1 w2)}{Swap \& Over}
+ \cm{2drop (d - )}{Drop}
+ \cm{2dup (d - d d)}{Duplicate}
+ \cm{2over (d1 d2 - d1 d2 d1)}{Duplicate 2nd}
+ \cm{2rot (d1 d2 d3 - d2 d3 d1)}{Rotate 3rd right}
+ \cm{2swap (d1 d2 - d2 d1)}{Swap}
+
+\sect{Tools}
+ \cm{assembler ( - )}{Select assembler word list}
+ \cm{bye ( - )}{Exit forth}
+ \cm{dump (A u - )}{Display range of addresses}
+ \cm{editor ( - )}{Select editor word list}
+ \cm{forget {\it word}}{Forget word and all after}
+ \cm{see {\it word}}{Show word definition}
+ \cm{unused ( - n)}{Unused space in data space}
+ \cm{words ( - )}{List words in search order}
+
+\sect{Memory Access}
+ \cm{! (w A - )}{Store}
+ \cm{@ (A - w)}{Fetch}
+ \cm{+! (n A - )}{Fetch, Add \& Store}
+ \cm{? (A - )}{Display constents memory address}
+ \cm{2! (d A - )}{Store}
+ \cm{2@ (A - d)}{Fetch}
+ \cm{c! (c C - )}{Store}
+ \cm{c@ (C - c)}{Fetch}
+ \cm{to {\it word} (w - )}{Store in value}
+
+\eject
+\sect{Characters and Strings}
+ \cm{char {\it char} ( - c)}{Interpretation: move char to stack}
+ \cm{bl ( - c)}{Move space char to stack}
+ \cm{c" {\it text}" ( - C)}{Store counted string}
+ \cm{count (C1 - C2 u)}{String info counted string}
+ \cm{s" {\it text}" ( - C u)}{Store string}
+
+\sect{Single Precision Operations}
+ \cm{+ (n1 n2 - n)}{Add}
+ \cm{- (n1 n2 - n)}{Subtract}
+ \cm{* (n1 n2 - n)}{Multiply}
+ \cm{/ (n1 n2 - n)}{Divide}
+ \cm{aligned (A1 - A2)}{Align the address}
+ \cm{cell+ (A1 - A2)}{Move to next cell}
+ \cm{cells (n1 - n2)}{Cell space}
+ \cm{char+ (A1 - A2)}{Move to next character}
+ \cm{chars (n1 - n2)}{Character space}
+ \cm{mod (n1 n2 - n)}{Modulo}
+ \cm{/mod (n1 n2 - n3 n4)}{Divide + Modulo}
+ \cm{1+ (n1 - n2)}{Increment}
+ \cm{1- (n1 - n2)}{Decrement}
+ \cm{abs (n1 - n2)}{Absolute}
+ \cm{invert (w1 - w2)}{Invert bits}
+ \cm{negate (n1 - n2)}{Negate}
+ \cm{max (n1 n2 - n3)}{Maximum}
+ \cm{min (n1 n2 - n3)}{Minimum}
+ \cm{2* (w1 - w2)}{Multiply by 2}
+ \cm{2/ (w1 - w2)}{Divide by 2}
+ \cm{and (w1 w2 - w3)}{Bitwise and}
+ \cm{or (w1 w2 - w3)}{Bitwise or}
+ \cm{xor (w1 w2 - w3)}{Bitwise xor}
+ \cm{lshift (w1 u - w2)}{Bitwise left shift}
+ \cm{rshift (w1 u - w2)}{Bitwise right shift}
+
+\sect{Mixed Precision Operations}
+ \cm{m+ (d1 n - d2)}{Add}
+ \cm{m* (n1 n2 - d)}{Multiply}
+ \cm{m*/ (d1 n u - d2)}{d2=(d1*n)/u}
+ \cm{*/ (n1 n2 n3 - n4)}{n4=(n1*n2)/n3}
+ \cm{*/mod (n1 n2 n3 - n4 n5)}{n1*n2=n3*n5+n4}
+ \cm{um* (u1 u2 - d)}{Multiply}
+ \cm{um/mod (ud u1 - u2 u3)}{ud=u2*u1+u2}
+ \cm{fm/mod (d1 n1 - n2 n3)}{Floored division}
+ \cm{sm/rem (d1 n1 - n2 n3)}{Symmetric division}
+
+\eject
+\sect{Single Precision Comparison}
+ \cm{0< (n - f)}{Smaller than zero}
+ \cm{0<> (n - f)}{Unequal to zero}
+ \cm{0= (n - f)}{Equal to zero}
+ \cm{0> (n - f)}{Greater than zero}
+ \cm{< (n1 n2 - f)}{Smaller}
+ \cm{<> (n1 n2 - f)}{Not equal}
+ \cm{= (n1 n2 - f)}{Equal}
+ \cm{> (n1 n2 - f)}{Greater}
+ \cm{false ( - f)}{False constant}
+ \cm{true ( - f)}{True constant}
+ \cm{u< (u1 u2 - f)}{Smaller unsigned}
+ \cm{u> (u1 u2 - f)}{Greater unsigned}
+ \cm{within (u1 u2 u3 - f)}{(u1 in $\lbrack$u2,u3$\rangle$)}
+
+
+\sect{Double Precision Operations}
+ \cm{d+ (d1 d2 - d3)}{Add}
+ \cm{d- (d1 d2 - d3)}{Subtract}
+ \cm{dabs (d1 - d2)}{Absolute}
+ \cm{dnegate (d1 - d2)}{Negate}
+ \cm{dmax (d1 d2 - d3)}{Maximum}
+ \cm{dmin (d1 d2 - d3)}{Minimum}
+ \cm{d2* (d1 - d2)}{Multiply by 2}
+ \cm{d2/ (d1 - d2)}{Divide by 2}
+ \cm{s>d (n - d)}{Single to Double conversion}
+ \cm{d>s (d - n)}{Double to Single conversion}
+
+\sect{Double Precision Comparison}
+ \cm{d0< (d - f)}{Smaller than zero}
+ \cm{d0= (d - f)}{Equal to zero}
+ \cm{d< (d1 d2 - f)}{Smaller}
+ \cm{d= (d1 d2 - f)}{Equal}
+ \cm{du< (ud1 ud2 - f)}{Smaller unsigned}
+
+\sect{Memory Blocks and strings}
+ \cm{-trailing (C1 u1 - C2 u2)}{Remove trailing spaces}
+ \cm{/string (C1 u1 n - C2 u2)}{Remove starting chars}
+ \cm{blank (C u - )}{Fill string with spaces}
+ \cm{cmove (C-from C-to u - )}{Move, low to high}
+ \cm{cmove> (C-from C-to u - )}{Move, high to low}
+ \cm{compare (C1 u1 C2 u2 - n)}{Compare two strings}
+ \cm{fill (C u c - )}{Fill string with u char}
+ \cm{move (C-from C-to u - )}{Move, overlap ok}
+ \cm{search (C1 u1 C2 u2 - C3 u3 f}{Search in 1 for 2}
+
+\sect{Word Definition}
+ \cm{: {\it word} ( - )}{Create new word}
+ \cm{; ( - )}{End of new word}
+ \cm{immediate ( - )}{Immediate executed words}
+ \cm{create {\it word} ( - )}{Create new entry in dict.}
+ \cm{does> ( - A)}{Code for new entry in dect.}
+ \cm{constant {\it word} (w - )}{Create single constant}
+ \cm{2constant {\it word} (w1 w2 - )}{Create double constant}
+ \cm{variable {\it word} ( - )}{Create single variable}
+ \cm{2variable {\it word} ( - )}{Create double variable}
+ \cm{value {\it word} ( - )}{Create a changable constant}
+ \cm{:noname {\it word} ( - )}{Create anonymous word}
+ \cm{; ( -- x)}{End of anonymous word}
+ \cm{code {\it word} ( - )}{Compile machine code word}
+ \cm{;code ( - )}{End of machine code word}
+ \cm{marker {\it word} ( - )}{Restore state data space}
+
+\sect{Return Stack}
+ \cm{>r (w - )}{Move to return stack}
+ \cm{r> ( - w)}{Move from return stack}
+ \cm{r@ ( - w)}{Fetch from return stack}
+ \cm{2>r (d - )}{Move to return stack}
+ \cm{2r> ( - d)}{Move from return stack}
+ \cm{2r@ ( - d)}{Fetch from return stack}
+
+\sect{Numeric Formatted Output}
+ \cm{<\# ( - )}{Start pictured numeric output string}
+ \cm{\# (ud1 - ud2)}{Convert least-significant digit}
+ \cm{\#s (ud - 0)}{Convert all remaining digits}
+ \cm{hold (c - )}{Append char to string}
+ \cm{sign (n - )}{Append sign to string}
+ \cm{\#> (ud - C u)}{End of formatting}
+
+\sect{Data space}
+ \cm{, (n - )}{Store cell in data space}
+ \cm{c, (c - )}{Store character in data space}
+ \cm{align ( - )}{Align data-space pointer}
+ \cm{allot (n - )}{Allocate space in data-space}
+ \cm{compile, (x - )}{Store x in data space}
+ \cm{here ( - A)}{Data space pointer}
+ \cm{literal (w - )}{Store literal in data space}
+ \cm{2literal (w1 w2 - )}{Store double lit. in data space}
+ \cm{sliteral (C u - )}{Store string lit.l in data space}
+
+\eject
+\sect{Control Structures}
+ \cm{DO (n2 n1 - )}{Start Do loop: n1..n2 (excl.)}
+ \cm{?DO (n2 n1 - )}{Start Do loop: if nonzero}
+ \cm{LOOP ( - )}{End Do loop}
+ \cm{+LOOP (n - )}{End Do loop stepwise}
+ \cm{I ( - n)}{Index innermost loop}
+ \cm{J ( - n)}{Index next loop}
+ \cm{LEAVE ( - )}{Leave the innermost loop}
+ \cm{UNLOOP ( - )}{Leave the innermost loop for exit}
+\vsep
+ \cm{IF (f - )}{Check for condition}
+ \cm{ELSE ( - )}{Execute if condition failed}
+ \cm{THEN ( - )}{End of condition}
+\cm{ENDIF ( - )}{End of condition}
+\vsep
+ \cm{BEGIN ( - )}{Repeat control structure}
+ \cm{WHILE (f - )}{Check}
+ \cm{REPEAT ( - )}{End of control structure}
+\vsep
+ \cm{BEGIN ( - )}{Until control structure}
+ \cm{UNTIL (f - )}{End of control structure}
+\vsep
+ \cm{BEGIN ( - )}{Again control structure}
+ \cm{AGAIN ( - )}{End of control structure}
+\vsep
+ \cm{CASE (n - )}{Case control structure}
+ \cm{OF (n - )}{Element check}
+ \cm{ENDOF ( - )}{End of element check}
+ \cm{ENDCASE ( - )}{End of case}
+\vsep
+ \cm{ABORT (.. - )}{Abort}
+ \cm{ABORT" {\it text}" (f - )}{Cond. abort with text}
+ \cm{EXIT ( - )}{Return to the calling definition}
+\vsep
+ \cm{CATCH (.. xt - .. n)}{Catch exception}
+ \cm{THROW (.. n - ..)}{Throw an exception}
+\vsep
+ \cm{AHEAD ( - )}{Jump ahead}
+ \cm{cs-pick (.. u - )}{Control stack pick}
+ \cm{cs-roll (.. u - )}{Control stack roll}
+ 
+\sect{Dynamic memory}
+ \cm{allocate (u - A w)}{Dynamic memory allocation}
+ \cm{free (A - w)}{Dynamic memory deallocation}
+ \cm{resize (A1 u - A2 i)}{Resize dynamic memory}
+
+% Footer
+\vfill \hrule\smallskip
+{\smallrm This card may be freely distributed under the terms of the 
+GNU general public licence\par
+Copyright \copyright\ {\oldstyle 2003-2006} by Dick van Oudheusden}
+
+% Ending
+\supereject
+\if L\lr \else\null\vfill\eject\fi
+\if L\lr \else\null\vfill\eject\fi
+\bye
+
+% EOF
