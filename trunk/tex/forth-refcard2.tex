@@ -1,6 +1,6 @@
-
-% Forth Quick Reference Card (part I)
-% Copyright (c) 2003 Dick van Oudheusden
+%
+% Forth Quick Reference Card (part II)
+% Copyright (c) 2006 Dick van Oudheusden
 % TeX Format
 
 % Note: Comment the following line and Uncomment the three next for PDF
@@ -100,8 +100,8 @@
  \cm{write-file (C u F - i)}{Write characters to file}
 
 \sect{Conditional interpreting}
- \cm{$\lbrack$ELSE$\rbrack$ ( - )}{Else for conditional interpreting}
  \cm{$\lbrack$IF$\rbrack$ (f - )}{Start of conditional interpreting}
+ \cm{$\lbrack$ELSE$\rbrack$ ( - )}{Else for conditional interpreting}
  \cm{$\lbrack$THEN$\rbrack$ ( - )}{End of conditional interpreting}
 
 \sect{Dictionary}
@@ -261,7 +261,7 @@
  \cm{2nip (d1 d2 - d2)}{Drop 2nd}
  \cm{2tuck (d1 d2 - d2 d1 d2)}{Swap \& Over}
  \cm{rdrop ( - )}{Drop from return stack}
- \cm{2rdrop ( - )}{Drop from return stack}
+ \cm{2rdrop ( - )}{Drop double from return stack}
  \cm{toupper (c1 - c2)}{Uppercase character}
  \cm{0<= (n - f)}{Smaller or equal to zero}
  \cm{0>= (n - f)}{Greater or equal to zero}
@@ -285,8 +285,22 @@
  \cm{require {\it filename}}{Include missing file}
 
 \eject
-\sect{Environment Queries}
-\cm{ToDo}{ToDo}
+\sect{Environment}
+\cm{/COUNTED-STRING (n)}{Maximum size in characters}
+\cm{/HOLD (n)}{Size of buffer in characters}
+\cm{/PAD (n)}{Size of pad in characters}
+\cm{ADDRESS-UNIT-BITS (n)}{Size of address in bits}
+\cm{FLOORED (f)}{Floored division is default ?}
+\cm{MAX-CHAR (u)}{Maximum value for character}
+\cm{MAX-D (d)}{Maximum value for double}
+\cm{MAX-N (n)}{Maximum value for signed number}
+\cm{MAX-U (u)}{Maximum value for unsigned number}
+\cm{RETURN-STACK-CELLS (n)}{Size of return stack}
+\cm{STACK-CELLS (n)}{Size of data stack}
+\cm{FLOATING-STACK (n)}{Size of float stack}
+\cm{MAX-FLOAT (r)}{Maximum value for float}
+\cm{\#LOCALS (n)}{Maximum number of locals}
+\cm{WORDLISTS (n)}{Maximum size of search order list}
 
 \sect{Legend}
 \cm{w}{Cell}
@@ -312,7 +326,7 @@
 \vfill \hrule\smallskip
 {\smallrm This card may be freely distributed under the terms of the 
 GNU general public licence\par
-Copyright \copyright\ {\oldstyle 2003-2006} by Dick van Oudheusden}
+Copyright \copyright\ {\oldstyle 2006} by Dick van Oudheusden}
 
 % Ending
 \supereject
