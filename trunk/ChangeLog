@@ -1,4 +1,7 @@
 0.3.0:
+* hci: new module (Hash cell table iterator)
+* hcn: new module (Hash cell table node)
+* hct: new module (Hash cell table)
 * float words optional
 * pfe config.fs/make.fs added
 * dti: new module (Date & Time iterator)

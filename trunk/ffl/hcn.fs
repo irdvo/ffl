@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\             scn - the single linked cell node in the ffl
+\              hcn - the hash cell table node in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,56 +20,63 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.3 $
+\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
 include ffl/config.fs
 
 
-[UNDEFINED] scn.version [IF]
+[UNDEFINED] hcn.version [IF]
 
 
 include ffl/stc.fs
+include ffl/str.fs
+
+( hcn = Hash Cell Table Node )
+( The hcn module implements the node in the hash table.)
 
 
-( scn = Single Linked Cell Node )
-( The scn module implements the node in the scl-list.)
-
-
-1 constant scn.version
+1 constant hcn.version
 
 
 ( Public structure )
 
-struct: scn%       ( - n = Get the required space for a scn structure )
-  cell: scn>cell
-  cell: scn>next
+struct: hcn%       ( - n = Get the required space for a hcn structure )
+  cell: hcn>hash        \ the hash code
+  cell: hcn>key         \ the pointer to the key
+  cell: hcn>cell        \ the cell data
+  cell: hcn>next        \ the next node
 ;struct 
 
 
 ( Public words )
 
-: scn-init     ( w w:scn - = Initialise the node with cell data )
-  tuck scn>cell     !
-       scn>next  nil!
+: hcn-init     ( w w:hcn - = Initialise the node with cell data )
+  tuck hcn>cell     !
+       hcn>next  nil!
+  \ ToDo
 ;
 
 
-: scn-new      ( w - w:scn = Create a new node on the heap )
-  scn% allocate  throw  tuck scn-init
+: hcn-new      ( w - w:hcn = Create a new node on the heap )
+  hcn% allocate  throw  tuck hcn-init
+  \ ToDo
 ;
 
 
-: scn-free     ( w:scn - = Free the node from the heap )
+: hcn-free     ( w:hcn - = Free the node from the heap )
+  \ ToDo
   free throw
 ;
 
 
-: scn-dump     ( w:scn - = Dump the node )
-  ." scn:" dup . cr
-  ."  cell :" dup scn>cell  ?  cr
-  ."  next :"     scn>next  ?  cr
+: hcn-dump     ( w:hcn - = Dump the node )
+  ." hcn:" dup . cr
+  ."  hash :" dup hcn>hash  ?  cr
+  ."  key  :" dup hcn>key   str-dump cr
+  ."  cell :" dup hcn>cell  ?  cr
+  ."  next :"     hcn>next  ?  cr
 ;
 
 [THEN]
