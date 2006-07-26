@@ -42,6 +42,7 @@ Index of used prefices
 5 cpl - Complex module
 4 dts - Datetime text stream
 4 frc - Fraction module
+? chs - Char Set module
       - Big Cell module
       - Big Float module
       - Big Fraction module
@@ -62,7 +63,7 @@ Index of used prefices
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
-3 hcb - Hash cell table module
+3 hct - Hash cell table module
 3 hci - Hash cell table iterator module
 3 hcn - Hash cell table node
 ----- - ------------------------------------------------
