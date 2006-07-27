@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.9 $
+\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -35,6 +35,7 @@ include car_test.fs
 include chr_test.fs
 include crc_test.fs
 include dtm_test.fs
+include hct_test.fs
 include scl_test.fs
 include str_test.fs
 include tis_test.fs

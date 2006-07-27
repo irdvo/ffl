@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-28 18:38:00 $ $Revision: 1.3 $
+\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -28,7 +28,7 @@ include ffl/tst.fs
 include ffl/chr.fs
 
 
-." Testing: chr" cr 
+.( Testing: chr) cr 
 
 t{ char a chr-lower?   ?true    }t
 t{ char A chr-lower?   ?false   }t
