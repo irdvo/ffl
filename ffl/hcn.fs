@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.1 $
+\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -31,7 +31,6 @@ include ffl/config.fs
 
 
 include ffl/stc.fs
-include ffl/str.fs
 
 ( hcn = Hash Cell Table Node )
 ( The hcn module implements the node in the hash table.)
@@ -45,38 +44,50 @@ include ffl/str.fs
 struct: hcn%       ( - n = Get the required space for a hcn structure )
   cell: hcn>hash        \ the hash code
   cell: hcn>key         \ the pointer to the key
+  cell: hcn>klen        \ the key length
   cell: hcn>cell        \ the cell data
   cell: hcn>next        \ the next node
+  cell: hcn>prev        \ the previous node    
 ;struct 
 
 
 ( Public words )
 
-: hcn-init     ( w w:hcn - = Initialise the node with cell data )
-  tuck hcn>cell     !
-       hcn>next  nil!
-  \ ToDo
+: hcn-init     ( w c-addr u u:hash w:hcn - = Initialise the node with cell data, key and hash )
+  >r
+  
+  over 0= exp-invalid-parameters AND throw
+  
+      r@ hcn>hash !
+  dup r@ hcn>klen !
+  dup chars allocate throw
+  dup r@ hcn>key  !
+  swap cmove
+      r@ hcn>cell !
+      r@ hcn>next nil!
+      r> hcn>prev nil!
 ;
 
 
-: hcn-new      ( w - w:hcn = Create a new node on the heap )
-  hcn% allocate  throw  tuck hcn-init
-  \ ToDo
+: hcn-new      ( w c-addr u u:hash - w:hcn = Create a new node on the heap )
+  hcn% allocate  throw  dup >r hcn-init r>
 ;
 
 
 : hcn-free     ( w:hcn - = Free the node from the heap )
-  \ ToDo
+  dup hcn>key free throw
   free throw
 ;
 
 
 : hcn-dump     ( w:hcn - = Dump the node )
   ." hcn:" dup . cr
-  ."  hash :" dup hcn>hash  ?  cr
-  ."  key  :" dup hcn>key   str-dump cr
-  ."  cell :" dup hcn>cell  ?  cr
-  ."  next :"     hcn>next  ?  cr
+  ."  hash :" dup  hcn>hash  ?   cr
+  ."  key  :" dup  hcn>key   @ 
+              over hcn>klen  @   type cr
+  ."  cell :" dup  hcn>cell  ?   cr
+  ."  next :" dup  hcn>next  ?   cr
+  ."  prev :"      hcn>prev  ?   cr 
 ;
 
 [THEN]

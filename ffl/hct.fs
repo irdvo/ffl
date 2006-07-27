@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.1 $
+\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -53,22 +53,32 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 ( Public words )
 
-: hct-init     ( w:hct - = Initialise the hct-list )
-  dup hct>table   nil!
-  dup hct>size      0!
-  dup hct>length    0!
-  100 over hct>load  !
-  101 swap htc-size!
+: hct-init     ( u w:hct - = Initialise the hash table with an initial size )
+  over 0= exp-invalid-parameters AND throw  
+  
+      dup  hct>length 0!
+  100 over hct>load    !     \ load = 100%
+      
+  over cells allocate throw  \ table
+  rot 2dup
+  0 DO                       \ fill table with nils
+    dup nil!
+    cell+
+  LOOP
+  drop rot
+  
+  tuck hct>size  !
+       hct>table !
 ;
 
 
-: hct-create   ( "name" - = Create a named hash table in the dictionary )
+: hct-create   ( u "name" - = Create a named hash table with an initial size in the dictionary )
   create   here   hct% allot   hct-init
 ;
 
 
-: hct-new      ( - w:hct = Create a new hash table on the heap )
-  hct% allocate  throw  dup hct-init
+: hct-new      ( u - w:hct = Create a new hash table with an initial size on the heap )
+  hct% allocate  throw  tuck hct-init
 ;
 
 
@@ -83,6 +93,14 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ( Module words )
 
 : hct+hash     ( c-addr u - u = Calculate the hash value of a key )
+  0 -rot
+  bounds ?DO
+    dup 5 lshift +
+    I c@ +
+    1 chars 
+  +LOOP
+;
+
   
 ( Member words )
 
@@ -96,7 +114,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-load@    ( w:hct - u = Get the load factor [*100] )
+: hct-load@    ( w:hct - u = Get the load factor [*100%] )
   hct>load @
 ;
 
@@ -111,15 +129,52 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-( Table words )
+( Private words )
 
-: hct-insert-with-hash ( w c-addr u u:hash w:hct - = Insert a cell with a key and hash in the table )
-  \ ToDo
+: hct-search-node ( c-addr u w:hct - w:hcn = Search the node based on the key )
+  over 0= exp-invalid-parameters AND throw
+  
+  >r
+  2dup hct+hash dup
+  r@ hct>size @ mod cells    \ offset in table, based on hash
+  r> hct>table @ + @         \ hash node in table
+                             \ c-addr u u:hash w:hcn
+  BEGIN                      \ look for the key
+    dup nil<> IF
+      2dup hcn>hash @ = IF
+        dup >r 2over  r@ hcn>key @ r> hcn>klen @ compare 0<>
+      ELSE                   \ check hash and key
+        true
+      THEN
+    ELSE
+      false
+    THEN
+  WHILE
+    hcn>next @               \ next hash table node
+  REPEAT
+  
+  nip nip nip
 ;
 
 
+( Table words )
+
 : hct-insert   ( w c-addr u w:hct - = Insert a cell with a key in the table )
-  \ ToDo
+  >r 2dup hct+hash           \ calculate the hash
+  dup >r hcn-new dup r>      \ new hash table node
+  
+  r@ hct>size @ mod cells    \ offset in table, based on hash
+  r@ hct>table @ +           \ table element
+  @!                         \ insert the new node, fetch the current node in table
+  dup nil<> IF         
+    2dup
+    swap hcn>next !          \ if previous value, then link the node
+         hcn>prev !
+  ELSE
+    2drop                    \ done
+  THEN
+  r> hct>length 1+!          \ one more node in the hash table
+  \ ToDo resize table by load
 ;
 
 
@@ -128,13 +183,19 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-has?     ( c-addr u w:hct - f = Check if key is present in the table )
-  \ ToDo
+: hct-get      ( c-addr u w:hct - false | w true = Get the cell from the table )
+  hct-search-node
+  
+  dup nil<> IF
+    hcn>cell @ true
+  ELSE
+    drop false
+  THEN
 ;
 
 
-: hct-get      ( c-addr u w:hct - false | w true = Get the cell from the table )
-  \ ToDo
+: hct-has?     ( c-addr u w:hct - f = Check if key is present in the table )
+  hct-search-node nil<> 
 ;
 
 
@@ -154,8 +215,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-dump     ( w:hct - = Dump the table )
   ." hct:" dup . cr
-  ."  table :" dup hct>first  ?  cr
-  ."  size  :" dup hct>last   ?  cr
+  ."  table :" dup hct>table  ?  cr
+  ."  size  :" dup hct>size   ?  cr
   ."  length:" dup hct>length ?  cr
   ."  load  :"     hct>load   ?  cr
   
