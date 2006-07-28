@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.2 $
+\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -75,7 +75,7 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 
 
 : hcn-free     ( w:hcn - = Free the node from the heap )
-  dup hcn>key free throw
+  dup hcn>key @ free throw
   free throw
 ;
 

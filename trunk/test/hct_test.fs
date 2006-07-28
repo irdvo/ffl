@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.1 $
+\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ marker hct-test
   
 tos-create t1
   
-: hct-repeat         ( w:hct - )
-  1000 0 DO
+: hct-repeat-insert         ( n w:hct - )
+  swap 0 DO
     I over >r
     dup 
     t1 tos-rewrite
@@ -47,6 +47,12 @@ tos-create t1
   drop
 ;
 
+: hct-sum ( n1 w c-addr u - n1+w )
+  2drop                      \ remove key
+  +
+;
+
+
 t{ 20 hct-create h1  }t
 
 t{ h1 hct-length@  ?0      }t
@@ -55,13 +61,11 @@ t{ h1 hct-empty?   ?true   }t
 t{ 1  s" one"   h1 hct-insert }t
 t{ 2  s" two"   h1 hct-insert }t
 t{ 3  s" three" h1 hct-insert }t
+t{ 1  s" again" h1 hct-insert }t
+t{ 1  s" same"  h1 hct-insert }t
 
-t{ h1 hct-length@   3 ?s   }t
+t{ h1 hct-length@   5 ?s   }t
 t{ h1 hct-empty?   ?false  }t
-
-
-\ t{ 3  l1 scl-count   2 ?s   }t
-\ t{ 4  l1 scl-count   ?0   }t
 
 t{ s" one" h1 hct-has?  ?true      }t
 t{ s" one" h1 hct-get   ?true 1 ?s }t
@@ -69,22 +73,26 @@ t{ s" zero" h1 hct-get  ?false     }t
 t{ s" bye"  h1 hct-has? ?false     }t
 t{ s" three" h1 hct-get ?true 3 ?s }t
 
-h1 hct-repeat
+t{ 0 h1 hct-count   ?0 }t
+t{ 1 h1 hct-count 3 ?s }t
+t{ 3 h1 hct-count 1 ?s }t
 
-t{ h1 hct-length@   1003 ?s   }t
+t{ 0 ' hct-sum h1 hct-execute 8 ?s }t
 
-\ t{    l1 scl-length@   ?0   }t
-\ t{    l1 scl-empty?   ?true   }t
 
-\ t{ scl-new constant l2   }t
+\ More ..
 
-\ Insert-sorted
+t{ 50 hct-new value h2 }t
 
-\ t{    l2 scl-free   }t
+1000 h2 hct-repeat-insert
+
+t{ h2 hct-length@   1000 ?s   }t
 
 \ Iterator test
 
 \ t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
+
+t{ h2 hct-free }t
 
 \ hct-test
 

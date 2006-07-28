@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.2 $
+\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -83,11 +83,23 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-free     ( w:hct - = Free the table from the heap )
-  \ ToDo
+  dup hct>table @            \ Free the nodes:
+  over hct>size @            \ Do for the whole table
+  0 DO
+    dup @
+    BEGIN
+      dup nil<>              \ Iterate the lists in the table
+    WHILE
+      dup hcn>next @
+      swap hcn-free          \ Free the node
+    REPEAT
+    drop
+    cell+
+  LOOP
+  drop
   
   free  throw
 ;
-
 
 
 ( Module words )
@@ -131,7 +143,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 ( Private words )
 
-: hct-search-node ( c-addr u w:hct - w:hcn = Search the node based on the key )
+: hct-search   ( c-addr u w:hct - w:hcn = Search the node based on the key )
   over 0= exp-invalid-parameters AND throw
   
   >r
@@ -184,7 +196,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-get      ( c-addr u w:hct - false | w true = Get the cell from the table )
-  hct-search-node
+  hct-search
   
   dup nil<> IF
     hcn>cell @ true
@@ -195,19 +207,66 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-has?     ( c-addr u w:hct - f = Check if key is present in the table )
-  hct-search-node nil<> 
+  hct-search nil<> 
 ;
 
 
 ( Special words )
 
 : hct-count    ( w w:hct - u = Count the occurences of cell data in the table )
-  \ ToDo
+  0 -rot                     \ counter = 0
+  dup hct>table @
+  swap hct>size @            \ Do for the table
+  0 DO
+    >r
+    r@ @
+    BEGIN
+      dup nil<>              \  Walk the list of nodes
+    WHILE
+      >r
+      r@ hcn>cell @
+      over = IF
+        swap 1+ swap         \  If cell data found, then increase the counter
+      THEN
+      r> hcn>next @
+    REPEAT
+    drop
+    r>
+    cell+
+  LOOP
+  2drop
 ;
 
 
-: hct-execute      ( ... xt w:hct - ... = Execute xt for every cell data in table )
-  \ ToDo
+: hct-execute      ( ... xt w:hct - ... = Execute xt for every key and cell data in table )
+  dup hct>table @
+  swap hct>size @            \ Do for the whole table
+  0 DO
+    >r
+    r@ @
+    BEGIN
+      dup nil<>              \ Iterate the lists in the table
+    WHILE
+      >r
+      r@ hcn>cell @ swap     \ execute xt with key and cell data
+      r@ hcn>key  @ swap
+      r@ hcn>klen @ swap
+      >r r@ execute r>       \ execute without private data
+      r>
+      hcn>next @
+    REPEAT
+    drop
+    r>
+    cell+
+  LOOP
+  2drop
+;
+
+
+( Private words )
+
+: hct-emit-element    ( w c-addr u - = Emit the key and cell data of the node )
+  type [char] = emit 0 .r [char] ; emit
 ;
 
 
@@ -218,9 +277,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   ."  table :" dup hct>table  ?  cr
   ."  size  :" dup hct>size   ?  cr
   ."  length:" dup hct>length ?  cr
-  ."  load  :"     hct>load   ?  cr
-  
-  \ ToDo
+  ."  load  :" dup hct>load   ?  cr
+  ."  nodes :" ['] hct-emit-element swap hct-execute cr
 ;
 
 [THEN]
