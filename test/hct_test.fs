@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.2 $
+\  $Date: 2006-07-29 12:27:26 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -53,6 +53,25 @@ tos-create t1
 ;
 
 
+: hct-repeat-delete         ( n w:hct - = delete the nodes [different sequence])
+  swap 2/ 0 DO
+    I 500 + over >r
+    t1 tos-rewrite
+    t1 tos-write-number
+    t1 str-get
+    r> hct-delete
+    2drop
+    I over >r
+    t1 tos-rewrite
+    t1 tos-write-number
+    t1 str-get
+    r> hct-delete
+    2drop
+  LOOP
+  drop
+;
+
+    
 t{ 20 hct-create h1  }t
 
 t{ h1 hct-length@  ?0      }t
@@ -79,8 +98,14 @@ t{ 3 h1 hct-count 1 ?s }t
 
 t{ 0 ' hct-sum h1 hct-execute 8 ?s }t
 
+t{ s" again" h1 hct-delete ?true 1 ?s }t
+t{ s" again" h1 hct-delete ?false }t
 
-\ More ..
+t{ h1 hct-length@ 4 ?s }t
+
+t{ 0 ' hct-sum h1 hct-execute 7 ?s }t
+
+\ Insert and delete a lot more nodes ..
 
 t{ 50 hct-new value h2 }t
 
@@ -88,11 +113,14 @@ t{ 50 hct-new value h2 }t
 
 t{ h2 hct-length@   1000 ?s   }t
 
-\ Iterator test
+800 h2 hct-repeat-delete
 
-\ t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
+t{ h2 hct-length@   200 ?s   }t
 
 t{ h2 hct-free }t
+
+
+\ Iterator test
 
 \ hct-test
 
