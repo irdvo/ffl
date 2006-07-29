@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.3 $
+\  $Date: 2006-07-29 12:27:26 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -98,7 +98,9 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   LOOP
   drop
   
-  free  throw
+  dup hct>table @ free throw \ free the table
+  
+  free throw                 \ free the hash table
 ;
 
 
@@ -114,6 +116,57 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
   
+( Private words )
+
+: hct-table-pntr ( u:hash w:hct - w:pntr = Get pointer in table for hash )
+  >r 
+  r@ hct>size @ mod cells
+  r> hct>table @ +
+;
+
+
+: hct-search   ( c-addr u w:hct - w:hcn = Search the node based on the key )
+  over 0= exp-invalid-parameters AND throw
+  
+  >r
+  2dup hct+hash dup
+  r> hct-table-pntr @        \ offset in table -> node in table
+                             \ c-addr u u:hash w:hcn
+  BEGIN                      \ look for the key
+    dup nil<> IF
+      2dup hcn>hash @ = IF
+        dup >r 2over  r@ hcn>key @ r> hcn>klen @ compare 0<>
+      ELSE                   \ check hash and key
+        true
+      THEN
+    ELSE
+      false
+    THEN
+  WHILE
+    hcn>next @               \ next hash table node
+  REPEAT
+  
+  nip nip nip
+;
+
+
+: hct-insert-node ( w:hcn :u:size w:table - = Insert the node in the table )
+  >r
+  over swap
+  over hcn>hash @
+  swap mod cells
+  r> +                       \ table element
+  @!                         \ insert the new node, fetch the current node in table
+  dup nil<> IF         
+    2dup
+    swap hcn>next !          \ if previous value, then link the node
+         hcn>prev !
+  ELSE
+    2drop                    \ done
+  THEN
+;
+
+
 ( Member words )
 
 : hct-empty?   ( w:hct - f = Check for empty table )
@@ -141,57 +194,54 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-( Private words )
-
-: hct-search   ( c-addr u w:hct - w:hcn = Search the node based on the key )
-  over 0= exp-invalid-parameters AND throw
-  
-  >r
-  2dup hct+hash dup
-  r@ hct>size @ mod cells    \ offset in table, based on hash
-  r> hct>table @ + @         \ hash node in table
-                             \ c-addr u u:hash w:hcn
-  BEGIN                      \ look for the key
-    dup nil<> IF
-      2dup hcn>hash @ = IF
-        dup >r 2over  r@ hcn>key @ r> hcn>klen @ compare 0<>
-      ELSE                   \ check hash and key
-        true
-      THEN
-    ELSE
-      false
-    THEN
-  WHILE
-    hcn>next @               \ next hash table node
-  REPEAT
-  
-  nip nip nip
-;
-
-
-( Table words )
+( Hashtable words )
 
 : hct-insert   ( w c-addr u w:hct - = Insert a cell with a key in the table )
-  >r 2dup hct+hash           \ calculate the hash
-  dup >r hcn-new dup r>      \ new hash table node
+  >r 
+  2dup hct+hash              \ calculate the hash
+  hcn-new                    \ new hash table node
   
-  r@ hct>size @ mod cells    \ offset in table, based on hash
-  r@ hct>table @ +           \ table element
-  @!                         \ insert the new node, fetch the current node in table
-  dup nil<> IF         
-    2dup
-    swap hcn>next !          \ if previous value, then link the node
-         hcn>prev !
-  ELSE
-    2drop                    \ done
-  THEN
+  r@ hct>size  @             \ offset in table, based on hash
+  r@ hct>table @             \ table element
+  
+  hct-insert-node            \ insert the node in the table
+  
   r> hct>length 1+!          \ one more node in the hash table
   \ ToDo resize table by load
 ;
 
 
 : hct-delete   ( c-addr u w:hct - false | w true = Delete key from the table )
-  \ ToDo
+  >r
+  r@ hct-search
+  
+  dup nil<> IF                              \ if node found then
+    r@ hct>length 1-!                       \   one node less
+    
+    dup hcn>next @ dup nil<> IF             \   if next node present then
+      hcn>prev over hcn>prev @ swap !       \     next->prev = prev node
+    ELSE
+      drop
+    THEN
+    
+    dup hcn>prev @ dup nil<> IF             \   if prev node present then
+      hcn>next over hcn>next @ swap !       \     prev->next = next node
+    ELSE
+      drop                                  \   else
+      dup hcn>next @                        \     table-pntr = next node
+      over hcn>hash @ r@ hct-table-pntr !
+    THEN
+    
+    dup hcn>cell @ swap                     \   fetch the cell
+    
+    hcn-free                                \   free the node
+    
+    true
+  ELSE
+    drop 
+    false
+  THEN
+  rdrop
 ;
 
 

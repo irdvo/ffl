@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.1 $
+\  $Date: 2006-07-29 12:27:26 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -96,7 +96,7 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
 ;
 
 
-: hci-move     ( w w:hci - f = Move the iterator to the <next?> record with the cell data )
+: hci-move     ( w w:hci - f = Move the iterator to the next record with the cell data )
   \ ToDo
 ;
 
