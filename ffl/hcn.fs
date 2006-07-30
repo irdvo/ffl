@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-28 14:53:02 $ $Revision: 1.3 $
+\  $Date: 2006-07-30 07:06:02 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -79,6 +79,30 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
   free throw
 ;
 
+
+( Private words )
+
+: hcn-next@    ( w:hcn - w:next = Get the next node )
+  hcn>next @
+;
+
+
+: hcn-prev@    ( w:hcn - w:prev = Get the previous node )
+  hcn>prev @
+;
+
+
+: hcn-hash@   ( w:hcn - u:hash = Get the hash value )
+  hcn>hash @
+;
+
+
+: hcn-cell@   ( w:hcn - w:cell = Get the cell value )
+  hcn>cell @
+;
+
+
+( Inspection )
 
 : hcn-dump     ( w:hcn - = Dump the node )
   ." hcn:" dup . cr
