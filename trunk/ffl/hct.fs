@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-29 12:27:26 $ $Revision: 1.4 $
+\  $Date: 2006-07-30 07:06:02 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -51,26 +51,43 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;struct
 
 
-( Public words )
+( Private words )
 
-: hct-init     ( u w:hct - = Initialise the hash table with an initial size )
-  over 0= exp-invalid-parameters AND throw  
+: hct-allocate-table ( u - w:table = allocate a table with size u )
+  dup 0= exp-invalid-parameters AND throw  
   
-      dup  hct>length 0!
-  100 over hct>load    !     \ load = 100%
-      
-  over cells allocate throw  \ table
-  rot 2dup
-  0 DO                       \ fill table with nils
+  dup cells allocate throw             \ table
+  
+  dup rot 0 DO                         \ fill table with nils
     dup nil!
     cell+
   LOOP
-  drop rot
-  
-  tuck hct>size  !
-       hct>table !
+  drop
 ;
 
+
+: hct-table@       ( w:hct - w:table = Get the table )
+  hct>table @
+;
+
+
+: hct-size@        ( w:hct - u:size = Get the size )
+  hct>size @
+;
+
+
+( Public words )
+
+: hct-init     ( u w:hct - = Initialise the hash table with an initial size )
+      dup  hct>length 0!
+  100 over hct>load    !     \ load = 100%
+      
+  over hct-allocate-table
+  
+  over hct>table !
+       hct>size  !
+;
+     
 
 : hct-create   ( u "name" - = Create a named hash table with an initial size in the dictionary )
   create   here   hct% allot   hct-init
@@ -83,14 +100,13 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-free     ( w:hct - = Free the table from the heap )
-  dup hct>table @            \ Free the nodes:
-  over hct>size @            \ Do for the whole table
-  0 DO
+  dup hct-table@             \ Free the nodes:
+  over hct-size@ 0 DO        \ Do for the whole table
     dup @
     BEGIN
       dup nil<>              \ Iterate the lists in the table
     WHILE
-      dup hcn>next @
+      dup hcn-next@
       swap hcn-free          \ Free the node
     REPEAT
     drop
@@ -98,7 +114,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   LOOP
   drop
   
-  dup hct>table @ free throw \ free the table
+  dup hct-table@ free throw  \ free the table
   
   free throw                 \ free the hash table
 ;
@@ -120,8 +136,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-table-pntr ( u:hash w:hct - w:pntr = Get pointer in table for hash )
   >r 
-  r@ hct>size @ mod cells
-  r> hct>table @ +
+  r@ hct-size@ mod cells
+  r> hct-table@ +
 ;
 
 
@@ -134,7 +150,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
                              \ c-addr u u:hash w:hcn
   BEGIN                      \ look for the key
     dup nil<> IF
-      2dup hcn>hash @ = IF
+      2dup hcn-hash@ = IF
         dup >r 2over  r@ hcn>key @ r> hcn>klen @ compare 0<>
       ELSE                   \ check hash and key
         true
@@ -143,7 +159,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
       false
     THEN
   WHILE
-    hcn>next @               \ next hash table node
+    hcn-next@                \ next hash table node
   REPEAT
   
   nip nip nip
@@ -153,7 +169,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 : hct-insert-node ( w:hcn :u:size w:table - = Insert the node in the table )
   >r
   over swap
-  over hcn>hash @
+  over hcn-hash@
   swap mod cells
   r> +                       \ table element
   @!                         \ insert the new node, fetch the current node in table
@@ -190,7 +206,27 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-size!    ( u w:hct - = Resize the hash table )
-  \ ToDo
+  >r
+  r@ hct-table@ 
+  swap dup hct-allocate-table     \ allocate the new table
+  r@ hct-size@ 0 DO               \ S: old-table new-size new-table
+    2>r
+    dup @                         \ Get node from table
+    BEGIN
+      dup nil<>                   \ Walk through the list in the table
+    WHILE
+      dup hcn-next@ swap
+      dup hcn>next nil!           \ Clear the node from the old table and ..
+      dup hcn>prev nil!
+      2r@ hct-insert-node         \ .. insert it in the new table
+    REPEAT
+    drop
+    cell+
+    2r>
+  LOOP
+  r@ hct>table @! free throw      \ store the new table, fetch the old and free
+  r> hct>size !
+  drop                            \ table-pntr
 ;
 
 
@@ -202,12 +238,17 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   hcn-new                    \ new hash table node
   
   r@ hct>size  @             \ offset in table, based on hash
-  r@ hct>table @             \ table element
+  r@ hct-table@              \ table element
   
   hct-insert-node            \ insert the node in the table
   
-  r> hct>length 1+!          \ one more node in the hash table
-  \ ToDo resize table by load
+  r@ hct>length 1+!          \ one more node in the hash table
+  
+                             \ test for rehash of table
+  r@ hct-length@  r@ hct-size@  r@ hct-load@ 100 */  > IF
+    r@ hct-size@ 2* 1+ r@ hct-size!
+  THEN
+  rdrop
 ;
 
 
@@ -218,21 +259,21 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   dup nil<> IF                              \ if node found then
     r@ hct>length 1-!                       \   one node less
     
-    dup hcn>next @ dup nil<> IF             \   if next node present then
-      hcn>prev over hcn>prev @ swap !       \     next->prev = prev node
+    dup hcn-next@ dup nil<> IF              \   if next node present then
+      hcn>prev over hcn-prev@ swap !        \     next->prev = prev node
     ELSE
       drop
     THEN
     
-    dup hcn>prev @ dup nil<> IF             \   if prev node present then
-      hcn>next over hcn>next @ swap !       \     prev->next = next node
+    dup hcn-prev@ dup nil<> IF              \   if prev node present then
+      hcn>next over hcn-next@ swap !        \     prev->next = next node
     ELSE
       drop                                  \   else
-      dup hcn>next @                        \     table-pntr = next node
-      over hcn>hash @ r@ hct-table-pntr !
+      dup hcn-next@                         \     table-pntr = next node
+      over hcn-hash@ r@ hct-table-pntr !
     THEN
     
-    dup hcn>cell @ swap                     \   fetch the cell
+    dup hcn-cell@ swap                      \   fetch the cell
     
     hcn-free                                \   free the node
     
@@ -249,7 +290,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   hct-search
   
   dup nil<> IF
-    hcn>cell @ true
+    hcn-cell@ true
   ELSE
     drop false
   THEN
@@ -265,8 +306,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-count    ( w w:hct - u = Count the occurences of cell data in the table )
   0 -rot                     \ counter = 0
-  dup hct>table @
-  swap hct>size @            \ Do for the table
+  dup hct-table@
+  swap hct-size@             \ Do for the table
   0 DO
     >r
     r@ @
@@ -274,11 +315,11 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
       dup nil<>              \  Walk the list of nodes
     WHILE
       >r
-      r@ hcn>cell @
+      r@ hcn-cell@
       over = IF
         swap 1+ swap         \  If cell data found, then increase the counter
       THEN
-      r> hcn>next @
+      r> hcn-next@
     REPEAT
     drop
     r>
@@ -289,21 +330,20 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-execute      ( ... xt w:hct - ... = Execute xt for every key and cell data in table )
-  dup hct>table @
-  swap hct>size @            \ Do for the whole table
-  0 DO
+  dup hct-table@
+  swap hct-size@ 0 DO        \ Do for the whole table
     >r
     r@ @
     BEGIN
       dup nil<>              \ Iterate the lists in the table
     WHILE
       >r
-      r@ hcn>cell @ swap     \ execute xt with key and cell data
+      r@ hcn-cell@ swap      \ execute xt with key and cell data
       r@ hcn>key  @ swap
       r@ hcn>klen @ swap
       >r r@ execute r>       \ execute without private data
       r>
-      hcn>next @
+      hcn-next@
     REPEAT
     drop
     r>
