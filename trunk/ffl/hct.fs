@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-30 07:06:02 $ $Revision: 1.5 $
+\  $Date: 2006-07-31 16:50:42 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -141,6 +141,13 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
+: hct-table-bounds ( u:start w:hct - w:table-end w:table-start = Get the table bounds for DO )
+  dup hct-table@ >r
+  hct-size@ cells r@ +       \ table-end
+  swap cells r> +            \ table-start
+;
+
+
 : hct-search   ( c-addr u w:hct - w:hcn = Search the node based on the key )
   over 0= exp-invalid-parameters AND throw
   
@@ -166,13 +173,13 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-insert-node ( w:hcn :u:size w:table - = Insert the node in the table )
+: hct-insert-node ( u:size w:table w:hcn - = Insert the node in the table )
   >r
-  over swap
-  over hcn-hash@
+  swap
+  r@ hcn-hash@
   swap mod cells
-  r> +                       \ table element
-  @!                         \ insert the new node, fetch the current node in table
+  +                          \ table element
+  r@ r> rot @!               \ insert the new node, fetch the current node
   dup nil<> IF         
     2dup
     swap hcn>next !          \ if previous value, then link the node
@@ -207,26 +214,22 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-size!    ( u w:hct - = Resize the hash table )
   >r
-  r@ hct-table@ 
-  swap dup hct-allocate-table     \ allocate the new table
-  r@ hct-size@ 0 DO               \ S: old-table new-size new-table
-    2>r
-    dup @                         \ Get node from table
+  dup hct-allocate-table          \ allocate the new table
+  0 r@ hct-table-bounds DO        \ S: old-table new-size new-table
+    I @                           \ Get node from table
     BEGIN
       dup nil<>                   \ Walk through the list in the table
     WHILE
       dup hcn-next@ swap
       dup hcn>next nil!           \ Clear the node from the old table and ..
       dup hcn>prev nil!
-      2r@ hct-insert-node         \ .. insert it in the new table
+      2over rot hct-insert-node   \ .. insert it in the new table
     REPEAT
     drop
-    cell+
-    2r>
-  LOOP
+    cell
+  +LOOP
   r@ hct>table @! free throw      \ store the new table, fetch the old and free
   r> hct>size !
-  drop                            \ table-pntr
 ;
 
 
@@ -237,8 +240,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
   2dup hct+hash              \ calculate the hash
   hcn-new                    \ new hash table node
   
-  r@ hct>size  @             \ offset in table, based on hash
-  r@ hct-table@              \ table element
+  r@ hct-size@ swap          \ offset in table, based on hash
+  r@ hct-table@ swap         \ table element
   
   hct-insert-node            \ insert the node in the table
   
@@ -306,11 +309,8 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-count    ( w w:hct - u = Count the occurences of cell data in the table )
   0 -rot                     \ counter = 0
-  dup hct-table@
-  swap hct-size@             \ Do for the table
-  0 DO
-    >r
-    r@ @
+  0 swap hct-table-bounds DO \ Do for the table
+    I @
     BEGIN
       dup nil<>              \  Walk the list of nodes
     WHILE
@@ -322,18 +322,15 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
       r> hcn-next@
     REPEAT
     drop
-    r>
-    cell+
-  LOOP
-  2drop
+    cell
+  +LOOP
+   drop
 ;
 
 
 : hct-execute      ( ... xt w:hct - ... = Execute xt for every key and cell data in table )
-  dup hct-table@
-  swap hct-size@ 0 DO        \ Do for the whole table
-    >r
-    r@ @
+  0 swap hct-table-bounds DO  \ Do for the whole table
+    I @
     BEGIN
       dup nil<>              \ Iterate the lists in the table
     WHILE
@@ -346,10 +343,9 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
       hcn-next@
     REPEAT
     drop
-    r>
-    cell+
-  LOOP
-  2drop
+    cell
+  +LOOP
+  drop
 ;
 
 

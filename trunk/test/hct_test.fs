@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-29 12:27:26 $ $Revision: 1.3 $
+\  $Date: 2006-07-31 16:50:42 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -72,10 +72,12 @@ tos-create t1
 ;
 
     
-t{ 20 hct-create h1  }t
+t{ 3 hct-create h1  }t
 
 t{ h1 hct-length@  ?0      }t
 t{ h1 hct-empty?   ?true   }t
+
+t{ 200 h1 hct-load! }t
 
 t{ 1  s" one"   h1 hct-insert }t
 t{ 2  s" two"   h1 hct-insert }t
@@ -109,6 +111,10 @@ t{ 0 ' hct-sum h1 hct-execute 7 ?s }t
 
 t{ 50 hct-new value h2 }t
 
+t{ h2 hct-load@ 100 ?s }t
+t{ 200 h2 hct-load!    }t   \ rehash when length > 200% of size
+t{ h2 hct-load@ 200 ?s }t
+
 1000 h2 hct-repeat-insert
 
 t{ h2 hct-length@   1000 ?s   }t
@@ -121,6 +127,23 @@ t{ h2 hct-free }t
 
 
 \ Iterator test
+
+t{ h1 hci-create i1 }t
+
+t{ i1 hci-first ?true 2 ?s }t
+t{ i1 hci-get   ?true 2 ?s }t
+t{ i1 hci-key   s" two" compare ?0 }t
+
+t{ i1 hci-next  ?true 1 ?s }t
+t{ i1 hci-next  ?true 3 ?s }t
+t{ i1 hci-next  ?true 1 ?s }t
+t{ i1 hci-next  ?false  }t
+
+t{ i1 hci-first ?true drop }t
+
+t{ 1 i1 hci-move ?true  }t
+t{ 1 i1 hci-move ?true  }t
+t{ 1 i1 hci-move ?false }t
 
 \ hct-test
 
