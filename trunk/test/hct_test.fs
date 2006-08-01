@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-31 16:50:42 $ $Revision: 1.4 $
+\  $Date: 2006-08-01 16:31:51 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -31,7 +31,7 @@ include ffl/tos.fs
 
 .( Testing: hct, hcn and hci) cr 
   
-marker hct-test
+marker hct-mark
   
 tos-create t1
   
@@ -134,10 +134,26 @@ t{ i1 hci-first ?true 2 ?s }t
 t{ i1 hci-get   ?true 2 ?s }t
 t{ i1 hci-key   s" two" compare ?0 }t
 
+  t{ i1 hci-first? ?true  }t
+  t{ i1 hci-last?  ?false }t
+
 t{ i1 hci-next  ?true 1 ?s }t
+
+  t{ i1 hci-first? ?false }t
+  t{ i1 hci-last?  ?false }t
+
 t{ i1 hci-next  ?true 3 ?s }t
+  
+  t{ i1 hci-first? ?false }t
+  t{ i1 hci-last?  ?false }t
+
 t{ i1 hci-next  ?true 1 ?s }t
+
+  t{ i1 hci-first? ?false  }t
+  t{ i1 hci-last?  ?true }t
+
 t{ i1 hci-next  ?false  }t
+
 
 t{ i1 hci-first ?true drop }t
 
@@ -145,7 +161,7 @@ t{ 1 i1 hci-move ?true  }t
 t{ 1 i1 hci-move ?true  }t
 t{ 1 i1 hci-move ?false }t
 
-\ hct-test
+hct-mark
 
 \ ==============================================================================
 

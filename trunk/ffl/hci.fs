@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-31 16:50:42 $ $Revision: 1.3 $
+\  $Date: 2006-08-01 16:31:51 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -194,12 +194,42 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
 
 
 : hci-first?   ( w:hci - f = Check if the iterator is on the first record )
-  \ ToDo
+  dup hci>walk @
+  dup nil<> IF
+    hcn-prev@                     \ if there is a previous record, then not the first
+    nil<> IF
+      false
+    ELSE
+      0 over hci-search-table
+      nil<> IF
+        over hci>index @ =        \ if a previous table element is present, then not the first 
+      ELSE
+        exp-invalid-state throw
+      THEN
+    THEN
+  ELSE
+    exp-invalid-state throw
+  THEN
+  nip
 ;
 
 
 : hci-last?    ( w:hci - f = Check if the iterator is on the last record )
-  \ ToDo
+  dup hci>walk @
+  dup nil<> IF
+    hcn-next@
+    nil<> IF                      \ if there is a next record, then not the last
+      false
+    ELSE
+      dup hci>index @ 1+ over hci-search-table
+      nil= dup 0= IF              \ if a next table element is present, then not the last
+        nip
+      THEN
+    THEN
+  ELSE
+    exp-invalid-state throw
+  THEN
+  nip
 ;
 
 
