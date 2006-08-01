@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-31 16:50:42 $ $Revision: 1.6 $
+\  $Date: 2006-08-01 16:56:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -148,7 +148,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-search   ( c-addr u w:hct - w:hcn = Search the node based on the key )
+: hct-search   ( c-addr u w:hct - u:hash w:hcn = Search the node based on the key )
   over 0= exp-invalid-parameters AND throw
   
   >r
@@ -169,7 +169,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
     hcn-next@                \ next hash table node
   REPEAT
   
-  nip nip nip
+  2>r 2drop 2r>              \ keep hash and node, drop key
 ;
 
 
@@ -207,7 +207,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-load!    ( u w:hct - = Set the load factor [*100] )
+: hct-load!    ( u w:hct - = Set the load factor [*100%] )
   hct>load !
 ;
 
@@ -237,19 +237,26 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-insert   ( w c-addr u w:hct - = Insert a cell with a key in the table )
   >r 
-  2dup hct+hash              \ calculate the hash
-  hcn-new                    \ new hash table node
+  2dup r@ hct-search         \ Search for key
+    
+  dup nil<> IF               \ if already present then
+    nip nip nip
+    hcn>cell !               \  update cell
+  ELSE                       \ else
+    drop                     \  S: w c-addr u u:hash
+    hcn-new                  \  new hash table node
   
-  r@ hct-size@ swap          \ offset in table, based on hash
-  r@ hct-table@ swap         \ table element
+    r@ hct-size@ swap        \ offset in table, based on hash
+    r@ hct-table@ swap       \ table element
   
-  hct-insert-node            \ insert the node in the table
+    hct-insert-node          \ insert the node in the table
   
-  r@ hct>length 1+!          \ one more node in the hash table
+    r@ hct>length 1+!        \ one more node in the hash table
   
                              \ test for rehash of table
-  r@ hct-length@  r@ hct-size@  r@ hct-load@ 100 */  > IF
-    r@ hct-size@ 2* 1+ r@ hct-size!
+    r@ hct-length@  r@ hct-size@  r@ hct-load@ 100 */  > IF
+      r@ hct-size@ 2* 1+ r@ hct-size!
+    THEN
   THEN
   rdrop
 ;
@@ -257,7 +264,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 : hct-delete   ( c-addr u w:hct - false | w true = Delete key from the table )
   >r
-  r@ hct-search
+  r@ hct-search nip
   
   dup nil<> IF                              \ if node found then
     r@ hct>length 1-!                       \   one node less
@@ -290,7 +297,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-get      ( c-addr u w:hct - false | w true = Get the cell from the table )
-  hct-search
+  hct-search nip
   
   dup nil<> IF
     hcn-cell@ true
@@ -301,7 +308,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 
 
 : hct-has?     ( c-addr u w:hct - f = Check if key is present in the table )
-  hct-search nil<> 
+  hct-search nip nil<> 
 ;
 
 
