@@ -2,7 +2,7 @@
 \
 \        hct_test - the test words for the hct module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-01 16:31:51 $ $Revision: 1.5 $
+\  $Date: 2006-08-01 16:56:48 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -83,7 +83,8 @@ t{ 1  s" one"   h1 hct-insert }t
 t{ 2  s" two"   h1 hct-insert }t
 t{ 3  s" three" h1 hct-insert }t
 t{ 1  s" again" h1 hct-insert }t
-t{ 1  s" same"  h1 hct-insert }t
+t{ 5  s" same"  h1 hct-insert }t
+t{ 1  s" same"  h1 hct-insert }t   \ actually replace of cell
 
 t{ h1 hct-length@   5 ?s   }t
 t{ h1 hct-empty?   ?false  }t
@@ -128,7 +129,7 @@ t{ h2 hct-free }t
 
 \ Iterator test
 
-t{ h1 hci-create i1 }t
+t{ h1 hci-new value i1 }t
 
 t{ i1 hci-first ?true 2 ?s }t
 t{ i1 hci-get   ?true 2 ?s }t
@@ -160,6 +161,8 @@ t{ i1 hci-first ?true drop }t
 t{ 1 i1 hci-move ?true  }t
 t{ 1 i1 hci-move ?true  }t
 t{ 1 i1 hci-move ?false }t
+
+t{ i1 hci-free }t
 
 hct-mark
 
