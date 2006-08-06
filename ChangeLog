@@ -1,4 +1,5 @@
 0.3.0:
+* md5: new module (MD5 Algorithm)
 * hci: new module (Hash cell table iterator)
 * hcn: new module (Hash cell table node)
 * hct: new module (Hash cell table)
