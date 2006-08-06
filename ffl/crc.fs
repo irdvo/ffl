@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2005-12-24 06:46:48 $ $Revision: 1.4 $
+\  $Date: 2006-08-06 19:06:54 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -207,7 +207,7 @@ decimal
 ;
 
 
-: crc-calc-poly ( u1 .. un n - u = Calculate the polynomial )
+: crc+calc-poly ( u1 .. un n - u = Calculate the polynomial )
   0 swap 0 ?DO
     swap 
     31 xor
@@ -217,7 +217,7 @@ decimal
 ;
 
 
-: crc-calc-crc32  ( c-addr u - u:crc32 = Calculate directly the CRC32 for byte data with default crc32 table)
+: crc+calc-crc32  ( c-addr u - u:crc32 = Calculate directly the CRC32 for byte data with default crc32 table)
   -1 -rot
   bounds ?DO                 \ Do for data
     I c@

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.5 $
+\  $Date: 2006-08-06 19:06:54 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -40,14 +40,14 @@ t{ c1 crc-start   s" ZYXWVUTSRQPONMLKJIHGFEDBCA" c1 crc-update c1 crc-finish  99
 t{ c1 crc-start   s" 123456789"                  c1 crc-update c1 crc-finish  CBF43926 ?u }t
 decimal
 
-t{ 32 26 23 22 16 12 11 10 8 7 5 4 2 1 0 15 crc-calc-poly hex EDB88320 decimal ?u }t
+t{ 32 26 23 22 16 12 11 10 8 7 5 4 2 1 0 15 crc+calc-poly hex EDB88320 decimal ?u }t
 
 hex
 t{ EDB88320 c1 crc-poly! }t
 
 t{ c1 crc-start   s" ZYXWVUTSRQPONMLKJIHGFEDBCA" c1 crc-update c1 crc-finish  99CDFDB2 ?u }t
 
-t{ s" An Arbitrary String" crc-calc-crc32 6FBEAAE7 ?u }t
+t{ s" An Arbitrary String" crc+calc-crc32 6FBEAAE7 ?u }t
 decimal
 
 \ ==============================================================================
