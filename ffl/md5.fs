@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.2 $
+\  $Date: 2006-08-06 19:42:41 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -120,13 +120,37 @@ create md5.pad       ( - addr = MD5 padding )
   md5.pad md5.cell-size cells erase   
   128 md5.pad c!  
 
-  
+
+sys.bigendian [IF]
 : md5+buf@+        ( u n - u+buf[n] = Fetch and add with MD5 buffer )
-  cells md5.buf + @ 
+  cells md5.buf + 
+  dup c@
+  swap char+ swap over c@ 8  lshift or
+  swap char+ swap over c@ 16 lshift or
+  swap char+           c@ 24 lshift or
   +
 ;
+[ELSE]
+: md5+buf@+        ( u n - u+buf[n] = Fetch and add with MD5 buffer )
+  cells md5.buf + @ +
+;
+[THEN]
 
-    
+sys.bigendian [IF]
+hex
+: md5!             ( w addr - = Store word on address, md5 order )
+  over                 FF and over c!
+  char+ over 8  rshift FF and over c!
+  char+ over 10 rshift FF and over c!
+  char+ swap 18 rshift FF and swap c!
+;
+decimal
+[ELSE]
+: md5!             ( w addr - = Store word on address, md5 order )
+  !
+;
+[THEN]
+
 hex
 : md5+round1       
   D76AA478  0 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f  md5.s11 lroll  md5.b +  TO md5.a   
@@ -302,7 +326,8 @@ decimal
 : md5-finish       ( w:md5 - u1 u2 u3 u4 = Finish the md5 calculation )
   >r
   r@ md5>length @ dup
-  8 m* swap md5.length 2!         \ save the bit length
+  8 m* swap md5.length            \ save the bit length
+  tuck md5! cell+ md5!
   
   md5.byte-size mod 
   [ md5.byte-size 2 cells - ] literal \ reserve two cells for the length
