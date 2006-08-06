@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.14 $
+\  $Date: 2006-08-06 19:42:41 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 \
@@ -39,14 +39,20 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 000200 constant ffl.version
 
 
+( Private words )
+  
+variable sys.endian   1 sys.endian !
+
 ( System Settings )
 
 create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
   1 c, 10 c,         \ unix: lf
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
-
-
-( Public words )
+  
+sys.endian c@ 0= constant sys.bigendian ( - f = Check for bigendian hardware )
+  
+  
+( Extension words )
 
 \ : [DEFINED]   
   
