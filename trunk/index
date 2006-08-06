@@ -25,6 +25,7 @@ Index of used prefices
       - Interface
 ----- - ------------------------------------------------
 1 crc - 32-bit Cyclic Redundancy Check
+3 md5 - MD5 module
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -75,14 +76,13 @@ Index of used prefices
 ----- - ------------------------------------------------
 8 bzf - BZip2 file module
 8 bzp - BZip2 module
-3 dbm - DBM module
+6 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
 5 htm - HTML module
-4 md5 - MD5 module
 4 rnd - Pseudo Random module
-6 rgx - Regex module
-6 sha - SHA1/2 module
+4 rgx - Regex module
+4 sha - SHA1/2 module
 4 tmr - Timer module
 5 xml - XML module
       - css module
