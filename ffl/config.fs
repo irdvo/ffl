@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-14 15:58:49 $ $Revision: 1.13 $
+\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 \
@@ -49,9 +49,16 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 ( Public words )
 
 \ : [DEFINED]   
-
+  
 : 2+               ( n - n+2 = Add two to tos)
   1+ 1+
+;
+
+
+: lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
+  2dup lshift >r
+  [ cell 8 * ] literal swap - rshift r>
+  or
 ;
 
 

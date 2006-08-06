@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 07:19:48 $ $Revision: 1.1 $
+\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -31,7 +31,7 @@
 include ffl/config.fs
 
 
-[UNDEFINED] hct.version [IF]
+[UNDEFINED] md5.version [IF]
 
 
 cell 4 =  1 chars 1 =  AND [IF]
@@ -46,20 +46,25 @@ include ffl/stc.fs
 1 constant md5.version
 
 
+( Private constants )
+
+16 constant md5.cell-size   ( - n = Size of buffer in cells )
+64 constant md5.byte-size   ( - n = Size of buffer in bytes )
+
 ( Public structure )
 
 struct: md5%       ( - n = Get the required space for the md5 data structure )
-     cell:  md5>a
-     cell:  md5>b
-     cell:  md5>c
-     cell:  md5>d
-  16 cells: md5>buffer
-     cell:  md5>length       
+  cell:  md5>a
+  cell:  md5>b
+  cell:  md5>c
+  cell:  md5>d
+ md5.cell-size 
+  cells: md5>buffer
+  cell:  md5>length       
 ;struct
 
 
 ( Private words )
-
 
 \ MD5 Transform constants
 7  constant md5.s11  
@@ -100,13 +105,6 @@ struct: md5%       ( - n = Get the required space for the md5 data structure )
 ;
 
 
-: lroll        ( u1 u - u2 = Rotate u1 u bits to the left )
-  2dup lshift >r
-  32 swap - rshift r>
-  or
-;
-
-
 0 value md5.a        ( - a = MD5 variable local a )
 0 value md5.b        ( - b = MD5 variable local b )
 0 value md5.c        ( - c = MD5 variable local c )
@@ -118,8 +116,8 @@ struct: md5%       ( - n = Get the required space for the md5 data structure )
 
 
 create md5.pad       ( - addr = MD5 padding )
-  16 cells allot   
-  md5.pad 16 cells erase   
+  md5.cell-size cells allot   
+  md5.pad md5.cell-size cells erase   
   128 md5.pad c!  
 
   
@@ -233,11 +231,21 @@ decimal
 
 
 : md5+cmove        ( c-addr u n:index - n:processed f:full = Move data from source to buffer )
-  2dup + 64 min 64 = >r           \ full buffer ?
-  tuck 64 swap - min >r           \ number of chars taken from source
-  chars md5.buf + r@ chars cmove  \ move source in the buffer
+  2dup + md5.byte-size min md5.byte-size = >r   \ full buffer ?
+  tuck md5.byte-size swap - min >r              \ number of chars taken from source
+  chars md5.buf + r@ chars cmove                \ move source in the buffer
   r> r>
 ;
+
+
+hex
+: md5+#s       ( u - = Convert one md5 number in hold area )
+  dup 18 rshift FF and 0 # # 2drop
+  dup 10 rshift FF and 0 # # 2drop
+  dup  8 rshift FF and 0 # # 2drop
+                FF and 0 # # 2drop
+;
+decimal
 
 
 ( Public words )
@@ -280,15 +288,14 @@ decimal
   r@ md5>buffer to md5.buf
   
   BEGIN
-    2dup r@ md5>length @ 64 mod md5+cmove
+    2dup r@ md5>length @ md5.byte-size mod md5+cmove
     over r@ md5>length +!
   WHILE
     r@ md5+transform
-    \ md5.buf 64 dump
     /string
   REPEAT
   rdrop
-  2drop
+  drop 2drop
 ;
 
 
@@ -297,17 +304,16 @@ decimal
   r@ md5>length @ dup
   8 m* swap md5.length 2!         \ save the bit length
   
-  64 mod [ 64 2 cells - ] literal \ reserve two cells for the length
+  md5.byte-size mod 
+  [ md5.byte-size 2 cells - ] literal \ reserve two cells for the length
   
-  2dup < IF                       \ pad length
+  2dup < IF                        \ pad length
     swap -
   ELSE
-    64 + swap -
+    md5.byte-size + swap -
   THEN
   
-  ?dup 0> IF                      \ only update if something to pad
-    md5.pad swap r@ md5-update
-  THEN
+  md5.pad swap r@ md5-update       \ pad the buffer
   
   md5.length 2 cells r@ md5-update \ add the bit length to the algorithm
   
@@ -317,41 +323,21 @@ decimal
   r> md5>d @
 ;
 
-hex
-: md5+#s       ( u - = Convert one md5 number in hold area )
-  dup 18 rshift FF and 0 # # 2drop
-  dup 10 rshift FF and 0 # # 2drop
-  dup  8 rshift FF and 0 # # 2drop
-                FF and 0 # # 2drop
-;
-decimal
 
-: md5+string   ( u1 u2 u3 u4 - c-addr u = Convert md5 result to string )
+: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert md5 result to string )
   base @ >r hex
-  <# md5+#s md5+#s md5+#s md5+#s #>
+  <# md5+#s md5+#s md5+#s md5+#s 0. #>
   r> base !
 ;
 
 
-: md5-dump     ( w:md5 - = Dump the table )
+: md5-dump         ( w:md5 - = Dump the md5 state )
   >r
   ." md5:" r@ . cr
-  ."  result :" r@ md5>a @ r@ md5>b @ r@ md5>c @ r@ md5>d @ md5+string type cr
+  ."  result :" r@ md5>a @ r@ md5>b @ r@ md5>c @ r@ md5>d @ md5+to-string type cr
   ."  length :" r@ md5>length ? cr
   ."  buffer :" r@ md5>buffer r> md5>length @ 64 min dump
 ;
-
-
-md5-create m1
-
-s" 0123456789012345678901234567890123456789012345678901234567890123" m1 md5-update m1 md5-finish md5+string cr type
-
-m1 md5-reset
-
-s" Hello" m1 md5-update m1 md5-finish md5+string cr type
-
-cr
-\ m1 md5-dump
 
 [THEN]
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.10 $
+\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include chr_test.fs
 include crc_test.fs
 include dtm_test.fs
 include hct_test.fs
+include md5_test.fs
 include scl_test.fs
 include str_test.fs
 include tis_test.fs
