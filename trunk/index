@@ -7,6 +7,7 @@ Index of used prefices
 2 bar - Bit array module
 2 car - Cell Array module
 1 chr - Char module
+3 chs - Char Set module
 2 str - Text string module
 3 dtm - Datetime module
 3 dti - Datetime interator
@@ -16,6 +17,9 @@ Index of used prefices
 1 sci - Single linked cell list iterator
 1 scl - Single linked cell list
 1 scn - Single linked cell node
+3 hct - Hash cell table module
+3 hci - Hash cell table iterator module
+3 hcn - Hash cell table node
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
@@ -43,7 +47,6 @@ Index of used prefices
 5 cpl - Complex module
 4 dts - Datetime text stream
 4 frc - Fraction module
-? chs - Char Set module
       - Big Cell module
       - Big Float module
       - Big Fraction module
@@ -64,9 +67,9 @@ Index of used prefices
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
-3 hct - Hash cell table module
-3 hci - Hash cell table iterator module
-3 hcn - Hash cell table node
+9 tci - n-Tree cell iterator module
+9 tcm - n-Tree cell module
+9 tcn - n-Tree cell node
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------

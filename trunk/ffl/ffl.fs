@@ -20,13 +20,14 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 07:21:52 $ $Revision: 1.11 $
+\  $Date: 2006-08-07 16:48:07 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
 include ffl/bar.fs
 include ffl/car.fs
 include ffl/chr.fs
+include ffl/chs.fs
 include ffl/crc.fs
 include ffl/dtm.fs
 include ffl/dti.fs
