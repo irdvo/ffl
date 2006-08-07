@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 19:42:41 $ $Revision: 1.3 $
+\  $Date: 2006-08-07 16:52:21 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -138,7 +138,7 @@ sys.bigendian [IF]
 
 sys.bigendian [IF]
 hex
-: md5!             ( w addr - = Store word on address, md5 order )
+: md5!             ( w addr - = Store word on address, MD5 order )
   over                 FF and over c!
   char+ over 8  rshift FF and over c!
   char+ over 10 rshift FF and over c!
@@ -146,7 +146,7 @@ hex
 ;
 decimal
 [ELSE]
-: md5!             ( w addr - = Store word on address, md5 order )
+: md5!             ( w addr - = Store word on address, MD5 order )
   !
 ;
 [THEN]
@@ -263,7 +263,7 @@ decimal
 
 
 hex
-: md5+#s       ( u - = Convert one md5 number in hold area )
+: md5+#s       ( u - = Convert one MD5 number in hold area )
   dup 18 rshift FF and 0 # # 2drop
   dup 10 rshift FF and 0 # # 2drop
   dup  8 rshift FF and 0 # # 2drop
@@ -274,7 +274,7 @@ decimal
 
 ( Public words )
 
-: md5-init     ( w:md5 - = Initialise the md5 )
+: md5-init     ( w:md5 - = Initialise the MD5 )
   >r
   [ hex ]
   67452301 r@ md5>a !
@@ -297,17 +297,17 @@ decimal
 ;
 
 
-: md5-free     ( w:md5 - = Free the table from the heap )
+: md5-free     ( w:md5 - = Free the MD5 from the heap )
   free throw 
 ;
 
 
-: md5-reset        ( w:md5 - = Reset the md5 state )
+: md5-reset        ( w:md5 - = Reset the MD5 state )
   md5-init
 ;
 
 
-: md5-update       ( c-addr u w:md5 = Update the md5 with more data )
+: md5-update       ( c-addr u w:md5 = Update the MD5 with more data )
   >r
   r@ md5>buffer to md5.buf
   
@@ -323,7 +323,7 @@ decimal
 ;
 
 
-: md5-finish       ( w:md5 - u1 u2 u3 u4 = Finish the md5 calculation )
+: md5-finish       ( w:md5 - u1 u2 u3 u4 = Finish the MD5 calculation )
   >r
   r@ md5>length @ dup
   8 m* swap md5.length            \ save the bit length
@@ -349,7 +349,7 @@ decimal
 ;
 
 
-: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert md5 result to string )
+: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert MD5 result to string )
   base @ >r hex
   <# md5+#s md5+#s md5+#s md5+#s 0. #>
   r> base !
@@ -364,10 +364,10 @@ decimal
   ."  buffer :" r@ md5>buffer r> md5>length @ 64 min dump
 ;
 
-[THEN]
-
 [ELSE]
 .( Warning: md5 only works with 4 byte cells and 1 byte chars ) cr
+[THEN]
+
 [THEN]
 
 \ ==============================================================================
