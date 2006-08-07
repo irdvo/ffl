@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 10:34:45 $ $Revision: 1.11 $
+\  $Date: 2006-08-07 17:27:02 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -33,6 +33,7 @@ tst-reset-tests
 include bar_test.fs
 include car_test.fs
 include chr_test.fs
+include chs_test.fs
 include crc_test.fs
 include dtm_test.fs
 include hct_test.fs

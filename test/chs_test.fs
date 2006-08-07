@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-07 16:58:27 $ $Revision: 1.1 $
+\  $Date: 2006-08-07 17:27:02 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -29,20 +29,16 @@ include ffl/tst.fs
 
 .( Testing: chs) cr 
   
-marker chs-mark
+chs-create c5
 
-chs-create c1
+t{ c5 chs-set-alpha }t
+t{ char a c5 chs-char? ?true  }t
+t{ char 0 c5 chs-char? ?false }t
 
-t{ c1 chs-set-alpha }t
-t{ char a c1 chs-char? ?true  }t
-t{ char 0 c1 chs-char? ?false }t
+t{ c5 chs-invert }t
 
-t{ c1 chs-invert }t
-
-t{ char a c1 chs-char? ?false }t
-t{ char 0 c1 chs-char? ?true  }t
-
-chs-mark
+t{ char a c5 chs-char? ?false }t
+t{ char 0 c5 chs-char? ?true  }t
 
 \ ==============================================================================
 
