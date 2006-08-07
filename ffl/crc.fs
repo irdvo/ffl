@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 19:06:54 $ $Revision: 1.5 $
+\  $Date: 2006-08-07 16:48:39 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/stc.fs
 ( The crc module implements a 32-bit cyclic redundancy check calculation. )
 
 
-1 constant crc.version
+2 constant crc.version
 
 
 ( Public structure )
