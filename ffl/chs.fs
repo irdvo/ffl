@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-07 16:48:07 $ $Revision: 1.1 $
+\  $Date: 2006-08-08 17:40:50 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -79,19 +79,20 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs^move         ( w:chs1 w:chs2 - = Move chs2 in chs1 )
+: chs^move         ( w:chs2 w:chs1 - = Move chs2 in chs1 )
+  chs>set swap chs>set swap chs.size chars cmove
 ;
 
 
 ( Private words )
 
 : chs+validate-char  ( c - = Check and throw exception if character out of range )
-  127 > exp-index-out-of-range AND throw
+  127 u> exp-index-out-of-range AND throw
 ;
 
 
 : chs+validate-chars ( c c - = Check and thow exception if characters out of range )
-  127 > swap 127 > OR exp-index-out-of-range AND throw
+  127 u> swap 127 u> OR exp-index-out-of-range AND throw
 ;
 
 
@@ -99,14 +100,14 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
   >r
   8 /mod
   swap 1 swap lshift
-  swap chars r> chs>set +
+  swap chars r> chs>set + 
 ;
 
 
 : chs-set-ch       ( c w:chs - = Set the character in the set )
   chs-address
   tuck c@ OR
-  swap !
+  swap c!
 ;
 
 
@@ -114,7 +115,22 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
   chs-address
   swap invert 
   over c@ AND 
-  swap !
+  swap c!
+;
+
+
+: chs-ch?          ( c w:chs - f = Check if the character is in the set )
+  chs-address
+  c@ AND 0<>
+;
+
+
+: chs-emit-char    ( c - = Emit the character from the set )
+  dup chr-print? IF
+    emit
+  ELSE
+    [char] < emit 0 .r [char] > emit
+  THEN
 ;
 
 
@@ -242,6 +258,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 
 : chs-reset-xdigit  ( w:chs - = Reset the xdigit class in the set )
+  >r
   r@ chs-reset-digit
   [char] F [char] A r@ chs-reset-chars
   [char] f [char] a r> chs-reset-chars
@@ -249,10 +266,20 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 
 : chs-set-punct    ( w:chs - = Set the punct class in the set )
+  >r
+  [char] / [char] ! r@ chs-set-chars
+  [char] @ [char] : r@ chs-set-chars
+  [char] ` [char] [ r@ chs-set-chars
+  [char] ~ [char] { r> chs-set-chars  
 ;
 
 
 : chs-reset-punct  ( w:chs - = Reset the punct class in the set )
+  >r
+  [char] / [char] ! r@ chs-reset-chars
+  [char] @ [char] : r@ chs-reset-chars
+  [char] ` [char] [ r@ chs-reset-chars
+  [char] ~ [char] { r> chs-reset-chars  
 ;
 
 
@@ -287,28 +314,48 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 
 : chs-set-cntrl    ( w:chs - = Set the cntrl class in the set )
-  >r chr.us chr.nul r> chs-set-chars
+  >r chr.us chr.nul r@ chs-set-chars
+  chr.del r> chs-set-char
 ;
 
 
 : chs-reset-cntrl  ( w:chs - = Reset the cntrl class in the set )
-  >r chr.us chr.nul r> chs-reset-chars
+  >r chr.us chr.nul r@ chs-reset-chars
+  chr.del r> chs-reset-char
 ;
 
 
 : chs-set-graph    ( w:chs - = Set the graph class in the set )
+  dup chs-set-alnum chs-set-punct
 ;
 
 
 : chs-reset-graph  ( w:chs - = Reset the graph class in the set )
+  dup chs-reset-alnum chs-reset-punct
 ;
 
 
 : chs-set-print    ( w:chs - = Set the print class in the set )
+  dup chs-set-graph 
+  chr.sp swap chs-set-char
 ;
 
 
 : chs-reset-print  ( w:chs - = Reset the print class in the set )
+  dup chs-reset-graph
+  chr.sp swap chs-reset-char
+;
+
+
+: chs-set-word     ( w:chs - = Set the word class in the set )
+  dup chs-set-alnum
+  [char] _ swap chs-set-char
+;
+
+
+: chs-reset-word   ( w:chs - = Reset the word class in the set )
+  dup chs-reset-alnum
+  [char] _ swap chs-reset-char
 ;
 
 
@@ -316,8 +363,23 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 : chs-char?        ( c w:chs - f = Check if character is in the set )
   over chs+validate-char
-  chs-address
-  c@ AND 0<>
+  chs-ch?
+;
+
+
+( Special word )
+
+: chs-execute      ( .. xt w:chs - .. = Execute xt for every character in the set )
+  128 0 DO
+    I over chs-ch? IF        \ If character in the set
+      I 
+      swap >r
+      swap >r                \   Clear the stack ..
+      r@ execute             \   .. and execute the token
+      r> r>                  \   Restor the stack
+    THEN
+  LOOP
+  2drop
 ;
 
 
@@ -325,7 +387,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 : chs-dump         ( w:chs - = Dump the chs state )
   ." chs:" dup . cr
-  drop
+  ."   set:" ['] chs-emit-char swap chs-execute
 ;
 
 [THEN]
