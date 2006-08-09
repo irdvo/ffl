@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-06 19:42:41 $ $Revision: 1.15 $
+\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 \
@@ -36,12 +36,13 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000200 constant ffl.version
+000300 constant ffl.version
 
 
 ( Private words )
   
 variable sys.endian   1 sys.endian !
+
 
 ( System Settings )
 
@@ -49,7 +50,14 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
   1 c, 10 c,         \ unix: lf
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
   
-sys.endian c@ 0= constant sys.bigendian ( - f = Check for bigendian hardware )
+  
+8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+
+sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
+  
+sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+
+sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
   
   
 ( Extension words )
