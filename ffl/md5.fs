@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.5 $
+\  $Date: 2006-08-09 17:34:55 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -287,7 +287,7 @@ decimal
 ;
 
 
-: md5-create   ( "name" - = Create a named MD5 in the dictionary )
+: md5-create   ( C: "name" - R: - w:md5 = Create a named MD5 in the dictionary )
   create   here   md5% allot   md5-init
 ;
 
