@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.4 $
+\  $Date: 2006-08-09 16:27:57 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/config.fs
 ( The tst module implements an unit testing framework.)
 
 
-1 constant tst.version
+2 constant tst.version
 
 
 ( Private database )
