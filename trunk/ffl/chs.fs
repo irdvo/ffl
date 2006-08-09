@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.3 $
+\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/chr.fs
 
 ( Private constant )
 
-16 1 chars / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars / bytes in char
+128 sys.bits-in-char / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars / bytes in char
   
   
 ( Public structure )
@@ -80,7 +80,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 
 : chs^move         ( w:chs2 w:chs1 - = Move chs2 in chs1 )
-  chs>set swap chs>set swap chs.size chars cmove
+  chs>set swap chs>set swap chs.size cmove
 ;
 
 
@@ -98,7 +98,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 : chs-address      ( c w:chs - u:mask w:addr = Determine mask and array address for character )
   >r
-  8 /mod
+  sys.bits-in-char /mod           \ Mask and offset
   swap 1 swap lshift
   swap chars r> chs>set + 
 ;

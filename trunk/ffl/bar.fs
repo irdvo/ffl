@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.5 $
+\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -64,13 +64,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   >r
   1 max                      \ at least one bit in the array
   
-  dup 8 /mod swap 0<> IF     \ 8 bits in a byte
+  dup sys.bits-in-char
+  /mod swap 0<> IF
     1+
   THEN
   
   dup r@ bar>size !
   
-  dup allocate throw         \ allocate the array
+  dup chars allocate throw         \ allocate the array
   
   tuck swap 0 fill           \ reset all bits
   
@@ -127,18 +128,19 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   
   0= exp-index-out-of-range AND throw
   
-  8 /mod                     \ 8 bits in a byte
+  sys.bits-in-byte /mod      \ mask and offset
   
   swap 1 swap lshift         \ Convert remainder to bit mask
   
-  -rot swap bar>bits @ +
+  -rot chars swap bar>bits @ +
 ;
 
 
 : bar-next-bit     ( u:mask w:addr - u:mask w:addr = Move mask and address to the next bit )
-  swap dup 128 = IF
+  swap dup 
+  [ 1 sys.bits-in-char 1- lshift ] literal = IF   \ 128
     drop 1
-    swap 1+
+    swap char+
   ELSE
     1 lshift swap
   THEN
@@ -198,7 +200,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 
 : bar-set          ( w:bar - = Set all bits in the bit array )
-  dup bar>bits @ swap bar>size @ 255 fill
+  dup bar>bits @ swap bar>size @ -1 fill
 ;
 
 
