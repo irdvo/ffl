@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-01 16:56:48 $ $Revision: 1.7 $
+\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -89,7 +89,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
      
 
-: hct-create   ( u "name" - = Create a named hash table with an initial size in the dictionary )
+: hct-create   ( C: "name" u - R: - w:hct = Create a named hash table with an initial size in the dictionary )
   create   here   hct% allot   hct-init
 ;
 

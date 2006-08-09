@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-10 17:01:21 $ $Revision: 1.7 $
+\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -167,7 +167,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-create   ( "name" - = Create a named scl-list in the dictionary )
+: scl-create   ( C: "name" - R: - w:scl = Create a named scl-list in the dictionary )
   create   here   scl% allot   scl-init
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-08 17:40:50 $ $Revision: 1.2 $
+\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -87,12 +87,12 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ( Private words )
 
 : chs+validate-char  ( c - = Check and throw exception if character out of range )
-  127 u> exp-index-out-of-range AND throw
+  127 u> exp-invalid-parameters AND throw
 ;
 
 
 : chs+validate-chars ( c c - = Check and thow exception if characters out of range )
-  127 u> swap 127 u> OR exp-index-out-of-range AND throw
+  127 u> swap 127 u> OR exp-invalid-parameters AND throw
 ;
 
 
@@ -173,7 +173,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Character range words )
 
-: chs-set-chars    ( c:end c:start w:chs - = Set a range of characters in the set )
+: chs-set-chars    ( c:max c:min w:chs - = Set a range of characters in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
@@ -183,7 +183,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-chars  ( c:end c:start w:chs - = Reset a range of characters in the set )
+: chs-reset-chars  ( c:max c:min w:chs - = Reset a range of characters in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
