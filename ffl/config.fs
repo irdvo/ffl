@@ -2,7 +2,7 @@
 \
 \                  config - the config in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\             Copyright (C) 2005-2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.16 $
+\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 \
