@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-08 08:25:01 $ $Revision: 1.15 $
+\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/chr.fs
 
 
 ( str = Character string )
-( The str module implements a text string.)
+( The str module implements a dynamic text string.)
 
 
 1 constant str.version

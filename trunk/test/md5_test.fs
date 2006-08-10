@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-07 16:56:48 $ $Revision: 1.1 $
+\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,8 +30,6 @@ include ffl/tst.fs
 
 .( Testing: md5) cr 
   
-marker md5-mark
-
 md5-create m1
 
 hex
@@ -44,7 +42,7 @@ t{ m1 md5-reset }t
 
 t{ s" 01234567890123456789012345678901234567890123456789012345678901234567890" m1 md5-update }t
 
-t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 ) }t
+t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 }t
 
 t{ m1 md5-reset }t
 
@@ -54,7 +52,7 @@ t{ s" 90123456789012345678901234567" m1 md5-update }t
 
 t{ s" 8901234567890" m1 md5-update }t
 
-t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 ) }t
+t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 }t
 
 t{ md5-new value m2 }t
 
@@ -71,8 +69,6 @@ t{ m2 md5-finish 98C6453 ?u 1B79B042 ?u E7107684 ?u B270F28A ?u }t
 t{ m2 md5-free }t
 
 decimal
-
-md5-mark
 
 \ ==============================================================================
 
