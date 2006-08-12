@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.3 $
+\  $Date: 2006-08-12 12:28:43 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 \
@@ -77,7 +77,7 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
-  [ cell 8 * ] literal swap - rshift r>
+  sys.bits-in-cell swap - rshift r>
   or
 ;
 
