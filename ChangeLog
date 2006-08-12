@@ -1,4 +1,7 @@
 0.3.0:
+* config: sys.bits-in-byte added
+* config: sys.bits-in-cell added
+* config: sys.bits-in-char added
 * chs: new module (Character Set)
 * crc: word crc-calc-crc32 renamed to crc+calc-crc32
 * crc: word crc-calc-poly renamed to crc+calc-poly

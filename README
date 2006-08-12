@@ -6,7 +6,7 @@
 The Forth Foundation Library is a general purpose forth library. It gives you
 a collection of words written in (ANS) Forth, in areas such as data types,
 collections, development support, interfaces and compound modules. The
-library is developped with gforth.
+library is developped with gforth and pfe.
 
 At the moment the library is still under development. The FFL library and the 
 test files are licensed under the GNU GPL.
@@ -53,10 +53,30 @@ For pfe the config.fs and make.fs files should be copied from the
 
 The next step is editing the config.fs file for system settings.
 
-At the moment there is only one system setting: the word 'sys.eol'. This word 
-defines the ascii end of line as a counted string. For unix this is a linefeed,
+
+At the moment there is four system setting: 
+
+sys.eol 
+
+This word defines the ascii end of line as a counted string. For unix this is a linefeed,
 for dos systems it is carriage return and linefeed. You should change the 'sys.eol' 
-word if you work on a dos system. The default is for unix systems.
+word if you work on non unix system. The default is for unix systems.
+
+sys.bits-in-byte
+
+This word defines the number of bits in a byte. The default is 8. If your
+system uses a different number of bits in a byte, then you should change
+this word.
+
+sys.bits-in-cell
+
+This word defines the number of bits in a cell. The default is the number of
+bits in a byte multipied by the number of bytes in a cell.
+
+sys.bits-in-char
+
+This word defines the number of bits in a char. The default is the number of
+bits in a byte multipied by the number of bytes in a char.
 
 
 Testing
@@ -80,7 +100,7 @@ pfe ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any
-errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxx tests.'
+errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
 then all went well.
 
 
@@ -95,8 +115,8 @@ the file 'words.html' all words of the libary are alphabetically listed.
 Porting to other forth systems
 ------------------------------
 
-The library is developped on gforth. The intention is that only two files
-are dependant of the forth system:
+The library is developped on gforth and pfe. The intention is that only two 
+files are dependant of the (ANS) forth system:
 
  ./ffl/config.fs
  ./ffl/make.fs
