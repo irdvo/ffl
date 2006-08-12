@@ -1,0 +1,37 @@
+0.3.0:
+* config: sys.bits-in-byte added
+* config: sys.bits-in-cell added
+* config: sys.bits-in-char added
+* chs: new module (Character Set)
+* crc: word crc-calc-crc32 renamed to crc+calc-crc32
+* crc: word crc-calc-poly renamed to crc+calc-poly
+* config: sys.bigendian added
+* md5: new module (MD5 Algorithm)
+* hci: new module (Hash cell table iterator)
+* hcn: new module (Hash cell table node)
+* hct: new module (Hash cell table)
+* float words optional
+* pfe config.fs/make.fs added
+* dti: new module (Date & Time iterator)
+* dtm: new module (Date & Time)
+0.2.0
+* car: new module (Cell array)
+* bar: new module (Bit array)
+* tst: new words: ?d and ?ud for tests on doubles
+* chr: new word: chr-string?
+* chr: new word: chr-base
+* tos: new module (Text output stream)
+* tis: new module (Text input stream)
+* chr: constants for ascii 0 till 31 and 127
+* str: new module (Text string)
+* scl: compare field for flexible sorting
+* scl: execute removes 'own' stack contents before executing xt
+* bigforth config.fs/make.fs added
+0.1.0
+* crc: new module (Cyclic Redundancy Check)
+* chr: new module (Char module)
+* tst: new module (Word test module)
+* stc: new module (Struct module)
+* sci: new module (Single linked cell list iterator)
+* scn: new module (Single linked cell list node)
+* scl: new module (Single linked cell list)

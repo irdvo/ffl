@@ -1,0 +1,4 @@
+#/bin/sh
+
+ofcfrth --dir=../html *.fs
+ofcfrth --dir=../webpage/docs *.fs

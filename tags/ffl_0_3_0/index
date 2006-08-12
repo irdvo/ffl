@@ -1,0 +1,97 @@
+Index of used prefices
+
+ ffl  - Forth Foundation Library
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+2 bar - Bit array module
+2 car - Cell Array module
+1 chr - Char module
+3 chs - Char Set module
+2 str - Text string module
+3 dtm - Datetime module
+3 dti - Datetime interator
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+1 sci - Single linked cell list iterator
+1 scl - Single linked cell list
+1 scn - Single linked cell node
+3 hct - Hash cell table module
+3 hci - Hash cell table iterator module
+3 hcn - Hash cell table node
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+1 stc - Struct definition
+1 tst - Unit tests
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+1 crc - 32-bit Cyclic Redundancy Check
+3 md5 - MD5 module
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+2 tis - Text Input Stream
+2 tos - Text Output Stream
+----- - ------------------------------------------------
+
+
+
+      ToDo
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+6 clr - Color module
+5 cpl - Complex module
+4 dts - Datetime text stream
+4 frc - Fraction module
+      - Big Cell module
+      - Big Float module
+      - Big Fraction module
+      - Big Complex module
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+5 aci - Avl cell tree iterator module
+5 act - Avl cell tree module
+5 acn - Avl cell tree node
+4 bci - Binary cell tree iterator module
+4 bct - Binary cell tree module
+4 bcn - Binary cell tree node
+6 dci - Double linked cell list Iterator
+6 dcl - Double linked cell list module
+6 dcn - Double linked cell list node
+7 fsm - Finite state machine module
+8 grp - Graph module
+8 gre - GRaph edge module
+8 grn - GRaph node module
+9 tci - n-Tree cell iterator module
+9 tcm - n-Tree cell module
+9 tcn - n-Tree cell node
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+4 log - Logger module
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+8 bzf - BZip2 file module
+8 bzp - BZip2 module
+4 dbm - DBM module
+7 gzf - GZip file module
+7 gzp - GZip module
+5 htm - HTML module
+4 rnd - Pseudo Random module
+5 rgx - Regex module
+4 sha - SHA1/2 module
+4 tmr - Timer module
+5 xml - XML module
+      - css module
+      - url module
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+5 arg - Argument parser
+----- - ------------------------------------------------

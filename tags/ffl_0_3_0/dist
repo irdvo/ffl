@@ -1,0 +1,28 @@
+#/bin/sh
+
+package=ffl
+version=0.3.0
+
+dest=${package}-${version}
+
+mkdir ${dest}
+mkdir ${dest}/ffl
+mkdir ${dest}/test
+mkdir ${dest}/html
+mkdir ${dest}/engines
+mkdir ${dest}/engines/gforth
+mkdir ${dest}/engines/bigforth
+mkdir ${dest}/engines/pfe
+
+cp AUTHORS COPYING NEWS README ChangeLog ${dest}
+cp     ffl/*.fs   ${dest}/ffl
+cp    test/*.fs   ${dest}/test
+cp    html/*.html ${dest}/html
+
+cp  engines/gforth/*.fs   ${dest}/engines/gforth
+cp  engines/bigforth/*.fs ${dest}/engines/bigforth
+cp  engines/pfe/*.fs      ${dest}/engines/pfe
+
+tar cvzf ${package}-${version}.tar.gz ${dest} 
+
+rm -rf ${dest}
