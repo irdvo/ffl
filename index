@@ -7,7 +7,7 @@ Index of used prefices
 2 bar - Bit array module
 2 car - Cell Array module
 1 chr - Char module
-3 chs - Char Set module
+3 chs - Char Set module: ToDo
 2 str - Text string module
 3 dtm - Datetime module
 3 dti - Datetime interator
@@ -95,3 +95,7 @@ Index of used prefices
 ----- - ------------------------------------------------
 5 arg - Argument parser
 ----- - ------------------------------------------------
+
+
+ToDo
+chs: set with a string of chars CcYyNn -> set
