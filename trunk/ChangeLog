@@ -1,4 +1,5 @@
 0.4.0:
+* frc: new module (Fraction)
 * examples directory added
 0.3.0:
 * config: sys.bits-in-byte added
