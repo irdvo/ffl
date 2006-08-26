@@ -11,6 +11,7 @@ Index of used prefices
 2 str - Text string module
 3 dtm - Datetime module
 3 dti - Datetime interator
+4 frc - Fraction module
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
@@ -46,7 +47,6 @@ Index of used prefices
 6 clr - Color module
 5 cpl - Complex module
 4 dts - Datetime text stream
-4 frc - Fraction module
       - Big Cell module
       - Big Float module
       - Big Fraction module
