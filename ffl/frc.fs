@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-27 07:06:44 $ $Revision: 1.2 $
+\  $Date: 2006-08-27 18:02:15 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,13 +34,15 @@ include ffl/stc.fs
 
 
 ( frc = Fraction module )
-( The frc module implements words for using fractions.)
-  
+( The frc module implements words for using fractions. Note: to reduce normalizing of fractions,)
+( the input is validated and normalized, but the resulting output is NOT normalized. This is left)
+( to the next fraction word.)
+
 
 1 constant frc.version
 
   
-( Public structure )
+( Fraction structure )
 
 struct: frc%       ( - n = Get the required space for the frc data structure )
   cell: frc>num         \ numerator
@@ -48,10 +50,8 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 ;struct
 
 
-( Private words )
 
-
-( Public words )
+( Structure creation, initialisation and destruction )
 
 : frc-init         ( w:frc - = Initialise the fraction to zero )
   dup    frc>num 0!
@@ -73,6 +73,8 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
   free throw 
 ;
 
+
+( General module words )
 
 : frc+calc-gcd     ( n1 n2 - n:gcd = Calculate the Greatest Common Divider )
   abs swap abs          \ both positive
@@ -98,16 +100,116 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 ;
 
 
-: frc+norm         ( n:denom n:num - n:denom n:num = Normalize a fraction on stack )
-  over 0> 0= exp-invalid-parameters AND throw
-  
+: frc+norm         ( n:num n:denom - n:num n:denom = Normalize a fraction on stack )
+  dup 0> 0= exp-invalid-parameters AND throw
   2dup frc+calc-gcd
   tuck /
   >r / r>
 ;
 
 
-( Member words )
+( Calculation module words )
+
+: frc+add          ( n:num2 n:denom2 n:num1 n:denom1 - n:num n:denom = Add two fractions on stack )
+  frc+norm 2swap 
+  frc+norm                  \ Normalize both fractions
+  rot
+  2dup = IF                 \ denom1 = denom2 ?
+    drop 
+    >r + r>                 \   num = num1 + num2
+  ELSE                      \ ELSE
+    2dup * >r               \   denom = denom1 * denom2
+    rot *
+    >r * r> +               \   num = num1 * denom2 + num2 * denom1
+    r>
+  THEN
+;
+
+
+: frc+subtract     ( n:num2 n:denom2 n:num1 n:denom1 - n:num n:denom = Subtract fraction1 from fraction2 on stack )
+  frc+norm 2swap 
+  frc+norm 2swap            \ Normalize both fractions
+  rot
+  2dup = IF                 \ denom1 = denom2 ?
+    drop 
+    >r - r>                 \   num = num1 + num2
+  ELSE                      \ ELSE
+    2dup * >r               \   denom = denom1 * denom2
+    rot *
+    >r * r> -
+    r>                      \   num = num2 * denom1 - num1 * denom2
+  THEN
+;
+
+
+: frc+multiply     ( n:num2 n:denom2 n:num1 n:denom1 - n:num n:denom = Multiply fraction1 by fraction2 on stack )
+  frc+norm 2swap 
+  frc+norm                   \ Normalize both fractions
+  rot *                      \ denom = denom1 * denom2
+  >r * r>                    \ num = num1 * num2
+;
+
+
+: frc+divide       ( n:num2 n:denom2 n:num1 n:denom1 - n:num n:denom = Divide fraction1 by fraction2 on stack )
+  frc+norm 2swap 
+  frc+norm 2swap             \ Normalize both fractions
+  over 0= -10 AND throw      \ Divide by zero check
+  >r * swap                  \ num   = num2 * denom1
+  r> * swap                  \ denom = denom2 * num1 
+;
+
+
+: frc+invert       ( n:num n:denom - n:num n:denom = Invert the fraction on stack)
+  frc+norm                   \ Normalize fraction 
+  over 0= -10 AND throw      \ Divide by zero check
+  swap                       \ invert
+;
+
+
+: frc+negate       ( n:num n:denom - n:num n:denom = Negate the fraction on stack)
+  frc+norm
+  swap negate swap
+;
+
+
+: frc+abs          ( n:denom n:num - n:denom n:num = Absolute the fraction on stack )
+  frc+norm
+  swap abs swap
+;
+
+
+( Conversion module words )
+
+[DEFINED] d>f [DEFINED] f/ AND [IF]
+: frc+to-float     ( n:num n:denom - r = Convert fraction to float value )
+  >r s>d d>f r> s>d d>f f/
+;
+[THEN]
+
+
+: frc+to-string    ( n:num n:denom - c-addr u = Convert fraction to a string )
+  frc+norm
+  <#
+  dup 1 <> IF
+    s>d #s 2drop
+    [char] / hold
+  ELSE
+    drop
+  THEN
+  dup abs s>d # 
+  rot sign
+  #>
+;
+
+
+( Compare module words )
+
+: frc+compare      ( n:num2 n:denom2 n:num1 n:denom1 - n = Compare two fractions on stack )
+  frc+subtract drop sgn
+;
+
+
+( Structure words )
 
 : frc-num@         ( w:frc - n:numerator = Get the numerator )
   frc>num @
@@ -119,29 +221,18 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 ;
 
 
-: frc-get          ( w:frc - n:denom n:num = Get the fraction )
-  dup  frc-denom@ 
-  swap frc-num@
+: frc-get          ( w:frc - n:num n:denom = Get the fraction )
+  dup  frc-num@ 
+  swap frc-denom@
 ;
 
-
-: frc-norm         ( w:frc - = Normalize the fraction )
+  
+: frc-set          ( n:num n:denom w:frc = Normalize and set the fraction )
   >r
+  frc+norm
   
-  r@ frc-denom@ r@ frc-num@ frc+calc-gcd
-  
-  r@ frc-denom@ over / r@ frc>denom !
-  r@ frc-num@   swap / r> frc>num   !
-;
-
-  
-: frc-set          ( n:denom n:num w:frc = Set the fraction )
-  rot
-  dup 0> 0= exp-invalid-parameters AND throw
-  
-  over frc>denom !
-  tuck frc>num   !
-  frc-norm
+  r@ frc>denom !
+  r> frc>num   !
 ;
 
 
@@ -151,153 +242,12 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 ;
 
 
-( Private words )
-
-: frc-add-norm     ( n:denom n:num w:frc - = Add normalized num/denom to fraction )
-  >r
-  over r@ frc-denom@ = IF
-    nip r@ frc>num +!
-  ELSE
-    r@ frc-denom@ * over r@ frc-num@ * + r@ frc>num !
-    r@ frc-denom@ * r@ frc>denom !
-  THEN
-  
-  r> frc-norm
+: frc^compare      ( w:frc2 w:frc1 - n = Compare fraction2 with fraction1 )
+  >r frc-get 
+  r> frc-get
+  frc+compare
 ;
 
-
-: frc-sub-norm     ( n:denom n:num w:frc - = Subtract normalized num/denom from fraction )
-  >r
-  over r@ frc-denom@ = IF
-    nip negate r@ frc>num +!
-  ELSE
-    r@ frc-denom@ * over r@ frc-num@ * swap  - r@ frc>num !
-    r@ frc-denom@ * r@ frc>denom !
-  THEN
-  
-  r> frc-norm
-;
-
-
-( Calculation words )
-
-: frc+add          ( n:denom2 n:num2 n:denom1 n:num1 - n:denom n:num = Add two fractions on stack )
-  frc+norm 2swap frc+norm   \ Normalize both fractions
-  >r rot
-  2dup = IF                 \ denom1 = denom2 ?
-    drop swap
-    r> +                    \   num = num1 + num2
-  ELSE                      \ ELSE
-    2dup *                  \   denom = denom1 * denom2
-    r> swap >r
-    * >r * r> +             \   num = num1 * denom2 + num2 * denom1
-    r> swap
-  THEN
-  frc+norm                  \ Normalize the result
-;
-
-
-: frc-add          ( n:denom n:num w:frc - = Add num/denom to fraction )
-  >r frc+norm r> frc-add-norm
-;
-
-
-: frc^add          ( w:frc2 w:frc1 - = Add fraction 2 to fraction 1)
-  >r frc-get r> frc-add-norm
-;
-
-
-: frc+subtract     ( n:denon2 n:num2 n:denom1 n:num1 - n:denom n:num = Subtract fraction2 from fraction1 on stack )
-  frc+norm 2swap frc+norm   \ Normalize both fractions
-  >r rot
-  2dup = IF                 \ denom1 = denom2 ?
-    drop swap
-    r> -                    \   num = num1 + num2
-  ELSE                      \ ELSE
-    2dup *                  \   denom = denom1 * denom2
-    r> swap >r
-    * >r * r> -             \   num = num1 * denom2 - num2 * denom1
-    r> swap
-  THEN
-  frc+norm                  \ Normalize the result
-;
-
-
-: frc-subtract     ( n:denom n:num w:frc - = Subtract num/denom from fraction )
-  >r frc+norm r> frc-sub-norm
-;
-
-
-: frc^subtract     ( w:frc2 w:frc1 - = Subtract fraction2 from fraction 1)
-  >r frc-get r> frc-sub-norm
-;
-
-
-: frc-multiply     ( n:denom n:num w:frc - = Multiply fraction by num/denom )
-  >r
-  frc+norm
-  r@ frc-num@   * r@ frc>num   !
-  r@ frc-denom@ * r@ frc>denom !
-  
-  r> frc-norm
-;
-
-
-: frc^multiply     ( w:frc2 w:frc1 - = Multiply fraction1 by fraction2 )
-  >r
-  frc-get
-  r@ frc-num@   * r@ frc>num   !
-  r@ frc-denom@ * r@ frc>denom !
-  
-  r> frc-norm
-;
-
-
-: frc-divide       ( n:denom n:num w:frc - = Divide fraction by num/denom )
-;
-
-
-: frc^divide       ( w:frc2 w:frc1 - = Divide fraction1 by fraction 2 )
-  >r frc-get r> frc-divide
-;
-
-
-: frc-invert       ( w:frc - = Invert the fraction )
-;
-
-
-: frc-negate       ( w:frc - = Negate the fraction )
-  
-;
-
-
-: frc-abs          ( w:frc - = Absolute the fraction )
-;
-
-
-( Conversion words )
-
-\ conditional
-: frc-to-float     ( w:frc - r = Convert to float value )
-;
-
-
-: frc-to-string    ( w:frc - c-addr u = Convert to a string )
-;
-
-
-( Compare words )
-
-: frc-compare      ( n:denom n:num w:frc - n = Compare fraction with num/denom )
-;
-
-
-: frc^compare      ( w:frc2 w:frc1 - n = Compare fraction1 with fraction 2 )
-  >r frc-get r> frc-compare
-;
-
-
-( Inspection )
 
 : frc-dump         ( w:frc - = Dump the fraction )
   ." frc:" dup . cr
