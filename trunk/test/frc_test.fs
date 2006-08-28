@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-27 07:06:44 $ $Revision: 1.1 $
+\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -37,39 +37,87 @@ t{ 2 -10 frc+calc-gcd 2 ?s }t
 t{ 5  15 frc+calc-lcm 15 ?s }t
 t{ 10 15 frc+calc-lcm 30 ?s }t
 
-\ Creation / allocation
+
+\ Calculations
+
+t{  1 2 1 3 frc+add 6  ?s 5  ?s }t
+t{  4 6 2 5 frc+add 15 ?s 16 ?s }t
+t{ -1 3 1 6 frc+add 2dup 18 ?s -3 ?s frc+norm  6 ?s -1 ?s }t
+
+t{  2 3  1 6 frc+subtract 2dup 18 ?s  9 ?s frc+norm  2 ?s  1 ?s }t
+t{  2 3 -1 6 frc+subtract 2dup 18 ?s 15 ?s frc+norm  6 ?s  5 ?s }t
+
+t{  4 6 2 5  frc+multiply 15 ?s  4 ?s }t
+t{ -2 3 3 7  frc+multiply 2dup 21 ?s -6 ?s frc+norm  7 ?s -2 ?s }t
+
+t{  2 3 1 6  frc+divide 2dup  3 ?s 12 ?s frc+norm  1 ?s  4 ?s }t
+t{ 1 3 -1 4  frc+divide 2dup  3 ?s -4 ?s frc+norm  3 ?s -4 ?s }t
+
+t{ -1 3 frc+invert 1 ?s -3 ?s }t
+
+t{ -1 3 frc+negate  3 ?s  1 ?s }t
+t{  1 3 frc+negate  3 ?s -1 ?s }t
+t{ -1 3 frc+abs     3 ?s  1 ?s }t
+t{  1 3 frc+abs     3 ?s  1 ?s }t
+
+\ Compare
+
+t{ 3 6 1 2 frc+compare    ?0 }t
+t{ 4 6 1 2 frc+compare  1 ?s }t
+t{ 2 6 1 2 frc+compare -1 ?s }t
+
+\ Conversion
+
+: frcs1 s" -2/7" ;
+: frcs2 s" 0"    ;
+: frcs3 s" 3"    ;
+: frcs4 s" 12/5" ;
+    
+t{ -6 21 frc+to-string frcs1 compare ?0 }t  
+t{  0 3  frc+to-string frcs2 compare ?0 }t
+t{  3 1  frc+to-string frcs3 compare ?0 }t
+t{ 12 5  frc+to-string frcs4 compare ?0 }t
+
+[DEFINED] frc+to-float [IF]
+t{  1 3 frc+to-float  0.33333e0 ?r }t
+t{ -1 3 frc+to-float -0.33333e0 ?r }t
+[THEN]
+
+
+\ Creation and allocation structure
 
 frc-create frc1
 
 t{ frc-new value frc2 }t
 
-t{ frc1 frc-get ?0 1 ?s  }t
+t{ frc1 frc-get 1 ?s ?0  }t
 
-t{ 10 5 frc1 frc-set     }t
+t{ 5 10 frc1 frc-set     }t
 
-t{ frc1 frc-get 1 ?s 2 ?s }t    \ normalized 5/10 -> 1/2
+t{ frc1 frc-get 2 ?s 1 ?s }t    \ normalized 5/10 -> 1/2
 
-\ Members
 
-t{ frc2 frc-get ?0 1 ?s  }t
+t{ frc2 frc-get 1 ?s ?0  }t
 
-t{ 8 12 frc2 frc-set }t
+t{ 12 8 frc2 frc-set }t
 
 t{ frc2 frc-num@ 3 ?s   }t
 t{ frc2 frc-denom@ 2 ?s }t     \ normalized 12/8 -> 3/2
 
-\ Calculation
+t{ frc2 frc1 frc^move }t
 
-t{ 6 4 frc1 frc-set }t
-t{ 5 2 frc2 frc-set }t
+t{ frc1 frc-get 2 ?s 3 ?s }t
 
-\ t{ frc2 frc1 frc^add }t
+t{ frc2 frc1 frc^compare ?0 }t
 
-\ t{ frc1 frc-get 16 ?s 15 ?s }t
+t{ 1 2 frc1 frc-set }t
+t{ 3 4 frc2 frc-set }t
 
-\ t{ 5 3 frc1 frc-add }t
+t{ frc2 frc1 frc^compare 1 ?s }t
 
-\ t{ frc1 frc-get 5 ?s 3 ?s }t
+t{ 1 3 frc2 frc-set }t
+
+t{ frc2 frc1 frc^compare -1 ?s }t
 
 t{ frc2 frc-free }t
 

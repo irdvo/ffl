@@ -1,4 +1,5 @@
 0.4.0:
+* cpx: new module (Complex number)
 * frc: new module (Fraction)
 * examples directory added
 0.3.0:

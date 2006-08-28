@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 16:27:57 $ $Revision: 1.5 $
+\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -175,7 +175,7 @@ variable tst-tests
 [DEFINED] fdepth [IF]
 : ?r           ( r r - = Check for float value on stack )
   tst-fdepth? IF
-    f<> IF
+    f- fabs 1e-5 f< 0= IF
       s" float stack contents mismatch: " tst-report-error
     THEN
   THEN

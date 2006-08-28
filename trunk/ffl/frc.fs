@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-27 18:02:15 $ $Revision: 1.3 $
+\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -102,9 +102,13 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 
 : frc+norm         ( n:num n:denom - n:num n:denom = Normalize a fraction on stack )
   dup 0> 0= exp-invalid-parameters AND throw
-  2dup frc+calc-gcd
-  tuck /
-  >r / r>
+  over 0= IF
+    drop 1
+  ELSE
+    2dup frc+calc-gcd
+    tuck /
+    >r / r>
+  THEN
 ;
 
 
@@ -156,6 +160,11 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
   over 0= -10 AND throw      \ Divide by zero check
   >r * swap                  \ num   = num2 * denom1
   r> * swap                  \ denom = denom2 * num1 
+  
+  dup 0< IF                  \ numerator has the sign
+    negate swap
+    negate swap
+  THEN
 ;
 
 
@@ -163,6 +172,11 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
   frc+norm                   \ Normalize fraction 
   over 0= -10 AND throw      \ Divide by zero check
   swap                       \ invert
+  
+  dup 0< IF                  \ numerator has the sign
+    negate swap
+    negate swap
+  THEN
 ;
 
 
@@ -172,7 +186,7 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 ;
 
 
-: frc+abs          ( n:denom n:num - n:denom n:num = Absolute the fraction on stack )
+: frc+abs          ( n:num n:denom - n:denom n:num = Absolute the fraction on stack )
   frc+norm
   swap abs swap
 ;
@@ -196,7 +210,7 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
   ELSE
     drop
   THEN
-  dup abs s>d # 
+  dup abs s>d #s 
   rot sign
   #>
 ;
