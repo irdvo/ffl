@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.1 $
+\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -93,13 +93,13 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+multiply     ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Multiply two complex numbers on stack )
-\  double re = [other re];
-\  double im = [other im];
-\  double tm;
-
-\   tm = (_re * re - _im * im);
-\  _im = (_re * im + re * _im);
-\  _re = tm;
+  fswap frot
+  fover fover f* f>r                   \ re1 * im2
+  f>r
+  fswap frot
+  fover fover f* fr> fswap f>r         \ re2 * im1
+  frot f* f>r f* fr> f-                \ re2 * r1 - im2 * im1
+  fr> fr> f+                           \ re1 * im2 + re2 * im1
 ;
 
 
@@ -122,15 +122,15 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+nrm          ( r:re r:im - r = Calculate the square of the modulus of the complex number )
-\   return (_re * _re + _im * _im)
+  fswap fdup f*
+  fswap fdup f*
+  f+                                   \ re * re + im * im
 ;
 
 
 : cpx+abs          ( r:re r:im - r = Calculate the modulus of the complex number )
-  cpx+nrm fsqrt              \  sqrt(re1 * re2 + im1 * im2)
+  cpx+nrm fsqrt                        \  sqrt(re * re + im * im)
 ;
-
-
 
 
 : cpx+sqrt         ( r:re r:im - r:re r:im = Calculate the square root for the complex number on stack )
@@ -166,16 +166,14 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+exp          ( r:re r:im - r:re r:im = Calculate the exponent function for the complex number on stack )
-\  double s = sin(_im);
-\  double c = cos(_im);
-\  double u = exp(_re);
-
-\  _re = u * c; 
-\  _im = u * s; 
+  fsincos                              \ sin(im) cos(im)
+  frot fexp                            \ exp(re)
+  fswap fover f*                       \ exp(re) * cos(im)
+  frot frot f*                         \ exp(re) * sin(im)
 ;
 
 
-: cpx+log          ( r:re r:im - r:re r:im = Calculate the natural logarithm for the complex number on stack )
+: cpx+ln           ( r:re r:im - r:re r:im = Calculate the natural logarithm for the complex number on stack )
 \  double r = [self nrm];
 
 \  _im = atan2(_im, _re);

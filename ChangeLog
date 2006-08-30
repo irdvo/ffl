@@ -1,4 +1,6 @@
 0.4.0:
+* config: new words: f>r fr> fr@
+* config: sys.cells-in-float added
 * cpx: new module (Complex number)
 * frc: new module (Fraction)
 * examples directory added

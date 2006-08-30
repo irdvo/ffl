@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-12 12:28:43 $ $Revision: 1.4 $
+\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -162,7 +162,17 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-( Public Exceptions )
+[DEFINED] floats [IF]
+
+( Float system settings )
+
+1 floats cell /mod swap [IF] 1+ [THEN]
+                            constant sys.cells-in-float ( - n = Number of cells in a float )
+
+[THEN]
+
+
+( Exceptions )
 
 variable exp-next  -2050 exp-next !
 
