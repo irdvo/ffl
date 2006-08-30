@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-12 12:28:43 $ $Revision: 1.4 $
+\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -152,7 +152,122 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-( Public Exceptions )
+[DEFINED] floats [IF]
+
+( Float system settings )
+
+1 floats 1 cells /mod swap [IF] 1+ [THEN]
+                            constant sys.cells-in-float ( - n = Number of cells in a float )
+
+( Private float extension )
+
+create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
+  sys.cells-in-float cells allot
+  
+  
+( Float extension words )
+
+\ the following words should definitely be ANS words .. 
+
+sys.cells-in-float 1 = [IF]
+: f>r              ( r - = Move a float to the return stack )
+  r>
+  sys.float-cells f!
+  sys.float-cells @ >r
+  >r
+;
+
+: fr>              ( - r = Move a float from the return stack )
+  r>
+  r> sys.float-cells !
+     sys.float-cells f@
+  >r
+;
+
+: fr@              ( - r = Fetch a float from the return stack )
+  r>
+  r@ sys.float-cells !
+     sys.float-cells f@
+  >r
+;
+[ELSE] sys.cells-in-float 2 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  >r
+;
+
+: fr>
+  r>
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  2r@ sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+[ELSE] sys.cells-in-float 3 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  sys.float-cells cell+ cell+ @ >r
+  >r
+;
+: fr>
+  r>
+  r>  sys.float-cells cell+ cell+ !
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  r>  dup  sys.float-cells cell+ cell+ !
+  2r> 2dup sys.float-cells 2!
+           sys.float-cells f@
+  2>r >r
+  >r
+;
+[ELSE] sys.cells-in-float 4 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  sys.float-cells cell+ cell+ 2@ 2>r
+  >r
+;
+
+: fr>
+  r>
+  2r> sys.float-cells cell+ cell+ !
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  2r> 2dup sys.float-cells cell+ cell+ 2!
+  2r> 2dup sys.float-cells 2!
+           sys.float-cells f@
+  2>r 2>r
+  >r
+;
+[ELSE]
+.( Unexpected float size )
+[THEN] [THEN] [THEN] [THEN]
+
+[THEN]
+
+
+( Exceptions )
 
 variable exp-next  -2050 exp-next !
 

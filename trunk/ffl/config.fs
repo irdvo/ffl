@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-22 17:39:03 $ $Revision: 1.19 $
+\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.20 $
 \
 \ ==============================================================================
 \
@@ -58,8 +58,7 @@ sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits i
 sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
-  
-  
+
 ( Extension words )
 
 \ : [DEFINED]   
@@ -120,7 +119,122 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-( Public Exceptions )
+[DEFINED] float [IF]
+
+( Float system settings )
+
+float cell /mod swap [IF] 1+ [THEN]
+                            constant sys.cells-in-float ( - n = Number of cells in a float )
+
+( Private float extension )
+
+create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
+  sys.cells-in-float cells allot
+  
+  
+( Float extension words )
+
+\ the following words should definitely be ANS words .. 
+
+sys.cells-in-float 1 = [IF]
+: f>r              ( r - = Move a float to the return stack )
+  r>
+  sys.float-cells f!
+  sys.float-cells @ >r
+  >r
+;
+
+: fr>              ( - r = Move a float from the return stack )
+  r>
+  r> sys.float-cells !
+     sys.float-cells f@
+  >r
+;
+
+: fr@              ( - r = Fetch a float from the return stack )
+  r>
+  r@ sys.float-cells !
+     sys.float-cells f@
+  >r
+;
+[ELSE] sys.cells-in-float 2 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  >r
+;
+
+: fr>
+  r>
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  2r@ sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+[ELSE] sys.cells-in-float 3 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  sys.float-cells cell+ cell+ @ >r
+  >r
+;
+: fr>
+  r>
+  r>  sys.float-cells cell+ cell+ !
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  r>  dup  sys.float-cells cell+ cell+ !
+  2r> 2dup sys.float-cells 2!
+           sys.float-cells f@
+  2>r >r
+  >r
+;
+[ELSE] sys.cells-in-float 4 = [IF]
+: f>r
+  r>
+  sys.float-cells f!
+  sys.float-cells 2@ 2>r
+  sys.float-cells cell+ cell+ 2@ 2>r
+  >r
+;
+
+: fr>
+  r>
+  2r> sys.float-cells cell+ cell+ !
+  2r> sys.float-cells 2!
+      sys.float-cells f@
+  >r
+;
+
+: fr@
+  r>
+  2r> 2dup sys.float-cells cell+ cell+ 2!
+  2r> 2dup sys.float-cells 2!
+           sys.float-cells f@
+  2>r 2>r
+  >r
+;
+[ELSE]
+.( Unexpected float size )
+[THEN] [THEN] [THEN] [THEN]
+
+[THEN]
+
+
+( Exceptions )
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
