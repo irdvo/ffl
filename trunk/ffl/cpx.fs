@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.2 $
+\  $Date: 2006-09-02 14:56:21 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/stc.fs
 ( The cpx module implements words for using complex numbers. )
 
 \
-\ The code is heavily inspired by the ccmatch library from Daniel A. Atkinson (c) Copyright 2000
+\ The code is heavily inspired by the ccmatch library from Daniel A. Atkinson (LGPL) (c) Copyright 2000
 \
 
 
@@ -85,14 +85,14 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-: cpx+subtract     ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Subtract complex1 from complex2 on stack )
+: cpx+sub          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Subtract complex1 from complex2 on stack )
   frot fswap f-
   frot frot f-
   fswap
 ;
 
 
-: cpx+multiply     ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Multiply two complex numbers on stack )
+: cpx+mul          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Multiply two complex numbers on stack )
   fswap frot
   fover fover f* f>r                   \ re1 * im2
   f>r
@@ -103,26 +103,44 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-: cpx+divide       ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Divide complex2 by complex1 on stack)
-\  double re1 = [src1 re];
-\  double im1 = [src1 im];
-\  double re2 = [src2 re];
-\  double im2 = [src2 im];
-\  double dv;
-
-\   dv =  re2 * re2 + im2 * im2;
-\  _re = (re1 * re2 + im1 * im2) / dv;
-\  _im = (im1 * re2 - re1 * im2) / dv; 
-; 
+: cpx+rmul         ( r:re r:im r:re2 - r:re r:im = Multiply a complex number with a real number )
+  frot
+  fover f*                             \ re * re2
+  frot frot f*                         \ im * re2
+;
 
 
-: cpx+conjugate    ( r:re r:im - r:re r:im = Conjugate the complex number on stack )
+: cpx+imul         ( r:re r:im r:im2 - r:re r:im = Multiply a complex number with an imaginary number )
+  fswap fover f* fnegate               \ -im * im2 
+  frot frot f*                         \  re * im2
+;
+
+  
+: cpx+div          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Divide complex2 by complex1 on stack)
+  fover fdup f*
+  fover fdup f*
+  f+ f>r                               \ r = re1 * re1 + im1 * im1
+  frot
+  fover fover f*                       \ im1 * im2
+  f>r f>r
+  fswap frot
+  fover fover f*                       \ re1 * re2
+  fr> fswap fr> f+                     \ re1 * re2 + im1 * im2
+  fr@ f/ f>r                           \ re1 * re2 + im1 * im2 / r
+  frot f*                              \ im2 * re1
+  fswap frot f*                        \ re2 * im1
+  f-                                   \ re1 * im2 - re2 * im1
+  fr> fswap fr> f/                     \ re1 * im2 - re2 * im1 / r
+;
+
+
+: cpx+conj         ( r:re r:im - r:re r:im = Conjugate the complex number on stack )
   negate                     \ negate the imaginary part
 ;
 
 
 : cpx+nrm          ( r:re r:im - r = Calculate the square of the modulus of the complex number )
-  fswap fdup f*
+  fdup f*
   fswap fdup f*
   f+                                   \ re * re + im * im
 ;
@@ -182,49 +200,40 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+sin          ( r:re r:im - r:re r:im = Calculate the trigonometric functions sine for the complex number on stack )
-\  double s = sin(_re);
-\  double c = cos(_re);
-\  double u = exp(_im); 
-\  double v = 1.0 / u;
-
-\  u = ldexp(u + v, -1); 
-\  v = u - v;
-
-\  _re = u * s;
-\  _im = c * v;
+  fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
+  frot fdup 1e0 fswap f/               \ v = 1 / u
+  fswap fover f+ 2e0 f/                \ u = 1/2 * (u+v)
+  fdup frot f-                         \ v = u - v
+  frot f*                              \ im = v * cos(re)
+  frot frot f* fswap                   \ re = u * sin(re)
 ;
 
 
 : cpx+cos          ( r:re r:im - r:re r:im = Calculate the trigonometric functions cosine for the complex number on stack)
-\  double s = sin(_re);
-\  double c = cos(_re);
-\  double u = exp(_im); 
-\  double v = 1.0/u;
-
-\  u = ldexp(u + v, -1);
-\  v = u - v;
-
-\  _re =  c * u;
-\  _im = -s * v;
+  fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
+  frot fdup 1e0 fswap f/               \ v = 1 / u
+  fswap fover f+ 2e0 f/                \ u = 1/2 * (u+v)
+  fdup frot f-                         \ v = u - v
+  f>r f*                               \ re = u * cos(re)
+  fswap fr> f* fnegate                 \ im = -v * sin(re)
 ;
 
 
 : cpx+tan          ( r:re r:im - r:re r:im = Calculate the trigonometric functions trangent for the complex number on stack )
-\  double s = sin(_re);
-\  double c = cos(_re);
-\  double u = exp(_im); 
-\  double v = 1.0 / u;
-\  double d;
-
-\  u = ldexp(u + v, -1);
-\  v = u - v;
-\  d = c * c + v * v; 
-
-\  _re = s * c / d; 
-\  _im = u * v / d;
+  fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re) 
+  frot fdup 1e0 fswap f/               \ v = 1/u
+  fswap fover f+ 2e0 f/                \ u = (u+v)/2
+  fdup frot f-                         \ v = u - v
+  frot fswap
+  fover fdup f*                        \ c * c
+  fover fdup f*                        \ v * v
+  f+ f>r                               \ d = c * c + v * v
+  frot f* fr@ f/                       \ im = (u * v) / d
+  frot frot f* fr> f/                  \ re = (s * c) / d
+  fswap
 ;
 
-
+  
 : cpx+asin         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function sine for the complex number on stack )
 \  DComplex *u = [DComplex alloc]; 
 \  DComplex *w = [self copy];
@@ -428,10 +437,21 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
+: cpx+to-polar     ( r:re r:im - r:r r:theta = Convert complex number to polar )
+  fover fover cpx+abs                 \ r     = abs(re,im)
+  frot frot fswap fatan2              \ theta = atan2(im,re) ToDo: problems ??
+;
+
+
+: cpx+from-polar   ( r:r r:theta - r:re r:im = Convert polar to complex number )
+  fsincos frot cpx+rmul fswap         \ re = cos * r im = sin * r
+;
+
+
 ( Compare module words )
 
 : cpx+equal?       ( r:re2 r:im2 r:re1 r:im1 - f = Check if two complex numbers are equal )
-  cpx+subtract drop sgn
+  frot f= f= AND
 ;
 
 
