@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-02 14:56:21 $ $Revision: 1.3 $
+\  $Date: 2006-09-09 05:46:31 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -56,7 +56,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ( Structure creation, initialisation and destruction )
 
 : cpx-init         ( w:cpx - = Initialise the zero complex number )
-  dup    cpx>re 0!
+  dup    cpx>re 0!         \ todo (floats)
          cpx>im 0!
 ;
 
@@ -152,34 +152,26 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+sqrt         ( r:re r:im - r:re r:im = Calculate the square root for the complex number on stack )
-\  double r = [self abs];
-
-\  r = sqrt(ldexp(r + fabs(_re), -1));
-\  if (r == 0.0) 
-\  {
-\    _re = 0.0;
-\    _im = 0.0;
-\  }
-\  else
-\  {
-\    if (_re >= 0.0)
-\    { 
-\      _re = r; 
-\      _im = ldexp(_im / r, -1);
-\    }
-\    else
-\    { 
-\      _re = ldexp(fabs(_im) / r, -1);
-\      if (_im >= 0.0) 
-\      {
-\        _im = r; 
-\      }
-\      else
-\      {
-\        _im= -r;
-\      }
-\    }
-\  }
+  fswap
+  fover fover fswap cpx+abs            \ r = abs(re,im)
+  fover fabs f+ 2e0 f/ fsqrt           \ r = sqrt(0.5*(r+abs(re)))
+  fdup f0= IF                          \ if r = 0 then
+    fdrop fdrop fdrop                  \   re = 0
+    0e0 0e0                            \   im = 0
+  ELSE
+    fswap f0< IF                       \ else if re < 0
+      fover fabs fover f/ 2e0 f/       \   re = 0.5*(fabs(im)/r)
+      frot f0< IF                      \   if im < 0
+        fswap                          \     im = -r
+        fnegate
+      ELSE                             \   else
+        fswap                          \     im = r
+      THEN
+    ELSE                               \ else if re >= 0
+      fswap                            \   re = r
+      fover f/ 2e0 f/                  \   im = 0.5*(im/r)
+    THEN
+  THEN
 ;
 
 
@@ -192,10 +184,9 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 : cpx+ln           ( r:re r:im - r:re r:im = Calculate the natural logarithm for the complex number on stack )
-\  double r = [self nrm];
-
-\  _im = atan2(_im, _re);
-\  _re = ldexp(log(r), -1);
+  fover fover cpx+nrm                  \ r = nrm
+  fln 2e0 f/                           \ im = 0.5*ln(r)
+  frot frot fswap fatan2               \ re = atan2(im,re)
 ;
 
 
@@ -235,187 +226,122 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
   
 : cpx+asin         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function sine for the complex number on stack )
-\  DComplex *u = [DComplex alloc]; 
-\  DComplex *w = [self copy];
-  
-\  double    t;
-
-\  [u init :1.0 :0.0];
-\  [w move :self];
-  
-\  [w mul :w];
-\  [u sub :w];
-\  [u sqrt  ];
-
-\  t   = _re;  
-\  _re = [u re] - _im; 
-\  _im = [u im] +  t;
-  
-\  [self log];
-
-\  t   = _re;
-\  _re = _im; 
-\  _im = -t;
-
-\  [u free];
-\  [w free];
+  fover fover
+  fover fover cpx+mul                  \ w = re,im * re,im
+  1e0 frot frot
+  0e0 frot frot cpx+sub                \ u = 1,0 - w
+  cpx+sqrt                             \ u = sqrt(u)
+  fswap frot f-                        \ v.re = u.re - im
+  frot  frot f+                        \ v.im = u.im + re
+  cpx+ln                               \ y = ln(v)
+  fswap fnegate                        \ re = y.im  im = -y.re
 ;
 
-
-: cpx+acos         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function cosine for the complex number on stack)
-\  DComplex *u = [DComplex alloc];
-\  DComplex *w = [self copy];
-\  double    t;
-
-\  [u init :1.0 :0.0];
   
-\  [w mul :w];
-\  [u sub :w];
-\  [u sqrt  ];
- 
-\  _re -= [u im]; 
-\  _im += [u re]; 
-
-\  [self log];
-
-\   t  = _re;
-\  _re = _im; 
-\  _im =  t;
+: cpx+acos         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function cosine for the complex number on stack)
+  fover fover
+  fover fover cpx+mul                  \ w = re,im * re,im
+  1e0 frot frot
+  0e0 frot frot cpx+sub                \ u = 1,0 - w
+  cpx+sqrt                             \ u = sqrt(u)
+  fswap frot f+                        \ re = re - v.im
+  frot  frot f-                        \ im = im + v.re
+  fswap
+  cpx+ln                               \ y = ln(re,im)
+  fswap fnegate                        \ re = y.im  im = -y.re
 ;
 
 
 : cpx+atan         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function tangent for the complex number on stack )
-\  DComplex *u = [DComplex alloc];
-\  DComplex *w = nil;
-
-\  [u init :-_im :_re];
-  
-\  _re = 1.0;
-\  _im = 0.0;
-
-\  w = [self copy];
-
-\  [self add :u];
-\  [w    sub :u];
-\  [self div :w];
-
-\  [self log];
-\  [self imul :-0.5];
+  fnegate fswap                        \ u = -im,re
+  f>r f>r 1e0 0e0 fr> fr>
+  fover fover f>r f>r
+  cpx+add                              \ s = 1,0 + u
+  1e0 0e0 fr> fr> 
+  cpx+sub                              \ w = 1,0 - u
+  cpx+div                              \ s = s \ w
+  cpx+ln                               \ s = ln(s)
+  -0.5e0 cpx+imul                      \ s= -0.5j * s
 ;
 
 
 : cpx+sinh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function sine for the complex number on stack )
-\  double s = sin(_im);
-\  double c = cos(_im);
-\  double u = exp(_re);
-\  double v = 1.0 / u;
-
-\  u = ldexp(u + v, -1);
-\  v = u - v;
-
-\  _re = v * c;
-\  _im = u * s;
+  fsincos                              \ sin(im) cos(im)
+  frot fexp                            \ u = exp(re)
+  1e0 fover f/                         \ v = 1/u
+  fswap fover f+ 2e0 f/                \ u = 0.5*(u+v)
+  fdup frot f-                         \ v = u-v                
+  frot f*                              \ re = cos(im) * v
+  frot frot f*                         \ im = sin(im) * u
 ;
 
 
 : cpx+cosh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function cosine for the complex number on stack )
-\  double s = sin(_im);
-\  double c = cos(_im);
-\  double u = exp(_re);
-\  double v = 1.0 / u;
-
-\  u = ldexp(u + v, -1);
-\  v = u - v;
-
-\  _re = c * u;
-\  _im = v * s;
+  fsincos                              \ sin(im) cos(im)
+  frot fexp                            \ u = exp(re)
+  1e0 fover f/                         \ v = 1/u
+  fswap fover f+ 2e0 f/                \ u = 0.5*(u+v)
+  fdup frot f-                         \ v = u-v
+  fswap frot f*                        \ re = cos(im) * u
+  frot frot f*                         \ im = sin(im) * v
 ;
 
 
 : cpx+tanh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function tangent for the complex number on stack )
-\  double s = sin(_im);
-\  double c = cos(_im);
-\  double u = exp(_re); 
-\  double v = 1.0 / u;
-\  double d;
-
-\  u = ldexp(u + v, -1); 
-\  v = u - v;
-\  d = c * c + v * v; 
-
-\  _re = u * v / d;
-\  _im = s * c / d;
+  fsincos                              \ s = sin(im) c = cos(im)
+  frot fexp                            \ u = exp(re)
+  1e0 fover f/                         \ v = 1/u
+  fswap fover f+ 2e0 f/                \ u = 0.5*(u+v)
+  fdup frot f-                         \ v = u-v
+  frot fover fdup f*
+  fover fdup f* f+ f>r                 \ d = c*c+v*v
+  fswap frot f* fr@ f/                 \ re = (u*v)/d
+  frot frot f* fr> f/                  \ im = (s*c)/d
 ;
 
 
 : cpx+asinh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function sine for the complex number on stack )
-\  DComplex *u = [DComplex alloc];
-\  DComplex *w = [self copy];
-
-\  [u init :1.0 :0.0];
-  
-\  [w mul :w];
-\  [u add :w];
-\  [u sqrt  ];
-
-\  [self add :u];
-\  [self log   ];
-
-\  [u free];
-\  [w free];
+  fover fover                          \ w = (re,im)
+  fover fover cpx+mul                  \ w = w * w
+  1e0 0e0 cpx+add                      \ u = (1,0) + w
+  cpx+sqrt                             \ u = sqrt(u)
+  cpx+add                              \ (re,im) = (re,im) + u
+  cpx+ln                               \ (re,im) = ln(re,im)
 ;
 
 
 : cpx+acosh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function cosine for the complex number on stack )
-\  DComplex *u = [DComplex alloc];
-\  DComplex *w = [self copy];
-\  int      kf = ((_im == 0) && (_re < -1)) ? 1 : 0;
-
-\  [u init :1.0 :0.0];
-  
-\  [w mul  :w];
-\  [w sub  :u];
-\  [w sqrt   ];
-
-\  [u move :w];
-
-\  [self add :u];
-\  [self log   ]; 
-
-\  if (_re < 0.0)
-\  {
-\    _re= -_re;
-\    _im= -_im;
-\  }
-\  if (kf) 
-\    _im= -_im;
-
-\  [u free];
-\  [w free];
+  fover fover 
+  f0= -1e0 f< AND                      \ f = (im = 0) AND (re < -1)
+  fover fover                          \ w = (re,im)
+  fover fover cpx+mul                  \ w = w * w
+  1e0 0e0 cpx+sub                      \ w = w - (1,0)
+  cpx+sqrt                             \ w = sqrt(w)
+  cpx+add                              \ w = (re,im) + w
+  cpx+ln                               \ w = ln(w)
+  fover f0< IF                         \ if (w.re < 0.0)
+    fnegate fswap                      \   w.re = -w.re
+    fnegate fswap                      \   w.im = -w.im
+  THEN
+  IF                                   \ if (f)
+    fnegate                            \   w.im = -w.im
+  THEN
 ;
 
 
 : cpx+atanh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function tangent for the complex number on stack )
-\  DComplex *u = [DComplex alloc]; 
-\  DComplex *w = [DComplex alloc]; 
-
-\  [[w init :1.0 :0.0] sub :self];
-\  [[u init :1.0 :0.0] add :self];
-
-\  [u div :w   ];
-\  [u log      ];
-\  [u rmul :0.5];
-
-\  [self move :u];
-
-\  [u free];
-\  [w free];
+  fover fover f>r f>r
+  1e0 0e0 cpx+add                      \ u = (1,0) + (re,im)
+  1e0 0e0 fr> fr> cpx+sub              \ w = (1,0) - (re,im)
+  cpx+div                              \ u = u / w
+  cpx+ln                               \ u = ln(u)
+  0.5e0 cpx+rmul                       \ re,im = 0.5 * u
 ;
 
 
 ( Conversion module words )
 
-: cpx+to-string    ( r:re r:im - c-addr u = Convert complex number to a string )
+: cpx+to-string    ( r:re r:im - c-addr u = Convert complex number to a string, using pad )
 \  DText *str = [[DText alloc] init];
 
 \  if (_re == 0.0)
