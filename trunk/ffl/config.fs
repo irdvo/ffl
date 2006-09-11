@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.20 $
+\  $Date: 2006-09-11 18:08:21 $ $Revision: 1.21 $
 \
 \ ==============================================================================
 \
@@ -134,7 +134,32 @@ create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
   
 ( Float extension words )
 
-\ the following words should definitely be ANS words .. 
+0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
+
+1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+
+2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+
+
+: f-rot            ( r1 r2 r3 - r3 r1 r2 = Rotate counter clockwise three floats )
+  frot frot
+;
+
+
+: f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
+  fover fover
+;
+
+
+\ : fnip             ( r1 r2 - r2 = Drop second float on stack )
+\   fswap fdrop
+\ ;
+
+
+\ : ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
+\   fswap fover
+\ ;
+
 
 sys.cells-in-float 1 = [IF]
 : f>r              ( r - = Move a float to the return stack )
