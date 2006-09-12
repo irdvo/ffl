@@ -1,9 +1,11 @@
 0.4.0:
-* config: new words: f>r fr> fr@
-* config: sys.cells-in-float added
-* cpx: new module (Complex number)
-* frc: new module (Fraction)
-* examples directory added
+* [2006-09-12]  tst: partly rewritten: reporting more info; no change in interface
+* [2006-09-11]  config: ftuck, fnip, f2dup, f-rot, 0e0, 1e0, 2e0 added
+* [2006-08-30]  config: new words: f>r fr> fr@
+* [2006-08-30]  config: sys.cells-in-float added
+* [2006-08-28]  cpx: new module (Complex number)
+* [2006-08-28]  examples directory added
+* [2006-08-26]  frc: new module (Fraction)
 0.3.0:
 * config: sys.bits-in-byte added
 * config: sys.bits-in-cell added
