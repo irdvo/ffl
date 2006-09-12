@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.6 $
+\  $Date: 2006-09-12 17:29:20 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -46,7 +46,7 @@ variable tst-tests
 
 ( Private words )
 
-: tst-empty-stack  ( ... -  = Empty the stack )
+: tst-empty-data-stack  ( ... -  = Empty the data stack )
   depth dup 0> IF            \ if stack-depth > 0 then
     0 DO
       drop                   \    remove the extra's
@@ -54,8 +54,10 @@ variable tst-tests
   ELSE
     drop
   THEN
-  
+;
+
 [DEFINED] fdepth [IF]
+: tst-empty-float-stack  ( ... - = Empty the float stack )
   fdepth dup 0> IF           \ if fstack-depth > 0 then
     0 DO
       fdrop                  \  remove extra's
@@ -63,28 +65,54 @@ variable tst-tests
   ELSE
     drop
   THEN
-[THEN]
 ;  
+[THEN]
 
 
 : tst-report-error ( w:caddr u - = Report an error with the current source line )
   type                       \ report error
   source type cr             \ report current source line
-  tst-empty-stack
   tst-errors 1+!
 ;
 
 
-: tst-depth?       ( .. - f = Check for a value on the stack )
+: tst-report-mismatch   ( - = Report an mismatch error )
+  s" stack contents mismatch: " tst-report-error
+;
+
+
+: tst-report-underflow  ( - = Report a stack underflow )
+  s" stack underflow: " tst-report-error
+;
+
+
+: tst-depth1?       ( .. - f = Check for one value on the stack )
   depth 0= dup IF
-    s" stack underflow: " tst-report-error
+    tst-report-underflow
   THEN
   0=
 ;
 
+
+: tst-depth2?       ( .. - f = Check for two values on the stack )
+  depth 2 < dup IF
+    tst-report-underflow
+  THEN
+  0=
+;
+
+
+: tst-depth4?       ( .. - f = Check for four values on the stack )
+  depth 4 < dup IF
+    tst-report-underflow
+  THEN
+  0=
+;
+
+
 [DEFINED] fdepth [IF]
-: tst-fdepth?   ( .. - f = Check for a value on the float stack )
-  fdepth 0= dup IF
+: tst-fdepth2?   ( .. - f = Check for two float values on the float stack )
+  fdepth 2 < dup IF
     s" float stack underflow: " tst-report-error
   THEN
   0=
@@ -92,10 +120,15 @@ variable tst-tests
 [THEN]
 
 
-: tst-report-mismatch   ( f - = Report an mismatch error )
-  IF s" stack contents mismatch: " tst-report-error THEN
+: tst-report-checking   ( - = Report checking for )
+  ."   expecting "
 ;
-  
+
+
+: tst-report-found      ( - = Report found: )
+  ." and found "
+;
+
 
 ( Public words )
 
@@ -107,76 +140,129 @@ variable tst-tests
 : }t           ( .. - = Check for stack overflow )
   depth 0> IF
     s" stack overflow: " tst-report-error
+    tst-empty-data-stack
   THEN
     
 [DEFINED] fdepth [IF]
   fdepth 0> IF
     s" float stack overflow: " tst-report-error
+    tst-empty-float-stack
   THEN
 [THEN]
 ;
 
 
 : ?s           ( s s - = Check for signed value on stack )
-  tst-depth? IF
-    <> tst-report-mismatch
+  tst-depth2? IF
+    2dup
+    <> IF 
+      tst-report-mismatch
+      tst-report-checking . tst-report-found . cr
+    ELSE
+      2drop
+    THEN
   THEN
 ;
 
 
 : ?u           ( u u - = Check for unsigned value on stack )
-  tst-depth? IF
-    u<> tst-report-mismatch
+  tst-depth2? IF
+    2dup
+    <> IF 
+      tst-report-mismatch
+      tst-report-checking u. tst-report-found u. cr
+    ELSE
+      2drop
+    THEN
   THEN
 ;
 
 
 : ?d           ( d d - = Check for a signed double on stack )
-  tst-depth? IF
-    d<> tst-report-mismatch
+  tst-depth4? IF
+    2over 2over
+    d<> IF 
+      tst-report-mismatch
+      tst-report-checking d. tst-report-found d. cr
+    ELSE
+      2drop 2drop
+    THEN
   THEN
 ;
 
 
 : ?ud          ( ud ud - = Check for an unsigned double on stack )
-  tst-depth? IF
-    du<> tst-report-mismatch
+  tst-depth4? IF
+    2over 2over
+    d<> IF 
+      tst-report-mismatch
+      tst-report-checking ud. tst-report-found ud. cr
+    ELSE
+      2drop 2drop
+    THEN
   THEN
 ;
 
 
 : ?0           ( n - = Check for zero value on stack )
-  tst-depth? IF
-    0<> tst-report-mismatch
+  tst-depth1? IF
+    dup
+    0<> IF
+      tst-report-mismatch
+      tst-report-checking ." zero " tst-report-found . cr
+    ELSE
+      drop
+    THEN
   THEN
 ;
 
 
 : ?nil         ( w - = Check for nil value on stack )
-  tst-depth? IF
-    nil<> tst-report-mismatch
+  tst-depth1? IF
+    dup
+    nil<> IF
+      tst-report-mismatch
+      tst-report-checking ." nil " tst-report-found . cr
+    ELSE
+      drop
+    THEN
   THEN
 ;
 
 
 : ?true        ( f - = Check for true value on stack )
-  tst-depth? IF
-    0= tst-report-mismatch
+  tst-depth1? IF
+    dup
+    0= IF 
+      tst-report-mismatch
+      tst-report-checking ." true flag " tst-report-found . cr
+    ELSE
+      drop
+    THEN
   THEN
 ;
 
 
 : ?false       ( f - = Check for false value on stack )
-  tst-depth? IF
-    tst-report-mismatch
+  tst-depth1? IF
+    dup IF
+      tst-report-mismatch
+      tst-report-checking ." false flag " tst-report-found . cr
+    ELSE
+      drop
+    THEN
   THEN
 ;
 
 [DEFINED] fdepth [IF]
 : ?r           ( r r - = Check for float value on stack )
-  tst-fdepth? IF
+  tst-fdepth2? IF
+    f2dup
     f- fabs 1e-5 f< 0= IF
       s" float stack contents mismatch: " tst-report-error
+      tst-report-checking f. tst-report-found f. cr
+    ELSE
+      fdrop fdrop
     THEN
   THEN
 ;
