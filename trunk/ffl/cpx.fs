@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-11 18:08:21 $ $Revision: 1.5 $
+\  $Date: 2006-09-12 17:02:47 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -30,14 +30,19 @@ include ffl/config.fs
 [UNDEFINED] cpx.version [IF]
 
 
+s" FLOATING-EXT"   environment? [IF] drop
+s" FLOATING-STACK" environment? [IF] drop
+
+
 include ffl/stc.fs
 
 
-( cpx = Complex module )
+( cpx = Complex number module )
 ( The cpx module implements words for using complex numbers. )
 
+
 \
-\ The code is heavily inspired by the ccmatch library from Daniel A. Atkinson (LGPL) (c) Copyright 2000
+\ The code is heavily inspired by the ccmath library from Daniel A. Atkinson (LGPL) (c) Copyright 2000
 \
 
 
@@ -85,7 +90,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-: cpx+sub          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Subtract complex1 from complex2 on stack )
+: cpx+sub          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Subtract complex number 1 from number 2 on stack )
   frot fswap f-
   f-rot f-
   fswap
@@ -116,7 +121,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
   
-: cpx+div          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Divide complex2 by complex1 on stack)
+: cpx+div          ( r:re2 r:im2 r:re1 r:im1 - r:re r:im = Divide complex number 2 by number 1 on stack)
   fover fdup f*
   fover fdup f*
   f+ f>r                               \ r = re1 * re1 + im1 * im1
@@ -363,7 +368,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
   
 ( Conversion module words )
 
-: cpx+to-string    ( r:re r:im - c-addr u = Convert complex number to a string, using precision and PAD )
+: cpx+to-string    ( r:re r:im - c-addr u = Convert the complex number to a string, using precision and PAD )
   fswap                                \ re is converted first
   pad
   bl over c! dup char+                 \ start of string, reserve space for sign
@@ -385,7 +390,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+to-polar     ( r:re r:im - r:r r:theta = Convert complex number to polar )
   f2dup cpx+abs                       \ r     = abs(re,im)
-  f-rot fswap fatan2                  \ theta = atan2(im,re) ToDo: problems ??
+  f-rot fswap fatan2                  \ theta = atan2(im,re)
 ;
 
 
@@ -440,12 +445,18 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-: cpx-dump         ( w:cpx - = Dump the complex )
+: cpx-dump         ( w:cpx - = Dump the complex number )
   ." cpx:" dup . cr
   ."   re:" dup cpx>re  f@ f. cr
   ."   im:"     cpx>im  f@ f. cr
 ;
 
+[ELSE]
+.( Warning: cpx requires a separate floating point stack ) cr
+[THEN]
+[ELSE]
+.( Warning: cpx requires floating point words ) cr
+[THEN]
 [THEN]
 
 \ ==============================================================================

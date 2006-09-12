@@ -20,12 +20,16 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-09 05:46:31 $ $Revision: 1.3 $
+\  $Date: 2006-09-12 17:02:47 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
 include ffl/cpx.fs
 include ffl/tst.fs
+
+
+[DEFINED] cpx.version [IF]
+
 
 .( Testing: cpx) cr 
   
@@ -72,6 +76,8 @@ t{ -2.0e0  0.0e0 cpx+acosh  3.1415926e0 ?r  1.3169578e0 ?r }t
 t{ -1.8e0  2.7e0 cpx+acosh  2.1374979e0 ?r  1.8799469e0 ?r }t
 t{  1.8e0 -2.7e0 cpx+atanh -1.3130350e0 ?r  0.1615066e0 ?r }t
 
+\ Conversion
+
 t{  1e0  1e0 cpx+to-polar  0.7853981e0 ?r 1.41421356e0 ?r }t
 t{ -1e0  1e0 cpx+to-polar  2.3561944e0 ?r 1.41421356e0 ?r }t
 t{  1e0 -1e0 cpx+to-polar -0.7853981e0 ?r 1.41421356e0 ?r }t
@@ -82,54 +88,43 @@ t{ 1.41421356e0  2.3561944e0 cpx+from-polar  1e0 ?r -1e0 ?r }t
 t{ 1.41421356e0 -0.7853981e0 cpx+from-polar -1e0 ?r  1e0 ?r }t
 t{ 1.41421356e0 -2.3561944e0 cpx+from-polar -1e0 ?r -1e0 ?r }t
 
-\ t{  1 2 1 3 cpx+add 6  ?s 5  ?s }t
+: cpxs1 s" -0.180e1-0.270e1j" ;
+: cpxs2 s" -0.180e1+0.270e1j" ;
+: cpxs3 s" 0.000e1-0.270e1j" ;    
+  
+  
+3 set-precision
 
-\ Compare
-
-\ t{ 3 6 1 2 cpx+compare    ?0 }t
-
-\ Conversion
-
-\ : cpxs1 s" -2/7" ;
-    
-\ t{ -6 21 cpx+to-string cpxs1 compare ?0 }t  
+t{ -1.8e0 -2.7e0 cpx+to-string cpxs1 compare ?0 }t
+t{ -1.8e0  2.7e0 cpx+to-string cpxs2 compare ?0 }t
+t{  0.0e0 -2.7e0 cpx+to-string cpxs3 compare ?0 }t
 
 
-\ Creation and allocation structure
+\ Structure
 
 cpx-create cpx1
 
 t{ cpx-new value cpx2 }t
 
-\ t{ cpx1 cpx-get 1 ?s ?0  }t
+t{ cpx1 cpx-get 0e0 ?r 0e0 ?r }t
 
-\ t{ 5 10 cpx1 cpx-set     }t
+t{ 5.1e0 10.9e0 cpx1 cpx-set   }t
 
-\ t{ cpx1 cpx-get 2 ?s 1 ?s }t    \ normalized 5/10 -> 1/2
+t{ cpx1 cpx-get 10.9e0 ?r 5.1e0 ?r }t
 
+t{ cpx1 cpx2 cpx^move }t
 
-\ t{ cpx2 cpx-get 1 ?s ?0  }t
+t{ cpx2 cpx-re@  5.1e0 ?r }t
+t{ cpx2 cpx-im@ 10.9e0 ?r }t
 
-\ t{ 12 8 cpx2 cpx-set }t
+t{ cpx1 cpx2 cpx^equal? ?true }t
 
-\ t{ cpx2 cpx-num@ 3 ?s   }t
-\ t{ cpx2 cpx-denom@ 2 ?s }t     \ normalized 12/8 -> 3/2
+t{ cpx2 cpx-get cpx+conj cpx2 cpx-set }t
 
-\ t{ cpx2 cpx1 cpx^move }t
-
-\ t{ cpx1 cpx-get 2 ?s 3 ?s }t
-
-\ t{ cpx2 cpx1 cpx^compare ?0 }t
-
-\ t{ 1 2 cpx1 cpx-set }t
-\ t{ 3 4 cpx2 cpx-set }t
-
-\ t{ cpx2 cpx1 cpx^compare 1 ?s }t
-
-\ t{ 1 3 cpx2 cpx-set }t
-
-\ t{ cpx2 cpx1 cpx^compare -1 ?s }t
+t{ cpx1 cpx2 cpx^equal? ?false }t
 
 t{ cpx2 cpx-free }t
+
+[THEN]
 
 \ ==============================================================================
