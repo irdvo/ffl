@@ -32,6 +32,7 @@ Index of used prefices
 ----- - ------------------------------------------------
 1 crc - 32-bit Cyclic Redundancy Check
 3 md5 - MD5 module
+4 rng - Pseudo Random module
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -83,7 +84,6 @@ Index of used prefices
 7 gzf - GZip file module
 7 gzp - GZip module
 5 htm - HTML module
-4 rnd - Pseudo Random module
 5 rgx - Regex module
 4 sha - SHA1/2 module
 4 tmr - Timer module
