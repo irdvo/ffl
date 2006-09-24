@@ -1,8 +1,9 @@
 0.4.0:
+* act: new module (AVL cell binary tree) (2006-09-24)
 * acn: new module (AVL cell tree node) (2006-09-23)
 * rng: new module (Pseudo Random Number Generator) (2006-09-15)
 * tst: partly rewritten: reporting more info; no change in interface (2006-09-12)
-* config: ftuck, fnip, f2dup, f-rot, 0e0, 1e0, 2e0 added (2006-09-11)
+* config: new words ftuck, fnip, f2dup, f-rot, 0e0, 1e0, 2e0 (2006-09-11)
 * config: new words: f>r fr> fr@ (2006-08-30)  
 * config: sys.cells-in-float added (2006-08-30)
 * cpx: new module (Complex number) (2006-08-28)
