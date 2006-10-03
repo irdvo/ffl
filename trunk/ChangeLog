@@ -1,4 +1,7 @@
 0.4.0:
+* bci: new module (Binary cell tree iterator) (2006-10-03)
+* bct: new module (Binary cell tree) (2006-10-03)
+* bcn: new module (Binary cell tree node) (2006-10-03)
 * act: new module (AVL cell binary tree) (2006-09-24)
 * acn: new module (AVL cell tree node) (2006-09-23)
 * rng: new module (Pseudo Random Number Generator) (2006-09-15)
