@@ -22,7 +22,9 @@ Index of used prefices
 3 hct - Hash cell table module
 3 hci - Hash cell table iterator module
 3 hcn - Hash cell table node
-4 aci - Avl cell tree iterator module
+4 bct - Binary cell tree module
+4 bcn - Binary cell tree node
+4 bci - Binary cell tree iterator
 4 act - Avl cell tree module
 4 acn - Avl cell tree node
 ----- - ------------------------------------------------

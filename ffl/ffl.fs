@@ -20,13 +20,16 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-24 18:38:12 $ $Revision: 1.17 $
+\  $Date: 2006-10-03 19:12:16 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 
 include ffl/acn.fs
 include ffl/act.fs
 include ffl/bar.fs
+include ffl/bci.fs
+include ffl/bcn.fs
+include ffl/bct.fs
 include ffl/car.fs
 include ffl/chr.fs
 include ffl/chs.fs
