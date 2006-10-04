@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-03 19:12:16 $ $Revision: 1.1 $
+\  $Date: 2006-10-04 10:07:38 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -102,19 +102,21 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 ( Private words )
 
-
 : bct-smallest-node  ( w:bcn - w:bcn = Find the smallest node in the subtree )
+  dup
   BEGIN
-    dup bcn-left@ nil<>
+    dup nil<>
   WHILE
-    bcn-left@
+    nip
+    dup bcn-left@
   REPEAT
+  drop
 ;
 
 
 : bct-next-node    ( w:bcn - w:bcn = Find the next node in the tree )
   dup bcn-right@ nil<> IF         \ If right subtree is present then
-    bcn-right@ bct-smallest-node  \ go to the smallest node in this subtree
+    bcn-right@ bct-smallest-node  \   Go to the smallest node in this subtree
   ELSE                            \ Else
     BEGIN
       dup bcn-parent@             \   Go to a non visited parent
@@ -129,11 +131,14 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 
 : bct-greatest-node  ( w:bcn - w:bcn = Find the greatest node in the subtree )
+  dup
   BEGIN
-    dup bcn-right@ nil<>
+    dup nil<>
   WHILE
-    bcn-right@
+    nip
+    dup bcn-right@
   REPEAT
+  drop
 ;
 
 
@@ -171,6 +176,45 @@ struct: bct%       ( - n = Get the required space for the bct structure )
     THEN
   REPEAT
   nip nip
+;
+
+
+: bct-replace-node  ( w:bcn w:child w:bct - = Replace the node with the child )
+  >r
+  over dup bcn-parent@                      \ If parent of node is nil Then
+  dup nil= IF
+    2drop
+    dup r@ bct>root !                       \   Root = child
+    nil swap bcn-parent!                    \   Child.Parent = nil
+  ELSE                                      \ Else
+    tuck bcn-left@ = IF                     \   If node is the left child Then
+      2dup bcn>left !                       \     Set child for left node
+    ELSE                                    \   Else
+      2dup bcn>right !                      \     Set child for right node
+    THEN
+    swap bcn-parent!                        \   Set parent of child
+  THEN
+  bcn-free                                  \ Free the node
+  rdrop
+;
+
+
+: bct-delete-node  ( w:bcn w:bct - = Delete the node from the tree )
+  >r
+  dup bcn-left@ nil= IF                     \ If left node is nil Then
+    dup bcn-right@ r@ bct-replace-node       \   Link with right node
+  ELSE
+    dup bcn-right@ nil= IF                  \ If right node nil nil Then
+      dup bcn-left@ r@ bct-replace-node      \   Link with left node
+    ELSE
+      dup bcn-right@ bct-smallest-node      \ Both nodes not nil Then
+      2dup bcn>key  @ swap bcn>key  !       \   Find the smallest in the right subtree
+      2dup bcn>cell @ swap bcn>cell !       \   Copy the contents
+      nip
+      dup bcn-right@ r@ bct-replace-node     \   Remove this node
+    THEN
+  THEN
+  rdrop
 ;
 
 
@@ -225,6 +269,35 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 
 : bct-delete       ( w:key w:bct - false | w:data true = Delete the key from the tree )
+  >r
+  r@ bct>compare @
+  r@ bct>root    @
+  BEGIN
+    dup nil= IF                   \ Nothing to compare -> not found
+      2drop drop
+      false true                  \ Done, not found
+    ELSE
+      bcn-compare-key
+      ?dup 0= IF                  \ Key matched
+        nip nip
+        dup bcn>cell @ swap
+        r@ bct-delete-node        \ Delete the node
+        true true                 \ Done, found
+      ELSE
+        0< IF
+          bcn-left@               \ Smaller -> walk the left node 
+        ELSE
+          bcn-right@              \ Bigger -> walk the right node
+        THEN
+        false                     \ Not done
+      THEN
+    THEN
+  UNTIL
+  
+  dup IF
+    -1 r@ bct>length +!           \ Update length if deleted
+  THEN
+  rdrop
 ;
 
 
