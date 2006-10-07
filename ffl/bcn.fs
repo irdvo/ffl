@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-03 19:12:16 $ $Revision: 1.1 $
+\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/stc.fs
 
 
 ( bcn = Binary tree cell node module )
-( The bcn module implements the node in an unbalanced binary tree )
+( The bcn module implements the a node in an unbalanced binary tree )
 
 
 1 constant bcn.version

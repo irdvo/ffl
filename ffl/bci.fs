@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-03 19:12:16 $ $Revision: 1.1 $
+\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -58,7 +58,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-create   ( C: w:bct "name" - R: - w = Create a named iterator in the dictionary )
+: bci-create   ( C: w:bct "name" - R: - w:bci = Create a named iterator in the dictionary )
   create 
     here  bci% allot  bci-init
 ;
@@ -69,7 +69,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-free     ( w:bci - = Free the iterator from heap )
+: bci-free     ( w:bci - = Free the iterator from the heap )
   free throw
 ;
 

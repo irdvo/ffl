@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-05 06:10:45 $ $Revision: 1.1 $
+\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -86,8 +86,8 @@ t{ 0 ' bct-sum bct1 bct-execute 72 ?s }t
 
 \ Insert and delete a lot more nodes ..
 
-10000 car-new value bct-car   \ Array with 10000 random numbers
-5189  rng-new value bct-rng   \ Random generator
+5000 car-new value bct-car   \ Array with 10000 random numbers
+5189 rng-new value bct-rng   \ Random generator
 
 t{ bct-new value bct2 }t
 
@@ -104,7 +104,7 @@ t{ bct-new value bct2 }t
 ;
 
 : bct-repeat-insert ( - = Insert 10000 random numbers in an array and the tree )
-  10000 0 DO
+  5000 0 DO
     bct-rng rng-next-number dup
     I bct-car car-set
     
@@ -114,7 +114,7 @@ t{ bct-new value bct2 }t
 
 : bct-count-present ( - n:present = Test if all values from the random array are present in the tree)
   0
-  10000 0 DO
+  5000 0 DO
     I bct-car car-get
     bct2 bct-has? IF
       1+
@@ -123,7 +123,7 @@ t{ bct-new value bct2 }t
 ;
 
 : bct-repeat-delete ( - = Delete all values from the tree )
-  10000 0 DO
+  5000 0 DO
     I bct-car car-get
     bct2 bct-delete IF
       drop
@@ -137,17 +137,23 @@ t{ ' bct-compare bct2 bct-compare! }t
 
 bct-repeat-insert
 
-t{ bct2 bct-length@ 10000 ?s }t
+t{ bct2 bct-length@ 5000 ?s }t
 
-t{ 0 ' bct-count bct2 bct-execute 10000 ?s }t
+t{ 0 ' bct-count bct2 bct-execute 5000 ?s }t
 
-t{ bct-count-present 10000 ?s }t
+t{ bct-count-present 5000 ?s }t
 
 t{ bct-repeat-delete }t
 
 t{ bct2 bct-length@ ?0 }t
 
 t{ 0 ' bct-count bct2 bct-execute ?0 }t
+
+bct-repeat-insert
+
+t{ bct2 bct-length@ 5000 ?s }t
+
+t{ 0 ' bct-count bct2 bct-execute 5000 ?s }t
 
 t{ bct2 bct-free }t
 
