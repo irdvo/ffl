@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-04 10:07:38 $ $Revision: 1.2 $
+\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -62,7 +62,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-create       ( "name" - = Create a named binary tree in the dictionary )
+: bct-create       ( C: "name" -  R: - w:bct = Create a named binary tree in the dictionary )
   create  here bct% allot  bct-init
 ;
 
@@ -73,8 +73,26 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 
 : bct-free         ( w:bct - = Free the tree node from the heap )
-  \ ToDo: remove all nodes
-  free throw 
+  dup bct>root @
+  BEGIN                           \ Free the nodes in the tree
+    dup nil<>
+  WHILE
+    dup bcn-left@ nil<> IF
+      dup  bcn-left@
+      swap bcn>left nil!
+    ELSE
+      dup bcn-right@ nil<> IF
+        dup  bcn-right@
+        swap bcn>right nil!
+      ELSE
+        dup  bcn-parent@
+        swap bcn-free
+      THEN
+    THEN
+  REPEAT
+  over bct>root !
+  
+  free throw                      \ Free the tree
 ;
 
 
@@ -341,31 +359,6 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 : bct-emit-element ( w:data w:key - = Emit the key and cell data )
   0 .r [char] = emit 0 .r [char] ; emit
-;
-
-
-: bct-test-node    ( w:node - = Test node )
-  dup nil<> IF                        \ If the node exists
-    >r
-    r@ .
-    r@ bcn>key ?
-    r@ bcn>cell ?
-    cr ." Left="
-    
-    r@ bcn>left @ recurse             \   walk the left branch
-    
-    cr ." Right=" 
-    
-    r> bcn>right @ recurse            \   walk the right branch
-  ELSE
-    ." Nil"
-    drop
-  THEN
-;
-
-: bct-test         ( w:bct - = Test the tree )
-  cr ." Root="
-  bct>root @ bct-test-node
 ;
 
 
