@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
+\  $Date: 2006-10-22 05:56:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -169,7 +169,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 
 : bci-first?   ( w:bci - f = Check if the iterator is on the first node )
   >r
-  bci>walk @
+  r@ bci>walk @
   dup nil<> IF
     r@ bci>tree @ bct>root @ 
     bct-smallest-node 
@@ -183,7 +183,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 
 : bci-last?    ( w:bci - f = Check if the iterator is on the last node )
   >r
-  bci>walk @
+  r@ bci>walk @
   dup nil<> IF
     r@ bci>tree @ bct>root @ 
     bct-greatest-node 
