@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.3 $
+\  $Date: 2006-10-22 05:56:17 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -176,6 +176,57 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
+: bct-insert-node  ( xt w:data w:key w:bct - w:bcn f = Insert data with a key in the tree )
+  >r
+  r@ bct>root @ nil= IF           \ first element in tree
+    rot nil swap 
+    execute dup                   \ create the node
+    r@ bct>root !
+    true
+  ELSE
+    r@ bct>compare @
+    r@ bct>root    @
+    BEGIN
+      bcn-compare-key
+      ?dup 0= IF                  \ key already present, update the data
+        nip nip                   \ key, compare token 
+        tuck bcn>cell !
+        nip false true            \ done, no insertion
+      ELSE
+        0< IF
+          dup bcn-left@ nil= IF   \ no left node present -> insert
+            >r
+            drop                  \ compare token
+            rot r@ swap
+            execute dup           \ create the node
+            r> bcn>left !
+            true true             \ done, insertion
+          ELSE
+            bcn-left@ false       \ continu searching to the left
+          THEN
+        ELSE
+          dup bcn-right@ nil= IF  \ no right node present -> insert
+            >r
+            drop                  \ compare token
+            rot r@ swap
+            execute dup           \ create the node
+            r> bcn>right !
+            true true             \ done, insertion
+          ELSE
+            bcn-right@ false      \ continu searching to the right
+          THEN
+        THEN
+      THEN
+    UNTIL
+  THEN
+  
+  dup IF
+    r@ bct>length 1+!
+  THEN
+  rdrop
+;
+
+
 : bct-search-node  ( w:key xt w:bct - w:node | nil = Search a node )
   dup  bct-compare@
   swap bct>root @
@@ -220,16 +271,16 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 : bct-delete-node  ( w:bcn w:bct - = Delete the node from the tree )
   >r
   dup bcn-left@ nil= IF                     \ If left node is nil Then
-    dup bcn-right@ r@ bct-replace-node       \   Link with right node
+    dup bcn-right@ r@ bct-replace-node      \   Link with right node
   ELSE
     dup bcn-right@ nil= IF                  \ If right node nil nil Then
-      dup bcn-left@ r@ bct-replace-node      \   Link with left node
+      dup bcn-left@ r@ bct-replace-node     \   Link with left node
     ELSE
       dup bcn-right@ bct-smallest-node      \ Both nodes not nil Then
       2dup bcn>key  @ swap bcn>key  !       \   Find the smallest in the right subtree
       2dup bcn>cell @ swap bcn>cell !       \   Copy the contents
       nip
-      dup bcn-right@ r@ bct-replace-node     \   Remove this node
+      dup bcn-right@ r@ bct-replace-node    \   Remove this node
     THEN
   THEN
   rdrop
@@ -239,50 +290,9 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ( Tree words )
 
 : bct-insert       ( w:data w:key w:bct - = Insert data with a key in the tree )
-  >r
-  r@ bct>root @ nil= IF           \ first element in tree
-    nil bcn-new
-    r@  bct>root !
-    true
-  ELSE
-    r@ bct>compare @
-    r@ bct>root    @
-    BEGIN
-      bcn-compare-key
-      ?dup 0= IF                  \ key already present, update the data
-        nip nip
-        bcn>cell !
-        false true                \ done, no insertion
-      ELSE
-        0< IF
-          dup bcn-left@ nil= IF   \ no left node present -> insert
-            >r
-            drop
-            r@ bcn-new
-            r> bcn>left !
-            true true             \ done, insertion
-          ELSE
-            bcn-left@ false       \ continu searching to the left
-          THEN
-        ELSE
-          dup bcn-right@ nil= IF  \ no right node present -> insert
-            >r
-            drop
-            r@ bcn-new
-            r> bcn>right !
-            true true             \ done, insertion
-          ELSE
-            bcn-right@ false      \ continu searching to the right
-          THEN
-        THEN
-      THEN
-    UNTIL
-  THEN
-  
-  IF
-    r@ bct>length 1+!
-  THEN
-  rdrop
+  >r ['] bcn-new -rot r>
+  bct-insert-node
+  2drop                           \ no balancing: drop flag and node  
 ;
 
 

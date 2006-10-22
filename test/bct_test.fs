@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
+\  $Date: 2006-10-22 05:56:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -73,8 +73,87 @@ t{ 4 bct1 bct-get   ?true 5 ?s }t
 
 t{ 0 ' bct-sum bct1 bct-execute 101 ?s }t
 
+
+\ Iterator test
+
+t{ bct1 bci-new value bci1 }t
+
+t{ bci1 bci-first ?true -1 ?s }t
+t{ bci1 bci-get   ?true -1 ?s }t
+t{ bci1 bci-key   ?true -1 ?s }t
+
+  t{ bci1 bci-first? ?true  }t
+  t{ bci1 bci-last?  ?false }t
+
+t{ bci1 bci-next  ?true 1 ?s }t
+
+  t{ bci1 bci-first? ?false }t
+  t{ bci1 bci-last?  ?false }t
+
+t{ bci1 bci-next  ?true 5 ?s }t
+t{ bci1 bci-key   ?true 4 ?s }t  
+
+  t{ bci1 bci-first? ?false }t
+  t{ bci1 bci-last?  ?false }t
+
+t{ bci1 bci-next  ?true 5 ?s }t
+t{ bci1 bci-next  ?true 6 ?s }t
+t{ bci1 bci-next  ?true 7 ?s }t
+t{ bci1 bci-next  ?true 8 ?s }t
+t{ bci1 bci-next  ?true 9 ?s }t
+t{ bci1 bci-next  ?true 11 ?s }t
+
+  t{ bci1 bci-first? ?false  }t
+  t{ bci1 bci-last?  ?true }t
+
+t{ bci1 bci-next  ?false  }t
+
+
+t{ bci1 bci-first ?true drop }t
+
+t{ 5 bci1 bci-move ?true  }t
+t{ 5 bci1 bci-move ?true  }t
+t{ 5 bci1 bci-move ?false }t
+
+
+t{ bci1 bci-first ?true drop }t
+t{ 5 bci1 bci-move ?true  }t
+
+t{ 4 bci1 bci-set }t
+t{ bci1 bci-get   ?true 4 ?s }t  
+t{ bci1 bci-key   ?true 4 ?s }t  
+
+
+t{ bci1 bci-last ?true 11 ?s }t
+
+  t{ bci1 bci-first? ?false  }t
+  t{ bci1 bci-last?  ?true }t
+  
+t{ bci1 bci-prev  ?true 9 ?s }t
+
+  t{ bci1 bci-first? ?false  }t
+  t{ bci1 bci-last?  ?false  }t
+  
+t{ bci1 bci-prev  ?true 8 ?s }t
+t{ bci1 bci-prev  ?true 7 ?s }t
+t{ bci1 bci-prev  ?true 6 ?s }t
+t{ bci1 bci-prev  ?true 5 ?s }t
+t{ bci1 bci-prev  ?true 4 ?s }t
+t{ bci1 bci-prev  ?true 1 ?s }t
+t{ bci1 bci-prev  ?true -1 ?s }t
+
+  t{ bci1 bci-first? ?true   }t
+  t{ bci1 bci-last?  ?false  }t
+  
+t{ bci1 bci-prev  ?false      }t
+
+t{ bci1 bci-free }t
+
+
+\ Delete test 
+
 t{  1 bct1 bct-delete ?true 1 ?s }t
-t{  4 bct1 bct-delete ?true 5 ?s }t
+t{  4 bct1 bct-delete ?true 4 ?s }t
 t{  1 bct1 bct-delete ?false     }t
 t{  9 bct1 bct-delete ?true 9 ?s }t
 t{ 12 bct1 bct-delete ?false     }t
@@ -160,43 +239,7 @@ t{ bct2 bct-free }t
 bct-rng rng-free
 bct-car car-free
 
-0 [IF]
-\ Iterator test
 
-t{ bct1 hci-new value hci1 }t
-
-t{ hci1 hci-first ?true 2 ?s }t
-t{ hci1 hci-get   ?true 2 ?s }t
-t{ hci1 hci-key   s" two" compare ?0 }t
-
-  t{ hci1 hci-first? ?true  }t
-  t{ hci1 hci-last?  ?false }t
-
-t{ hci1 hci-next  ?true 1 ?s }t
-
-  t{ hci1 hci-first? ?false }t
-  t{ hci1 hci-last?  ?false }t
-
-t{ hci1 hci-next  ?true 3 ?s }t
-  
-  t{ hci1 hci-first? ?false }t
-  t{ hci1 hci-last?  ?false }t
-
-t{ hci1 hci-next  ?true 1 ?s }t
-
-  t{ hci1 hci-first? ?false  }t
-  t{ hci1 hci-last?  ?true }t
-
-t{ hci1 hci-next  ?false  }t
-
-
-t{ hci1 hci-first ?true drop }t
-
-t{ 1 hci1 hci-move ?true  }t
-t{ 1 hci1 hci-move ?true  }t
-t{ 1 hci1 hci-move ?false }t
-
-t{ hci1 hci-free }t
 
 [THEN]
 
