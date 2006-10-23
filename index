@@ -67,9 +67,11 @@ Index of used prefices
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
-9 tci - n-Tree cell iterator module
-9 tcm - n-Tree cell module
-9 tcn - n-Tree cell node
+9 nci - n-Tree cell iterator module
+9 nct - n-Tree cell module
+9 ncn - n-Tree cell node
+      - red black balanced tree
+      - splay tree
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
@@ -99,3 +101,4 @@ Index of used prefices
 ToDo
 chs: set with a string of chars CcYyNn -> set
 cpx: cotan ?
+stc: union,enum

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-05 06:10:46 $ $Revision: 1.16 $
+\  $Date: 2006-10-23 17:38:52 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 
@@ -30,6 +30,7 @@ include ffl/tst.fs
 tst-reset-tests
 
 \ the test sources
+include act_test.fs
 include bar_test.fs
 include bct_test.fs
 include car_test.fs
