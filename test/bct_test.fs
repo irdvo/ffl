@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-22 05:56:17 $ $Revision: 1.3 $
+\  $Date: 2006-10-27 20:02:44 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -165,7 +165,7 @@ t{ 0 ' bct-sum bct1 bct-execute 72 ?s }t
 
 \ Insert and delete a lot more nodes ..
 
-5000 car-new value bct-car   \ Array with 10000 random numbers
+5000 car-new value bct-car   \ Array with 5000 random numbers
 5189 rng-new value bct-rng   \ Random generator
 
 t{ bct-new value bct2 }t
@@ -182,7 +182,7 @@ t{ bct-new value bct2 }t
   THEN
 ;
 
-: bct-repeat-insert ( - = Insert 10000 random numbers in an array and the tree )
+: bct-repeat-insert ( - = Insert 5000 random numbers in an array and the tree )
   5000 0 DO
     bct-rng rng-next-number dup
     I bct-car car-set

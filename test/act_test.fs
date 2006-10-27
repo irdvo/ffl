@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-23 17:38:52 $ $Revision: 1.1 $
+\  $Date: 2006-10-27 20:02:44 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,6 +34,33 @@ include ffl/rng.fs
 
 .( Testing: act and acn) cr 
   
+
+: act-verify-node  ( w:node - w:height = Verify the node by checking the balance )
+  dup nil= IF
+    drop 0
+  ELSE
+    >r
+    r@ bcn-right@  recurse
+    r@ bcn-left@   recurse
+    2dup -
+    dup r@ acn-balance@ <> IF
+      ." Invalid balance for node:" r@ bcn>key ? cr
+    THEN
+    dup -1 < swap 1 > OR IF
+      ." Unbalanced at node:" r@ bcn>key ? cr
+    THEN
+    rdrop
+    max 1+
+  THEN
+;
+
+
+: act-verify       ( w:bct - = Verify the act tree )
+  bct>root @
+  act-verify-node
+  drop
+;
+
 
 \ Simple test
 
@@ -54,11 +81,14 @@ t{  5  4 act1 act-insert }t   \ actually data change of node 4
 t{ act1 bct-length@   9 ?s   }t
 t{ act1 bct-empty?   ?false  }t
 
+act1 act-verify
+
 t{ 1 act1 bct-has?  ?true      }t
 t{ 1 act1 bct-get   ?true 1 ?s }t
 t{ 0 act1 bct-has?  ?false     }t
 t{ 0 act1 bct-get   ?false     }t
 t{ 4 act1 bct-get   ?true 5 ?s }t
+
 
 : act-sum ( n:sum w:data w:key - n:sum = Sum data and key )
   rot + +
@@ -72,26 +102,24 @@ t{ 4 act1 bct-get   ?true 5 ?s }t
 t{ 0 ' act-sum act1 bct-execute 101 ?s }t
 
 
-0 [IF]
-
 \ Delete test 
 
-t{  1 bct1 bct-delete ?true 1 ?s }t
-t{  4 bct1 bct-delete ?true 4 ?s }t
-t{  1 bct1 bct-delete ?false     }t
-t{  9 bct1 bct-delete ?true 9 ?s }t
-t{ 12 bct1 bct-delete ?false     }t
+t{  1 act1 act-delete ?true 1 ?s }t
+t{  4 act1 act-delete ?true 5 ?s }t
+t{  1 act1 act-delete ?false     }t
+t{  9 act1 act-delete ?true 9 ?s }t
+t{ 12 act1 act-delete ?false     }t
 
-t{ bct1 bct-length@ 6 ?s }t
+t{ act1 bct-length@ 6 ?s }t
 
-t{ 0 ' bct-sum bct1 bct-execute 72 ?s }t
+t{ 0 ' act-sum act1 bct-execute 72 ?s }t
 
-[THEN]
+act1 act-verify
 
 
 \ Insert and delete a lot more nodes ..
 
-5000 car-new value act-car   \ Array with 10000 random numbers
+5000 car-new value act-car   \ Array with 5000 random numbers
 5189 rng-new value act-rng   \ Random generator
 
 t{ bct-new value act2 }t
@@ -127,8 +155,8 @@ t{ bct-new value act2 }t
   LOOP
 ;
 
-: act-repeat-delete ( - = Delete all values from the tree )
-  5000 0 DO
+: act-repeat-delete ( - = Delete half values from the tree )
+  2500 0 DO
     I act-car car-get
     act2 act-delete IF
       drop
@@ -137,6 +165,7 @@ t{ bct-new value act2 }t
     THEN
   LOOP
 ;
+
 
 t{ ' act-compare act2 bct-compare! }t
 
@@ -148,27 +177,32 @@ t{ 0 ' act-count act2 bct-execute 5000 ?s }t
 
 t{ act-count-present 5000 ?s }t
 
-0 [IF]
+act2 act-verify
 
-t{ bct-repeat-delete }t
 
-t{ bct2 bct-length@ ?0 }t
+t{ act-repeat-delete }t
 
-t{ 0 ' bct-count bct2 bct-execute ?0 }t
+t{ act2 bct-length@ 2500 ?s }t
 
-bct-repeat-insert
+t{ 0 ' act-count act2 bct-execute 2500 ?s }t
 
-t{ bct2 bct-length@ 5000 ?s }t
+act2 act-verify
 
-t{ 0 ' bct-count bct2 bct-execute 5000 ?s }t
-[THEN]
+
+act-repeat-insert
+
+t{ act2 bct-length@ 7500 ?s }t
+
+t{ 0 ' act-count act2 bct-execute 7500 ?s }t
+
+act2 act-verify
+
 
 t{ act2 bct-free }t
 
+
 act-rng rng-free
 act-car car-free
-
-
 
 [THEN]
 
