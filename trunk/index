@@ -36,6 +36,7 @@ Index of used prefices
       - Interface
 ----- - ------------------------------------------------
 1 crc - 32-bit Cyclic Redundancy Check
+4 ecm - ECMA-48 terminal escape sequences outputter
 3 md5 - MD5 module
 4 rng - Pseudo Random module
 ----- - ------------------------------------------------
