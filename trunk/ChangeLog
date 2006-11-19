@@ -1,5 +1,5 @@
 0.4.0:
-* ecm: new module (ECMA-48 terminal escape sequences outputter) (2006-11-17)
+* trm: new module (Terminal escape sequences outputter) (2006-11-17)
 * bci: new module (Binary cell tree iterator) (2006-10-03)
 * bct: new module (Binary cell tree) (2006-10-03)
 * bcn: new module (Binary cell tree node) (2006-10-03)
