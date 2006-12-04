@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 17:34:55 $ $Revision: 1.6 $
+\  $Date: 2006-12-04 19:55:43 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -307,7 +307,7 @@ decimal
 ;
 
 
-: md5-update       ( c-addr u w:md5 = Update the MD5 with more data )
+: md5-update       ( c-addr u w:md5 - = Update the MD5 with more data )
   >r
   r@ md5>buffer to md5.buf
   
@@ -349,7 +349,7 @@ decimal
 ;
 
 
-: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert MD5 result to string )
+: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert MD5 result to string, using the pictured output area )
   base @ >r hex
   <# md5+#s md5+#s md5+#s md5+#s 0. #>
   r> base !
