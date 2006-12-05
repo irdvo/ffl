@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.4 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -46,7 +46,7 @@ include ffl/chr.fs
 128 sys.bits-in-char / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars / bytes in char
   
   
-( Public structure )
+( Character Set Structure )
 
 struct: chs%       ( - n = Get the required space for the chs data structure )
  chs.size
@@ -54,10 +54,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;struct
 
 
-( Private words )
-
-
-( Public words )
+( Set creation, initialisation and destruction )
 
 : chs-init         ( w:chs - = Initialise the character set )
   chs>set  chs.size chars  erase
@@ -78,6 +75,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
   free throw 
 ;
 
+( Sets words )
 
 : chs^move         ( w:chs2 w:chs1 - = Move chs2 in chs1 )
   chs>set swap chs>set swap chs.size cmove
@@ -367,7 +365,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-( Special word )
+( Special words )
 
 : chs-execute      ( .. xt w:chs - .. = Execute xt for every character in the set )
   128 0 DO

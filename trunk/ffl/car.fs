@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.6 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/stc.fs
 1 constant car.version
 
 
-( Public structure )
+( Cell Array Structure )
 
 struct: car%       ( - n = Get the required space for the car data structure )
   cell:  car>length
@@ -59,7 +59,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 
 
 
-( Public words )
+( Array creation, initialisation and destruction )
 
 : car-init         ( n:length w:car - = Initialise the cell array with an initial length )
   >r

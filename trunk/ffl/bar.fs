@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 17:03:07 $ $Revision: 1.6 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,7 @@ include ffl/stc.fs
 1 constant bar.version
 
 
-( Public structure )
+( Bit array structure )
 
 struct: bar%       ( - n = Get the required space for the bar data structure )
   cell:  bar>length
@@ -55,10 +55,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 
 
-( Private database )
-
-
-( Public words )
+( Bit array creation, initialisation and destruction )
 
 : bar-init         ( n:length w:bar - = Initialise the bit array )
   >r

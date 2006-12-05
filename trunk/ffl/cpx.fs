@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-12 17:02:47 $ $Revision: 1.6 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -49,7 +49,7 @@ include ffl/stc.fs
 1 constant cpx.version
 
   
-( Complex structure )
+( Complex Structure )
 
 struct: cpx%       ( - n = Get the required space for the cpx data structure )
   float: cpx>re          \ real
@@ -58,7 +58,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 
 
-( Structure creation, initialisation and destruction )
+( Complex structure creation, initialisation and destruction )
 
 : cpx-init         ( w:cpx - = Initialise the zero complex number )
   dup  0e0 cpx>re f!
@@ -399,7 +399,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-( Compare module words )
+( Compare words )
 
 : cpx+equal?       ( r:re2 r:im2 r:re1 r:im1 - f = Check if two complex numbers are [true] equal )
   frot f= f= AND

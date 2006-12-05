@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-17 19:03:05 $ $Revision: 1.7 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -40,10 +40,10 @@ include ffl/stc.fs
 ( The crc module implements a 32-bit cyclic redundancy check calculation. )
 
 
-2 constant crc.version
+3 constant crc.version
 
 
-( Public structure )
+( CRC-32 Structure )
 
 struct: crc%       ( - n = Get the required space for the crc structure )
   cell: crc>value
@@ -123,18 +123,13 @@ create crc.table  \ polynomial: EDB88320
 decimal
 
 
-( Public words )
-
-: crc-start    ( w:crc - = Start/restart a crc calculation )
-  -1 swap crc>value !
-;
-
+( CRC-32 Structure creation, initialisation and destruction )
 
 hex
 : crc-init     ( w:crc - = Initialise the crc structure)
   crc.table over crc>table !
   EDB88320  over crc>poly  !
-  crc-start
+  -1        swap crc>value !
 ;
 decimal
 
@@ -150,7 +145,7 @@ decimal
 ;
 
 
-: scr-free     ( w:crc - = Free a crc from the heap )
+: crc-free     ( w:crc - = Free a crc from the heap )
   dup crc>table @ dup
   crc.table <> IF            \ If not default crc table then
     free throw               \  free the table
@@ -161,7 +156,9 @@ decimal
 ;
 
 
-: crc-poly! ( u:poly w:crc - = Set the polynomial for the crc structure)
+( Member words )
+
+: crc-poly!    ( u:poly w:crc - = Set the polynomial for the crc structure)
   crc.table over crc>table @ = IF \ If default table then
     256 cells allocate throw      \   create new table
     over crc>table !
@@ -184,8 +181,15 @@ decimal
 ;
 
 
-: crc-poly@   ( w:crc - u:poly = Get the polynomial in the crc )
+: crc-poly@    ( w:crc - u:poly = Get the polynomial in the crc )
   crc>poly @
+;
+
+
+( CRC-32 words )
+
+: crc-reset   ( w:crc - = Reset the crc calculation )
+  -1 swap crc>value !
 ;
 
 
@@ -206,6 +210,8 @@ decimal
   crc>value @ invert
 ;
 
+
+( Module words )
 
 : crc+calc-poly ( u1 .. un n - u = Calculate the polynomial )
   0 swap 0 ?DO
