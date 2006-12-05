@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-07 06:09:27 $ $Revision: 1.2 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -53,7 +53,7 @@ struct: bcn%       ( - n = Get the required space for the bcn structure )
 
 
 
-( Structure creation, initialisation and destruction )
+( Tree node creation, initialisation and destruction )
 
 : bcn-init         ( w:data w:key w:parant w:bcn - = Initialise the bcn structure with a key, data and parent )
   tuck bcn>parent    !

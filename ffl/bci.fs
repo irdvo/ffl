@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-22 05:56:17 $ $Revision: 1.3 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,7 @@ include ffl/bcn.fs
 1 constant bci.version
 
 
-( Public structure )
+( Iterator Structure )
 
 struct: bci%       ( - n = Get the required space for a bci data structure )
   cell: bci>tree        \ Refernce to the binary tree
@@ -50,7 +50,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;struct 
 
 
-( Structure creation, initialisation and destruction )
+( Iterator creation, initialisation and destruction )
 
 : bci-init     ( w:bct w:bci - = Initialise the iterator with a binary tree )
   tuck bci>tree    !
@@ -194,6 +194,8 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
   rdrop
 ;
 
+
+( Inspection )
 
 : bci-dump     ( w:bci - = Dump the iterator )
   ." bci:" dup . cr

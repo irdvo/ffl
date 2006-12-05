@@ -1,4 +1,6 @@
 0.4.0:
+* crc: word scr-free renamed to crc-free (bug)
+* crc: word crc-start renamed to crc-reset
 * sh1: new module (Secure Hash 1) (2006-12-04)
 * trm: new module (Terminal escape sequences outputter) (2006-11-17)
 * bci: new module (Binary cell tree iterator) (2006-10-03)

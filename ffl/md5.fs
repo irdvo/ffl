@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-04 19:55:43 $ $Revision: 1.7 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -51,7 +51,7 @@ include ffl/stc.fs
 16 constant md5.cell-size   ( - n = Size of buffer in cells )
 64 constant md5.byte-size   ( - n = Size of buffer in bytes )
 
-( Public structure )
+( MD5 Structure )
 
 struct: md5%       ( - n = Get the required space for the md5 data structure )
   cell:  md5>a
@@ -233,7 +233,7 @@ hex
 decimal
 
 
-: md5+transform    ( md5 - = MD5 Basic transformation )
+: md5-transform    ( w:md5 - = MD5 Basic transformation )
   >r
   
   r@ md5>a @ to md5.a     \ copy to values for easy access
@@ -272,7 +272,7 @@ hex
 decimal
 
 
-( Public words )
+( Structure creation, initialisation and destruction )
 
 : md5-init     ( w:md5 - = Initialise the MD5 )
   >r
@@ -302,6 +302,8 @@ decimal
 ;
 
 
+( MD5 words )
+
 : md5-reset        ( w:md5 - = Reset the MD5 state )
   md5-init
 ;
@@ -315,7 +317,7 @@ decimal
     2dup r@ md5>length @ md5.byte-size mod md5+cmove
     over r@ md5>length +!
   WHILE
-    r@ md5+transform
+    r@ md5-transform
     /string
   REPEAT
   rdrop
@@ -355,6 +357,8 @@ decimal
   r> base !
 ;
 
+
+( Inspection )
 
 : md5-dump         ( w:md5 - = Dump the md5 state )
   >r

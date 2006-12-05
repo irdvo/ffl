@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-04 19:55:43 $ $Revision: 1.1 $
+\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,6 +30,8 @@ include ffl/config.fs
 
 [UNDEFINED] sh1.version [IF]
 
+
+cell 4 =  [IF]
 
 include ffl/stc.fs
 
@@ -69,7 +71,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;struct
 
 
-( Structure creation, initialisation and destruction )
+( SHA-1 creation, initialisation and destruction )
 
 : sh1-init         ( w:sh1 - = Initialise the sh1 structure )
   [ hex ]
@@ -101,6 +103,13 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 ( Private words )
 
+: sh1-w-bounds     ( u:end u:start w:sh1 - u:addr-end u:addr-start = Bounds work buffer from start to end )
+  sh1>w >r
+  swap cells r@ + 
+  swap cells r> +
+;
+
+
 : sh1+rotate       ( e d c b a f k w - d c b a t = Rotate the sha-1 state )
   + +                        \ t = f + k + w
   over 5 lroll +             \ t += a lroll 5
@@ -109,65 +118,63 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-transform    ( c-addr w:sh1 - = Transform 64 bytes of data )
+: sh1-cmove        ( c-addr u w:sh1 - n:len f:full = Move characters from the string to the work buffer )
+;
+
+
+: sh1-transform    ( w:sh1 - = Transform 64 bytes of data )
   >r
   
-  \ ToDo ..
+  r@ sh1>b r@ sh1>w sh1.b-size cells move  \ Move chuck in work buffer
   
-  r@ sh1>h4 @   
+  80 16 sh1-w-bounds DO        \ Extend 16  words in work buffer to 80 words in work buffer
+    I 3  cells - @
+    I 8  cells - @ xor
+    I 14 cells - @ xor
+    I 16 cells - @ xor
+    I ! 
+  cell +LOOP
+  
+  r@ sh1>h4 @                  \ Initialise hash values
   r@ sh1>h3 @  
   r@ sh1>h2 @ 
   r@ sh1>h1 @ 
-  r@ sh1>h0 @                \ S: e d c b a
+  r@ sh1>h0 @                  \ S: e d c b a
   
-  \ ToDo ...
-  
-  \ 0..19
-  DO
+  20 0 sh1-w-bounds DO         \ Transform 0..19
     >r >r
     over r@ invert and         \ S: e d c d&~b
     over r@ and or             \ S: e d c f = d & ~b | c & b
     r> swap r> swap            \ S: e d c b a f
     sh1.k0 I sh1+rotate 
-  LOOP
+  cell +LOOP
   
-  \ ToDo ...
-  
-  \ 20..39
-  DO
+  40 20 sh1-w-bounds DO        \ Transform 20..39
     >r >r
     2dup xor                   \ S: e d c f = c ^ d
     r> tuck xor                \ S: e d c b f = b ^ c ^ d
     r> swap                    \ S: e d c b a f
     sh1.k1 I sh1+rotate 
-  LOOP
+  cell +LOOP
 
-  \ ToDo ...
-  
-  \ 40..59
-  DO
+  60 40 sh1-w-bounds DO        \ Transform 40..59
     >r >r
     2dup over r@ and >r        \ S: e d c d    R : a b f = b & d
     and r> or                  \ S: e d c f = b & d | c & d
     over r@ and or             \ S: e d c f = b & d | c & d | b & c  
     r> swap r> swap            \ S: e d c b a f
     sh1.k2 I sh1+rotate
-  LOOP
+  cell +LOOP
   
-  \ ToDo ...
-  
-  \ 60..79
-  DO
+  80 60 sh1-w-bounds DO        \ Transform 60..79
     >r >r
     2dup xor
     r> tuck xor
     r> swap 
     sh1.k3 I sh1+rotate
-  LOOP
+  cell +LOOP
   
-  \ ToDo ...
-  
-  r@ sh1>h0 +!
+  r@ sh1>h0 +!                 \ Add hash values to current results
   r@ sh1>h1 +!
   r@ sh1>h2 +!
   r@ sh1>h3 +!
@@ -183,7 +190,14 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 
 : sh1-update       ( c-addr u w:sh1 - = Update the SHA-1 with more data )
-  \ ToDo
+  >r
+  BEGIN
+    2dup r@ sh1-cmove
+  WHILE
+    r@ sh1-transform
+    /string
+  REPEAT
+  r> 2drop 2drop
 ;
 
 
@@ -212,6 +226,10 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   ."  length :" r@ sh1>length ? cr
   ."  buffer :" r@ sh1>w r> sh1>length @ 64 min dump
 ;
+
+[ELSE]
+.( Warning: sh1 requires 4 byte cells ) cr
+[THEN]
 
 [THEN]
 
