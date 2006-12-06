@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.2 $
+\  $Date: 2006-12-06 20:06:21 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -32,6 +32,8 @@ include ffl/config.fs
 
 
 cell 4 =  [IF]
+
+\ Based on the algoritms published in FIPS 180-1 and Wikipedia
 
 include ffl/stc.fs
 
@@ -45,8 +47,13 @@ include ffl/stc.fs
 
 ( Private constants )
 
-80 constant sh1.w-size
-16 constant sh1.b-size
+80       constant sh1.w-size       \ Size of work buffer in cells
+
+
+16       constant sh1.b-size       \ Size of input buffer in cells
+sh1.b-size cells 1 chars /
+         constant sh1.b-csize      \ Size of input buffer in chars
+         
 hex
 5A827999 constant sh1.k0
 6ED9EBA1 constant sh1.k1
@@ -66,7 +73,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
  sh1.w-size
   cells: sh1>w
  sh1.b-size
-  cells: sh1>b               \ buffer with data
+  cells: sh1>b               \ input buffer with data
   cell:  sh1>length          \ total length of processed data
 ;struct
 
@@ -103,6 +110,30 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 ( Private words )
 
+sys.bigendian [IF]
+: sha!             ( w addr - = Store word on address, SHA1 order )
+  !
+;
+: sha@
+  @
+;
+
+[ELSE]
+: sha!             ( w addr - = Store word on address, SHA1 order )
+        over 24 rshift 255 and over c!
+  char+ over 16 rshift 255 and over c!
+  char+ over 8  rshift 255 and over c!
+  char+ swap           255 and swap c!
+;
+: sha@             ( addr - w = Fetch word on address, SHA1 order )
+  dup                  c@ 24 lshift 
+  swap char+ swap over c@ 16 lshift or
+  swap char+ swap over c@  8 lshift or
+  swap char+           c@           or
+;
+[THEN]
+
+
 : sh1-w-bounds     ( u:end u:start w:sh1 - u:addr-end u:addr-start = Bounds work buffer from start to end )
   sh1>w >r
   swap cells r@ + 
@@ -118,20 +149,33 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-cmove        ( c-addr u w:sh1 - n:len f:full = Move characters from the string to the work buffer )
+: sh1-cmove        ( c-addr u w:sh1 - n:len f:full = Move characters from the string to the input buffer, update the length )
+  2dup sh1>length @ sh1.b-csize mod    \ index = sh1>length mod buf-size
+  tuck + sh1.b-csize >= >r >r          \ full  = (index + str-len >= buf-size )
+  swap sh1.b-csize r@ - min            \ copy-len = min(buf-size - index, str-len)
+  2dup swap sh1>length +!              \ sh1>length += copy-len
+  r> swap >r
+  chars swap sh1>b + r@ cmove          \ copy(str->buf,copy-len)
+  r> r>
 ;
 
 
 : sh1-transform    ( w:sh1 - = Transform 64 bytes of data )
   >r
   
-  r@ sh1>b r@ sh1>w sh1.b-size cells move  \ Move chuck in work buffer
-  
-  80 16 sh1-w-bounds DO        \ Extend 16  words in work buffer to 80 words in work buffer
+  r@ sh1>b
+  16 0 r@ sh1-w-bounds DO       \ Move chunk in work buffer
+    dup sha@ I !
+    cell+
+  cell +LOOP
+  drop
+    
+  80 16 r@ sh1-w-bounds DO      \ Extend 16  words in work buffer to 80 words in work buffer
     I 3  cells - @
     I 8  cells - @ xor
     I 14 cells - @ xor
     I 16 cells - @ xor
+      1 lroll
     I ! 
   cell +LOOP
   
@@ -141,37 +185,37 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   r@ sh1>h1 @ 
   r@ sh1>h0 @                  \ S: e d c b a
   
-  20 0 sh1-w-bounds DO         \ Transform 0..19
+  20 0 r@ sh1-w-bounds DO      \ Transform 0..19
     >r >r
     over r@ invert and         \ S: e d c d&~b
     over r@ and or             \ S: e d c f = d & ~b | c & b
     r> swap r> swap            \ S: e d c b a f
-    sh1.k0 I sh1+rotate 
+    sh1.k0 I @ sh1+rotate 
   cell +LOOP
   
-  40 20 sh1-w-bounds DO        \ Transform 20..39
+  40 20 r@ sh1-w-bounds DO     \ Transform 20..39
     >r >r
     2dup xor                   \ S: e d c f = c ^ d
     r> tuck xor                \ S: e d c b f = b ^ c ^ d
     r> swap                    \ S: e d c b a f
-    sh1.k1 I sh1+rotate 
+    sh1.k1 I @ sh1+rotate 
   cell +LOOP
 
-  60 40 sh1-w-bounds DO        \ Transform 40..59
+  60 40 r@ sh1-w-bounds DO     \ Transform 40..59
     >r >r
     2dup over r@ and >r        \ S: e d c d    R : a b f = b & d
     and r> or                  \ S: e d c f = b & d | c & d
     over r@ and or             \ S: e d c f = b & d | c & d | b & c  
     r> swap r> swap            \ S: e d c b a f
-    sh1.k2 I sh1+rotate
+    sh1.k2 I @ sh1+rotate
   cell +LOOP
   
-  80 60 sh1-w-bounds DO        \ Transform 60..79
+  80 60 r@ sh1-w-bounds DO     \ Transform 60..79
     >r >r
     2dup xor
     r> tuck xor
     r> swap 
-    sh1.k3 I sh1+rotate
+    sh1.k3 I @ sh1+rotate
   cell +LOOP
   
   r@ sh1>h0 +!                 \ Add hash values to current results
@@ -179,6 +223,23 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   r@ sh1>h2 +!
   r@ sh1>h3 +!
   r> sh1>h4 +!
+;
+
+
+: sh1+pad      ( w:index w:buffer - = Pad the buffer )
+  over chars +
+  128 over c!                       \ Add 80h to buffer
+  char+ 
+  swap 1+ sh1.b-csize swap - chars  \ Pad remaining with zero's
+  erase
+;
+
+
+: sh1+#s       ( u - = Convert one SHA1 number in hold area )
+  dup 24 rshift 255 and 0 # # 2drop
+  dup 16 rshift 255 and 0 # # 2drop
+  dup  8 rshift 255 and 0 # # 2drop
+                255 and 0 # # 2drop
 ;
 
 
@@ -204,7 +265,25 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 : sh1-finish       ( w:sh1 - u1 u2 u3 u4 u5 = Finish the SHA-1 calculation )
   >r
   
-  \ ToDo
+  r@ sh1>length @ sh1.b-csize mod           \ index = sh1>length mod buf-size
+  
+  dup [ sh1.b-csize 2 cells - 1 chars - ] literal > IF
+    r@ sh1>b sh1+pad                        \ If buffer is too full Then
+    r@ sh1-transform                        \   Pad buffer and tranform
+    r@ sh1>b sh1.b-csize chars erase        \   Pad next buffer
+  ELSE                                      \ Else
+    r@ sh1>b sh1+pad                        \   Pad buffer
+  THEN
+  
+  r@ sh1>length @ sys.bits-in-char m*       \ Calculate bit length
+  
+  [ sh1.b-csize 2 cells - ] literal chars   \ Index for bit length
+  r@ sh1>b +                                \ Buffer location for bit length
+  
+  tuck sha! cell+ sha!                      \ Store the length
+  
+  \  r@ sh1>b sh1.b-csize dump
+  r@ sh1-transform
   
   r@ sh1>h0 @
   r@ sh1>h1 @
@@ -213,9 +292,13 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   r> sh1>h4 @
 ;
 
+
 : sh1+to-string    ( u1 u2 u3 u4 u5 - c-addr u = Convert SHA-1 result to string, using the pictured output area )
-  \ ToDo
+  base @ >r hex
+  <#  sh1+#s sh1+#s sh1+#s sh1+#s sh1+#s  0. #>
+  r> base !
 ;
+
 
 ( Inspection )
 
