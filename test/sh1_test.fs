@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\            ffl_test - the test-all source file in the ffl
+\          sh1_test - the test words for the sh1 module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,38 +20,51 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-06 20:06:21 $ $Revision: 1.18 $
+\  $Date: 2006-12-06 20:06:21 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-
+include ffl/sh1.fs
 include ffl/tst.fs
 
-tst-reset-tests
 
-\ the test sources
-include act_test.fs
-include bar_test.fs
-include bct_test.fs
-include car_test.fs
-include chr_test.fs
-include chs_test.fs
-include cpx_test.fs
-include crc_test.fs
-include dtm_test.fs
-include frc_test.fs
-include hct_test.fs
-include md5_test.fs
-include rng_test.fs
-include scl_test.fs
-include sh1_test.fs
-include str_test.fs
-include tis_test.fs
-include tos_test.fs
-
-.( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests) cr
+.( Testing: sh1) cr 
   
-bye
+sh1-create sh11
+
+hex
+
+t{ s" abc" sh11 sh1-update }t
+
+t{ sh11 sh1-finish 9CD0D89D ?u 7850C26C ?u BA3E2571 ?u 4706816A ?u A9993E36 ?u }t
+
+t{ sh11 sh1-reset }t
+
+t{ s" abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq" sh11 sh1-update }t
+
+t{ sh11 sh1-finish E54670F1 ?u F95129E5 ?u BAAE4AA1 ?u 1C3BD26E ?u 84983E44 ?u }t
+
+t{ sh1-new value sh12 }t
+
+decimal
+
+: sh1-test
+  100000 0 DO
+    s" aaaaaaaaaa" sh12 sh1-update
+  LOOP
+;
+
+sh1-test
+
+hex
+
+t{ sh12 sh1-finish 6534016F ?u DBAD2731 ?u F61EEB2B ?u D4C4DAA4 ?u 34AA973C ?u }t
+
+t{ sh12 sh1-free }t
+
+[THEN]
+
+decimal
 
 \ ==============================================================================
 
