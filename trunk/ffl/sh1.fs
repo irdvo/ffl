@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-06 20:06:21 $ $Revision: 1.3 $
+\  $Date: 2006-12-07 18:30:07 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -31,7 +31,7 @@ include ffl/config.fs
 [UNDEFINED] sh1.version [IF]
 
 
-cell 4 =  [IF]
+cell 4 =  1 chars 1 =  AND [IF]
 
 \ Based on the algoritms published in FIPS 180-1 and Wikipedia
 
@@ -78,7 +78,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;struct
 
 
-( SHA-1 creation, initialisation and destruction )
+( SHA-1 Structure creation, initialisation and destruction )
 
 : sh1-init         ( w:sh1 - = Initialise the sh1 structure )
   [ hex ]
@@ -114,18 +114,17 @@ sys.bigendian [IF]
 : sha!             ( w addr - = Store word on address, SHA1 order )
   !
 ;
-: sha@
+: sha@             ( addr - w = Fetch word on address, SHA1 order )
   @
 ;
-
 [ELSE]
-: sha!             ( w addr - = Store word on address, SHA1 order )
+: sha!
         over 24 rshift 255 and over c!
   char+ over 16 rshift 255 and over c!
   char+ over 8  rshift 255 and over c!
   char+ swap           255 and swap c!
 ;
-: sha@             ( addr - w = Fetch word on address, SHA1 order )
+: sha@
   dup                  c@ 24 lshift 
   swap char+ swap over c@ 16 lshift or
   swap char+ swap over c@  8 lshift or
@@ -235,11 +234,8 @@ sys.bigendian [IF]
 ;
 
 
-: sh1+#s       ( u - = Convert one SHA1 number in hold area )
-  dup 24 rshift 255 and 0 # # 2drop
-  dup 16 rshift 255 and 0 # # 2drop
-  dup  8 rshift 255 and 0 # # 2drop
-                255 and 0 # # 2drop
+: sh1+#s       ( u - Put a single SHA-1 result in the hold area )
+  0 # # # # # # # # 2drop
 ;
 
 
@@ -282,8 +278,7 @@ sys.bigendian [IF]
   
   tuck sha! cell+ sha!                      \ Store the length
   
-  \  r@ sh1>b sh1.b-csize dump
-  r@ sh1-transform
+  r@ sh1-transform                          \ Transform last buffer
   
   r@ sh1>h0 @
   r@ sh1>h1 @
@@ -295,7 +290,7 @@ sys.bigendian [IF]
 
 : sh1+to-string    ( u1 u2 u3 u4 u5 - c-addr u = Convert SHA-1 result to string, using the pictured output area )
   base @ >r hex
-  <#  sh1+#s sh1+#s sh1+#s sh1+#s sh1+#s  0. #>
+  <#  sh1+#s sh1+#s sh1+#s sh1+#s sh1+#s 0. #>
   r> base !
 ;
 
@@ -307,11 +302,12 @@ sys.bigendian [IF]
   ." sh1:" r@ . cr
   ."  result :" r@ sh1>h0 @ r@ sh1>h1 @ r@ sh1>h2 @ r@ sh1>h3 @ r@ sh1>h4 @ sh1+to-string type cr
   ."  length :" r@ sh1>length ? cr
-  ."  buffer :" r@ sh1>w r> sh1>length @ 64 min dump
+  ."  buffer :" r@ sh1>b sh1.b-csize chars dump
+  ."  work   :" r> sh1>w sh1.w-size  cells dump
 ;
 
 [ELSE]
-.( Warning: sh1 requires 4 byte cells ) cr
+.( Warning: sh1 requires 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]

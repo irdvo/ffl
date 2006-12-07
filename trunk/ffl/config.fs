@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-11 18:08:21 $ $Revision: 1.21 $
+\  $Date: 2006-12-07 18:30:07 $ $Revision: 1.22 $
 \
 \ ==============================================================================
 \
@@ -160,6 +160,20 @@ create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
 \   fswap fover
 \ ;
 
+1 [IF]
+: f>r
+  r> rp@ float - rp! rp@ f! >r 
+;
+
+: fr>
+  r> rp@ f@ float rp@ + rp! >r
+;
+
+: fr@
+  r> rp@ f@ >r
+;
+
+[ELSE]
 
 sys.cells-in-float 1 = [IF]
 : f>r              ( r - = Move a float to the return stack )
@@ -255,6 +269,8 @@ sys.cells-in-float 1 = [IF]
 [ELSE]
 .( Unexpected float size )
 [THEN] [THEN] [THEN] [THEN]
+
+[THEN]
 
 [THEN]
 
