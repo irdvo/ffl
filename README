@@ -54,7 +54,7 @@ For pfe the config.fs and make.fs files should be copied from the
 The next step is editing the config.fs file for system settings.
 
 
-At the moment there is four system setting: 
+At the moment there are four system setting: 
 
 sys.eol 
 

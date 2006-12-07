@@ -20,13 +20,15 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-06 20:06:21 $ $Revision: 1.1 $
+\  $Date: 2006-12-07 18:30:07 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/sh1.fs
 include ffl/tst.fs
 
+
+[DEFINED] sh1.version [IF]
 
 .( Testing: sh1) cr 
   
@@ -49,22 +51,20 @@ t{ sh1-new value sh12 }t
 decimal
 
 : sh1-test
-  100000 0 DO
-    s" aaaaaaaaaa" sh12 sh1-update
+  50000 0 DO
+    s" aaaaaaaaaaaaaaaaaaaa" sh12 sh1-update
   LOOP
 ;
 
 sh1-test
 
-hex
-
-t{ sh12 sh1-finish 6534016F ?u DBAD2731 ?u F61EEB2B ?u D4C4DAA4 ?u 34AA973C ?u }t
+t{ sh12 sh1-finish sh1+to-string s" 34AA973CD4C4DAA4F61EEB2BDBAD27316534016F" compare ?0 }t
 
 t{ sh12 sh1-free }t
 
 [THEN]
+[THEN]
 
-decimal
 
 \ ==============================================================================
 
