@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-07 18:30:07 $ $Revision: 1.22 $
+\  $Date: 2006-12-08 20:59:48 $ $Revision: 1.23 $
 \
 \ ==============================================================================
 \
@@ -51,13 +51,20 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
   
   
-8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+8                            constant sys.bits-in-byte   ( - n = Number of bits in a byte )
 
-sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
+sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits in a char )
   
-sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
-sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
+sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
+
+: sys.timer@                                             ( - ud = Fetch microseconds timer )
+  utime 
+;
+
+s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value of the timer )
+
 
 ( Extension words )
 
