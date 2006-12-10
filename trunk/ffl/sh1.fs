@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-07 18:30:07 $ $Revision: 1.4 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/stc.fs
 
 
 ( sh1 = SHA-1 module )
-( The sh1 module implements words for using the SHA-1 algorithm.                )
+( The sh1 module implements words for using the SHA-1 algorithm. )
 
 
 1 constant sh1.version
@@ -78,7 +78,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;struct
 
 
-( SHA-1 Structure creation, initialisation and destruction )
+( SHA-1 structure creation, initialisation and destruction )
 
 : sh1-init         ( w:sh1 - = Initialise the sh1 structure )
   [ hex ]

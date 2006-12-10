@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-01-30 18:58:00 $ $Revision: 1.3 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,13 +36,13 @@ include ffl/scn.fs
 
 
 ( sci = Single Linked Cell List Iterator )
-( The sci module implements an iterator on the single linked cell list <scl>. )
+( The sci module implements an iterator on the single linked cell list [scl]. )
 
 
 1 constant sci.version
 
 
-( Public structure )
+( Iterator structure )
 
 struct: sci%       ( - n = Get the required space for a sci data structure )
   cell: sci>list
@@ -50,7 +50,7 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 ;struct 
 
 
-( Public words )
+( Iterator creation, initialisation and destruction )
 
 : sci-init     ( w:scl w:sci - = Initialise the iterator with a scl list )
   tuck sci>list     !
@@ -74,6 +74,8 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 ;
 
 
+( Member words )
+
 : sci-get      ( w:sci - w true | false = Get the cell data from the current record )
   sci>walk @
   dup nil<> IF               \ if current <> nil then
@@ -95,6 +97,8 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
   THEN
 ;
 
+
+( Iterator words )
 
 : sci-first    ( w:sci - w true | false = Move the iterator to the first record )
   dup sci>list @             
@@ -165,6 +169,8 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
   THEN
 ;
 
+
+( Inspection )
 
 : sci-dump     ( w:sci - = Dump the iterator )
   ." sci:" dup . cr

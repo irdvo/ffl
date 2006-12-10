@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.5 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,8 @@ include ffl/chr.fs
 
 
 ( chs = Character set module )
-( The chs module implements words for using character sets. It supports the POSIX classes used in regular expressions.)
+( The chs module implements words for using character sets. It supports the )
+( POSIX classes used in regular expressions. )
   
 
 1 constant chs.version

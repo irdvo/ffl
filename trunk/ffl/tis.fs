@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-05 17:39:42 $ $Revision: 1.11 $
+\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -44,18 +44,16 @@ include ffl/str.fs
 ( then the leading text is returned and the stream pointer is moved after   )
 ( the scanned data; skip = move the stream pointer after the skipped data.  )  
 
+
 1 constant tis.version
 
 
-( Public structure )
+( Input stream structure )
 
 struct: tis%       ( - n = Get the required space for the tis data structure )
   str% field: tis>text
        cell:  tis>pntr
 ;struct
-
-
-( Private database )
 
 
 ( Private words )
@@ -72,7 +70,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-( Public words )
+( Input stream creation, initialisation and destruction )
 
 : tis-init         ( w:tis - = Initialise the empty input stream )
   dup str-init               \ Initialise the base string data structure
@@ -94,6 +92,8 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   str-free
 ;
 
+
+( Stream words )
 
 : tis-reset        ( w:tis - = Reset the input stream )
   tis>pntr 0!
@@ -447,7 +447,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-scan-string  ( c-addr n w:tis - false | c-addr u true = Read characters till the string )
+: tis-scan-string  ( c-addr n w:tis - false | c-addr u true = Read characters till a string )
   >r
   0 -rot
   r@ tis-get ?dup IF                   \ Check if there are remaing characters

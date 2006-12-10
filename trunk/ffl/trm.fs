@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-11-19 08:01:32 $ $Revision: 1.1 $
+\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -39,9 +39,6 @@ include ffl/config.fs
 
 1 constant trm.version
 
-
-
-( Public words )
 
 ( Attributes )
 
@@ -82,6 +79,7 @@ include ffl/config.fs
   27 emit
   emit
 ;
+
 
 : trm+do-esc2      ( c c - = Output a double escape sequence )
   27 emit
@@ -348,7 +346,6 @@ include ffl/config.fs
 : trm+select-graphics-for-alternate-font ( - = Select the vt100 graphics font for the alternate font )
   [char] 0 [char] ) trm+do-esc2
 ;
-
 
 [THEN]
 

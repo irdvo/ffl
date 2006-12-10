@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -399,7 +399,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ;
 
 
-( Compare words )
+( Compare module words )
 
 : cpx+equal?       ( r:re2 r:im2 r:re1 r:im1 - f = Check if two complex numbers are [true] equal )
   frot f= f= AND

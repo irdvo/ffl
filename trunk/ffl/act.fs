@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-27 20:02:44 $ $Revision: 1.2 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -37,12 +37,12 @@ include ffl/bct.fs
 
 
 ( act = AVL binary tree cell module )
-( The act module implements an AVL binary tree with the key and data cell       )
-( based. The act module is a specialisation of the bct module, so the words     )
-( bct-init, bct-create, bct-new, bct-free, bct-length@, bct-empty?,             )
-( bct-compare@, bct-compare!, bct-get, bct-has?, bct-execute and bct-dump are   )
-( inherited from bct. Also the tree iterator bci is the iterator for the act    )
-( tree. The implementation is non-recursive.                                    )
+( The act module implements an AVL binary tree with the key and data cell      )
+( based. The act module is a specialisation of the bct module, so the words    )
+( bct-init, bct-create, bct-new, bct-free, bct-length@, bct-empty?,            )
+( bct-compare@, bct-compare!, bct-get, bct-has?, bct-execute and bct-dump are  )
+( inherited from bct. Also the tree iterator bci is the iterator for the act   )
+( tree. The implementation is non-recursive.                                   )
 
 
 1 constant act.version

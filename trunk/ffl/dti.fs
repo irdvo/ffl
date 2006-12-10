@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.3 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/dtm.fs
 
 
 
-( Public words )
+( Year iterator words )
 
 : dti-year-        ( w:dtm - = Decrease the date/time with one year )
   >r
@@ -66,6 +66,8 @@ include ffl/dtm.fs
   r> dtm-year!
 ;
 
+
+( Month iterator words )
 
 : dti-month-       ( w:dtm - = Decrease the date/time with one months )
   >r 
@@ -94,6 +96,8 @@ include ffl/dtm.fs
   r> dtm-month!
 ;
 
+
+( Day iterator words )
 
 : dti-day-         ( w:dtm - = Decrease the date/time with one day )
   >r
@@ -130,6 +134,8 @@ include ffl/dtm.fs
 ;
 
 
+( Hour iterator words )
+
 : dti-hour-        ( w:dtm - = Decrease the date/time with one hour )
   dup dtm-hour@
   1- dup 0< IF
@@ -150,6 +156,8 @@ include ffl/dtm.fs
 ;
 
 
+( Minute iterator words )
+
 : dti-minute-      ( w:dtm - = Decrease the date/time with one minute )
   dup dtm-minute@
   1- dup 0< IF
@@ -169,6 +177,8 @@ include ffl/dtm.fs
   swap dtm-minute!
 ;
 
+
+( Seconds iterator words )
 
 : dti-second-      ( w:dtm - = Decrease the date/time with one second )
   dup dtm-second@
@@ -202,6 +212,8 @@ include ffl/dtm.fs
   >r dnegate r> dti-seconds+
 ;
 
+
+( Milliseconds iterator words )
 
 : dti-milli+       ( w:dtm - = Increase the date/time with one millisecond )
   dup dtm-milli@

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-01 16:31:51 $ $Revision: 1.4 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,7 @@ include ffl/hcn.fs
 1 constant hci.version
 
 
-( Public structure )
+( Iterator structure )
 
 struct: hci%       ( - n = Get the required space for a hci data structure )
   cell: hci>table       \ Refernce to the hash table
@@ -71,7 +71,7 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
 ;
     
     
-( Public words )
+( Iterator creation, initialisation and destruction words )
 
 : hci-init     ( w:hct w:hci - = Initialise the iterator with a hash table )
   tuck hci>table    !
@@ -95,6 +95,8 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
   free throw
 ;
 
+
+( Member words )
 
 : hci-get      ( w:hci - false | w true = Get the cell data from the current record )
   hci>walk @
@@ -127,6 +129,8 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
   THEN    
 ;
 
+
+( Iterator words )
 
 : hci-first    ( w:hci - w true | false = Move the iterator to the first record )
   >r
@@ -232,6 +236,8 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
   nip
 ;
 
+
+( Inspection )
 
 : hci-dump     ( w:hci - = Dump the iterator )
   ." hci:" dup . cr

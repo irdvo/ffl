@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.16 $
+\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 
@@ -35,13 +35,13 @@ include ffl/chr.fs
 
 
 ( str = Character string )
-( The str module implements a dynamic text string.)
+( The str module implements a dynamic text string. )
 
 
 1 constant str.version
 
 
-( Public structure )
+( String structure )
 
 struct: str%       ( - n = Get the required space for the str data structure )
   cell: str>data
@@ -77,7 +77,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( Public words )
+( String creation, initialisation and destruction )
 
 : str-init         ( w:str - = Initialise the empty string )
   dup str>data  nil!
@@ -108,6 +108,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
   free  throw                \ Free struct
 ;
 
+
+( Member words )
 
 : str-empty?       ( w:str - f = Check for an empty string )
   str>length @ 0=  
@@ -164,21 +166,6 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( String manipulation words )
-
-
-: str-clear        ( w:str - = Clear the string )
-  str>length 0!
-;
-
-
-: str-set          ( c-addr u w:str - = Set a string in the string )
-  2dup str-size!             \ check the space
-  2dup str>length !          \ set the length
-  str-data@ swap chars cmove \ move the string
-;
-
-
 ( Private words )
 
 : str-length+!     ( u w:str - u = Increase the length, return the previous length )
@@ -204,7 +191,19 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-( Public words )
+( Set words )
+
+: str-clear        ( w:str - = Clear the string )
+  str>length 0!
+;
+
+
+: str-set          ( c-addr u w:str - = Set a string in the string )
+  2dup str-size!             \ check the space
+  2dup str>length !          \ set the length
+  str-data@ swap chars cmove \ move the string
+;
+
 
 : str-append-string    ( c-addr u w:str - = Append a string to the string )
   2dup str-length+!          \ increase the length
@@ -256,6 +255,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+( Get words )
+
 : str-get-substring   ( u n:start w:str - c-addr u = Get a substring from start,  u chars long )
   dup >r str-offset          \ Index -> offset
   2dup + r@ str-length@ >    \ If not enough data then exception
@@ -275,6 +276,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
   str-get bounds
 ;  
 
+
+( Delete word )
 
 : str-delete       ( u n w:str - = Delete a substring from nth index and length u from the string )
   dup >r
@@ -297,6 +300,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+( Zero terminated string words )
+
 : str-set-zstring  ( c-addr w:str - = Set a zero terminated string in the string )
   over 0 swap                \ length = 0
   BEGIN
@@ -316,6 +321,8 @@ struct: str%       ( - n = Get the required space for the str data structure )
   tuck + chr.nul swap c!     \ store nul at end of string
 ;
 
+
+( Strings word )
 
 : str^move         ( w:str2 w:str1 - Move str2 in str1 )
   >r str-get r> str-set
@@ -386,6 +393,27 @@ struct: str%       ( - n = Get the required space for the str data structure )
 : str-delete-char  ( n w:str - = Delete the character on the nth position in the string )
   2>r 1 2r>
   str-delete
+;
+
+
+( Special words )
+
+: str-count        ( c-addr u w:str - u = Count the number of occurences of a string in the string )
+  >r 0 -rot 
+  r> str-get
+  rot
+  tuck - 1+                  \ Determine the maximum length for full string
+  dup 0<= IF
+    2drop 2drop
+  ELSE
+    >r swap r> bounds DO
+      2dup I over compare 0= IF  \ Test all substrings for success ..
+        rot 1+ -rot              \ .. and count them
+      THEN
+      1 chars
+    +LOOP
+    2drop
+  THEN
 ;
 
 
@@ -582,24 +610,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-count        ( c-addr u w:str - u = Count the number of occurences of a string in the string )
-  >r 0 -rot 
-  r> str-get
-  rot
-  tuck - 1+                  \ Determine the maximum length for full string
-  dup 0<= IF
-    2drop 2drop
-  ELSE
-    >r swap r> bounds DO
-      2dup I over compare 0= IF  \ Test all substrings for success ..
-        rot 1+ -rot              \ .. and count them
-      THEN
-      1 chars
-    +LOOP
-    2drop
-  THEN
-;
-
+( Search and replace words )
 
 : str-find         ( c-addr u n w:str - n = Find the first occurence of a string from nth position in the string )
   dup >r str-offset                    \ Index -> offset

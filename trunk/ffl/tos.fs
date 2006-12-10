@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-08 08:00:10 $ $Revision: 1.9 $
+\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -45,16 +45,12 @@ include ffl/str.fs
 1 constant tos.version
 
 
-( Public structure )
+( Output stream structure )
 
 struct: tos%       ( - n = Get the required space for the tos data structure )
   str% field: tos>text
        cell:  tos>pntr
 ;struct
-
-
-( Private database )
-
 
 
 ( Private words )
@@ -77,7 +73,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-( Public words )
+( Output stream creation, initialisation and destruction )
 
 : tos-init         ( w:tos - = Initialise the empty output stream )
   dup str-init               \ Initialise the base string data structure
@@ -99,6 +95,8 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
   str-free
 ;
 
+
+( Stream words )
 
 : tos-rewrite      ( w:tos - = Rewrite the output stream )
   dup tos>text   str-clear
@@ -151,7 +149,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-write-line    ( w:tos - = Write cr/lf to the stream, not alignable )
+: tos-write-line    ( w:tos - = Write end-of-line from config to the stream, not alignable )
   sys.eol
   count bounds ?DO
     I c@ over tos-write-char
