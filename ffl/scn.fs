@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-26 06:50:20 $ $Revision: 1.3 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/stc.fs
 1 constant scn.version
 
 
-( Public structure )
+( Node structure )
 
 struct: scn%       ( - n = Get the required space for a scn structure )
   cell: scn>cell
@@ -48,7 +48,7 @@ struct: scn%       ( - n = Get the required space for a scn structure )
 ;struct 
 
 
-( Public words )
+( Node creation, initialisation and destruction )
 
 : scn-init     ( w w:scn - = Initialise the node with cell data )
   tuck scn>cell     !
@@ -65,6 +65,8 @@ struct: scn%       ( - n = Get the required space for a scn structure )
   free throw
 ;
 
+
+( Inspection )
 
 : scn-dump     ( w:scn - = Dump the node )
   ." scn:" dup . cr

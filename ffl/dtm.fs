@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.8 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/stc.fs
 1 constant dtm.version
 
 
-( Public structure )
+( Date time structure )
 
 struct: dtm%       ( - n = Get the required space for the dtm data structure )
   cell:  dtm>year
@@ -101,7 +101,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 
 
-( Public words )
+( Date time structure creation, initialisation and destruction )
 
 : dtm-init         ( w:dtm - = Initialise the structure with the current date and time )
   >r

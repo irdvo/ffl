@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.8 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/hcn.fs
 1 constant hct.version
 
 
-( Public structure )
+( Hash table structure )
 
 struct: hct%       ( - n = Get the required space for the hct data structure )
   cell: hct>table        \ array of pointers to hcn
@@ -76,7 +76,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-( Public words )
+( Hash table creation, initialisation and destruction )
 
 : hct-init     ( u w:hct - = Initialise the hash table with an initial size )
       dup  hct>length 0!
@@ -233,7 +233,7 @@ struct: hct%       ( - n = Get the required space for the hct data structure )
 ;
 
 
-( Hashtable words )
+( Hash table words )
 
 : hct-insert   ( w c-addr u w:hct - = Insert a cell with a key in the table )
   >r 

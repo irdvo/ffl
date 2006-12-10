@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.4 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -34,9 +34,9 @@ include ffl/stc.fs
 
 
 ( frc = Fraction module )
-( The frc module implements words for using fractions. Note: to reduce normalizing of fractions,)
-( the input is validated and normalized, but the resulting output is NOT normalized. This is left)
-( to the next fraction word.)
+( The frc module implements words for using fractions. Note: to reduce         )
+( normalizing of fractions, the input is validated and normalized, but the     )
+( resulting output is NOT normalized. This is left to the next fraction word.  )
 
 
 1 constant frc.version
@@ -201,7 +201,7 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
 [THEN]
 
 
-: frc+to-string    ( n:num n:denom - c-addr u = Convert fraction to a string )
+: frc+to-string    ( n:num n:denom - c-addr u = Convert fraction to a string using the pictured output area)
   frc+norm
   <#
   dup 1 <> IF
@@ -262,6 +262,8 @@ struct: frc%       ( - n = Get the required space for the frc data structure )
   frc+compare
 ;
 
+
+( Inspection )
 
 : frc-dump         ( w:frc - = Dump the fraction )
   ." frc:" dup . cr

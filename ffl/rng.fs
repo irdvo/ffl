@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-17 19:03:05 $ $Revision: 1.1 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -37,8 +37,8 @@ include ffl/stc.fs
 
 
 ( rng = Pseudo random number generator module )
-( The rng module implements words for generating pseudo random numbers;  )
-( it uses the Mersenne Twister as generator with a period of 2^19937 - 1 )
+( The rng module implements words for generating pseudo random numbers;   )
+( it uses the Mersenne Twister as generator with a period of 2^19937 - 1. )
 
 \
 \ The module is inspired by a C-program for MT19937:
@@ -130,7 +130,7 @@ decimal
 ;
 
 
-( Structure creation, initialisation and destruction )
+( Random generator structure creation, initialisation and destruction )
 
 : rng-init         ( u:seed w:rng - = Initialise the rng structure with a seed )
   rng-init-mt

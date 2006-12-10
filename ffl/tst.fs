@@ -2,7 +2,7 @@
 \
 \                tst - the unit test module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\              Copyright (C) 2005-2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-12 17:29:20 $ $Revision: 1.7 $
+\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -32,7 +32,7 @@ include ffl/config.fs
 
 
 ( tst = Unit testing )
-( The tst module implements an unit testing framework.)
+( The tst module implements an unit testing framework. )
 
 
 2 constant tst.version
@@ -130,7 +130,7 @@ variable tst-tests
 ;
 
 
-( Public words )
+( Test syntax words )
 
 : t{           ( - = Start a test )
   tst-tests 1+!
@@ -151,6 +151,8 @@ variable tst-tests
 [THEN]
 ;
 
+
+( Test value words )
 
 : ?s           ( s s - = Check for signed value on stack )
   tst-depth2? IF
@@ -268,6 +270,8 @@ variable tst-tests
 ;
 [THEN]
 
+
+( Test results words )
 
 : tst-reset-tests ( - = Reset the test results )
   tst-errors 0!

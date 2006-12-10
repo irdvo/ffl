@@ -2,7 +2,7 @@
 \
 \       ffl - the include-all source file in the forth foundation library
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\              Copyright (C) 2005-2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-08 20:59:48 $ $Revision: 1.24 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.25 $
 \
 \ ==============================================================================
 

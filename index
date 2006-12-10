@@ -7,7 +7,7 @@ Index of used prefices
 2 bar - Bit array module
 2 car - Cell Array module
 1 chr - Char module
-3 chs - Char Set module: ToDo
+3 chs - Char Set module
 4 cpx - Complex module
 2 str - Text string module
 3 dtm - Datetime module
@@ -55,52 +55,63 @@ Index of used prefices
       - Data type
 ----- - ------------------------------------------------
 6 clr - Color module
-4 dts - Datetime text stream
-      - Big Cell module
-      - Big Float module
-      - Big Fraction module
-      - Big Complex module
+5 dts - Datetime text stream
+9     - Big Cell module
+9     - Big Float module
+9     - Big Fraction module
+9     - Big Complex module
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
-6 dci - Double linked cell list Iterator
-6 dcl - Double linked cell list module
-6 dcn - Double linked cell list node
-7 fsm - Finite state machine module
+5 dci - Double linked cell list Iterator
+5 dcl - Double linked cell list module
+5 dcn - Double linked cell list node
+6 fsm - Finite state machine module
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
-9 nci - n-Tree cell iterator module
-9 nct - n-Tree cell module
-9 ncn - n-Tree cell node
+5 nci - n-Tree cell iterator module
+5 nct - n-Tree cell module
+5 ncn - n-Tree cell node
       - red black balanced tree
       - splay tree
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
-4 log - Logger module
+6 log - Logger module
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------
-8 bzf - BZip2 file module
-8 bzp - BZip2 module
-4 dbm - DBM module
+7 bzf - BZip2 file module
+7 bzp - BZip2 module
+8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
 5 htm - HTML module
-5 rgx - Regex module
+6 rgx - Regex module
 5 sh2 - SHA2 module
 5 xml - XML module
+5 dom - XML-DOM module
       - css module
       - url module
 ----- - ------------------------------------------------
+      - Graphics
+----- - ------------------------------------------------
+A gpc - Graphics module
+A     - JPEG
+A     - PNG
+A     - Font ??
+----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
-5 arg - Argument parser
+6 arg - Argument parser
 ----- - ------------------------------------------------
 
 
 ToDo
+----
 chs: set with a string of chars CcYyNn -> set
 cpx: cotan ?
 stc: union,enum
+frc: lcm 
+str: icompare naar config

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.6 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ include ffl/bcn.fs
 
 
 ( bct = binary cell tree module )
-( The bct module implements an unbalanced binary tree with the key and )
-( data cell based. The implementation is non-recursive. )
+( The bct module implements an unbalanced binary tree with the key and data ) 
+( cell based. The implementation is non-recursive. )
 
 
 1 constant bct.version

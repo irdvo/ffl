@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-01 16:56:48 $ $Revision: 1.5 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/stc.fs
 1 constant hcn.version
 
 
-( Public structure )
+( Hash table node structure )
 
 struct: hcn%       ( - n = Get the required space for a hcn structure )
   cell: hcn>hash        \ the hash code
@@ -51,7 +51,7 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 ;struct 
 
 
-( Public words )
+( Node creation, initialisation and destruction )
 
 : hcn-init     ( w c-addr u u:hash w:hcn - = Initialise the node with cell data, key and hash )
   >r
@@ -101,6 +101,8 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
   hcn>cell @
 ;
 
+
+( Inspection )
 
 : hcn-dump     ( w:hcn - = Dump the node )
   ." hcn:" dup . cr

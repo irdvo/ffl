@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-08 19:33:34 $ $Revision: 1.3 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/config.fs
 1 constant stc.version
 
 
-( Public words )
+( Structure syntax words )
 
 : struct:      ( C: "name" - w 0 R: - n = Start a named struct definition, leave the size on stack )
   create 
@@ -51,6 +51,8 @@ include ffl/config.fs
   swap !
 ;
 
+
+( Field definition words )
 
 : field:       ( C: w n "name" - w R: w - w = Create a named structure field, add offset to address )
   create 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-09 16:22:29 $ $Revision: 1.8 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/scn.fs
 2 constant scl.version
 
 
-( Public structure )
+( List structure )
 
 struct: scl%       ( - n = Get the required space for the scl data structure )
   cell: scl>first
@@ -157,7 +157,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-( Public words )
+( List creation, initialisation and destruction )
 
 : scl-init     ( w:scl - = Initialise the scl-list )
   dup scl>first   nil!
@@ -309,6 +309,29 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
+: scl-reverse  ( w:scl - = Reverse or mirror the list )
+  nil over
+  scl>first @                \ walk = first
+  
+  BEGIN
+    dup nil<>
+  WHILE                      \ while walk<>nil do
+    dup scn>next @
+    >r
+    tuck scn>next !          \  walk->next = prev
+    r>
+  REPEAT
+  2drop
+  
+  dup  scl>first @
+  over dup scl>last @       
+  swap scl>first !           \ first = last
+  swap scl>last  !           \ last  = first
+;
+
+
+( Search words )
+
 : scl-find     ( w w:scl - n:index = Find the first index for cell data in the list, -1 for not found )
   0 -rot                     \ index = 0
   scl>first @                \ walk = first
@@ -336,28 +359,6 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-reverse  ( w:scl - = Reverse or mirror the list )
-  nil over
-  scl>first @                \ walk = first
-  
-  BEGIN
-    dup nil<>
-  WHILE                      \ while walk<>nil do
-    dup scn>next @
-    >r
-    tuck scn>next !          \  walk->next = prev
-    r>
-  REPEAT
-  2drop
-  
-  dup  scl>first @
-  over dup scl>last @       
-  swap scl>first !           \ first = last
-  swap scl>last  !           \ last  = first
-;
-
-
-
 ( Sort words )
 
 : scl-insert-sorted   ( w w:scl - = Insert the cell data sorted in the list )
@@ -382,7 +383,6 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   
   rdrop
 ;
-
 
 
 ( Inspection )

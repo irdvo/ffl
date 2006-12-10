@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-03 19:17:34 $ $Revision: 1.6 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -31,8 +31,8 @@ include ffl/config.fs
 
 
 ( chr = Char Data Type )
-( The chr module implements words for checking ranges of characters and for    )
-( converting characters.                                                       )
+( The chr module implements words for checking ranges of characters and for )
+( converting characters.                                                    )
   
 
 2 constant chr.version

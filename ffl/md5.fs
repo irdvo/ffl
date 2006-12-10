@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.8 $
+\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -50,6 +50,7 @@ include ffl/stc.fs
 
 16 constant md5.cell-size   ( - n = Size of buffer in cells )
 64 constant md5.byte-size   ( - n = Size of buffer in bytes )
+
 
 ( MD5 Structure )
 
@@ -136,6 +137,7 @@ sys.bigendian [IF]
 ;
 [THEN]
 
+
 sys.bigendian [IF]
 hex
 : md5!             ( w addr - = Store word on address, MD5 order )
@@ -150,6 +152,7 @@ decimal
   !
 ;
 [THEN]
+
 
 hex
 : md5+round1       
@@ -272,7 +275,7 @@ hex
 decimal
 
 
-( Structure creation, initialisation and destruction )
+( MD5 structure creation, initialisation and destruction )
 
 : md5-init     ( w:md5 - = Initialise the MD5 )
   >r
