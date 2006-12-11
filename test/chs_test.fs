@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-08 17:40:51 $ $Revision: 1.3 $
+\  $Date: 2006-12-11 18:14:53 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -46,8 +46,29 @@ t{ char 7  chs1 chs-char? ?false }t
 t{ char a  chs1 chs-char? ?false }t
 t{ chr.del chs1 chs-char? ?false }t
 
+\ String words
+
+t{ chs1 chs-reset }t
+
+t{ s" abcefgijk" chs1 chs-set-string }t
+t{ char a chs1 chs-char? ?true  }t
+t{ char c chs1 chs-char? ?true  }t
+t{ char d chs1 chs-char? ?false }t
+t{ char k chs1 chs-char? ?true  }t
+t{ char l chs1 chs-char? ?false }t
+
+t{ s" ceklm" chs1 chs-reset-string }t
+t{ char a chs1 chs-char? ?true  }t
+t{ char c chs1 chs-char? ?false  }t
+t{ char d chs1 chs-char? ?false }t
+t{ char k chs1 chs-char? ?false }t
+t{ char l chs1 chs-char? ?false }t
+t{ char j chs1 chs-char? ?true  }t
+
 
 \ Set class words
+
+t{ chs1 chs-reset }t
 
 t{ chs1 chs-set-upper }t
 
