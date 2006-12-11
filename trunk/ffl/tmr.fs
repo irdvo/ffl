@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-08 20:59:48 $ $Revision: 1.1 $
+\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -74,7 +74,7 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 
 
 : tmr-new          ( ud:timeout - w:tmr = Create a new timer structure on the heap )
-  tmr% allocate  throw   >r r@ dup tmr-init r>
+  tmr% allocate  throw   >r r@ tmr-init r>
 ;
 
 
@@ -89,7 +89,7 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 ( Member words )
 
 : tmr-timeout@     ( w:tmr - ud:timeout = Get the time out value )
-  tmr>timeout @
+  tmr>timeout 2@
 ;
 
 
@@ -135,12 +135,12 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 ;
 
 
-: tmr-wait         ( w:tmr - = Wait, blocking, till the timer expires )
+: tmr-wait         ( w:tmr - = Wait till the timer expires [in milliseconds] and restart timer )
   >r
   r@ tmr-timer@ r@ tmr>timeout 2@
   2over 2over du< IF
     2swap d- 1000 um/mod nip ms
-    0. r@ tmr>rem 2!                \ ToDo: not correct
+    0. r@ tmr>rem 2!
   ELSE
     d- r@ tmr>rem 2!
   THEN

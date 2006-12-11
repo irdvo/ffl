@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\            ffl_test - the test-all source file in the ffl
+\          tmr_test - the test words for the tmr module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2006  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,39 +20,60 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.19 $
+\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-
+include ffl/tmr.fs
 include ffl/tst.fs
 
-tst-reset-tests
 
-\ the test sources
-include act_test.fs
-include bar_test.fs
-include bct_test.fs
-include car_test.fs
-include chr_test.fs
-include chs_test.fs
-include cpx_test.fs
-include crc_test.fs
-include dtm_test.fs
-include frc_test.fs
-include hct_test.fs
-include md5_test.fs
-include rng_test.fs
-include scl_test.fs
-include sh1_test.fs
-include str_test.fs
-include tis_test.fs
-include tmr_test.fs
-include tos_test.fs
+[DEFINED] tmr.version [IF]
 
-.( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests) cr
+.( Testing: tmr) cr 
   
-bye
+300000. tmr-create tmr1   \ 0.3 sec.
+
+t{ tmr1 tmr-expired? ?false }t
+
+200 ms
+
+t{ tmr1 tmr-expired? ?false }t
+
+200 ms
+
+t{ tmr1 tmr-expired? ?true }t
+
+210 ms
+
+t{ tmr1 tmr-expired? ?true }t
+
+300 ms
+
+t{ tmr1 tmr-restart }t
+
+t{ tmr1 tmr-timer@ 2000. d< ?true }t
+
+t{ tmr1 tmr-expired? ?false }t
+
+t{ tmr1 tmr-timeout@ 300000. ?ud }t
+
+
+
+t{ 0. tmr-new value tmr2 }t
+
+200 ms
+
+t{ tmr2 tmr-timer@ 210000. d< ?true }t
+
+t{ 20000. tmr2 tmr-start }t
+
+t{ tmr2 tmr-wait }t
+
+t{ tmr2 tmr-free }t
+
+[THEN]
+
 
 \ ==============================================================================
 

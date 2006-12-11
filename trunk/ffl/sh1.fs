@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.5 $
+\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -103,7 +103,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-free         ( w:sh1 - = Free the tree node from the heap )
+: sh1-free         ( w:sh1 - = Free the sha-1 structure from the heap )
   free throw
 ;
 
