@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.6 $
+\  $Date: 2006-12-11 18:14:53 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/chr.fs
 ( POSIX classes used in regular expressions. )
   
 
-1 constant chs.version
+2 constant chs.version
 
 
 ( Private constant )
@@ -188,6 +188,26 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
   swap 1+ swap DO
     I over chs-reset-ch
   LOOP
+  drop
+;
+
+
+( String words )
+
+: chs-set-string  ( c-addr u w:chs - = Set the characters in the string in the set )
+  -rot
+  bounds ?DO
+    I c@ over chs-set-char
+  1 chars +LOOP
+  drop
+;
+
+
+: chs-reset-string  ( c-addr u w:chs - = Reset the characters in the string in the set )
+  -rot
+  bounds ?DO
+    I c@ over chs-reset-char
+  1 chars +LOOP
   drop
 ;
 
