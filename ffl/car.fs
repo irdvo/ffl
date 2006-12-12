@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
+\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -64,7 +64,7 @@ struct: car%       ( - n = Get the required space for the car data structure )
 : car-init         ( n:length w:car - = Initialise the cell array with an initial length )
   >r
   car.extra r@ car>extra !
-  ['] - r@ car>compare !
+  ['] <=> r@ car>compare !
   
   0 max dup r@ car>length !  \ length >= 0
   

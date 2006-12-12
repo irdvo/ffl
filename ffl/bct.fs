@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.7 $
+\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -56,9 +56,9 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ( Tree creation, initialisation and destruction )
 
 : bct-init         ( w:data w:key w:bct - = Initialise the bct structure with a key and data )
-  dup        bct>root   nil!
-  dup        bct>length   0!
-  ['] - swap bct>compare   !
+  dup          bct>root   nil!
+  dup          bct>length   0!
+  ['] <=> swap bct>compare   !
 ;
 
 
