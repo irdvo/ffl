@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-08 20:59:48 $ $Revision: 1.23 $
+\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.24 $
 \
 \ ==============================================================================
 \
@@ -117,6 +117,14 @@ s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value 
 ;
 
 
+: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+  2dup = IF 
+    2drop 0 EXIT 
+  THEN
+  < 2* 1+
+;
+
+      
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +

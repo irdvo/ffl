@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-27 20:02:44 $ $Revision: 1.2 $
+\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -124,18 +124,6 @@ act1 act-verify
 
 t{ bct-new value act2 }t
 
-: act-compare  ( n n - r = Compare n and n )
-  2dup < IF
-    2drop -1
-  ELSE
-    > IF
-      1
-    ELSE
-      0
-    THEN
-  THEN
-;
-
 : act-repeat-insert ( - = Insert 5000 random numbers in an array and the tree )
   5000 0 DO
     act-rng rng-next-number dup
@@ -166,8 +154,6 @@ t{ bct-new value act2 }t
   LOOP
 ;
 
-
-t{ ' act-compare act2 bct-compare! }t
 
 act-repeat-insert
 

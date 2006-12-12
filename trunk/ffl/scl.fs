@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
+\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -163,7 +163,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
   dup scl>first   nil!
   dup scl>last    nil!
   dup scl>length    0!
-  ['] - swap scl>compare ! 
+  ['] <=> swap scl>compare ! 
 ;
 
 
