@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.8 $
+\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -311,7 +311,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 : bct-get          ( w:key w:bct - false | w:data true = Get the data from the tree )
   bct-search-node
   dup nil<> IF
-    Bcn>cell @
+    bcn>cell @
     true
   ELSE
     drop false
