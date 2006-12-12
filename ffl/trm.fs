@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.2 $
+\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -60,7 +60,7 @@ include ffl/config.fs
 35 constant trm.foreground-magenta    ( - u = Set magenta foreground )
 36 constant trm.foreground-cyan       ( - u = Set cyan foreground )
 37 constant trm.foreground-white      ( - u = Set white foreground )
-38 constant trm.foreground-default-underscore ( - u = Set default foreground with underscore on )
+38 constant trm.foreground-def-underline ( - u = Set default foreground with underscore on )
 39 constant trm.foreground-default    ( - u = Set default foreground )
 40 constant trm.background-black      ( - u = Set black background )
 41 constant trm.background-red        ( - u = Set red background )
@@ -343,7 +343,7 @@ include ffl/config.fs
 ;
 
 
-: trm+select-graphics-for-alternate-font ( - = Select the vt100 graphics font for the alternate font )
+: trm+select-graphics-font2 ( - = Select the vt100 graphics font for the alternate font )
   [char] 0 [char] ) trm+do-esc2
 ;
 

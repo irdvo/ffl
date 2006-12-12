@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-12 12:28:43 $ $Revision: 1.5 $
+\  $Date: 2006-12-12 19:45:51 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000300 constant ffl.version
+000400 constant ffl.version
 
 
 ( Private words )
@@ -51,15 +51,21 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
   
   
-8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+8                            constant sys.bits-in-byte   ( - n = Number of bits in a byte )
 
-sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
+sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits in a char )
   
-sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
-sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
-  
-  
+sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
+
+: sys.timer@                                             ( - ud = Fetch microseconds timer )
+  utime 
+;
+
+s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value of the timer )
+
+
 ( Extension words )
 
 \ : [DEFINED]   
@@ -111,6 +117,14 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
+: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+  2dup = IF 
+    2drop 0 EXIT 
+  THEN
+  < 2* 1+
+;
+
+      
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +
@@ -120,7 +134,56 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-( Public Exceptions )
+[DEFINED] float [IF]
+
+( Float extension constants )
+
+0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
+
+1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+
+2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+
+
+( Float extension words )
+
+: f-rot            ( r1 r2 r3 - r3 r1 r2 = Rotate counter clockwise three floats )
+  frot frot
+;
+
+
+: f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
+  fover fover
+;
+
+
+\ : fnip             ( r1 r2 - r2 = Drop second float on stack )
+\   fswap fdrop
+\ ;
+
+
+\ : ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
+\   fswap fover
+\ ;
+
+: f>r
+  r> rp@ float - rp! rp@ f! >r 
+;
+
+: fr>
+  r> rp@ f@ float rp@ + rp! >r
+;
+
+: fr@
+  r> rp@ f@ >r
+;
+
+[THEN]
+
+[THEN]
+
+
+( Exceptions )
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )

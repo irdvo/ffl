@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-12 17:02:47 $ $Revision: 1.4 $
+\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -90,14 +90,14 @@ t{ 1.41421356e0 -2.3561944e0 cpx+from-polar -1e0 ?r -1e0 ?r }t
 
 : cpxs1 s" -0.180e1-0.270e1j" ;
 : cpxs2 s" -0.180e1+0.270e1j" ;
-: cpxs3 s" 0.000e1-0.270e1j" ;    
+: cpxs3 s" 0.100e1-0.270e1j" ;    
   
   
 3 set-precision
 
 t{ -1.8e0 -2.7e0 cpx+to-string cpxs1 compare ?0 }t
 t{ -1.8e0  2.7e0 cpx+to-string cpxs2 compare ?0 }t
-t{  0.0e0 -2.7e0 cpx+to-string cpxs3 compare ?0 }t
+t{  1.0e0 -2.7e0 cpx+to-string cpxs3 compare ?0 }t
 
 
 \ Structure

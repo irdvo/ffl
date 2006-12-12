@@ -20,11 +20,11 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.24 $
+\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.25 $
 \
 \ ==============================================================================
 \
-\ This file is for gforth.
+\ This file is for pfe.
 \
 \ ==============================================================================
 
@@ -36,11 +36,16 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000400 constant ffl.version
+000300 constant ffl.version
+
+
+( Extra loads )
+
+s" floating-ext" environment? 2drop
 
 
 ( Private words )
-  
+   
 variable sys.endian   1 sys.endian !
 
 
@@ -49,29 +54,31 @@ variable sys.endian   1 sys.endian !
 create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
   1 c, 10 c,         \ unix: lf
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
+
+8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+
+sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
   
-  
-8                            constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+sys.bits-in-byte 1 cells *  constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
-sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits in a char )
-  
-sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
 
-sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
 
-: sys.timer@                                             ( - ud = Fetch microseconds timer )
-  utime 
-;
+\ : sys.timer@                                            ( - ud = Fetch microseconds timer )
+\  \ ToDo
+\ ;
 
-s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value of the timer )
+s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
 
 
 ( Extension words )
 
-\ : [DEFINED]   
-  
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
+: rdrop            ( - )
+  r> r> drop >r
+;
+
+: cell             ( - n = Cell size)
+  1 cells
 ;
 
 
@@ -80,6 +87,32 @@ s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value 
   sys.bits-in-cell swap - rshift r>
   or
 ;
+
+
+: u<>              ( u u - f = Check if two unsigned words are unequal )
+  <>
+;
+
+
+: d<>              ( d d - f = Check if two two double are unequal )
+  d= 0=
+;
+
+
+: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
+  d<>
+;
+
+
+: sgn              ( n - n = Determine the sign of the number )
+  dup 0= IF 
+    EXIT 
+  THEN
+  0< 2* 1+
+;
+
+
+0 constant nil     ( - w = Nil address )
 
 
 : 0!               ( w - = Set zero in address )
@@ -124,7 +157,7 @@ s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value 
   < 2* 1+
 ;
 
-      
+
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +
@@ -134,20 +167,10 @@ s" MAX-UD" environment? drop 2constant sys.timer-max     ( - ud = Maximum value 
 ;
 
 
-[DEFINED] float [IF]
+[DEFINED] floats [IF]
 
-( Float system settings )
 
-float cell /mod swap [IF] 1+ [THEN]
-                            constant sys.cells-in-float ( - n = Number of cells in a float )
-
-( Private float extension )
-
-create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
-  sys.cells-in-float cells allot
-  
-  
-( Float extension words )
+( Float constants )
 
 0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
 
@@ -156,8 +179,20 @@ create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
 2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
 
 
-: f-rot            ( r1 r2 r3 - r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
+( Float extension words )
+
+: f>r
+  r> rp@ 1 floats - rp! rp@ f! >r 
+;
+
+
+: fr>
+  r> rp@ f@ 1 floats rp@ + rp! >r
+;
+
+
+: fr@
+  r> rp@ f@ >r
 ;
 
 
@@ -165,132 +200,19 @@ create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
   fover fover
 ;
 
-
-\ : fnip             ( r1 r2 - r2 = Drop second float on stack )
-\   fswap fdrop
-\ ;
-
-
-\ : ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
-\   fswap fover
-\ ;
-
-1 [IF]
-: f>r
-  r> rp@ float - rp! rp@ f! >r 
-;
-
-: fr>
-  r> rp@ f@ float rp@ + rp! >r
-;
-
-: fr@
-  r> rp@ f@ >r
-;
-
-[ELSE]
-
-sys.cells-in-float 1 = [IF]
-: f>r              ( r - = Move a float to the return stack )
-  r>
-  sys.float-cells f!
-  sys.float-cells @ >r
-  >r
-;
-
-: fr>              ( - r = Move a float from the return stack )
-  r>
-  r> sys.float-cells !
-     sys.float-cells f@
-  >r
-;
-
-: fr@              ( - r = Fetch a float from the return stack )
-  r>
-  r@ sys.float-cells !
-     sys.float-cells f@
-  >r
-;
-[ELSE] sys.cells-in-float 2 = [IF]
-: f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  >r
-;
-
-: fr>
-  r>
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
-;
-
-: fr@
-  r>
-  2r@ sys.float-cells 2!
-      sys.float-cells f@
-  >r
-;
-[ELSE] sys.cells-in-float 3 = [IF]
-: f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  sys.float-cells cell+ cell+ @ >r
-  >r
-;
-: fr>
-  r>
-  r>  sys.float-cells cell+ cell+ !
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
-;
-
-: fr@
-  r>
-  r>  dup  sys.float-cells cell+ cell+ !
-  2r> 2dup sys.float-cells 2!
-           sys.float-cells f@
-  2>r >r
-  >r
-;
-[ELSE] sys.cells-in-float 4 = [IF]
-: f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  sys.float-cells cell+ cell+ 2@ 2>r
-  >r
-;
-
-: fr>
-  r>
-  2r> sys.float-cells cell+ cell+ !
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
-;
-
-: fr@
-  r>
-  2r> 2dup sys.float-cells cell+ cell+ 2!
-  2r> 2dup sys.float-cells 2!
-           sys.float-cells f@
-  2>r 2>r
-  >r
-;
-[ELSE]
-.( Unexpected float size )
-[THEN] [THEN] [THEN] [THEN]
-
-[THEN]
-
 [THEN]
 
 
 ( Exceptions )
+
+variable exp-next  -2050 exp-next !
+
+: exception      ( w:addr u - n = add an exception )
+  2drop
+  exp-next @ 
+  -1 exp-next +!
+;
+
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )

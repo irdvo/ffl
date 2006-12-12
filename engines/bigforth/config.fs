@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.5 $
+\  $Date: 2006-12-12 19:45:51 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -67,6 +67,12 @@ sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits i
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
 
 
+: sys.timer@                                            ( - ud = Fetch microseconds timer )
+  timer@ >us
+;
+
+
+s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
 
 ( Extension words )
 
@@ -153,6 +159,14 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
+: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+  2dup = IF 
+    2drop 0 EXIT 
+  THEN
+  < 2* 1+
+;
+
+
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +
@@ -164,10 +178,25 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 [DEFINED] floats [IF]
 
-( Float system settings )
+( Float extension constants )
 
-1 floats cell /mod swap [IF] 1+ [THEN]
-                            constant sys.cells-in-float ( - n = Number of cells in a float )
+0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
+
+1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+
+2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+
+
+( Float extension words )
+
+: f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
+  fover fover
+;
+
+
+: ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
+  fswap fover
+;
 
 [THEN]
 
