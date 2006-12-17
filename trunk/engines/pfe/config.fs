@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-30 18:28:24 $ $Revision: 1.5 $
+\  $Date: 2006-12-17 19:24:42 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -62,6 +62,13 @@ sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits i
 sys.bits-in-byte 1 cells *  constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
+
+
+: sys.timer@                                            ( - ud = Fetch microseconds timer )
+  gettimeofday 0 swap 1000000 um* d+
+;
+
+s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
 
 
 ( Extension words )
@@ -143,6 +150,14 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
+: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+  2dup = IF 
+    2drop 0 EXIT 
+  THEN
+  < 2* 1+
+;
+
+
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +
@@ -154,115 +169,36 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 [DEFINED] floats [IF]
 
-( Float system settings )
 
-1 floats 1 cells /mod swap [IF] 1+ [THEN]
-                            constant sys.cells-in-float ( - n = Number of cells in a float )
+( Float constants )
 
-( Private float extension )
+0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
 
-create sys.float-cells        ( - addr = Convert a float to cells and v.v. )
-  sys.cells-in-float cells allot
-  
-  
+1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+
+2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+
+
 ( Float extension words )
 
-\ the following words should definitely be ANS words .. 
-
-sys.cells-in-float 1 = [IF]
-: f>r              ( r - = Move a float to the return stack )
-  r>
-  sys.float-cells f!
-  sys.float-cells @ >r
-  >r
-;
-
-: fr>              ( - r = Move a float from the return stack )
-  r>
-  r> sys.float-cells !
-     sys.float-cells f@
-  >r
-;
-
-: fr@              ( - r = Fetch a float from the return stack )
-  r>
-  r@ sys.float-cells !
-     sys.float-cells f@
-  >r
-;
-[ELSE] sys.cells-in-float 2 = [IF]
 : f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  >r
+  r> rp@ 1 floats - rp! rp@ f! >r 
 ;
+
 
 : fr>
-  r>
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
+  r> rp@ f@ 1 floats rp@ + rp! >r
 ;
+
 
 : fr@
-  r>
-  2r@ sys.float-cells 2!
-      sys.float-cells f@
-  >r
-;
-[ELSE] sys.cells-in-float 3 = [IF]
-: f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  sys.float-cells cell+ cell+ @ >r
-  >r
-;
-: fr>
-  r>
-  r>  sys.float-cells cell+ cell+ !
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
+  r> rp@ f@ >r
 ;
 
-: fr@
-  r>
-  r>  dup  sys.float-cells cell+ cell+ !
-  2r> 2dup sys.float-cells 2!
-           sys.float-cells f@
-  2>r >r
-  >r
-;
-[ELSE] sys.cells-in-float 4 = [IF]
-: f>r
-  r>
-  sys.float-cells f!
-  sys.float-cells 2@ 2>r
-  sys.float-cells cell+ cell+ 2@ 2>r
-  >r
-;
 
-: fr>
-  r>
-  2r> sys.float-cells cell+ cell+ !
-  2r> sys.float-cells 2!
-      sys.float-cells f@
-  >r
+: f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
+  fover fover
 ;
-
-: fr@
-  r>
-  2r> 2dup sys.float-cells cell+ cell+ 2!
-  2r> 2dup sys.float-cells 2!
-           sys.float-cells f@
-  2>r 2>r
-  >r
-;
-[ELSE]
-.( Unexpected float size )
-[THEN] [THEN] [THEN] [THEN]
 
 [THEN]
 

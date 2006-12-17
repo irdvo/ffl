@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.25 $
+\  $Date: 2006-12-17 19:24:42 $ $Revision: 1.26 $
 \
 \ ==============================================================================
 \
@@ -64,9 +64,9 @@ sys.bits-in-byte 1 cells *  constant sys.bits-in-cell   ( - n = Number of bits i
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
 
 
-\ : sys.timer@                                            ( - ud = Fetch microseconds timer )
-\  \ ToDo
-\ ;
+: sys.timer@                                            ( - ud = Fetch microseconds timer )
+  gettimeofday 0 swap 1000000 um* d+
+;
 
 s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
 
