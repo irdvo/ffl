@@ -20,11 +20,11 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.27 $
+\  $Date: 2006-12-23 18:24:27 $ $Revision: 1.28 $
 \
 \ ==============================================================================
 \
-\ This file is for pfe.
+\ This file is for gforth.
 \
 \ ==============================================================================
 
@@ -36,16 +36,11 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000300 constant ffl.version
-
-
-( Extra loads )
-
-s" floating-ext" environment? 2drop
+000400 constant ffl.version
 
 
 ( Private words )
-   
+  
 variable sys.endian   1 sys.endian !
 
 
@@ -54,24 +49,29 @@ variable sys.endian   1 sys.endian !
 create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
   1 c, 10 c,         \ unix: lf
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
-
-8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
-
-sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
   
-sys.bits-in-byte 1 cells *  constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+  
+8                            constant sys.bits-in-byte   ( - n = Number of bits in a byte )
 
-sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
+sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits in a char )
+  
+sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
+
+sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
 
 
 ( Extension words )
 
-: rdrop            ( - )
-  r> r> drop >r
+: ms@                                                    ( - u = Fetch milliseconds timer )
+  utime 1 1000 m*/ drop 
 ;
 
-: cell             ( - n = Cell size)
-  1 cells
+
+s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
+
+
+: 2+               ( n - n+2 = Add two to tos)
+  1+ 1+
 ;
 
 
@@ -80,40 +80,6 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
   sys.bits-in-cell swap - rshift r>
   or
 ;
-
-
-: ms@                                            ( - ud = Fetch milliseconds timer )
-  gettimeofday 1000 * +
-;
-
-
-s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
-
-
-: u<>              ( u u - f = Check if two unsigned words are unequal )
-  <>
-;
-
-
-: d<>              ( d d - f = Check if two two double are unequal )
-  d= 0=
-;
-
-
-: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
-  d<>
-;
-
-
-: sgn              ( n - n = Determine the sign of the number )
-  dup 0= IF 
-    EXIT 
-  THEN
-  0< 2* 1+
-;
-
-
-0 constant nil     ( - w = Nil address )
 
 
 : 0!               ( w - = Set zero in address )
@@ -158,7 +124,7 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
   < 2* 1+
 ;
 
-
+      
 : index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
   over 0< IF
     +
@@ -168,10 +134,9 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-[DEFINED] floats [IF]
+[DEFINED] float [IF]
 
-
-( Float constants )
+( Float extension constants )
 
 0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
 
@@ -182,18 +147,8 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 
 ( Float extension words )
 
-: f>r
-  r> rp@ 1 floats - rp! rp@ f! >r 
-;
-
-
-: fr>
-  r> rp@ f@ 1 floats rp@ + rp! >r
-;
-
-
-: fr@
-  r> rp@ f@ >r
+: f-rot            ( r1 r2 r3 - r3 r1 r2 = Rotate counter clockwise three floats )
+  frot frot
 ;
 
 
@@ -201,19 +156,32 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
   fover fover
 ;
 
+
+\ : fnip             ( r1 r2 - r2 = Drop second float on stack )
+\   fswap fdrop
+\ ;
+
+
+\ : ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
+\   fswap fover
+\ ;
+
+: f>r
+  r> rp@ float - rp! rp@ f! >r 
+;
+
+: fr>
+  r> rp@ f@ float rp@ + rp! >r
+;
+
+: fr@
+  r> rp@ f@ >r
+;
+
 [THEN]
 
 
 ( Exceptions )
-
-variable exp-next  -2050 exp-next !
-
-: exception      ( w:addr u - n = add an exception )
-  2drop
-  exp-next @ 
-  -1 exp-next +!
-;
-
 
 s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
