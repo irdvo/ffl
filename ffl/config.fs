@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-17 19:24:42 $ $Revision: 1.26 $
+\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.27 $
 \
 \ ==============================================================================
 \
@@ -64,13 +64,6 @@ sys.bits-in-byte 1 cells *  constant sys.bits-in-cell   ( - n = Number of bits i
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
 
 
-: sys.timer@                                            ( - ud = Fetch microseconds timer )
-  gettimeofday 0 swap 1000000 um* d+
-;
-
-s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
-
-
 ( Extension words )
 
 : rdrop            ( - )
@@ -87,6 +80,14 @@ s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value o
   sys.bits-in-cell swap - rshift r>
   or
 ;
+
+
+: ms@                                            ( - ud = Fetch milliseconds timer )
+  gettimeofday 1000 * +
+;
+
+
+s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
 
 
 : u<>              ( u u - f = Check if two unsigned words are unequal )
