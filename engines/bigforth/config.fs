@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.7 $
+\  $Date: 2006-12-23 18:24:27 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 \
@@ -84,7 +84,7 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-: ms@              ( - u = Fetch microseconds timer )
+: ms@              ( - u = Fetch milliseconds timer )
   timer@ >us 1 1000 m*/ drop
 ;
 

@@ -31,6 +31,14 @@ In case of pfe the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/share/pfe
 
+In case of Win32Forth the 'ffl' directory (and its contents) should be
+copied to:
+
+<drive>:\Program Files\Win32Forth
+
+(with <drive> the drive where Win32 is installed, normally this is 'C', or 
+in a directory that is in the search path of Win32Forth.)
+
 
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.
@@ -46,9 +54,11 @@ necessary for gforth.
 For bigforth the config.fs and make.fs files should be copied from the
 'engines/bigforth' directory to the 'ffl' directory.
 
-
 For pfe the config.fs and make.fs files should be copied from the 
 'engines/pfe' directory to the 'ffl' directory.
+
+For Win32Forth the config.fs and make.fs files should be copied from the
+'engines/Win32Forth' directory to the 'ffl' directory.
 
 
 The next step is editing the config.fs file for system settings.
@@ -58,9 +68,12 @@ At the moment there are four system setting:
 
 sys.eol 
 
-This word defines the ascii end of line as a counted string. For unix this is a linefeed,
-for dos systems it is carriage return and linefeed. You should change the 'sys.eol' 
-word if you work on non unix system. The default is for unix systems.
+This word defines the ascii end of line as a counted string. For unix this 
+is a linefeed, for dos systems it is carriage return and linefeed. You should 
+change the 'sys.eol' word if the default is not correct for you. For gforth, 
+bigforth and pfe the default is unix end of line, for Win32Forth the default 
+is dos.
+
 
 sys.bits-in-byte
 
@@ -68,10 +81,12 @@ This word defines the number of bits in a byte. The default is 8. If your
 system uses a different number of bits in a byte, then you should change
 this word.
 
+
 sys.bits-in-cell
 
 This word defines the number of bits in a cell. The default is the number of
 bits in a byte multipied by the number of bytes in a cell.
+
 
 sys.bits-in-char
 
@@ -98,6 +113,12 @@ bigforth ffl_test.fs
 
 pfe ffl_test.fs
 
+(or Win32Forth)
+
+Use 'chdir' to move to the test directory.
+Remove from the 'ffl_test.fs' file the ending 'bye'.
+Use 'include ffl_test.fs' to run the tests.
+
 
 The program will tell you which modules are tested and if there were any
 errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
@@ -110,6 +131,10 @@ Documentation
 In the directory 'html' there is the HTML documentation of the library. The
 file 'index.html' contains an overview of all the modules in the library. In 
 the file 'words.html' all words of the libary are alphabetically listed.
+
+On the site there is also a manual. This manual is actually a wiki, so not
+only can you look for more information there, but you can also improve the
+manual.
 
 
 Porting to other forth systems
@@ -133,10 +158,9 @@ for a particular forth system, let me know. I will add them to the README.
 Bugs
 ----
 
-Because the library is still beta it is not impossible that you will find bugs. 
-You can send them or any suggestions to the email address which is listed 
-on the site: ffl.dvoudheusden.net. This is also the place for new versions, news, 
-documentation etc.
+Because the library is still beta it is not impossible that you will find 
+bugs. You can send them or any suggestions to the email address which is 
+listed on the site: ffl.dvoudheusden.net.
 
 Thanks.
 Dick van Oudheusden

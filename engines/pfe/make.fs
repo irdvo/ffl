@@ -20,13 +20,17 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-17 19:24:42 $ $Revision: 1.3 $
+\  $Date: 2006-12-23 18:24:27 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
 .( Forth Foundation Library: ) cr
-  
-gettimeofday
+
+: timer@
+  gettimeofday 1000 * swap 1000 / +
+;
+
+timer@
 
 unused
 
@@ -37,9 +41,9 @@ unused -
 
 .( Compilation Size: ) . .( bytes) cr
   
-gettimeofday 2swap d- 1 1000 m*/
+timer@ swap -
 
-.( Compilation Time: ) d. .( msec) cr
+.( Compilation Time: ) u. .( msec) cr
 
 \ ==============================================================================
 
