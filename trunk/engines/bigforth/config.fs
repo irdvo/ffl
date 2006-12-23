@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 19:45:51 $ $Revision: 1.6 $
+\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 \
@@ -67,13 +67,6 @@ sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits i
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
 
 
-: sys.timer@                                            ( - ud = Fetch microseconds timer )
-  timer@ >us
-;
-
-
-s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value of the timer )
-
 ( Extension words )
 
 : [DEFINED] 
@@ -89,6 +82,14 @@ s" MAX-UD" environment? drop 2constant sys.timer-max    ( - ud = Maximum value o
 : 2+               ( n - n+2 = Add two to tos)
   1+ 1+
 ;
+
+
+: ms@              ( - u = Fetch microseconds timer )
+  timer@ >us 1 1000 m*/ drop
+;
+
+
+s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milliseconds timer )
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.1 $
+\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -32,7 +32,7 @@ include ffl/tst.fs
 
 .( Testing: tmr) cr 
   
-300000. tmr-create tmr1   \ 0.3 sec.
+300 tmr-create tmr1   \ 0.3 sec.
 
 t{ tmr1 tmr-expired? ?false }t
 
@@ -52,23 +52,25 @@ t{ tmr1 tmr-expired? ?true }t
 
 t{ tmr1 tmr-restart }t
 
-t{ tmr1 tmr-timer@ 2000. d< ?true }t
+t{ tmr1 tmr-timer@ 2 u< ?true }t
 
 t{ tmr1 tmr-expired? ?false }t
 
-t{ tmr1 tmr-timeout@ 300000. ?ud }t
+t{ tmr1 tmr-timeout@ 300 ?u }t
 
 
 
-t{ 0. tmr-new value tmr2 }t
+t{ 0 tmr-new value tmr2 }t
 
 200 ms
 
-t{ tmr2 tmr-timer@ 210000. d< ?true }t
+t{ tmr2 tmr-timer@ 250 u< ?true }t
 
-t{ 20000. tmr2 tmr-start }t
+t{ 20 tmr2 tmr-start }t
 
 t{ tmr2 tmr-wait }t
+
+t{ tmr2 tmr-timer@ 2 u< ?true }t
 
 t{ tmr2 tmr-free }t
 
