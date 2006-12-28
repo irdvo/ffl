@@ -27,6 +27,9 @@ Index of used prefices
 4 bci - Binary cell tree iterator
 4 act - Avl cell tree module
 4 acn - Avl cell tree node
+4 dni - Double linked node list iterator
+4 dnl - Double linked node list
+4 dnn - Double linked list node
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
@@ -63,6 +66,9 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
+5 dnn - Double linked node list node
+5 dnl - Double linked node list module
+5 dni - Double linked node list iterator
 5 dci - Double linked cell list Iterator
 5 dcl - Double linked cell list module
 5 dcn - Double linked cell list node
@@ -70,6 +76,9 @@ Index of used prefices
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
+5 nni - n-Tree node iterator module
+5 nnt - n-Tree node module
+5 nnn - n-Tree node node
 5 nci - n-Tree cell iterator module
 5 nct - n-Tree cell module
 5 ncn - n-Tree cell node
@@ -110,7 +119,6 @@ A     - Font ??
 
 ToDo
 ----
-chs: set with a string of chars CcYyNn -> set
 cpx: cotan ?
 stc: union,enum
 frc: lcm 
