@@ -1,4 +1,6 @@
 0.4.0:
+* dnl: new module (Double linked node list) (2006-12-28)
+* dnn: new module (Double linked list node) (2006-12-28)
 * Manual (wiki) added to the website (2006-12-24)
 * Win32Forth config.fs/make.fs added
 * config: new word <=> for comparing numbers (2006-12-12)

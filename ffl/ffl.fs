@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.25 $
+\  $Date: 2006-12-28 20:08:19 $ $Revision: 1.26 $
 \
 \ ==============================================================================
 
@@ -35,6 +35,8 @@ include ffl/chr.fs
 include ffl/chs.fs
 include ffl/cpx.fs
 include ffl/crc.fs
+include ffl/dnl.fs
+include ffl/dnn.fs
 include ffl/dtm.fs
 include ffl/dti.fs
 include ffl/trm.fs
