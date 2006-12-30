@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-30 06:43:16 $ $Revision: 1.3 $
+\  $Date: 2006-12-30 18:35:53 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ include ffl/dnn.fs
 
 ( dnl = Double Linked Node List )
 ( The dnl module implements a double linked list that can handle variable size )
-( nodes. It is the base module for ..afgeleide.. modules, for example the dcl  )
-( module. )
+( nodes. It is the base module for more specialised modules, for example the   }
+{ dcl [double linked cell list] module. )
   
 
 1 constant dnl.version
@@ -151,6 +151,29 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
+: dnl-remove   ( w:dnn w:dnl - = Remove a node from the list )
+  swap
+  dup nil= exp-invalid-parameters AND throw
+  
+  nil over dnn>next @! swap
+  nil swap dnn>prev @!            \ S: dnl next prev
+  
+  dup nil= IF                     \ If prev = nil Then
+    >r 2dup swap dnl>first ! r>   \   dnl.first = next
+  ELSE                            \ Else
+    2dup dnn-next!                \   prev.next = next
+  THEN
+  swap
+  dup nil= IF                     \ If next = nil Then
+    drop over dnl>last !          \   dnl.last = prev
+  ELSE                            \ Else
+    dnn-prev!                     \   next.prev = prev
+  THEN                            \ S: dnl
+  
+  dnl>length 1-!
+;
+  
+
 ( Index words )
 
 : dnl-index?   ( n:index w:dnl - f = Check if an index is valid in the list )
@@ -160,13 +183,13 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-get      ( n:index w:dnl - w:dnn = Get the node from the indexth node from the list )
+: dnl-get      ( n:index w:dnl - w:dnn = Get the indexth node from the list )
   tuck dnl-length@ dnl+offset     \ S: dnl offset
   swap dnl-node                   \ S: dnn | nil
 ;
 
 
-: dnl-insert   ( w:dnn n:index w:dnl - = Insert a node at the indexth node in the list )
+: dnl-insert   ( w:dnn n:index w:dnl - = Insert a node before the indexth node in the list )
   tuck dnl-length@ 1+ dnl+offset  \ S: dnn dnl offset
   ?dup 0= IF
     dnl-prepend
@@ -194,8 +217,16 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 : dnl-delete   ( n:index w:dnl - w:dnn = Delete the indexth node from the list )
   tuck dnl-length@ dnl+offset     \ S: dnl offset
-  over dnl-node                   \ S: dnl dnn | nil
-  \ ToDo
+  ?dup 0= IF                      \ If offset = 0 Then
+    dup dnl-first@                \   First node
+  ELSE                            \ Else
+    over dnl-length@ 1- over = IF \   If offset = length-1 Then
+      drop dnl-last@              \     Last node
+    ELSE                          \   Else
+      over dnl-node               \     Offset -> node
+    THEN
+  THEN                            \ S: dnl dnn
+  dup rot dnl-remove              \ Remove the node
 ;
 
 
@@ -209,16 +240,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 : dnl-pop      ( w:dnl - w:dnn | nil = Pop the node at the end of the list )
   dup dnl-last@              \ dnn = dnl.last 
   dup nil<> IF               \ If dnn != nil Then
-    swap                     
-    dup dnl>length 1-!       \   dnl.length--
-    over dnn-prev@
-    dup nil<> IF             \   If dnn.prev <> nil Then
-      nil over dnn-next!     \     dnn.prev.next = nil
-    ELSE                     \   Else
-      over dnl>first nil!    \     dnl.first = nil
-    THEN
-    swap dnl>last !          \   dnl.last = dnn.prev
-    nil over dnn-prev!       \   dnn.prev = nil
+    dup rot dnl-remove
   ELSE
     nip
   THEN
@@ -259,24 +281,22 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 
 : dnl-reverse  ( w:dnl - = Reverse or mirror the list )
-  \ ToDo
-  nil over
-  dnl>first @                \ walk = first
-  
+  dup dnl-first@             \ walk = first
   BEGIN
     dup nil<>
   WHILE                      \ while walk<>nil do
-    dup dnn>next @
-    >r
-    tuck dnn>next !          \  walk->next = prev
-    r>
+    dup  dnn-next@
+    swap
+    2dup dnn>prev @!
+    swap dnn-next!
   REPEAT
-  2drop
+  drop
   
-  dup  dnl>first @
-  over dup dnl>last @       
-  swap dnl>first !           \ first = last
-  swap dnl>last  !           \ last  = first
+  dup  dnl-first@
+  swap dup
+  dnl-last@ over
+  dnl>first !                \ first = last
+  dnl>last  !                \ last  = first
 ;
 
 
