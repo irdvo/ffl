@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-23 08:07:07 $ $Revision: 1.3 $
+\  $Date: 2006-12-30 06:19:02 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -38,9 +38,9 @@ include ffl/stc.fs
 
 
 ( tmr = Timer module )
-( The tmr module implements words for using a pollable timer. Due to the fact )
-( that the ANS standard does not define a way to fetch milliseconds, this     )
-( module has a environmental dependency.                                      )
+( The tmr module implements words for using a pollable interval timer. Due to )
+( the fact that the ANS standard does not define a way to fetch milliseconds, )
+( this module has a environmental dependency.                                 )
 
 
 1 constant tmr.version
@@ -52,9 +52,9 @@ include ffl/stc.fs
 ( Timer structure )
 
 struct: tmr%       ( - n = Get the required space for the timer data structure )
-  cell:  tmr>now             \ start us of timer
+  cell:  tmr>now             \ start of timer
   cell:  tmr>timeout         \ timeout time
-  cell:  tmr>rem             \ remaining us after expired? or wait
+  cell:  tmr>rem             \ remaining ms after expired? or wait
 ;struct
 
 
