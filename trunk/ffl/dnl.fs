@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-30 06:19:02 $ $Revision: 1.2 $
+\  $Date: 2006-12-30 06:43:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -50,38 +50,6 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
   cell: dnl>last
   cell: dnl>length
 ;struct
-
-
-( Private words )
-
-: dnl-offset   ( n w:dnl - n = Determine offset from index, incl. validation )
-  dnl>length @
-  
-  over 0< IF                 \ if index < 0 then
-    tuck + swap              \   index = index + length
-  THEN
-  
-  over <= over 0< OR IF      \ if index < 0 or index >= length
-    exp-index-out-of-range throw 
-  THEN
-;
-
-
-: dnl-indexth  ( n w:dnl - w:dnn = Get the nth element in the list )
-  \ ToDo
-  nil -rot                   \ prev = nil
-  dnl>first @                \ cur  = first
-  
-  BEGIN
-    2dup nil<> swap 0> AND   \ while n>0 and cur<> nil do
-  WHILE
-    rot drop dup -rot        \  prev = cur
-    dnn>next @               \  cur  = cur->next
-    swap 1- swap             \  n--
-  REPEAT
-  
-  nip
-;
 
 
 ( List creation, initialisation and destruction )
@@ -130,6 +98,27 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
+( Private words )
+
+: dnl+offset   ( n:index n:length - n:offset = Determine offset from index, incl. validation )
+  tuck index2offset                    \ convert to offset
+  dup rot 0 within                     \ check outside 0..length-1
+  exp-index-out-of-range AND throw     \ raise exception
+;
+
+
+: dnl-node  ( n:offset w:dnl - w:dnn | nil = Get the nth node in the list )
+  dnl-first@                 \ cur  = first
+  BEGIN
+    2dup nil<> swap 0> AND   \ while n>0 and cur<> nil do
+  WHILE
+    dnn-next@                \  cur  = cur->next
+    swap 1- swap             \  n--
+  REPEAT
+  nip
+;
+
+
 ( List words )
 
 : dnl-append   ( w:dnn w:dnl - = Append a node in the list )
@@ -164,22 +153,53 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 ( Index words )
 
-: dnl-get      ( n:index w:dnl - w:dnn = Get the node from the indexth node from the list )
-  \ ToDo
+: dnl-index?   ( n:index w:dnl - f = Check if an index is valid in the list )
+  dnl-length@
+  tuck index2offset
+  swap 0 swap within
 ;
 
 
-: dnl-insert   ( w:dnn n:index w:dnl - = Insert a node after the indexth node in the list )
-  \ ToDo
+: dnl-get      ( n:index w:dnl - w:dnn = Get the node from the indexth node from the list )
+  tuck dnl-length@ dnl+offset     \ S: dnl offset
+  swap dnl-node                   \ S: dnn | nil
+;
+
+
+: dnl-insert   ( w:dnn n:index w:dnl - = Insert a node at the indexth node in the list )
+  tuck dnl-length@ 1+ dnl+offset  \ S: dnn dnl offset
+  ?dup 0= IF
+    dnl-prepend
+  ELSE
+    over dnl-length@ over = IF
+      drop dnl-append
+    ELSE                          \ Insert the new node
+      over dnl-node               \ S: dnn2 dnl dnn1 | nil
+      dup  nil= exp-invalid-state AND throw
+      
+      tuck dnn-prev@              \ S: dnn2 dnn1 dnl prev
+      dup  nil= exp-invalid-state AND throw
+      
+      swap dnl>length 1+!         \ dnl.length++
+      
+      rot  2dup
+      swap dnn-next!              \ prev.next = dnn2  S: dnn1 prev dnn2
+      tuck dnn-prev!              \ dnn2.prev = prev  S: dnn1 dnn2
+      2dup dnn-next!              \ dnn2.next = dnn1  S: dnn1 dnn2
+      swap dnn-prev!              \ dnn1.prev = dnn2
+    THEN
+  THEN
 ;
 
 
 : dnl-delete   ( n:index w:dnl - w:dnn = Delete the indexth node from the list )
+  tuck dnl-length@ dnl+offset     \ S: dnl offset
+  over dnl-node                   \ S: dnl dnn | nil
   \ ToDo
 ;
 
 
-( FIFO words )
+( LIFO words )
 
 : dnl-push     ( w:dnn w:dnl - = Push the node at the end of the list )
   dnl-append
@@ -190,15 +210,15 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
   dup dnl-last@              \ dnn = dnl.last 
   dup nil<> IF               \ If dnn != nil Then
     swap                     
-    dup dnl>length 1-!       \ dnl.length--
+    dup dnl>length 1-!       \   dnl.length--
     over dnn-prev@
-    dup nil<> IF             \ If dnn.prev <> nil Then
-      nil over dnn-next!     \   dnn.prev.next = nil
-    ELSE                     \ Else
-      over dnl>first nil!    \   dnl.first = nil
+    dup nil<> IF             \   If dnn.prev <> nil Then
+      nil over dnn-next!     \     dnn.prev.next = nil
+    ELSE                     \   Else
+      over dnl>first nil!    \     dnl.first = nil
     THEN
-    swap dnl>last !          \ dnl.last = dnn.prev
-    nil over dnn-prev!       \ dnn.prev = nil
+    swap dnl>last !          \   dnl.last = dnn.prev
+    nil over dnn-prev!       \   dnn.prev = nil
   ELSE
     nip
   THEN
@@ -210,7 +230,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-( LIFO words )
+( FIFO words )
 
 : dnl-enqueue  ( w:dnn w:dnl - = Enqueue the node at the start of the list )
   dnl-prepend
@@ -225,16 +245,14 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ( Special words )
 
 : dnl-execute      ( ... xt w:dnl - ... = Execute xt for every node in list )
-  \ ToDo
-  dnl>first @                \ walk = first
+  dnl-first@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
   WHILE
-    dup >r 
-    swap 
-    dup >r execute           \  execute xt with node
-    r> r>
-    dnn>next @               \  walk = walk->next
+    2>r 
+    2r@ swap execute         \  execute xt with node
+    2r>
+    dnn-next@                \  walk = walk->next
   REPEAT
   2drop
 ;
