@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\              dnn - the double linked list node in the ffl
+\            dcn - the double linked cell list node in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,80 +20,69 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-31 06:50:17 $ $Revision: 1.2 $
+\  $Date: 2006-12-31 06:50:17 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
 include ffl/config.fs
 
 
-[UNDEFINED] dnn.version [IF]
+[UNDEFINED] dcn.version [IF]
 
 
-include ffl/stc.fs
+include ffl/dnn.fs
 
 
-( dnn = Double Linked List Node )
-( The dnn module implements the node in the dnl-list.)
+( dcn = Double Linked Cell List Node )
+( The dcn module implements the node in the dcl-list.)
 
 
-1 constant dnn.version
+1 constant dcn.version
 
 
 ( Node structure )
 
-struct: dnn%       ( - n = Get the required space for a dnn structure )
-  cell: dnn>next
-  cell: dnn>prev
+struct: dcn%       ( - n = Get the required space for a dcn structure )
+  dnn% field: dcn>dnn        \ extend the dnn structure with ..
+       cell:  dcn>cell       \ .. a cell
 ;struct 
 
 
 ( Node creation, initialisation and destruction )
 
-: dnn-init     ( w:dnn - = Initialise the node )
-  dup  dnn>next  nil!
-       dnn>prev  nil!
+: dcn-init     ( w:data w:dcn - = Initialise the node )
+  dup  dnn-init
+       dcn>cell !
 ;
 
 
-: dnn-new      ( - w:dnn = Create a new node on the heap )
-  dnn% allocate  throw  dup dnn-init
+: dcn-new      ( w:data - w:dcn = Create a new node on the heap )
+  dcn% allocate  throw  tuck dcn-init
 ;
 
 
-: dnn-free     ( w:dnn - = Free the node from the heap )
+: dcn-free     ( w:dcn - = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: dnn-next@    ( w:dnn - w:next = Get the next node )
-  dnn>next @
+: dcn-cell@    ( w:dcn - w:data = Get the cell data from the node )
+  dcn>cell @
 ;
 
 
-: dnn-next!    ( w:next w:dnn - = Set the next node )
-  dnn>next !
-;
-
-
-: dnn-prev@    ( w:dnn - w:prev = Get the previous node )
-  dnn>prev @
-;
-
-
-: dnn-prev!    ( w:prev w:dnn - = Set the previous node )
-  dnn>prev !
+: dcn-cell!    ( w:data w:dcn - = Set the cell data in the node )
+  dcn>cell !
 ;
 
 
 ( Inspection )
 
-: dnn-dump     ( w:dnn - = Dump the node )
-  ." dnn:" dup . cr
-  ."  next :" dup dnn>next  ?  cr
-  ."  prev :"     dnn>prev  ?  cr
+: dcn-dump     ( w:dcn - = Dump the node )
+  dup dnn-dump
+  ."  cell :" dcn>cell  ?  cr
 ;
 
 [THEN]
