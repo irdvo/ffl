@@ -30,6 +30,8 @@ Index of used prefices
 4 dni - Double linked node list iterator
 4 dnl - Double linked node list
 4 dnn - Double linked list node
+4 dcl - Double linked cell list
+4 dcn - Double linked cell list node
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
@@ -66,12 +68,8 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
-5 dnn - Double linked node list node
-5 dnl - Double linked node list module
 5 dni - Double linked node list iterator
 5 dci - Double linked cell list Iterator
-5 dcl - Double linked cell list module
-5 dcn - Double linked cell list node
 6 fsm - Finite state machine module
 8 grp - Graph module
 8 gre - GRaph edge module
