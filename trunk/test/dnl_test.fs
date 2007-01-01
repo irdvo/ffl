@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-30 18:36:39 $ $Revision: 1.1 $
+\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -41,6 +41,8 @@ t{ dnn-new value dnn3 }t
 t{ dnn-new value dnn4 }t
 t{ dnn-new value dnn5 }t
 
+\ append & prepend tests
+
 t{ dnn1 dnl1 dnl-append   }t
 t{ dnn2 dnl1 dnl-append   }t
 t{ dnn3 dnl1 dnl-append   }t
@@ -50,6 +52,8 @@ t{ dnn5 dnl1 dnl-prepend   }t
 
 t{ dnl1 dnl-length@   5 ?s   }t
 t{ dnl1 dnl-empty?   ?false  }t
+
+\ pop tests
 
 t{ dnl1 dnl-pop dnn3 ?s }t
 
@@ -71,6 +75,8 @@ t{ dnl1 dnl-pop ?nil }t
 
 t{ dnl-new value dnl2 }t
 
+\ insert tests
+
 t{ dnn1 0 dnl2 dnl-insert }t
 t{ dnn2 1 dnl2 dnl-insert }t
 t{ dnn3 1 dnl2 dnl-insert }t
@@ -79,11 +85,15 @@ t{ dnn5 4 dnl2 dnl-insert }t
 
 t{ dnl2 dnl-length@  5 ?s }t
 
+\ get tests
+
 t{ 0 dnl2 dnl-get dnn4 ?s }t
 t{ 1 dnl2 dnl-get dnn1 ?s }t
 t{ 2 dnl2 dnl-get dnn3 ?s }t
 t{ 3 dnl2 dnl-get dnn2 ?s }t
 t{ 4 dnl2 dnl-get dnn5 ?s }t
+
+\ index tests
 
 t{ 0  dnl2 dnl-index? ?true  }t
 t{ 4  dnl2 dnl-index? ?true  }t
@@ -103,6 +113,8 @@ t{ 2 dnl2 dnl-get dnn3 ?s }t
 t{ 3 dnl2 dnl-get dnn1 ?s }t
 t{ 4 dnl2 dnl-get dnn4 ?s }t
 
+\ delete tests
+
 t{ 0 dnl2 dnl-delete dnn5 ?s }t
 t{ 2 dnl2 dnl-delete dnn1 ?s }t
 
@@ -117,6 +129,22 @@ t{ 0 dnl2 dnl-delete dnn4 ?s }t
 t{ dnl2 dnl-length@  ?0 }t
 t{ dnl2 dnl-first@ ?nil }t
 t{ dnl2 dnl-last@  ?nil }t
+
+\ insert-before & insert-after tests
+
+t{ dnn1 dnl2 dnl-append }t
+t{ dnn2 dnn1 dnl2 dnl-insert-before }t
+t{ dnn3 dnn1 dnl2 dnl-insert-before }t
+t{ dnn4 dnn3 dnl2 dnl-insert-after  }t
+t{ dnn5 dnn1 dnl2 dnl-insert-after  }t
+
+t{ dnl2 dnl-length@  5 ?s }t
+
+t{ 0 dnl2 dnl-get dnn2 ?s }t
+t{ 1 dnl2 dnl-get dnn3 ?s }t
+t{ 2 dnl2 dnl-get dnn4 ?s }t
+t{ 3 dnl2 dnl-get dnn1 ?s }t
+t{ 4 dnl2 dnl-get dnn5 ?s }t
 
 t{ dnl2 dnl-free }t
 
