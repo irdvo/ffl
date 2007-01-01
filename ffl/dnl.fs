@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-30 18:35:53 $ $Revision: 1.4 $
+\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -151,6 +151,36 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
+: dnl-insert-before  ( w:new w:ref w:dnl - = Insert a new node before the reference node in the list )
+  dup dnl>length 1+!
+  >r
+  2dup swap dnn-next!        \ new.next = ref
+  over swap dnn>prev @!      \ ref.prev = new
+  2dup swap dnn-prev!        \ new.prev = ref.prev
+  r>
+  over nil= IF               \ If ref.prev = nil Then
+    nip dnl>first !          \   dnl.first = new
+  ELSE                       \ Else
+    drop dnn-next!           \   ref.prev.next = new
+  THEN
+;
+
+
+: dnl-insert-after  ( w:new w:ref w:dnl - = Insert a new node after the reference node in the list )
+  dup dnl>length 1+!
+  >r
+  2dup swap dnn-prev!        \ new.prev = ref
+  over swap dnn>next @!      \ ref.next = new
+  2dup swap dnn-next!        \ new.next = ref.next
+  r>
+  over nil= IF               \ If ref.next = nil Then
+    nip dnl>last !           \   dnl.last = new
+  ELSE                       \ Else
+    drop dnn-prev!           \   ref.next.prev = new
+  THEN
+;
+
+
 : dnl-remove   ( w:dnn w:dnl - = Remove a node from the list )
   swap
   dup nil= exp-invalid-parameters AND throw
@@ -199,17 +229,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
     ELSE                          \ Insert the new node
       over dnl-node               \ S: dnn2 dnl dnn1 | nil
       dup  nil= exp-invalid-state AND throw
-      
-      tuck dnn-prev@              \ S: dnn2 dnn1 dnl prev
-      dup  nil= exp-invalid-state AND throw
-      
-      swap dnl>length 1+!         \ dnl.length++
-      
-      rot  2dup
-      swap dnn-next!              \ prev.next = dnn2  S: dnn1 prev dnn2
-      tuck dnn-prev!              \ dnn2.prev = prev  S: dnn1 dnn2
-      2dup dnn-next!              \ dnn2.next = dnn1  S: dnn1 dnn2
-      swap dnn-prev!              \ dnn1.prev = dnn2
+      swap dnl-insert-before      \ Insert before dnn1
     THEN
   THEN
 ;

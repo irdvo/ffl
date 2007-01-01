@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-31 07:49:24 $ $Revision: 1.1 $
+\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/dnl.fs
 include ffl/dcn.fs
 
 
-( dcl = Dingle Linked Cell List )
+( dcl = Double Linked Cell List )
 ( The dcl module implements a double linked list that can store cell wide data.)
   
 
@@ -243,28 +243,30 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 ( Sort words )
 
 : dcl-insert-sorted   ( w:data w:dcl - = Insert the cell data sorted in the list )
-  \ ToDo
-
-  \ dup dcl-compare@ >r        \ save the sort execution token
+  dup dcl-compare@ >r        \ save the sort execution token
   
-  \ tuck
-  \ nil -rot                   \ prev = nil
-  \ dnl-first@                 \ walk = first
+  tuck
+  dnl-first@                 \ walk = first
   
-  \ BEGIN
-  \  dup nil<> IF             \ while walk <> nil and walk->cell <= w do
-  \    2dup dcn-cell@  
-  \    r@ execute 0>=
-  \  ELSE
-  \    false
-  \  THEN
-  \ WHILE
-  \  dnn-next@                \  walk = walk->next
-  \ REPEAT
+  BEGIN
+    dup nil<> IF             \ while walk <> nil and walk->cell <= w do
+      2dup dcn-cell@  
+      r@ execute 0>=
+    ELSE
+      false
+    THEN
+  WHILE
+    dnn-next@                \  walk = walk->next
+  REPEAT
+  rdrop
   
-  \ drop -rot dcl-add          \ add the node
+  >r dcn-new swap r>         \ Create a new node S: new dcl walk
   
-  \ rdrop
+  dup nil= IF                \ If all nodes are smaller Then
+    drop dnl-append          \   Append
+  ELSE                       \ Else
+    swap dnl-insert-before   \   Insert before walk
+  THEN
 ;
 
 
@@ -272,9 +274,9 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 : dcl-dump     ( w:dcl - = Dump the list )
   dup dnl-dump
+  ." dcl:" cr
   ."  compare:" dup dcl>compare ? cr
-  
-  ['] dcn-dump swap dcl-execute
+  ."  nodes  :" ['] . swap dcl-execute cr
 ;
 
 [THEN]
