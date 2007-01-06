@@ -20,12 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.2 $
+\  $Date: 2007-01-06 06:31:19 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
 include ffl/tst.fs
 include ffl/dnl.fs
+include ffl/dni.fs
 
 
 .( Testing: dnl, dnn and dni) cr 
@@ -53,6 +54,27 @@ t{ dnn5 dnl1 dnl-prepend   }t
 t{ dnl1 dnl-length@   5 ?s   }t
 t{ dnl1 dnl-empty?   ?false  }t
 
+\ Iterator test
+
+t{ dnl1 dni-create dni1 }t
+
+t{ dni1 dni-first dnn5 ?s }t
+t{ dni1 dni-get   dnn5 ?s }t
+t{ dni1 dni-first? ?true  }t
+t{ dni1 dni-last?  ?false }t
+
+t{ dni1 dni-next dnn4 ?s  }t
+t{ dni1 dni-next dnn1 ?s  }t
+t{ dni1 dni-first? ?false }t
+t{ dni1 dni-last?  ?false }t
+
+t{ dni1 dni-next dnn2 ?s  }t
+t{ dni1 dni-next dnn3 ?s  }t
+t{ dni1 dni-first? ?false }t
+t{ dni1 dni-last?  ?true  }t
+
+t{ dni1 dni-next ?nil     }t
+
 \ pop tests
 
 t{ dnl1 dnl-pop dnn3 ?s }t
@@ -72,6 +94,8 @@ t{ dnl1 dnl-first@ ?nil }t
 t{ dnl1 dnl-last@  ?nil }t
 
 t{ dnl1 dnl-pop ?nil }t
+
+
 
 t{ dnl-new value dnl2 }t
 
@@ -112,6 +136,31 @@ t{ 1 dnl2 dnl-get dnn2 ?s }t
 t{ 2 dnl2 dnl-get dnn3 ?s }t
 t{ 3 dnl2 dnl-get dnn1 ?s }t
 t{ 4 dnl2 dnl-get dnn4 ?s }t
+
+\ Iterator test
+
+t{ dnl2 dni-new value dni2 }t
+
+t{ dni2 dni-last dnn4 ?s  }t
+t{ dni2 dni-get  dnn4 ?s  }t
+t{ dni2 dni-last?  ?true  }t
+t{ dni2 dni-first? ?false }t
+
+t{ dni2 dni-prev dnn1 ?s  }t
+t{ dni2 dni-last?  ?false }t
+t{ dni2 dni-first? ?false }t
+
+t{ dni2 dni-prev dnn3 ?s  }t
+t{ dni2 dni-prev dnn2 ?s  }t
+t{ dni2 dni-prev dnn5 ?s  }t
+
+t{ dni2 dni-last?  ?false }t
+t{ dni2 dni-first? ?true  }t
+
+t{ dni2 dni-prev ?nil     }t
+t{ dni2 dni-get  ?nil     }t
+
+t{ dni2 dni-free          }t
 
 \ delete tests
 
