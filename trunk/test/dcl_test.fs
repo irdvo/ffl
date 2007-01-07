@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 08:07:01 $ $Revision: 1.2 $
+\  $Date: 2007-01-07 17:46:09 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -56,6 +56,10 @@ t{ 5  dcl1 dcl-find   -1 ?s   }t
 
 t{ 2  dcl1 dcl-has?   ?true   }t
 t{ -2 dcl1 dcl-has?   ?false   }t
+
+t{ 2 dcl1 dcl-find  4 swap dcl1 dcl-set }t   \ find item 2 and change it to 4
+
+t{ 2  dcl1 dcl-has?   ?false   }t
 
 t{    dcl1 dcl-delete-all   }t
 
@@ -134,6 +138,7 @@ t{    dci1 dci-first    2drop      }t
 t{  3 dci1 dci-move     ?true      }t
 t{  7 dci1 dci-insert-after        }t
 t{    dci1 dci-get      ?true 3 ?s }t
+t{    dci1 dci-next     ?true 7 ?s }t
 
 t{    dcl1 dcl-reverse   }t
 

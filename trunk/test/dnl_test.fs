@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-06 06:31:19 $ $Revision: 1.3 $
+\  $Date: 2007-01-07 17:46:09 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -53,6 +53,14 @@ t{ dnn5 dnl1 dnl-prepend   }t
 
 t{ dnl1 dnl-length@   5 ?s   }t
 t{ dnl1 dnl-empty?   ?false  }t
+
+\ execute test
+
+: dnl-test-count ( u w:dnn - u+1 )
+  drop 1+
+;
+
+t{ 0 ' dnl-test-count dnl1 dnl-execute 5 ?s }t
 
 \ Iterator test
 
@@ -194,6 +202,15 @@ t{ 1 dnl2 dnl-get dnn3 ?s }t
 t{ 2 dnl2 dnl-get dnn4 ?s }t
 t{ 3 dnl2 dnl-get dnn1 ?s }t
 t{ 4 dnl2 dnl-get dnn5 ?s }t
+
+t{ dnn2 dnl2 dnl-remove }t
+t{ dnn4 dnl2 dnl-remove }t
+t{ dnn5 dnl2 dnl-remove }t
+
+t{ 0 dnl2 dnl-get dnn3 ?s }t
+t{ 1 dnl2 dnl-get dnn1 ?s }t
+
+t{   dnl2 dnl-length@ 2 ?s }t
 
 t{ dnl2 dnl-free }t
 
