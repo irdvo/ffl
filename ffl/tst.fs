@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.8 $
+\  $Date: 2007-01-07 08:07:01 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -35,14 +35,14 @@ include ffl/config.fs
 ( The tst module implements an unit testing framework. )
 
 
-2 constant tst.version
+3 constant tst.version
 
 
 ( Private database )
 
 variable tst-errors
 variable tst-tests
-
+variable tst-timer
 
 ( Private words )
 
@@ -274,13 +274,14 @@ variable tst-tests
 ( Test results words )
 
 : tst-reset-tests ( - = Reset the test results )
-  tst-errors 0!
-  tst-tests  0!
+      tst-errors 0!
+      tst-tests  0!
+  ms@ tst-timer !
 ;
 
 
-: tst-get-result  ( - u:tests u:errors = Get the test results )
-  tst-tests @ tst-errors @
+: tst-get-result  ( - u:ms u:tests u:errors = Get the test results )
+  ms@ tst-timer @ - tst-tests @ tst-errors @
 ;
 
 
