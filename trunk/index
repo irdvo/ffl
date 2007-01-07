@@ -30,6 +30,7 @@ Index of used prefices
 4 dni - Double linked node list iterator
 4 dnl - Double linked node list
 4 dnn - Double linked list node
+4 dci - Double linked cell list iterator
 4 dcl - Double linked cell list
 4 dcn - Double linked cell list node
 ----- - ------------------------------------------------

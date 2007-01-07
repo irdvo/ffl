@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.5 $
+\  $Date: 2007-01-07 08:07:01 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -241,7 +241,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
     dup dnl-first@                \   First node
   ELSE                            \ Else
     over dnl-length@ 1- over = IF \   If offset = length-1 Then
-      drop dnl-last@              \     Last node
+      drop dup dnl-last@          \     Last node
     ELSE                          \   Else
       over dnl-node               \     Offset -> node
     THEN
