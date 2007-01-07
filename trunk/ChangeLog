@@ -1,4 +1,6 @@
 0.4.0:
+* dtm: new words dtm-get-date and dtm-get-time
+* dtm: dtm-set-with-days bug fix 
 * tst: tst-get-result will now also return ms since tst-reset-tests (2007-01-07)
 * dci: new module (Double linked cell list iterator) (2007-01-07)
 * dni: new module (Double linked node list iterator) (2007-01-03)

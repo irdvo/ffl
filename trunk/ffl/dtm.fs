@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
+\  $Date: 2007-01-07 18:40:35 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -38,7 +38,7 @@ include ffl/stc.fs
 ( The dtm module implements words for using [gregorian] date and time. )
 
 
-1 constant dtm.version
+2 constant dtm.version
 
 
 ( Date time structure )
@@ -344,8 +344,17 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 : dtm-set-with-days  ( d:days n:epoch w:dtm - = Set the date with days since epoch )
   >r >r
   BEGIN
-    2dup r@ dtm+days-in-year
-    s>d 2swap d<
+    2dup 
+    r@ dtm+days-in-year s>d 
+    2swap 
+    
+    2over d= IF                             \ If number of days is exact days in this year Then
+      d- r> 1+ >r                           \   Number of days = 0 and year++
+      false
+    ELSE                                    \ Else
+      2over d<                              \   Found the year ?
+    THEN
+    
   WHILE
     2dup 366 fm/mod nip                     \ Guess the number of years
     dup 
@@ -354,15 +363,15 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
     swap dtm+calc-leap-years negate m+      \ Calculate the actual number of days in the guessed years
   REPEAT
   r> r@ dtm-year!
-  
-  d>s dtm.february                          \ Look for the correct month
+
+  d>s dtm.december                          \ Look for the correct month
   BEGIN
-    2dup r@ dtm-year@ dtm+days-till-month >=
+    2dup r@ dtm-year@ dtm+days-till-month <
   WHILE
-    1+
+    1-
   REPEAT
   
-  1- dup r@ dtm-month!
+  dup r@ dtm-month!
   
   r@ dtm-year@ dtm+days-till-month -
   1+ r> dtm-day!
@@ -410,6 +419,22 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
   r> dtm-year@
 ;
 
+
+: dtm-get-date     ( w:dtm - n:day n:month n:year = Get the date )
+  >r
+  r@ dtm-day@
+  r@ dtm-month@
+  r> dtm-year@
+;
+
+
+: dtm-get-time     ( w:dtm - n:mili n:sec n:min n:hour = Get the time )
+  >r
+  r@ dtm-milli@
+  r@ dtm-second@
+  r@ dtm-minute@
+  r> dtm-hour@
+;
 
 : dtm-weekday       ( w:dtm - n = Get the week day from the date )
   >r

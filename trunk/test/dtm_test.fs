@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-06-21 19:24:40 $ $Revision: 1.2 $
+\  $Date: 2007-01-07 18:40:35 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -126,12 +126,31 @@ t{ d1 dtm-year@ 2005 ?s }t
 t{ 654 21 50 6 7 dtm.may 2005 d1 dtm-compare ?0 }t
 
 t{ d1 dtm-get 2005 ?s dtm.may ?s 7 ?s 6 ?s 50 ?s 21 ?s 654 ?s }t
+t{ d1 dtm-get-date 2005 ?s dtm.may ?s 7 ?s }t
+t{ d1 dtm-get-time 6 ?s 50 ?s 21 ?s 654 ?s }t
 
 t{ d1 dtm-set-now }t
 
 t{ 0 0 0 0 1 dtm.january 1600 d2 dtm-set }t
 
 t{ d1 d2 dtm^compare 1 ?s }t
+
+t{ 13512. dtm.unix-epoch d1 dtm-set-with-days }t
+
+t{ d1 dtm-get-date 2006 ?s dtm.december ?s 30 ?s }t
+
+t{ 13513. dtm.unix-epoch d1 dtm-set-with-days }t
+
+t{ d1 dtm-get-date 2006 ?s dtm.december ?s 31 ?s }t
+
+t{ 13514. dtm.unix-epoch d1 dtm-set-with-days }t
+
+t{ d1 dtm-get-date 2007 ?s dtm.january ?s 1 ?s }t
+
+t{ 13515. dtm.unix-epoch d1 dtm-set-with-days }t
+
+t{ d1 dtm-get-date 2007 ?s dtm.january ?s 2 ?s }t
+
 
 \ Calculations
 
