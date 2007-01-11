@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-06 06:31:19 $ $Revision: 1.1 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -133,7 +133,7 @@ struct: dni%       ( - n = Get the required space for a dni data structure )
 ;
 
 
-: dni-last?    ( w:dni - f = Check if the iterator is on the last record )
+: dni-last?    ( w:dni - f = Check if the iterator is on the last node )
   dup dni>dnl @
   dnl-last@
   dup nil= IF

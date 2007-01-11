@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.9 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -72,15 +72,15 @@ struct: md5%       ( - n = Get the required space for the md5 data structure )
 12 constant md5.s12  
 17 constant md5.s13  
 22 constant md5.s14
-5  constant md5.s21	  
+5  constant md5.s21
 9  constant md5.s22  
 14 constant md5.s23  
 20 constant md5.s24
-4  constant md5.s31	 
+4  constant md5.s31
 11 constant md5.s32  
 16 constant md5.s33  
 23 constant md5.s34
-6  constant md5.s41	 
+6  constant md5.s41
 10 constant md5.s42  
 15 constant md5.s43  
 21 constant md5.s44
