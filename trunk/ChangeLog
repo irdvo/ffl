@@ -29,7 +29,6 @@
 * config: new words: f>r fr> fr@ (2006-08-30)  
 * config: sys.cells-in-float added (2006-08-30)
 * cpx: new module (Complex number) (2006-08-28)
-* examples directory added (2006-08-28)
 * frc: new module (Fraction) (2006-08-26)
 0.3.0:
 * config: sys.bits-in-byte added

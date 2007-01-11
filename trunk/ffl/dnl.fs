@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 08:07:01 $ $Revision: 1.6 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ include ffl/dnn.fs
 
 ( dnl = Double Linked Node List )
 ( The dnl module implements a double linked list that can handle variable size )
-( nodes. It is the base module for more specialised modules, for example the   }
-{ dcl [double linked cell list] module. )
+( nodes. It is the base module for more specialised modules, for example the   )
+( dcl [double linked cell list] module. )
   
 
 1 constant dnl.version

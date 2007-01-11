@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 18:49:07 $ $Revision: 1.29 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.30 $
 \
 \ ==============================================================================
 \
@@ -47,7 +47,7 @@ variable sys.endian   1 sys.endian !
 ( System Settings )
 
 create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
-  1 c, 10 c,         \ unix: lf
+  1 c, 10 c,         \ newline string,   \ Anton Ertl
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
   
   

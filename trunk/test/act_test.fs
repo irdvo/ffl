@@ -20,13 +20,12 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.3 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
 include ffl/tst.fs
 include ffl/act.fs
-include ffl/bct.fs
 include ffl/bci.fs
 
 include ffl/car.fs
@@ -55,7 +54,7 @@ include ffl/rng.fs
 ;
 
 
-: act-verify       ( w:bct - = Verify the act tree )
+: act-verify       ( w:act - = Verify the act tree )
   bct>root @
   act-verify-node
   drop
@@ -64,7 +63,7 @@ include ffl/rng.fs
 
 \ Simple test
 
-t{ bct-create act1  }t
+t{ act-create act1  }t
 
 t{  1  1 act1 act-insert }t
 t{  8  8 act1 act-insert }t
@@ -78,16 +77,16 @@ t{ 11 11 act1 act-insert }t
 
 t{  5  4 act1 act-insert }t   \ actually data change of node 4
 
-t{ act1 bct-length@   9 ?s   }t
-t{ act1 bct-empty?   ?false  }t
+t{ act1 act-length@   9 ?s   }t
+t{ act1 act-empty?   ?false  }t
 
 act1 act-verify
 
-t{ 1 act1 bct-has?  ?true      }t
-t{ 1 act1 bct-get   ?true 1 ?s }t
-t{ 0 act1 bct-has?  ?false     }t
-t{ 0 act1 bct-get   ?false     }t
-t{ 4 act1 bct-get   ?true 5 ?s }t
+t{ 1 act1 act-has?  ?true      }t
+t{ 1 act1 act-get   ?true 1 ?s }t
+t{ 0 act1 act-has?  ?false     }t
+t{ 0 act1 act-get   ?false     }t
+t{ 4 act1 act-get   ?true 5 ?s }t
 
 
 : act-sum ( n:sum w:data w:key - n:sum = Sum data and key )
@@ -99,7 +98,7 @@ t{ 4 act1 bct-get   ?true 5 ?s }t
 ;
 
 
-t{ 0 ' act-sum act1 bct-execute 101 ?s }t
+t{ 0 ' act-sum act1 act-execute 101 ?s }t
 
 
 \ Delete test 
@@ -110,9 +109,9 @@ t{  1 act1 act-delete ?false     }t
 t{  9 act1 act-delete ?true 9 ?s }t
 t{ 12 act1 act-delete ?false     }t
 
-t{ act1 bct-length@ 6 ?s }t
+t{ act1 act-length@ 6 ?s }t
 
-t{ 0 ' act-sum act1 bct-execute 72 ?s }t
+t{ 0 ' act-sum act1 act-execute 72 ?s }t
 
 act1 act-verify
 
@@ -122,7 +121,7 @@ act1 act-verify
 5000 car-new value act-car   \ Array with 5000 random numbers
 5189 rng-new value act-rng   \ Random generator
 
-t{ bct-new value act2 }t
+t{ act-new value act2 }t
 
 : act-repeat-insert ( - = Insert 5000 random numbers in an array and the tree )
   5000 0 DO
@@ -137,7 +136,7 @@ t{ bct-new value act2 }t
   0
   5000 0 DO
     I act-car car-get
-    act2 bct-has? IF
+    act2 act-has? IF
       1+
     THEN
   LOOP
@@ -157,9 +156,9 @@ t{ bct-new value act2 }t
 
 act-repeat-insert
 
-t{ act2 bct-length@ 5000 ?s }t
+t{ act2 act-length@ 5000 ?s }t
 
-t{ 0 ' act-count act2 bct-execute 5000 ?s }t
+t{ 0 ' act-count act2 act-execute 5000 ?s }t
 
 t{ act-count-present 5000 ?s }t
 
@@ -168,23 +167,23 @@ act2 act-verify
 
 t{ act-repeat-delete }t
 
-t{ act2 bct-length@ 2500 ?s }t
+t{ act2 act-length@ 2500 ?s }t
 
-t{ 0 ' act-count act2 bct-execute 2500 ?s }t
+t{ 0 ' act-count act2 act-execute 2500 ?s }t
 
 act2 act-verify
 
 
 act-repeat-insert
 
-t{ act2 bct-length@ 7500 ?s }t
+t{ act2 act-length@ 7500 ?s }t
 
-t{ 0 ' act-count act2 bct-execute 7500 ?s }t
+t{ 0 ' act-count act2 act-execute 7500 ?s }t
 
 act2 act-verify
 
 
-t{ act2 bct-free }t
+t{ act2 act-free }t
 
 
 act-rng rng-free

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-09-17 19:03:05 $ $Revision: 1.1 $
+\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -55,6 +55,7 @@ t{ rng1 9999 rng-skip }t
 t{ rng1 rng-next-number 862334504 ?u }t
 
 
+[DEFINED] rng-next-float [IF]
 t{ 19650218 rng-new value rng2 }t
 
 t{ rng2 rng-next-float 0.54146918e0 ?r }t
@@ -64,6 +65,7 @@ t{ rng2 9999 rng-skip }t
 t{ rng2 rng-next-float 0.95790732e0 ?r }t
 
 t{ rng2 rng-free }t
+[THEN]
 
 [THEN]
 
