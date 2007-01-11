@@ -1,0 +1,27 @@
+        bytes
+0.1.0:   11460
+str.fs:  21120
+tis.fs:  24640
+tos.fs:  26476
+bar.fs:  29596
+car.fs:  34180
+0.2.0:   34228
+dtm.fs:  42844
+dti.fs:  43028
+hct.fs:  50220
+md5.fs:  60892
+chs.fs:  64940
+0.3.0:   65060
+frc.fs:  67372
+cpx.fs:  72380
+tst.fs:  73545
+rng.fs:  75292
+bct.fs:  81812
+act.fs:  86100
+trm.fs:  90324
+sh1.fs:  94156
+tmr.fs:  95964
+dnl.fs:  99372
+dcl.fs:
+dni.fs: 102356 
+dci.fs: 102428
