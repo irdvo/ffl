@@ -2,7 +2,7 @@
 \
 \                  config - the config in the ffl
 \
-\             Copyright (C) 2005-2006  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.8 $
+\  $Date: 2007-01-14 07:10:34 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000400 constant ffl.version
+000500 constant ffl.version
 
 
 ( Private words )
@@ -157,24 +157,15 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 ;
 
 
-\ : fnip             ( r1 r2 - r2 = Drop second float on stack )
-\   fswap fdrop
-\ ;
-
-
-\ : ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
-\   fswap fover
-\ ;
-
-: f>r
+: f>r              ( r - = Push float on the return stack )
   r> rp@ float - rp! rp@ f! >r 
 ;
 
-: fr>
+: fr>              ( - r = Pop float from the return stack )
   r> rp@ f@ float rp@ + rp! >r
 ;
 
-: fr@
+: fr@              ( - r = Get float from top of return stack )
   r> rp@ f@ >r
 ;
 

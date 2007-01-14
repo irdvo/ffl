@@ -2,7 +2,7 @@
 \
 \                  config - the config in the ffl
 \
-\             Copyright (C) 2005-2006  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.3 $
+\  $Date: 2007-01-14 07:10:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000300 constant ffl.version
+000500 constant ffl.version
 
 
 ( Private words )
@@ -189,7 +189,7 @@ variable exp-next  -2050 exp-next !
 : exception      ( w:addr u - n = add an exception )
   2drop
   exp-next @ 
-  -1 exp-next +!
+  exp-next 1-!
 ;
 
 
