@@ -1,3 +1,4 @@
+* fina config.fs/make.fs added (thanks to Jorge Acereda Macia)
 0.4.0:
 * dtm: new words dtm-get-date and dtm-get-time
 * dtm: dtm-set-with-days bug fix 

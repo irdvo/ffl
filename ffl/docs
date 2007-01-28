@@ -1,4 +1,4 @@
 #/bin/sh
 
-ofcfrth --dir=../html *.fs
-ofcfrth --dir=../webpage/docs *.fs
+ofcfrth --dir=../html --exa=../examples *.fs
+ofcfrth --dir=../webpage/docs --exa=../examples *.fs

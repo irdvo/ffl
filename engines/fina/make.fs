@@ -3,7 +3,7 @@
 \               make - the 'make' source file for gforth
 \
 \               Copyright (C) 2005  Dick van Oudheusden
-\  
+\
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
 \ License as published by the Free Software Foundation; either
@@ -19,15 +19,14 @@
 \ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 \
 \ ==============================================================================
-\ 
-\  $Date: 2007-01-28 19:52:36 $ $Revision: 1.12 $
+\
+\  $Date: 2007-01-28 19:52:35 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include tags.fs
-
+include ffl/config.fs
 .( Forth Foundation Library: ) cr
-utime
+ms@
 
 unused
 
@@ -37,10 +36,9 @@ unused -
 
 
 .( Compilation Size: ) . .( bytes) cr
-  
-utime 2swap d- 1 1000 m*/
 
-.( Compilation Time: ) d. .( msec) cr
+ms@ swap -
+
+.( Compilation Time: ) . .( msec) cr
 
 \ ==============================================================================
-
