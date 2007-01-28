@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.8 $
+\  $Date: 2007-01-28 19:52:36 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -29,7 +29,7 @@ include ffl/config.fs
 
 [UNDEFINED] cpx.version [IF]
 
-
+[DEFINED] float [IF]
 s" FLOATING-EXT"   environment? [IF] drop
 s" FLOATING-STACK" environment? [IF] drop
 
@@ -453,6 +453,9 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 [ELSE]
 .( Warning: cpx requires a separate floating point stack ) cr
+[THEN]
+[ELSE]
+.( Warning: cpx requires floating point words ) cr
 [THEN]
 [ELSE]
 .( Warning: cpx requires floating point words ) cr
