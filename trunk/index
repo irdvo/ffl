@@ -120,7 +120,8 @@ ToDo
 ----
 cpx: cotan ?
 stc: union,enum
-frc: lcm 
-str: icompare naar config
+frc: lcm
+cfg: newline
+cfg: sys.* -> *
 
 fce: config.fs/make.fs naar cvs

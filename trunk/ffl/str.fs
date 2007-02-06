@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.17 $
+\  $Date: 2007-02-06 19:03:53 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 
@@ -575,21 +575,6 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Comparison words )
 
-: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
-  rot swap 2swap 2over
-  min 0 ?DO
-    over c@ chr-upper over c@ chr-upper - sgn ?dup IF
-      >r 2drop 2drop r>
-      unloop 
-      exit
-    THEN
-    1 chars + swap 1 chars + swap
-  LOOP
-  2drop
-  - sgn
-;
-  
-  
 : str-icompare     ( c-addr u w:str - n = Compare case-insensitive a string with the string )
   str-get icompare
 ;
