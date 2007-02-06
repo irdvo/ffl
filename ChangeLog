@@ -1,4 +1,6 @@
+* icompare from str.fs to config.fs (2007-02-06)
 * fina config.fs/make.fs added (thanks to Jorge Acereda Macia)
+* Manual added to the website
 0.4.0:
 * dtm: new words dtm-get-date and dtm-get-time
 * dtm: dtm-set-with-days bug fix 
@@ -9,7 +11,6 @@
 * dcn: new module (Double linked cell list node) (2006-12-31)
 * dnl: new module (Double linked node list) (2006-12-28)
 * dnn: new module (Double linked list node) (2006-12-28)
-* Manual (wiki) added to the website (2006-12-24)
 * Win32Forth config.fs/make.fs added
 * config: new word <=> for comparing numbers (2006-12-12)
 * chs: new words chs-set-string,chs-reset-string (2006-12-11)
