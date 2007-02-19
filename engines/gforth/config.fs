@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-14 18:45:15 $ $Revision: 1.10 $
+\  $Date: 2007-02-19 18:52:45 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 \
@@ -114,6 +114,21 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 
 : @!               ( w a - w = First fetch the contents and then store the new value )
   dup @ -rot !
+;
+
+
+: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
+  rot swap 2swap 2over
+  min 0 ?DO
+    over c@ toupper over c@ toupper - sgn ?dup IF
+      >r 2drop 2drop r>
+      unloop 
+      exit
+    THEN
+    1 chars + swap 1 chars + swap
+  LOOP
+  2drop
+  - sgn
 ;
 
 
