@@ -16,6 +16,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
+5 dnl - Single linked node list
 5 snn - Single linked node
 1 sci - Single linked cell list iterator
 1 scl - Single linked cell list
@@ -70,8 +71,6 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
-5 dni - Double linked node list iterator
-5 dci - Double linked cell list Iterator
 6 fsm - Finite state machine module
 8 grp - Graph module
 8 gre - GRaph edge module
@@ -88,6 +87,7 @@ Index of used prefices
       - Development
 ----- - ------------------------------------------------
 6 log - Logger module
+  hlp - Manual/help/info module
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------

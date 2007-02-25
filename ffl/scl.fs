@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 18:44:19 $ $Revision: 1.10 $
+\  $Date: 2007-02-25 07:40:38 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -310,23 +310,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 
 : scl-reverse  ( w:scl - = Reverse or mirror the list )
-  nil over
-  scl>first @                \ walk = first
-  
-  BEGIN
-    dup nil<>
-  WHILE                      \ while walk<>nil do
-    dup scn>next @
-    >r
-    tuck scn>next !          \  walk->next = prev
-    r>
-  REPEAT
-  2drop
-  
-  dup  scl>first @
-  over dup scl>last @       
-  swap scl>first !           \ first = last
-  swap scl>last  !           \ last  = first
+  snl-reverse
 ;
 
 
