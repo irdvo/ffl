@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-31 07:49:24 $ $Revision: 1.27 $
+\  $Date: 2007-02-27 19:54:09 $ $Revision: 1.28 $
 \
 \ ==============================================================================
 
@@ -52,6 +52,9 @@ include ffl/rng.fs
 include ffl/scn.fs
 include ffl/scl.fs
 include ffl/sci.fs
+include ffl/sni.fs
+include ffl/snl.fs
+include ffl/snn.fs
 include ffl/sh1.fs
 include ffl/str.fs
 include ffl/tis.fs
