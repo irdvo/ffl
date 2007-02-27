@@ -20,13 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-27 06:06:15 $ $Revision: 1.1 $
+\  $Date: 2007-02-27 19:54:10 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/tst.fs
 include ffl/snl.fs
-\ include ffl/dni.fs
+include ffl/sni.fs
 
 
 .( Testing: snl, snn and sni) cr 
@@ -64,24 +64,24 @@ t{ 0 ' snl-test-count snl1 snl-execute 5 ?s }t
 
 \ Iterator test
 
-\ t{ snl1 dni-create dni1 }t
+t{ snl1 sni-create sni1 }t
 
-\ t{ dni1 dni-first snn5 ?s }t
-\ t{ dni1 dni-get   snn5 ?s }t
-\ t{ dni1 dni-first? ?true  }t
-\ t{ dni1 dni-last?  ?false }t
+t{ sni1 sni-first snn5 ?s }t
+t{ sni1 sni-get   snn5 ?s }t
+t{ sni1 sni-first? ?true  }t
+t{ sni1 sni-last?  ?false }t
 
-\ t{ dni1 dni-next snn4 ?s  }t
-\ t{ dni1 dni-next snn1 ?s  }t
-\ t{ dni1 dni-first? ?false }t
-\ t{ dni1 dni-last?  ?false }t
+t{ sni1 sni-next snn4 ?s  }t
+t{ sni1 sni-next snn1 ?s  }t
+t{ sni1 sni-first? ?false }t
+t{ sni1 sni-last?  ?false }t
 
-\ t{ dni1 dni-next snn2 ?s  }t
-\ t{ dni1 dni-next snn3 ?s  }t
-\ t{ dni1 dni-first? ?false }t
-\ t{ dni1 dni-last?  ?true  }t
+t{ sni1 sni-next snn2 ?s  }t
+t{ sni1 sni-next snn3 ?s  }t
+t{ sni1 sni-first? ?false }t
+t{ sni1 sni-last?  ?true  }t
 
-\ t{ dni1 dni-next ?nil     }t
+t{ sni1 sni-next ?nil     }t
 
 \ pop tests
 
@@ -147,28 +147,20 @@ t{ 4 snl2 snl-get snn4 ?s }t
 
 \ Iterator test
 
-\ t{ snl2 dni-new value dni2 }t
+t{ snl2 sni-new value sni2 }t
 
-\ t{ dni2 dni-last snn4 ?s  }t
-\ t{ dni2 dni-get  snn4 ?s  }t
-\ t{ dni2 dni-last?  ?true  }t
-\ t{ dni2 dni-first? ?false }t
+t{ sni2 sni-first snn5 ?s }t
+t{ sni2 sni-next snn2 ?s  }t
+t{ sni2 sni-next snn3 ?s  }t
+t{ sni2 sni-next snn1 ?s  }t
+t{ sni2 sni-next snn4 ?s  }t
 
-\ t{ dni2 dni-prev snn1 ?s  }t
-\ t{ dni2 dni-last?  ?false }t
-\ t{ dni2 dni-first? ?false }t
+t{ sni2 sni-last?  ?true  }t
+t{ sni2 sni-first? ?false }t
 
-\ t{ dni2 dni-prev snn3 ?s  }t
-\ t{ dni2 dni-prev snn2 ?s  }t
-\ t{ dni2 dni-prev snn5 ?s  }t
+t{ sni2 sni-next ?nil     }t
 
-\ t{ dni2 dni-last?  ?false }t
-\ t{ dni2 dni-first? ?true  }t
-
-\ t{ dni2 dni-prev ?nil     }t
-\ t{ dni2 dni-get  ?nil     }t
-
-\ t{ dni2 dni-free          }t
+t{ sni2 sni-free          }t
 
 \ delete tests
 
