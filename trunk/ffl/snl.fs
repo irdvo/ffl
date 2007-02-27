@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-25 07:40:38 $ $Revision: 1.1 $
+\  $Date: 2007-02-27 06:06:15 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -119,7 +119,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
     dup snn-next@            \  cur = cur->next
     r>
   REPEAT
-  nip
+  drop
 ;
 
 
@@ -137,6 +137,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
   THEN
   drop snn>next nil!         \ snn.next = nil
 ;
+
 
 : snl-prepend  ( w:snn w:snl - = Prepend a node in the list )
   dup  snl>length 1+!        \ snl.length++
@@ -162,27 +163,40 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
   THEN
 ;
 
-\ ToDo !
-: snl-remove   ( w:snn w:snl - = Remove a node from the list )
+
+: snl-remove-first   ( w:snl - w:snn | nil = Remove the first node from the list )
+  dup snl-first@
+  dup nil<> IF               \ If first <> nil Then
+    2dup snn-next@
+    dup nil= IF              \   If first.next = nil Then
+      over snl>last nil!     \     last.nil
+    THEN
+    swap snl>first !         \   first = first.next
+    swap snl>length 1-!      \   length--
+  ELSE
+    nip
+  THEN
+;
+
+
+: snl-remove-after   ( w:prv w:snl - w:snn | nil = Remove the node after the reference node from the list )
   swap
   dup nil= exp-invalid-parameters AND throw
   
-  nil over snn>next @! swap
-  nil swap snn>prev @!            \ S: snl next prev
-  
-  dup nil= IF                     \ If prev = nil Then
-    >r 2dup swap snl>first ! r>   \   snl.first = next
-  ELSE                            \ Else
-    2dup snn-next!                \   prev.next = next
+  dup snn-next@ >r                \ S: snl prv
+  r@ nil<> IF                     \ If prv.next <> nil Then
+    nil r@ snn>next @!            \   prv.next.next = nil
+    dup nil= IF                   \   If prv.next.next = nil Then
+      >r
+      2dup swap snl>last !        \     snl.last = prv
+      r>
+    THEN
+    swap snn-next!                \   prv.next = prv.next.next
+    snl>length 1-!
+  ELSE
+    2drop
   THEN
-  swap
-  dup nil= IF                     \ If next = nil Then
-    drop over snl>last !          \   snl.last = prev
-  ELSE                            \ Else
-    snn-prev!                     \   next.prev = prev
-  THEN                            \ S: snl
-  
-  snl>length 1-!
+  r>
 ;
   
 
@@ -200,7 +214,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
   swap snl-node nip               \ S: snn | nil
 ;
 
-\ ToDo !
+
 : snl-insert   ( w:snn n:index w:snl - = Insert a node before the indexth node in the list )
   tuck snl-length@ 1+ snl+offset  \ S: snn snl offset
   ?dup 0= IF
@@ -209,26 +223,22 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
     over snl-length@ over = IF
       drop snl-append
     ELSE                          \ Insert the new node
-      over snl-node               \ S: snn2 snl snn1 | nil
+      over snl-node drop          \ S: snn snl prv | nil
       dup  nil= exp-invalid-state AND throw
-      swap snl-insert-before      \ Insert before snn1
+      swap snl-insert-after       \ Insert after prv
     THEN
   THEN
 ;
 
-\ ToDo !
+
 : snl-delete   ( n:index w:snl - w:snn = Delete the indexth node from the list )
   tuck snl-length@ snl+offset     \ S: snl offset
   ?dup 0= IF                      \ If offset = 0 Then
-    dup snl-first@                \   First node
+    snl-remove-first              \   First node
   ELSE                            \ Else
-    over snl-length@ 1- over = IF \   If offset = length-1 Then
-      drop dup snl-last@          \     Last node
-    ELSE                          \   Else
-      over snl-node               \     Offset -> node
-    THEN
-  THEN                            \ S: snl snn
-  dup rot snl-remove              \ Remove the node
+    over snl-node drop            \   Offset -> node S: snl prv
+    swap snl-remove-after         \   Remove after prv
+  THEN                            \ S: snn
 ;
 
 
@@ -238,14 +248,9 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
   snl-prepend
 ;
 
-\ ToDo ? (snl-remove)
+
 : snl-pop      ( w:snl - w:snn | nil = Pop the node at the top of the stack [= start of the list] )
-  dup snl-first@             \ snn = snl.first
-  dup nil<> IF               \ If snn != nil Then
-    dup rot snl-remove
-  ELSE
-    nip
-  THEN
+  snl-remove-first
 ;
 
 
@@ -262,7 +267,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 
 : snl-dequeue  ( w:snl - w:snn | nil = Dequeue the node at the end of the queue [= start of the list] )
-  snl-pop
+  snl-remove-first
 ;
 
 
@@ -284,7 +289,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 : snl-reverse  ( w:snl - = Reverse or mirror the list )
   nil over
-  snl>first @                \ walk = first
+  snl-first@                 \ walk = first
   
   BEGIN
     dup nil<>
@@ -296,10 +301,10 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
   REPEAT
   2drop
   
-  dup  scl>first @
-  over dup scl>last @       
-  swap scl>first !           \ first = last
-  swap scl>last  !           \ last  = first
+  dup  snl-first@
+  over dup snl-last@       
+  swap snl>first !           \ first = last
+  swap snl>last  !           \ last  = first
 ;
 
 
