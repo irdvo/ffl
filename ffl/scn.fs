@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
+\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -30,29 +30,29 @@ include ffl/config.fs
 [UNDEFINED] scn.version [IF]
 
 
-include ffl/stc.fs
+include ffl/snn.fs
 
 
 ( scn = Single Linked Cell Node )
 ( The scn module implements the node in the scl-list.)
 
 
-1 constant scn.version
+2 constant scn.version
 
 
 ( Node structure )
 
 struct: scn%       ( - n = Get the required space for a scn structure )
-  cell: scn>cell
-  cell: scn>next
+  snn% field: scn>snn        \ Extend the snn structure with ..
+       cell:  scn>cell       \ .. a cell
 ;struct 
 
 
 ( Node creation, initialisation and destruction )
 
 : scn-init     ( w w:scn - = Initialise the node with cell data )
-  tuck scn>cell     !
-       scn>next  nil!
+  dup  snn-init
+       scn>cell     !
 ;
 
 
@@ -66,12 +66,24 @@ struct: scn%       ( - n = Get the required space for a scn structure )
 ;
 
 
+( Members words )
+
+: scn-cell@    ( w:scn - w:data = Get the cell data from the node )
+  scn>cell @
+;
+
+
+: scn-cell!    ( w:data w:scn - = Set the cell data in the node )
+  scn>cell !
+;
+
+
+
 ( Inspection )
 
 : scn-dump     ( w:scn - = Dump the node )
-  ." scn:" dup . cr
-  ."  cell :" dup scn>cell  ?  cr
-  ."  next :"     scn>next  ?  cr
+  dup snn-dump
+  ."  cell :" scn>cell  ?  cr
 ;
 
 [THEN]
