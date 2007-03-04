@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-07-27 18:08:01 $ $Revision: 1.5 $
+\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -48,11 +48,12 @@ t{    l1 scl-empty?   ?false  }t
 
 t{ 3 3 l1 scl-insert   }t
 
-t{ 3  l1 scl-count   2 ?s   }t
+t{ 3  l1 scl-count   2 ?s }t
 t{ 4  l1 scl-count   ?0   }t
 
-t{ -1 l1 scl-find   ?0   }t
-t{ 5  l1 scl-find   -1 ?s   }t
+t{ -1 l1 scl-find   ?0    }t
+t{ 5  l1 scl-find   -1 ?s }t
+t{ 3  l1 scl-find    3 ?s }t
 
 t{ 2  l1 scl-has?   ?true   }t
 t{ -2 l1 scl-has?   ?false   }t
@@ -86,7 +87,6 @@ t{ 6  l2 scl-get   12 ?s }t
 
 t{    l2 scl-free   }t
 
-\ Iterator test
 
 t{ 1  l1 scl-append              }t
 t{ 2  l1 scl-append              }t
@@ -95,7 +95,16 @@ t{ 4  l1 scl-append              }t
 t{ 5  l1 scl-append              }t
 t{ 6  l1 scl-append              }t
 
+\ set test
+
+t{ 3  l1 scl-get 4 ?s            }t
+t{ 7 3 l1 scl-set                }t
+t{ 3  l1 scl-get 7 ?s            }t
+t{ 4 3 l1 scl-set                }t
+
 t{    l1 scl-empty?   ?false     }t
+
+\ Iterator test
 
 t{    l1 sci-create i1           }t
 
@@ -133,7 +142,17 @@ t{    i1 sci-next     ?true 2 ?s }t
 t{    i1 sci-next     ?true 1 ?s }t
 t{    i1 sci-next     ?false     }t
 
+t{    i1 sci-first    ?true 6 ?s }t
+t{ 2  i1 sci-move     ?true      }t
+t{    i1 sci-get      ?true 2 ?s }t
+t{ 7  i1 sci-insert-after        }t
+t{    i1 sci-get      ?true 2 ?s }t
+t{    i1 sci-next     ?true 7 ?s }t
+t{    i1 sci-next     ?true 1 ?s }t
+t{    i1 sci-next     ?false     }t
+
 t{    l1 scl-delete-all          }t
+
 
 t{ 1  l1 scl-append              }t
 t{ 2  l1 scl-append              }t
@@ -175,14 +194,18 @@ t{ 9  l1 scl-insert-sorted       }t
 t{ 7  l1 scl-insert-sorted       }t
 t{ 7  l1 scl-insert-sorted       }t
 
-t{    i1 sci-first    ?true 9 ?s }t
-t{    i1 sci-next     ?true 7 ?s }t
-t{    i1 sci-next     ?true 7 ?s }t
-t{    i1 sci-next     ?true 5 ?s }t
-t{    i1 sci-next     ?true 1 ?s }t
-t{    i1 sci-next     ?false     }t
+t{  l1 sci-new constant sci2     }t
 
-t{    l1 scl-delete-all          }t
+t{  sci2 sci-first    ?true 9 ?s }t
+t{  sci2 sci-next     ?true 7 ?s }t
+t{  sci2 sci-next     ?true 7 ?s }t
+t{  sci2 sci-next     ?true 5 ?s }t
+t{  sci2 sci-next     ?true 1 ?s }t
+t{  sci2 sci-next     ?false     }t
+
+t{  sci2 sci-free                }t
+
+t{  l1 scl-delete-all            }t
 
 \ ==============================================================================
 

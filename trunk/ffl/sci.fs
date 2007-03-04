@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
+\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -30,10 +30,9 @@ include ffl/config.fs
 [UNDEFINED] sci.version [IF]
 
 
-include ffl/stc.fs
 include ffl/scl.fs
 include ffl/scn.fs
-
+include ffl/sni.fs
 
 ( sci = Single Linked Cell List Iterator )
 ( The sci module implements an iterator on the single linked cell list [scl]. )
@@ -44,17 +43,13 @@ include ffl/scn.fs
 
 ( Iterator structure )
 
-struct: sci%       ( - n = Get the required space for a sci data structure )
-  cell: sci>list
-  cell: sci>walk
-;struct 
+sni% constant sci%  ( - n = Get the required space for a sci data structure )
 
 
 ( Iterator creation, initialisation and destruction )
 
 : sci-init     ( w:scl w:sci - = Initialise the iterator with a scl list )
-  tuck sci>list     !
-       sci>walk  nil!
+  sni-init
 ;
 
 
@@ -70,28 +65,32 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 
 
 : sci-free     ( w:sci - = Free iterator from heap )
-  free throw
+  sni-free
+;
+
+
+( Private words )
+
+: sni+get      ( w:scn - w true | false = Get the cell data from the current record )
+  dup nil<> IF               \ if current <> nil then
+    scn-cell@ true           \   fetch cell
+  ELSE
+    drop false
+  THEN
 ;
 
 
 ( Member words )
 
 : sci-get      ( w:sci - w true | false = Get the cell data from the current record )
-  sci>walk @
-  dup nil<> IF               \ if current <> nil then
-    scn>cell @               \   fetch cell
-    true
-  ELSE
-    drop
-    false
-  THEN
+  sni-get sni+get
 ;
 
 
 : sci-set      ( w w:sci - = Set the cell data for the current record )
-  sci>walk @
+  sni-get
   dup nil<> IF
-    scn>cell !
+    scn-cell!
   ELSE
     exp-invalid-state throw
   THEN
@@ -101,27 +100,16 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 ( Iterator words )
 
 : sci-first    ( w:sci - w true | false = Move the iterator to the first record )
-  dup sci>list @             
-  scl>first @
-  over sci>walk !            \ walk = list->first
-  sci-get
+  sni-first sni+get
 ;
 
 
 : sci-next     ( w:sci - w true | false = Move the iterator to the next record )
-  dup sci>walk 
-  dup @
-  dup nil<> IF               \ if walk <> nil then
-    scn>next @               \   walk = walk->next
-    swap !
-  ELSE                       \ else
-    exp-invalid-state throw  \   exception
-  THEN
-  sci-get
+  sni-next sni+get
 ;
 
 
-: sci-move     ( w w:sci - f = Move the iterator to the <next?> record with the cell data )
+: sci-move     ( w w:sci - f = Move the iterator to the next record with the cell data )
   swap
   BEGIN
     over sci-next IF
@@ -131,39 +119,26 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
     THEN
   UNTIL
   drop
-  sci>walk @ nil<>
+  sni-get nil<>
 ;
 
 
 : sci-first?   ( w:sci - f = Check if the iterator is on the first record )
-  dup sci>list @
-  scl>first @
-  dup nil= IF
-    2drop
-    false
-  ELSE
-    swap sci>walk @ =
-  THEN
+  sni-first?
 ;
 
 
 : sci-last?    ( w:sci - f = Check if the iterator is on the last record )
-  dup sci>list @
-  scl>last @
-  dup nil= IF
-    2drop
-    false
-  ELSE
-    swap sci>walk @ =
-  THEN
+  sni-last?
 ;
 
 
-: sci-insert-after ( w w:sci - = Insert the cell data after the current record )
-  dup sci>list @
-  swap sci>walk @
+: sci-insert-after ( w:data w:sci - = Insert the cell data after the current record )
+  dup sni>snl @
+  swap sni-get
   dup nil<> IF
-    scl-add
+    2>r scn-new 2r>
+    swap snl-insert-after
   ELSE
     exp-invalid-state throw
   THEN
@@ -173,9 +148,7 @@ struct: sci%       ( - n = Get the required space for a sci data structure )
 ( Inspection )
 
 : sci-dump     ( w:sci - = Dump the iterator )
-  ." sci:" dup . cr
-  ."  list :" dup sci>list  ?  cr
-  ."  walk :"     sci>walk  ?  cr
+  sni-dump
 ;
 
 [THEN]
