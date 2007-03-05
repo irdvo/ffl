@@ -1,10 +1,11 @@
 0.5.0
+* nni: new module (n-Tree base iterator) (2007-03-05)
 * nnt: new module (n-Tree base module) (2007-03-04)
 * nnn: new module (n-Tree base node) (2007-03-04)
-* sci: use of sni
-* scl: use of snl
+* sci: extends sni
+* scl: extends snl
 * scn: new modules scn-cell! scn-cell@
-* scn: use of snn
+* scn: extends snn
 * sni: new module (Single linked base iterator) (2007-02-27)
 * snl: new module (Single linked base list) (2007-02-26)
 * snn: new module (Single linked base node) (2007-02-19)
