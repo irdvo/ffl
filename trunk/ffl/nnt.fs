@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.1 $
+\  $Date: 2007-03-11 07:56:07 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -107,11 +107,11 @@ struct: nnt%       ( - n = Get the required space for the nnt data structure )
 ;
 
 
-: nnt-execute?     ( ... xt w:nnt - ... f = Execute xt for every node in the tree until xt returns false )
+: nnt-execute?     ( ... xt w:nnt - ... f = Execute xt for every node in the tree until xt returns true )
   nnt-root@                 \ walk = first
-  true
+  false
   BEGIN
-    over nil<> over AND      \ while walk<>nil and flag = true do
+    over nil<> over 0= AND   \ while walk<>nil and flag = false do
   WHILE
     drop    
     2>r 
@@ -124,20 +124,23 @@ struct: nnt%       ( - n = Get the required space for the nnt data structure )
 ;
   
 
+( Private words )
+
+: nnt-emit-node  ( w:nnn - = Emit the tree node )
+  0 .r [char] ; emit
+;
+
+
 ( Inspection )
 
 : nnt-dump     ( w:nnt - = Dump the tree )
   ." nnt:" dup . cr
   ."  root  :" dup nnt>root ?  cr
   ."  length:" dup nnt>length ? cr
-  
-  nnt-root@ dup nil<> IF
-    nnn-dump cr
-  ELSE
-    drop
-  THEN
+  ."  nodes :" ['] nnt-emit-node swap nnt-execute cr
 ;
 
 [THEN]
 
 \ ==============================================================================
+ 
