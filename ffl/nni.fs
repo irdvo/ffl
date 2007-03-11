@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-05 06:08:11 $ $Revision: 1.1 $
+\  $Date: 2007-03-11 07:56:07 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -79,6 +79,13 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
+( Private words )
+
+: nni+throw     ( w:nnn - w:nnn = Raise exception if nnn is nil )
+  dup nil= exp-invalid-state AND throw
+;
+
+
 ( Tree iterator words )
 
 : nni-root?    ( w:nni - f = Check if the current node is the root node )
@@ -101,56 +108,83 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 : nni-parent   ( w:nni - w:nnn | nil = Move the iterator to the parent of the current node )
   nni>walk
   dup @
-  dup nil<> IF
-    nnn-parent@
-    dup rot !
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw
+  
+  nnn-parent@
+  dup rot !
 ;
 
 
 : nni-children   ( w:nni - n = Return the number of children of the current node )
   nni-get
-  dup nil<> IF
-    nnn>children
-    dnl-length@
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw 
+  
+  nnn>children dnl-length@
 ;
 
 
 : nni-children?  ( w:nni - f = Check if the current node has children )
   nni-get
-  dup nil<> IF
-    nnn>children
-    dnl-first@ 
-    nil<>
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw
+  
+  nnn>children dnl-first@ nil<>
 ;
 
 
-: nni-child    ( w:nni - w:nnn = Move the iterator to the first child of the current node )
-  nni>walk
-  dup @
-  dup nil<> IF
-    nnn>children
-    dnl-first@
-    dup rot !
-  ELSE
-    exp-invalid-state throw
-  THEN
+: nni-child    ( w:nni - w:nnn | nil = Move the iterator to the first child of the current node )
+  nni>walk dup @
+  
+  nni+throw
+  
+  nnn>children dnl-first@
+  dup rot !
 ;
 
 
-: nni-prepend-child  ( w:nnn w:nni - Prepend a child to the children of the current node, iterator is moved to the new child )
+: nni-prepend-child  ( w:nnn w:nni - = Prepend a child to the children of the current node, iterator is moved to the new child )
+  2dup nni>nnt @ nnt>root
+  dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nni nnn root^
+    !                                \   root       = nnn
+    dup nni>nnt @ nnt>length 0!      \   nnt.length = 0
+    nil                              \   parent     = nil
+  ELSE                               \ Else
+    drop
+    over nni-get                     \   If nni.walk <> nil Then
+      
+    nni+throw
+    
+    tuck                             \     Parent = walk
+    nnn>children dnl-prepend         \     Prepend nnn to nni.walk.children
+  THEN
+  rot tuck                           \ nnn.parent = parent
+  nnn-parent!
+  over nni>walk !                    \ nni.walk   = nnn
+  nni>nnt @ nnt>length 1+!           \ nnt.length++
 ;
 
 
 : nni-append-child  ( w:nnn w:nni - = Append a child to the children of the current node, iterator is moved to the new child )
+  2dup nni>nnt @ nnt>root
+  dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nni nnn root^
+    !                                \   root       = nnn
+    dup nni>nnt @ nnt>length 0!      \   nnt.length = 0
+    nil                              \   parent     = nil
+  ELSE                               \ Else
+    drop
+    over nni-get                     \   If nni.walk <> nil Then
+      
+    nni+throw
+      
+    tuck                             \     Parent = walk
+    nnn>children dnl-append          \     Append nnn to nni.walk.children
+  THEN
+  rot tuck                           \ nnn.parent = parent
+  nnn-parent!
+  over nni>walk !                    \ nni.walk   = nnn
+  nni>nnt @ nnt>length 1+!           \ nnt.length++
 ;
 
 
@@ -159,107 +193,156 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 : nni-first    ( w:nni - w:nnn = Move the iterator to the first sibling )
   nni>walk
   dup @
-  dup nil<> IF               \ If walk <> nil Then
-    nnn-parent@             
-    dup nil<> IF
-      nnn>children
-      dnl-first@             \  walk = walk.parent.children.first
-      dup rot !
-    ELSE
-      exp-invalid-state throw
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw
+    
+  nnn-parent@             
+    
+  nni+throw
+  
+  nnn>children dnl-first@          \  walk = walk.parent.children.first
+  dup rot !
 ;
 
 
 : nni-next     ( w:nni - w:nnn | nil = Move the iterator to the next sibling )
   nni>walk 
   dup @
-  dup nil<> IF               \ if walk <> nil then
-    nnn>dnn
-    dnn-next@                \   walk = walk.next
-    dup rot !
-  ELSE                       \ else
-    exp-invalid-state throw  \   exception
-  THEN
+  
+  nni+throw
+  
+  nnn>dnn dnn-next@                \   walk = walk.next
+  dup rot !
 ;
 
 
 : nni-prev     ( w:nni - w:nnn | nil = Move the iterator to the previous sibling )
   nni>walk 
   dup @
-  dup nil<> IF               \ if walk <> nil then
-    nnn>dnn
-    dnn-prev@                \   walk = walk.prev
-    dup rot !
-  ELSE                       \ else
-    exp-invalid-state throw  \   exception
-  THEN
+  
+  nni+throw
+  
+  nnn>dnn dnn-prev@                \   walk = walk.prev
+  dup rot !
 ;
 
 
 : nni-last     ( w:nni - w:nnn = Move the iterator to the last sibling )
   nni>walk
   dup @
-  dup nil<> IF               \ If walk <> nil Then
-    nnn-parent@             
-    dup nil<> IF
-      nnn>children
-      dnl-last@              \  walk = walk.parent.children.last
-      dup rot !
-    ELSE
-      exp-invalid-state throw
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw
+  
+  nnn-parent@
+  
+  nni+throw
+  
+  nnn>children dnl-last@           \  walk = walk.parent.children.last
+  dup rot !
 ;
 
 
 : nni-first?   ( w:nni - f = Check if the iterator is on the first sibling )
   nni-get dup
-  dup nil<> IF               \ If walk <> nil Then
-    nnn-parent@             
-    dup nil<> IF
-      nnn>children
-      dnl-first@             \  walk =?= walk.parent.children.last
-      =
-    ELSE
-      exp-invalid-state throw
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
+  
+  nni+throw
+  
+  nnn-parent@
+  
+  nni+throw
+
+  nnn>children dnl-first@          \  walk =?= walk.parent.children.first
+  =
 ;
 
 
 : nni-last?    ( w:nni - f = Check if the iterator is on the last sibling )
   nni-get dup
-  dup nil<> IF               \ If walk <> nil Then
-    nnn-parent@             
-    dup nil<> IF
-      nnn>children
-      dnl-last@              \  walk =?= walk.parent.children.last
-      =
-    ELSE
-      exp-invalid-state throw
-    THEN
+  
+  nni+throw
+  
+  nnn-parent@
+  
+  nni+throw
+  
+  nnn>children dnl-last@           \  walk =?= walk.parent.children.last
+  =
+;
+
+
+: nni-insert-before  ( w:nnn w:nni - = Insert a sibling before the current sibling in the tree)
+  tuck
+  nni-get 2dup
+  
+  nni+throw
+  
+  nnn-parent@              \ S: nni nnn walk nnn parent
+    
+  nni+throw
+  
+  tuck
+  swap nnn-parent!         \ nnn.parent = walk.parent
+  nnn>children             \ Insert before in the children list
+  dnl-insert-before        
+  nni>nnt @ nnt>length 1+! \ tree.length++
+;
+
+
+: nni-insert-after  ( w:nnn w:nni - = Insert a sibling after the current sibling in the tree)
+  tuck
+  nni-get 2dup
+  
+  nni+throw
+  
+  nnn-parent@              \ S: nni nnn walk nnn parent
+  
+  nni+throw
+  
+  tuck
+  swap nnn-parent!         \ nnn.parent = walk.parent
+  nnn>children             \ Insert after in the children list
+  dnl-insert-after       
+  nni>nnt @ nnt>length 1+! \ tree.length++
+;
+
+
+: nni-remove        ( w:nni - w:nnn = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node )
+  dup nni-get
+  \ Checks
+  nni+throw                              \ Error if iterator is not on a node
+  
+  dup nnn>children dnl-first@            \ Error if node has children
+  
+  nil<> exp-invalid-state AND throw
+  
+  tuck
+  
+  \ Next iterator S: nnn nni nnn
+  nnn>dnn
+  
+  dup dnn-next@ dup nil<> IF             \ If next <> nil Then
+    nip                                  \   walk = next
   ELSE
-    exp-invalid-state throw
+    drop dup dnn-prev@ dup nil<> IF      \ Else if prev <> nil Then
+      nip                                \   walk = next
+    ELSE                                 \ Else
+      2drop over                         \   walk = parent
+      nnn-parent@
+    THEN
   THEN
+  over nni>walk !
+  
+  \ Remove node from list S: nnn nni
+  over dup nnn-parent@ dup nil= IF       \ If parent = nil Then (root node)
+    2drop dup nni>nnt @ nnt>root nil!    \   Remove node by clearing root node
+  ELSE                                   \ Else
+    over nnn>parent nil!                 \   Parent = nil
+    nnn>children dnl-remove              \   Parent.children remove node
+  THEN
+  nni>nnt @ nnt>length 1-!               \ Tree.length--
 ;
 
-
-: nni-insert-before  ( w:nnn w:nni - = Insert the sibling before the current sibling )
-;
-
-
-: nni-insert-after  ( w:nnn w:nni - = Insert the sibling after the current sibling )
-;
-
-
+  
 ( Inspection )
 
 : nni-dump     ( w:nni - = Dump the iterator )
