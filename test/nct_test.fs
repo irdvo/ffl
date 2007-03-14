@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-14 06:28:17 $ $Revision: 1.1 $
+\  $Date: 2007-03-14 19:18:15 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -189,11 +189,40 @@ t{ nci1  nci-remove ?true 1 ?s   }t  \ Remove the root
 
 t{ nct1  nct-length@ 0 ?s        }t
 
+
 t{ nci1 nci-free }t
+
 
 \ Tree on the heap
 
 t{ nct-new value nct2  }t
+
+t{ nct2 nci-create nci2 }t
+
+: nct-build-tree
+  5 1 DO
+    I nci2 nci-append-child
+    
+    I dup 1 ?DO
+      dup nci2 nci-insert-before
+    LOOP
+    drop
+  LOOP
+;
+
+
+t{ nct-build-tree         }t
+
+t{ nct2 nct-length@ 10 ?s }t
+
+t{ nct2 nct-delete-all    }t
+
+t{ nct-build-tree         }t
+
+t{ 0 ' nct-test-sum nct2 nct-execute 30 ?s }t
+
+
+t{ nct2 nct-free          }t
 
 
 \ ==============================================================================
