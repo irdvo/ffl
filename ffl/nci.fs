@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-13 06:03:05 $ $Revision: 1.1 $
+\  $Date: 2007-03-14 06:27:42 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -68,7 +68,7 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
 ;
 
 
-( Member words )
+( Private words )
 
 : nni+get      ( w:ncn - w:data true | false = Get the cell data from the current node )
   dup nil<> IF
@@ -76,6 +76,13 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
   ELSE
     drop false
   THEN
+;
+
+
+( Member words )
+
+: nci-get      ( w:nci - w:data true | false = Get the cell data from the current node )
+  nni-get nni+get
 ;
 
 
@@ -100,6 +107,7 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
   nni-children
 ;
 
+
 : nci-children?  ( w:nci - f = Check if the current node has children )
   nni-children?
 ;
@@ -110,48 +118,13 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
 ;
 
 
-\ ToDo
-: nci-prepend-child  ( w:nnn w:nci - = Prepend a child to the children of the current node, iterator is moved to the new child )
-  2dup nci>nnt @ nnt>root
-  dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nci nnn root^
-    !                                \   root       = nnn
-    dup nci>nnt @ nnt>length 0!      \   nnt.length = 0
-    nil                              \   parent     = nil
-  ELSE                               \ Else
-    drop
-    over nci-get                     \   If nci.walk <> nil Then
-      
-    nci+throw
-    
-    tuck                             \     Parent = walk
-    nnn>children dnl-prepend         \     Prepend nnn to nci.walk.children
-  THEN
-  rot tuck                           \ nnn.parent = parent
-  nnn-parent!
-  over nci>walk !                    \ nci.walk   = nnn
-  nci>nnt @ nnt>length 1+!           \ nnt.length++
+: nci-prepend-child  ( w:data w:nci - = Prepend data as child to the children of the current node, iterator is moved to the new child )
+  >r ncn-new r> nni-prepend-child
 ;
 
-\ ToDo
-: nci-append-child  ( w:nnn w:nci - = Append a child to the children of the current node, iterator is moved to the new child )
-  2dup nci>nnt @ nnt>root
-  dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nci nnn root^
-    !                                \   root       = nnn
-    dup nci>nnt @ nnt>length 0!      \   nnt.length = 0
-    nil                              \   parent     = nil
-  ELSE                               \ Else
-    drop
-    over nci-get                     \   If nci.walk <> nil Then
-      
-    nci+throw
-      
-    tuck                             \     Parent = walk
-    nnn>children dnl-append          \     Append nnn to nci.walk.children
-  THEN
-  rot tuck                           \ nnn.parent = parent
-  nnn-parent!
-  over nci>walk !                    \ nci.walk   = nnn
-  nci>nnt @ nnt>length 1+!           \ nnt.length++
+
+: nci-append-child  ( w:data w:nci - = Append a child to the children of the current node, iterator is moved to the new child )
+  >r ncn-new r> nni-append-child
 ;
 
 
@@ -187,77 +160,18 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
 ;
 
 
-\ ToDo
 : nci-insert-before  ( w:nnn w:nci - = Insert a sibling before the current sibling in the tree)
-  tuck
-  nci-get 2dup
-  
-  nci+throw
-  
-  nnn-parent@              \ S: nci nnn walk nnn parent
-    
-  nci+throw
-  
-  tuck
-  swap nnn-parent!         \ nnn.parent = walk.parent
-  nnn>children             \ Insert before in the children list
-  dnl-insert-before        
-  nci>nnt @ nnt>length 1+! \ tree.length++
+  >r ncn-new r> nni-insert-before
 ;
 
-\ ToDo
+
 : nci-insert-after  ( w:nnn w:nci - = Insert a sibling after the current sibling in the tree)
-  tuck
-  nci-get 2dup
-  
-  nci+throw
-  
-  nnn-parent@              \ S: nci nnn walk nnn parent
-  
-  nci+throw
-  
-  tuck
-  swap nnn-parent!         \ nnn.parent = walk.parent
-  nnn>children             \ Insert after in the children list
-  dnl-insert-after       
-  nci>nnt @ nnt>length 1+! \ tree.length++
+  >r ncn-new r> nni-insert-after
 ;
 
-\ ToDo
-: nci-remove        ( w:nci - w:nnn = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node )
-  dup nci-get
-  \ Checks
-  nci+throw                              \ Error if iterator is not on a node
-  
-  dup nnn>children dnl-first@            \ Error if node has children
-  
-  nil<> exp-invalid-state AND throw
-  
-  tuck
-  
-  \ Next iterator S: nnn nci nnn
-  nnn>dnn
-  
-  dup dnn-next@ dup nil<> IF             \ If next <> nil Then
-    nip                                  \   walk = next
-  ELSE
-    drop dup dnn-prev@ dup nil<> IF      \ Else if prev <> nil Then
-      nip                                \   walk = next
-    ELSE                                 \ Else
-      2drop over                         \   walk = parent
-      nnn-parent@
-    THEN
-  THEN
-  over nci>walk !
-  
-  \ Remove node from list S: nnn nci
-  over dup nnn-parent@ dup nil= IF       \ If parent = nil Then (root node)
-    2drop dup nci>nnt @ nnt>root nil!    \   Remove node by clearing root node
-  ELSE                                   \ Else
-    over nnn>parent nil!                 \   Parent = nil
-    nnn>children dnl-remove              \   Parent.children remove node
-  THEN
-  nci>nnt @ nnt>length 1-!               \ Tree.length--
+
+: nci-remove        ( w:nci - w:data true | false = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node )
+  nni-remove nni+get
 ;
 
   

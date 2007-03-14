@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-13 06:03:05 $ $Revision: 1.1 $
+\  $Date: 2007-03-14 06:27:42 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -41,6 +41,18 @@ include ffl/ncn.fs
 
 
 1 constant nct.version
+
+
+( Pivate words )
+
+: nct-delete-children ( w:dnl - = Delete all nodes [children] in the list )
+  BEGIN
+    dup dnl-pop dup nil<>
+  WHILE
+    ncn-free
+  REPEAT
+  2drop
+;
 
 
 ( Tree structure )
@@ -65,9 +77,39 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 ;
 
 
-\ ToDo: delete all nodes ??
+: nct-delete-all  ( w:nct - = Delete all the nodes in the tree )
+  dup nnt-root@                    \ walk = nct.root
+  BEGIN
+    dup nil<>                  \ While walk <> nil Doe
+  WHILE
+    dup nnn>children           \   If node has children Then
+    dnl-first@ dup nil<> IF
+      nip                      \     Move walk to first child
+    ELSE                       \   Else
+      drop
+      dup nnn>dnn 
+      dnn-next@ dup nil<> IF   \     If node has sibling Then
+        nip                    \       Move walk to next sibling
+      ELSE                     \     Else
+        drop
+        dup nnn-parent@ dup nil= IF \  If parent = nil Then (root node)
+          swap ncn-free        \         Free root node
+        ELSE                   \       Else
+          nip dup nnn>children \         Free all children of the parent node
+          nct-delete-children
+        THEN
+      THEN
+    THEN
+  REPEAT
+  drop
+  dup nnt>root nil!
+      nnt>length 0!
+;
+
 
 : nct-free     ( w:nct - = Free the tree from the heap )
+  dup nct-delete-all
+  
   free  throw
 ;
 
@@ -81,6 +123,25 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 
 : nct-empty?   ( w:nct - f = Check for empty tree )
   nnt-empty?
+;
+
+
+( Private words )
+
+: nct+emit-node  ( w:data - = Emit the tree node )
+  0 .r [char] ; emit
+;
+
+
+: nct+equal?     ( w:data w:data - w:data f = Check if data is equal to the node data )
+  over =
+;
+
+
+: nct+count      ( w:count w:data w:data - w:count w:data = Count if data is equal to the node data )
+  over = IF
+    swap 1+ swap
+  THEN
 ;
 
 
@@ -119,10 +180,14 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 ;
   
 
-( Private words )
+: nct-count      ( w:data w:nct - n = Count the occurences of the cell data in the tree )
+  0 -rot
+  ['] nct+count  swap nct-execute drop
+;
 
-: nct-emit-node  ( w:data - = Emit the tree node )
-  0 .r [char] ; emit
+
+: nct-has?       ( w:data w:nct - f = Check if the cell data is present in the tree )
+  ['] nct+equal? swap nct-execute? nip
 ;
 
 
@@ -131,7 +196,7 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 : nct-dump     ( w:nct - = Dump the tree )
   dup nnt-dump
   ." nct:" dup . cr
-  ."  nodes :" ['] nct-emit-node swap nct-execute cr
+  ."  nodes :" ['] nct+emit-node swap nct-execute cr
 ;
 
 [THEN]
