@@ -100,11 +100,10 @@ Index of used prefices
 5 htm - HTML module
 6 rgx - Regex module
 5 sh2 - SHA2 module
-5 xml - XML module
+5 xml - XML module / SAX module
 5 dom - XML-DOM module
       - css module
       - url module
-      - SAX module
 ----- - ------------------------------------------------
       - Graphics
 ----- - ------------------------------------------------
@@ -116,6 +115,7 @@ A     - Font ??
       - Compound
 ----- - ------------------------------------------------
 6 arg - Argument parser
+  gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------

@@ -2,7 +2,7 @@
 \
 \                  config - the config in the ffl
 \
-\            Copyright (C) 2005-2007  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,16 +20,16 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-04-01 04:40:12 $ $Revision: 1.10 $
+\  $Date: 2007-04-01 04:40:12 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 \
-\ This file is for bigforth.
+\ This file is the config file for minForth
 \
 \ ==============================================================================
 
 
-s" ffl.version" forth-wordlist search-wordlist 0= [IF]
+[DEFINED] ffl.version 0= [IF]
 
 
 ( config = Forth system specific words )
@@ -37,14 +37,6 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 
 
 000500 constant ffl.version
-
-
-
-( Extra includes )
-
-import float
-
-float also
 
 
 ( Private words )
@@ -61,7 +53,7 @@ create sys.eol     ( - c-addr = Counted string for the end of line for the curre
 8                           constant sys.bits-in-byte   ( - n = Number of bits in a byte )
 
 sys.bits-in-byte 1 chars *  constant sys.bits-in-char   ( - n = Number of bits in a char )
-  
+   
 sys.bits-in-byte cell *     constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
 sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigendian hardware )
@@ -69,39 +61,27 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 ( Extension words )
 
-: [DEFINED] 
-  bl word find   nip 
-; immediate
-
-
-: [UNDEFINED] 
-  bl word find   nip 0= 
+: [UNDEFINED]
+  get-word "find IF drop false ELSE true THEN  ( " )
 ; immediate
 
 
 : ms@                                                    ( - u = Fetch milliseconds timer )
-  utime 1 1000 m*/ drop 
+  msecs 
 ;
 
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
 
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
+
+: rdrop            ( - ) 
+  r> r> drop >r
 ;
-
-
-: ms@              ( - u = Fetch milliseconds timer )
-  msecs
-;
-
-
-s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milliseconds timer )
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
-  sys.bits-in-cell swap - rshift r>
+  [ cell 8 * ] literal swap - rshift r>
   or
 ;
 
@@ -113,6 +93,11 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 
 : du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
   d<>
+;
+
+
+: u<=              ( u u - f = Compare for smaller equal )
+  u> 0=
 ;
 
 
@@ -157,21 +142,8 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 ;
 
 
-: u<>
-  <>
-;
-
-
 : @!               ( w a - w = First fetch the contents and then store the new value )
   dup @ -rot !
-;
-
-
-: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
 ;
 
 
@@ -184,7 +156,37 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 ;
 
 
-[DEFINED] floats [IF]
+: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+  2dup = IF 
+    2drop 0 EXIT 
+  THEN
+  < 2* 1+
+;
+
+
+: toupper          ( c - c = Convert the character to upper case )
+  dup [char] a >= over [char] z <= AND IF
+    [ char a char A - ] literal -
+  THEN
+;
+
+
+: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
+  rot swap 2swap 2over
+  min 0 ?DO
+    over c@ toupper over c@ toupper - sgn ?dup IF
+      >r 2drop 2drop r>
+      unloop 
+      exit
+    THEN
+    1 chars + swap 1 chars + swap
+  LOOP
+  2drop
+  - sgn
+;
+
+
+1 floats constant float ( - n = Size of one float )
 
 ( Float extension constants )
 
@@ -195,21 +197,56 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
 
 
+( Private float variable )
+
+fvariable float<>cells
+
 ( Float extension words )
+
+: f-rot            ( r1 r2 r3 - r3 r1 r2 = Rotate counter clockwise three floats )
+  frot frot
+;
+
 
 : f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 
-
-: ftuck            ( r1 r2 - r2 r1 r2 = Swap and over )
+: ftuck            ( r1 r2 - r2 r1 r2 = Tuck two floats )
   fswap fover
 ;
 
-[THEN]
+: f=               ( r1 r2 - f = Compare two floats )
+  f- fabs 1e-99 f<
+;
+
+cell 4 = float 8 = AND [IF]
+
+: f>r              ( r - = Put float to return stack )
+  r>
+  float<>cells f!
+  float<>cells @ >r
+  float<>cells cell+ @ >r
+  >r
+;
+
+: fr>              ( - r = Get float from return stack )
+  r>
+  r> float<>cells cell+ !
+  r> float<>cells !
+     float<>cells f@
+  >r
+;
+
+: fr@              ( - r = Fetch float of return stack )
+  1 rpick float<>cells cell+ !
+  2 rpick float<>cells !
+          float<>cells f@
+;
 
 
-( Exceptions )
+
+( Public Exceptions )
 
 variable exp-next  -2050 exp-next !
 
@@ -225,8 +262,6 @@ s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid
 s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
 s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
 
-[ELSE]
-  drop
 [THEN]
 
 \ ==============================================================================

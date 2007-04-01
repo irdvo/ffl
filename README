@@ -39,6 +39,9 @@ copied to:
 (with <drive> the drive where Win32 is installed, normally this is 'C', or 
 in a directory that is in the search path of Win32Forth.)
 
+In case of minForth the 'ffl' directory (and its contents) should be 
+copied to your forth working directory.
+
 
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.
@@ -60,6 +63,8 @@ For pfe the config.fs and make.fs files should be copied from the
 For Win32Forth the config.fs and make.fs files should be copied from the
 'engines/Win32Forth' directory to the 'ffl' directory.
 
+For minForth the config.fs and make.fs files should be copied from the
+'engines/minForth' directory to the 'ffl' directory.
 
 The next step is editing the config.fs file for system settings.
 
@@ -72,7 +77,7 @@ This word defines the ascii end of line as a counted string. For unix this
 is a linefeed, for dos systems it is carriage return and linefeed. You should 
 change the 'sys.eol' word if the default is not correct for you. For gforth, 
 bigforth and pfe the default is unix end of line, for Win32Forth the default 
-is dos.
+is dos. For minForth the default is unix.
 
 
 sys.bits-in-byte
@@ -119,6 +124,17 @@ Use 'chdir' to move to the test directory.
 Remove from the 'ffl_test.fs' file the ending 'bye'.
 Use 'include ffl_test.fs' to run the tests.
 
+(or minForth)
+
+For running the tests the minForth engine is too small configured.
+The first step is to extend the engine by editing the kernel.mfc file from
+minForth. Change in this file the NAMES to 512000, the HEAP to 640000 and
+the LIMIT to 1000000. Then rebuild the minForth engine.
+Step two is to copy this new engine (mf and mf.i) to a directory with the
+test sources. Also make sure that in this directory the ffl is installed
+in the 'ffl' directory.
+Step three is to start the minForth engine (mf) and enter 
+'include ffl_test.fs'.
 
 The program will tell you which modules are tested and if there were any
 errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'

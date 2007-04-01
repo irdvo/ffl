@@ -15,6 +15,7 @@ mkdir ${dest}/engines/bigforth
 mkdir ${dest}/engines/pfe
 mkdir ${dest}/engines/Win32Forth
 mkdir ${dest}/engines/fina
+mkdir ${dest}/engines/minForth
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp       ffl/*.fs   ${dest}/ffl
@@ -26,6 +27,7 @@ cp   engines/bigforth/*.fs    ${dest}/engines/bigforth
 cp   engines/pfe/*.fs         ${dest}/engines/pfe
 cp   engines/Win32Forth/*.fs  ${dest}/engines/Win32Forth
 cp   engines/fina/*.fs        ${dest}/engines/fina
+cp   engines/minForth/*.fs    ${dest}/engines/minForth
 
 tar cvzf ${package}-${version}.tar.gz ${dest} 
 
