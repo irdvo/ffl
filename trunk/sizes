@@ -28,5 +28,6 @@ dci.fs: 102428
 snl.fs: 106396
 sni.fs: 107396
 nn?.fs: 110988
+nc?.fs: 114260
 
 fina: CompileSize=80186 CompileTime=10714 msec TestTime=24450 msec (without floats)

@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\            ffl_test - the test-all source file in the ffl
+\               make - the 'make' source file for gforth
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
@@ -20,44 +20,25 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-04-01 04:40:12 $ $Revision: 1.25 $
+\  $Date: 2007-04-01 04:40:12 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
+.( Forth Foundation Library: ) cr
+msecs
 
-include ffl/tst.fs
+unused
 
-tst-reset-tests
+include ffl/ffl.fs
 
-\ the test sources
-include act_test.fs
-include bar_test.fs
-include bct_test.fs
-include car_test.fs
-include chr_test.fs
-include chs_test.fs
-include cpx_test.fs
-include crc_test.fs
-include dcl_test.fs
-include dnl_test.fs
-include dtm_test.fs
-include frc_test.fs
-include hct_test.fs
-include md5_test.fs
-include nct_test.fs
-include nnt_test.fs
-include rng_test.fs
-include scl_test.fs
-include snl_test.fs
-include sh1_test.fs
-include str_test.fs
-include tis_test.fs
-include tmr_test.fs
-include tos_test.fs
+unused -
 
-.( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests took ) . .( ms.) cr
+
+.( Compilation Size: ) . .( bytes) cr
   
-bye
+msecs swap -
+
+.( Compilation Time: ) . .( msec) cr
 
 \ ==============================================================================
 
