@@ -59,6 +59,8 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
+5 nfe - non-deterministic finite automate expression
+5 nfs - non-deterministic finite automata state
 2 tis - Text Input Stream
 2 tos - Text Output Stream
 ----- - ------------------------------------------------

@@ -1,4 +1,6 @@
 0.5.0
+* nfe: new module (Non-deterministic finite automate state) (2007-05-08)
+* nfs: new module (Non-deterministic finite automata state) (2007-05-07)
 * minForth config.fs/make/fs added
 * nci: new module (n-Tree cell iterator) (2007-03-13)
 * nct: new module (n-Tree cell tree) (2007-03-13)
