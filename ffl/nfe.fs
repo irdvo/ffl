@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-08 19:49:57 $ $Revision: 1.1 $
+\  $Date: 2007-05-09 05:38:00 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,9 +35,10 @@ include ffl/nfs.fs
 ( nfe = Non-deterministic finite automata expression )
 ( The nfe module implements an expression in a non-deterministic finite      )
 ( automata. An expression is a concatenation, repeation or alteration of     )
-( non-deterministic finite automato states [nfs]. An expression consists of  )
-( two cells on the stack: the start of the list with non resolved out states )
-( and the start of the list of states.                                       )
+( non-deterministic finite automato states [nfs]. An not yet fully built     )
+( expression keeps two cells on the stack: the start of the list with non    )
+( resolved out states and the start of the list of states. A fully built     )
+( expression keeps only one cell on the stack: the start of the states.      )
 
 
 1 constant nfe.version
@@ -53,6 +54,21 @@ include ffl/nfs.fs
     2swap nfs-out1!       \   out.out1 = nfs
   REPEAT
   2drop
+;
+
+
+( Expression destruction word )
+
+: nfe+free  ( w:start - = Free all states in an expression [recursive] )
+  dup nil<> IF
+    dup nfs-visit@ -1 <> IF     \ If start <> nil and not yet visited Then
+      -1 over nfs-visit!        \   Set visited
+      dup nfs-out1@ recurse     \   Recurse the out1 branch
+      dup nfs-out2@ recurse     \   Recurse the out2 branch
+      dup nfs-free              \   Free the state
+    THEN
+  THEN
+  drop
 ;
 
 
@@ -127,13 +143,21 @@ include ffl/nfs.fs
 ;
 
 
-: nfe+free  ( w:start - = Free all states in an expression )
-  \ ToDo
-;
+( Inspection )
 
-
-: nfe+dump  ( w:start - = Dump the expression )
-  \ ToDo
+: nfe+dump  ( n:visit w:start - = Dump the expression using an unique visit number [0>] [recursive] )
+  dup nil<> IF
+    2dup nfs-visit@ <> IF         \ If start <> nil and not yet visited Then
+      2dup nfs-visit!             \   Set visited
+      dup nfs-type@ dup .
+      nfs.char = IF
+        dup nfs-data@ emit space  \   Dump the state
+      THEN
+      2dup nfs-out1@ recurse      \   Recurse the out1 branch
+      2dup nfs-out2@ recurse      \   Recurse the out2 branch
+    THEN
+  THEN
+  2drop
 ;
 
 [THEN]
