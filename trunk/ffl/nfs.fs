@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-08 19:49:57 $ $Revision: 1.1 $
+\  $Date: 2007-05-09 05:38:00 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -47,6 +47,7 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
   cell: nfs>data
   cell: nfs>out1
   cell: nfs>out2
+  cell: nfs>visit
 ;struct
 
 
@@ -68,7 +69,8 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
   r@ nfs>type  !
   r@ nfs>data  !
   r@ nfs>out1  nil!
-  r> nfs>out2  nil!
+  r@ nfs>out2  nil!
+  r> nfs>visit 0!
 ;
 
 
@@ -114,14 +116,25 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 ;
 
 
+: nfs-visit!  ( n w:nfs - = Set the visit number [0>=] )
+  nfs>visit !
+;
+
+
+: nfs-visit@  ( w:nfs - n = Get the visit number )
+  nfs>visit @
+;
+
+
 ( Inspection )
 
 : nfs-dump     ( w:nfs - = Dump the state )
   ." nfs:" dup . cr
-  ."  type:" dup nfs>type  ?  cr
-  ."  data:" dup nfs>data  ? cr
-  ."  out1:" dup nfs>out1  ? cr
-  ."  out2:"     nfs>out2  ? cr
+  ."  type :" dup nfs>type  ?  cr
+  ."  data :" dup nfs>data  ? cr
+  ."  out1 :" dup nfs>out1  ? cr
+  ."  out2 :" dup nfs>out2  ? cr
+  ."  visit:"     nfs>visit ? cr 
 ;
 
 [THEN]
