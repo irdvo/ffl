@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-09 05:38:00 $ $Revision: 1.2 $
+\  $Date: 2007-05-10 19:35:18 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -112,7 +112,7 @@ include ffl/nfs.fs
 ;
 
 
-: nfe+one-or-zero  ( w:outs w:start - w:outs w:start = Repeat the expression one or zero [?] times )
+: nfe+zero-or-one  ( w:outs w:start - w:outs w:start = Repeat the expression one or zero [?] times )
   nil nfs.split nfs-new    \ new split state
   tuck nfs-out2!           \ split.out2 = start
   tuck nfs-out1!           \ split.out1 = outs
@@ -133,7 +133,7 @@ include ffl/nfs.fs
   nil nfs.split nfs-new   \ new split state
   r@ over nfs-out2!       \ split.out2 = start
   tuck swap nfe+resolve   \ resolve outs -> split
-  >r                      \ outs = split, start = start
+  r>                      \ outs = split, start = start
 ;
 
 
