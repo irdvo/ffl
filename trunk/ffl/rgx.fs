@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-10 19:35:18 $ $Revision: 1.1 $
+\  $Date: 2007-05-11 15:03:11 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,8 @@ include ffl/nfe.fs
 
 
 ( rgx = Regular expression )
-( The rgx module implements words for using regular expressions.   )
+( The rgx module implements words for compiling and matching regular         )
+( expressions. ToDo: syntax rules                                            )
 
 
 1 constant rgx.version
@@ -53,7 +54,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 
 ( Private scanner types )
 
-100 constant rgx.eos          ( - n = End of pattern reached )
+100 constant rgx.eos          ( - n = End of pattern )
 101 constant rgx.alternation  ( - n = Alternation [|] )
 102 constant rgx.zero-or-one  ( - n = Zero or one [?] )
 103 constant rgx.zero-or-more ( - n = Zero or more [*] )
@@ -88,7 +89,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ;
 
 
-( Member words )
+( Private member words )
 
 : rgx-visit@   ( w:rgx - n = Get the [unique] visit number )
   rgx>visit dup
@@ -136,33 +137,31 @@ nil value rgx.parse-alternation
 
 : rgx-parse-single   ( w:rgx - expr true | false = Parse a single token )
   >r
-  r@ rgx-scan-token
-  dup nfs.lparen = IF
-    2drop  r@ rgx-scan-next
-    rgx.parse-alternation execute IF
-      r@ rgx-scan-token
-      dup nfs.rparen = IF
-        2drop  r@ rgx-scan-next
-        nfe+paren
+  r@ rgx-scan-token                     \ Scan the current token
+  dup nfs.lparen = IF                   \ If token = ( Then
+    2drop  
+    r@ rgx-scan-next                    \   Move to next token
+    r@ rgx.parse-alternation execute IF \   If an alternation expression is parsed Then
+      r@ rgx-scan-token nip
+      nfs.rparen = IF                   \     If current token = ) Then
+        nfe+paren                       \      Paren the expression
+        r@ rgx-scan-next                \      Move to the next token
         true
-      ELSE
-        nfe+free
+      ELSE                              \     Else (error)
+        nip nfe+free                    \       Free the expression
         false
       THEN
-    ELSE
+    ELSE                                \   Else (error)
       false
     THEN
-  ELSE
-    dup nfs.char = IF
-      nfe+single true
-      r@ rgx-scan-next
-    ELSE
-      dup nfs.any = IF
-        nfe+single true
-        r@ rgx-scan-next
-      ELSE
-        2drop false
-      THEN
+  ELSE                                  \ Else
+    dup nfs.char = over nfs.any = OR IF \   If token = character or . Then
+      nfe+single                        \     Create single expression
+      r@ rgx-scan-next                  \     Move to the next token
+      true
+    ELSE                                \   Else (error)
+      2drop 
+      false
     THEN
   THEN
   rdrop
@@ -171,34 +170,28 @@ nil value rgx.parse-alternation
 
 : rgx-parse-repeat   ( w:rgx - expr true | false = Parse a repeat token )
   >r
-  r@ rgx-parse-single IF
-    BEGIN                          \ until
-      r@ rgx-scan-token
-      dup rgx.zero-or-one = IF
-        2drop
-        r@ rgx-scan-next
-        nfe+zero-or-one 
-        true
-      ELSE
-        dup rgx.zero-or-more = IF
-          2drop  
-          r@ rgx-scan-next
+  r@ rgx-parse-single IF          \ If a single expression is parsed Then
+    BEGIN
+      r@ rgx-scan-token nip       \   Scan the current token
+      CASE
+        rgx.zero-or-one OF        \   If the token is ? Then
+          nfe+zero-or-one         \     Change the expression 
+          r@ rgx-scan-next        \     Move to the next token
+          false                   \     Continu scanning
+          ENDOF
+        rgx.zero-or-more OF
           nfe+zero-or-more 
-          true
-        ELSE
-          dup rgx.one-or-more = IF
-            2drop
-            r@ rgx-scan-next
-            nfe+one-or-more
-            true
-          ELSE
-            2drop 
-            false
-          THEN
-        THEN
-      THEN
-    WHILE
-    REPEAT
+          r@ rgx-scan-next
+          false
+          ENDOF
+        rgx.one-or-more OF
+          nfe+one-or-more
+          r@ rgx-scan-next
+          false
+          ENDOF                   \ Else
+        true swap                 \   Done, no more repeat operators
+      ENDCASE
+    UNTIL
     true
   ELSE
     false
@@ -209,11 +202,11 @@ nil value rgx.parse-alternation
 
 : rgx-parse-concat   ( w:rgx - expr true | false = Parse a concatenation of repeat tokens )
   >r
-  r@ rgx-parse-repeat IF
+  r@ rgx-parse-repeat IF          \ If a repeat expression is parsed Then
     BEGIN
-      r@ rgx-parse-repeat
+      r@ rgx-parse-repeat         \   While a second repeat expression is parsed Do
     WHILE
-      nfe+concat
+      nfe+concat                  \     Concat the expressions
     REPEAT
     true
   ELSE
@@ -225,20 +218,21 @@ nil value rgx.parse-alternation
 
 : rgx-parse-alternation   ( w:rgx - expr true | false = Parse an alternation of two expressions )
   >r
-  r@ rgx-parse-concat IF
-    true
-    BEGIN
-      dup r@ rgx-scan-token rgx.alternation = AND
+  r@ rgx-parse-concat IF          \ If a concatted expression is parsed Then
+    true 
+    BEGIN                         \   While ok and current token = | Do
+      dup r@ rgx-scan-token nip rgx.alternation = AND
     WHILE
       drop 
-      r@ rgx-scan-next
-      r@ rgx-parse-concat IF
-        nfe+alternation
-      ELSE
-        0=
+      r@ rgx-scan-next            \     Move to next token
+      r@ rgx-parse-concat IF      \     If a concatted expression is parsed Then
+        nfe+alternation           \       Put the two expressions as alternation
+        true
+      ELSE                        \     Else (error)
+        nip nfe+free              \       Free the expression
+        false
       THEN
     REPEAT
-    \ ToDo: false = nfe-free
   ELSE
     false
   THEN
@@ -250,13 +244,29 @@ nil value rgx.parse-alternation
 
 ( Regular expression words )
 
-: rgx-compile  ( c-addr u w:rgx - true | n false = Compile a pattern as regular expression )
+: rgx-compile  ( c-addr u w:rgx - true | n:index false = Compile a pattern as regular expression)
   >r
   nil r@ rgx>expression @! nfe+free   \ Free the current expression
   
   r@ rgx-scan-init                    \ Initialise the scanner
   
-  \ ToDo
+  r@ rgx-parse-alternation IF         \ If an expression is parsed Then
+    r@ rgx-scan-token rgx.eos = IF    \   If the expression ends Then
+      drop
+      nfe+paren                       \     Paren the full expression
+      nfe+close                       \     Add the match state
+      
+      r@ rgx>expression !             \     Save it for matching
+      true
+    ELSE                              \   Else
+      nip nfe+free                    \     Cleanup, error
+      r@ rgx>index @
+      false
+    THEN
+  ELSE                                \ Else
+    r@ rgx>index @                    \   Error
+    false
+  THEN
   rdrop
 ;
 
