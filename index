@@ -25,8 +25,8 @@ Index of used prefices
 4 bct - Binary cell tree module
 4 bcn - Binary cell tree node
 4 bci - Binary cell tree iterator
-4 act - Avl cell tree module
-4 acn - Avl cell tree node
+4 act - AVL cell tree module
+4 acn - AVL cell tree node
 4 dni - Double linked node list iterator
 4 dnl - Double linked node list
 4 dnn - Double linked list node
@@ -61,6 +61,7 @@ Index of used prefices
 ----- - ------------------------------------------------
 5 nfe - non-deterministic finite automate expression
 5 nfs - non-deterministic finite automata state
+5 rgx - Regular expression module
 2 tis - Text Input Stream
 2 tos - Text Output Stream
 ----- - ------------------------------------------------
@@ -94,16 +95,16 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------
+  cfg - Configuration file
 7 bzf - BZip2 file module
 7 bzp - BZip2 module
 8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
-5 htm - HTML module
-6 rgx - Regex module
+6 htm - HTML module
 5 sh2 - SHA2 module
-5 xml - XML module / SAX module
-5 dom - XML-DOM module
+6 xml - XML module / SAX module
+6 dom - XML-DOM module
       - css module
       - url module
 ----- - ------------------------------------------------
@@ -125,6 +126,7 @@ A     - Font ??
         File editor
         Line editor
         Info viewer
+        Man viewer
 ----- - ------------------------------------------------        
 
 ToDo
@@ -134,5 +136,9 @@ stc: union,enum
 frc: lcm
 cfg: newline
 cfg: sys.* -> *
+rgx: ^ en $
+rgx: []
+rgx: [[]]
+rgx: \+
 
 fce: config.fs/make.fs naar cvs
