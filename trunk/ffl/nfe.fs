@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-10 19:35:18 $ $Revision: 1.3 $
+\  $Date: 2007-05-13 05:30:41 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,9 +36,9 @@ include ffl/nfs.fs
 ( The nfe module implements an expression in a non-deterministic finite      )
 ( automata. An expression is a concatenation, repeation or alteration of     )
 ( non-deterministic finite automato states [nfs]. An not yet fully built     )
-( expression keeps two cells on the stack: the start of the list with non    )
-( resolved out states and the start of the list of states. A fully built     )
-( expression keeps only one cell on the stack: the start of the states.      )
+( expression keeps two cells on the stack: the list with non resolved out    )
+( states and the list of [nfs] states. A fully built expression keeps only   )
+( one cell on the stack: the list of [nfs] states.                           )
 
 
 1 constant nfe.version
