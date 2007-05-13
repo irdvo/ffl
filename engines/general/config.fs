@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-14 07:10:34 $ $Revision: 1.4 $
+\  $Date: 2007-05-13 05:30:41 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -180,6 +180,25 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
     drop
   THEN
 ;
+
+
+: defer            ( C: "name" - = Create a deferred word )
+  create 
+    ['] abort ,
+  does>
+    @ execute
+;
+
+
+: is               ( C: "name" I: xt "name" - = Set the deferred "name" to execute xt )
+  state @ IF
+    postpone [']
+    postpone >body
+    postpone !
+  ELSE
+    ' >body !
+  THEN
+; immediate
 
 
 ( Public Exceptions )

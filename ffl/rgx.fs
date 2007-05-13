@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-11 15:03:11 $ $Revision: 1.2 $
+\  $Date: 2007-05-13 05:30:41 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -133,7 +133,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 
 ( Private parser words )
 
-nil value rgx.parse-alternation
+defer rgx.parse-alternation
 
 : rgx-parse-single   ( w:rgx - expr true | false = Parse a single token )
   >r
@@ -239,7 +239,7 @@ nil value rgx.parse-alternation
   rdrop
 ;
 
-' rgx-parse-alternation to rgx.parse-alternation
+' rgx-parse-alternation is rgx.parse-alternation
 
 
 ( Regular expression words )
