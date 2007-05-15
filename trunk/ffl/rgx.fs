@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-13 05:30:41 $ $Revision: 1.3 $
+\  $Date: 2007-05-15 14:18:40 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -44,11 +44,10 @@ include ffl/nfe.fs
 ( Regular expression structure )
 
 struct: rgx%       ( - n = Get the required space for the rgx data structure )
-  cell: rgx>pattern      \ the pattern during scanning
-  cell: rgx>length       \ the length of the pattern during scanning
-  cell: rgx>index        \ the index in the pattern during scanning
-  cell: rgx>expression   \ the non-deterministic finite automata expression after parsing
-  cell: rgx>visit        \ the [unique] visit number
+  nfe% field: rgx>nfe       \ the the regular expression is a non-deterministic finite automate expression
+       cell:  rgx>pattern   \ the pattern during scanning
+       cell:  rgx>length    \ the length of the pattern during scanning
+       cell:  rgx>index     \ the index in the pattern during scanning
 ;struct
 
 
@@ -64,11 +63,10 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ( Regular expression creation, initialisation and destruction )
 
 : rgx-init     ( w:rgx - = Initialise the regular expression )
+  dup nfe-init              \ Initialise the base expression
   dup rgx>pattern    nil!
   dup rgx>length       0!
-  dup rgx>index        0!
-  dup rgx>expression nil!
-      rgx>visit        0!
+      rgx>index        0!
 ;
 
 
@@ -83,17 +81,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 
 
 : rgx-free   ( w:rgx - = Free the regular expression from the heap )
-  dup rgx>expression @ nfe+free   \ free the stored expression
-  
-  free  throw
-;
-
-
-( Private member words )
-
-: rgx-visit@   ( w:rgx - n = Get the [unique] visit number )
-  rgx>visit dup
-  1+! @
+  nfe-free
 ;
 
 
@@ -141,10 +129,10 @@ defer rgx.parse-alternation
   dup nfs.lparen = IF                   \ If token = ( Then
     2drop  
     r@ rgx-scan-next                    \   Move to next token
-    r@ rgx.parse-alternation execute IF \   If an alternation expression is parsed Then
+    r@ rgx.parse-alternation IF         \   If an alternation expression is parsed Then
       r@ rgx-scan-token nip
       nfs.rparen = IF                   \     If current token = ) Then
-        nfe+paren                       \      Paren the expression
+        r@ nfe-paren                    \      Paren the expression
         r@ rgx-scan-next                \      Move to the next token
         true
       ELSE                              \     Else (error)
@@ -156,7 +144,7 @@ defer rgx.parse-alternation
     THEN
   ELSE                                  \ Else
     dup nfs.char = over nfs.any = OR IF \   If token = character or . Then
-      nfe+single                        \     Create single expression
+      r@ nfe-single                     \     Create single expression
       r@ rgx-scan-next                  \     Move to the next token
       true
     ELSE                                \   Else (error)
@@ -175,17 +163,17 @@ defer rgx.parse-alternation
       r@ rgx-scan-token nip       \   Scan the current token
       CASE
         rgx.zero-or-one OF        \   If the token is ? Then
-          nfe+zero-or-one         \     Change the expression 
+          r@ nfe-zero-or-one      \     Change the expression 
           r@ rgx-scan-next        \     Move to the next token
           false                   \     Continu scanning
           ENDOF
         rgx.zero-or-more OF
-          nfe+zero-or-more 
+          r@ nfe-zero-or-more 
           r@ rgx-scan-next
           false
           ENDOF
         rgx.one-or-more OF
-          nfe+one-or-more
+          r@ nfe-one-or-more
           r@ rgx-scan-next
           false
           ENDOF                   \ Else
@@ -206,7 +194,7 @@ defer rgx.parse-alternation
     BEGIN
       r@ rgx-parse-repeat         \   While a second repeat expression is parsed Do
     WHILE
-      nfe+concat                  \     Concat the expressions
+      r@ nfe-concat               \     Concat the expressions
     REPEAT
     true
   ELSE
@@ -226,7 +214,7 @@ defer rgx.parse-alternation
       drop 
       r@ rgx-scan-next            \     Move to next token
       r@ rgx-parse-concat IF      \     If a concatted expression is parsed Then
-        nfe+alternation           \       Put the two expressions as alternation
+        r@ nfe-alternation        \       Put the two expressions as alternation
         true
       ELSE                        \     Else (error)
         nip nfe+free              \       Free the expression
@@ -246,17 +234,14 @@ defer rgx.parse-alternation
 
 : rgx-compile  ( c-addr u w:rgx - true | n:index false = Compile a pattern as regular expression)
   >r
-  nil r@ rgx>expression @! nfe+free   \ Free the current expression
+  r@ nfe-clear                        \ Free the current expression
   
   r@ rgx-scan-init                    \ Initialise the scanner
   
   r@ rgx-parse-alternation IF         \ If an expression is parsed Then
     r@ rgx-scan-token rgx.eos = IF    \   If the expression ends Then
       drop
-      nfe+paren                       \     Paren the full expression
-      nfe+close                       \     Add the match state
-      
-      r@ rgx>expression !             \     Save it for matching
+      r@ nfe-close                    \     Close the expression: match state, paren and storing
       true
     ELSE                              \   Else
       nip nfe+free                    \     Cleanup, error
@@ -281,14 +266,30 @@ defer rgx.parse-alternation
 ;
 
 
+: rgx-search ( c-addr u w:rgx - n:index = Search in string for first match of regular expression )
+;
+
+
+: rgx-isearch ( c-addr u w:rgx - n:index = Search case insensitive in string for first match of regular expression )
+;
+
+
+: rgx-replace ( c-addr2 u2 c-addr u w:rgx - n:index = Replace in string the first match of regular expression with string2 )
+;
+
+
+: rgx-ireplace ( c-addr2 u2 c-addr u w:rgx - n:index = Replace in string the first case insensitive match of regular expression with string2 )
+;
+
+
 ( Inspection )
 
 : rgx-dump     ( w:rgx - = Dump the regular expression )
+  dup nfe-dump
   ." rgx:" dup . cr
   ."  pattern   :" dup rgx>pattern ? cr
   ."  length    :" dup rgx>length  ? cr
-  ."  index     :" dup rgx>index   ? cr
-  ."  expression:" dup rgx-visit@ swap rgx>expression @ nfe+dump
+  ."  index     :"     rgx>index   ? cr
 ;
 
 [THEN]

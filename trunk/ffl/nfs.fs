@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-09 05:38:00 $ $Revision: 1.2 $
+\  $Date: 2007-05-15 14:18:40 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -43,11 +43,12 @@ include ffl/stc.fs
 ( State structure )
 
 struct: nfs%       ( - n = Get the required space for the nfs data structure )
-  cell: nfs>type
-  cell: nfs>data
-  cell: nfs>out1
-  cell: nfs>out2
-  cell: nfs>visit
+  cell: nfs>id       \ the state id
+  cell: nfs>type     \ the state type
+  cell: nfs>data     \ the state optional data
+  cell: nfs>out1     \ the next state
+  cell: nfs>out2     \ the split state
+  cell: nfs>visit    \ the visit number
 ;struct
 
 
@@ -64,8 +65,9 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 
 ( State creation, initialisation and destruction )
 
-: nfs-init     ( w:data n:type w:nfs - = Initialise the state )
+: nfs-init     ( w:data n:type n:id w:nfs - = Initialise the state )
   >r
+  r@ nfs>id    !
   r@ nfs>type  !
   r@ nfs>data  !
   r@ nfs>out1  nil!
@@ -74,7 +76,7 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 ;
 
 
-: nfs-new      ( w:data n:type - w:nfs = Create a new state on the heap )
+: nfs-new      ( w:data n:type n:id - w:nfs = Create a new state on the heap )
   nfs% allocate  throw  >r r@ nfs-init r>
 ;
 
@@ -85,6 +87,11 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 
 
 ( Member words )
+
+: nfs-id@    ( w:nfs - n:id = Get the id of the state )
+  nfs>id @
+;
+
 
 : nfs-type@  ( w:nfs - n:type = Get the type of the state )
   nfs>type @
@@ -130,7 +137,8 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 
 : nfs-dump     ( w:nfs - = Dump the state )
   ." nfs:" dup . cr
-  ."  type :" dup nfs>type  ?  cr
+  ."  id   :" dup nfs>id    ? cr
+  ."  type :" dup nfs>type  ? cr
   ."  data :" dup nfs>data  ? cr
   ."  out1 :" dup nfs>out1  ? cr
   ."  out2 :" dup nfs>out2  ? cr
