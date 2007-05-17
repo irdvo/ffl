@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-15 14:18:40 $ $Revision: 1.5 $
+\  $Date: 2007-05-17 19:32:40 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -228,7 +228,13 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 ( Private inspection words )
 
-: nfe+dump ( n:visit w:start - = Dump the expression [recursive] )
+: nfe+dump-out   ( w:nfs - = Dump the first out pointer )
+  ." ->"        
+  nfs-out1@ nfs-id@ 0 .r 
+;
+
+
+: nfe+dump   ( n:visit w:start - = Dump the expression [recursive] )
   dup nil<> IF
     2dup nfs-visit@ <> IF         \ If start <> nil and not yet visited Then
       2dup nfs-visit!             \   Set visited
@@ -238,33 +244,29 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
       CASE
         nfs.char   OF 
           dup nfs-data@ emit 
-          ." ->"        
-          dup nfs-out1@ nfs-id@ 0 .r 
+          dup nfe+dump-out
           ENDOF
         nfs.any    OF 
-          ." .->"
-          dup nfs-out1@ nfs-id@ 0 .r 
+          [char] . emit
+          dup nfe+dump-out
           ENDOF
         nfs.class  OF 
-          ." [->"
-          dup nfs-out1@ nfs-id@ 0 .r 
+          [char] [ emit
+          dup nfe+dump-out 
           ENDOF
         nfs.lparen OF 
           [char] ( emit 
           dup nfs-data@ 0 .r 
-          ." ->"        
-          dup nfs-out1@ nfs-id@ 0 .r 
+          dup nfe+dump-out 
           ENDOF
         nfs.rparen OF 
           [char] ) emit 
           dup nfs-data@ 0 .r 
-          ." ->"        
-          dup nfs-out1@ nfs-id@ 0 .r 
+          dup nfe+dump-out
           ENDOF
         nfs.split  OF 
           [char] ? emit
-          ." ->"        
-          dup nfs-out1@ nfs-id@ 0 .r 
+          dup nfe+dump-out
           [char] , emit
           dup nfs-out2@ nfs-id@ 0 .r 
           ENDOF
