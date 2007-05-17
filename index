@@ -61,6 +61,7 @@ Index of used prefices
 ----- - ------------------------------------------------
 5 nfe - non-deterministic finite automate expression
 5 nfs - non-deterministic finite automata state
+5 nft - non-deterministic finite automata thread
 5 rgx - Regular expression module
 2 tis - Text Input Stream
 2 tos - Text Output Stream
