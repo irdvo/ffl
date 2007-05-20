@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-17 19:32:40 $ $Revision: 1.6 $
+\  $Date: 2007-05-20 06:31:22 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -50,6 +50,13 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   cell: nfe>states     \ the number of states in the expression
   cell: nfe>level      \ the paren level in the expression
   cell: nfe>visit      \ the visit number
+  cell: nfe>string     \ the string the expression is matched against
+  cell: nfe>length     \ the length of the string
+  cell: nfe>index      \ the index in the string during matching
+  cell: nfe>current    \ the current thread
+  cell: nfe>next       \ the next thread
+  cell: nfe>thread1    \ the first thread
+  cell: nfe>thread2    \ the second thread
 ;struct
 
 
@@ -59,7 +66,14 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   dup nfe>expression nil!
   dup nfe>states       0!
   dup nfe>visit        0!
-      nfe>level        0!
+  dup nfe>level        0!
+  dup nfe>string     nil!
+  dup nfe>length       0!
+  dup nfe>index        0!
+  dup nfe>current    nil!
+  dup nfe>next       nil!
+  dup nfe>thread1    nil!
+      nfe>thread2    nil!
 ;
 
 
@@ -125,9 +139,13 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 ( Member words )
 
-: nfe-visit@   ( w:rgx - n = Get the [unique] visit number )
+: nfe-visit+@   ( w:nfe - n = Get the next visit number )
   nfe>visit dup
   1+! @
+;
+  
+: nfe-visit@   ( w:nfe - n = Get the current visit number )
+  nfe>visit @
 ;
 
 : nfe-expression@   ( w:nfe - w:list = Get the list of states in the expression or nil )
@@ -144,9 +162,106 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
+( Private matching thread words )
+
+\ Dynamic array of thread structures:
+\    offset length: 0
+\    offset states: cell
+\    offset state : cell + index * ( cell + parens * 2 * cells )
+\ Size: cell + states * ( cell + parens * 2 * cells )
+    
+: nfe-new-threads   ( w:nfe - w:threads = Create a new thread array on the heap )
+  dup  nfe-parens@ 2* 1+      \ thread size: parens * 2 + 1 ..
+  swap nfe-states@ * cells    \ * states cells ..
+  cell+                       \ + length
+  allocate throw
+  dup 0!                      \ length = 0
+;
+
+
+: nfe+free-threads  ( w:thr - = Free the thread array from the heap )
+  free throw
+;
+
+
+: nfe-start-threads   ( w:nfe - = Start using the next thread array )
+  nfe>next @  0!
+;
+
+
+: nfe-threads-length@   ( w:nfe - n:length = Get the length of the current thread array )
+  nfe>current @ @
+;
+
+
+: nfe-get-thread   ( n:offset w:nfe - w:matches w:nfs = Get the offsetth matches and nfs state in the current thread array )
+  tuck
+  nfe-parens@ 2* 1+ cells     \ size thread element
+  *                           \ * offset
+  cell+                       \ + length field
+  swap nfe>current @ +        \ address current thread element
+  dup cell+                   \ matches
+  swap @                      \ nfs state
+;
+
+
+: nfe-add-thread-state   ( w:matches w:nfs w:nfe - = Add the nfs state with the matches to the next thread array [recursive] )
+  >r 
+  dup nfs-visit@ r@ nfe-visit@ <> IF
+    r@ nfe-visit@ over nfs-visit!  \ Set this state visited
+    
+    r@ nfe>next @ dup @ swap 1+!   \ fetch the offset and increase
+    
+    2dup                           \ Setup for storing
+    
+    r@ nfe-parens@                 \ offset > addr
+    2* 1+ cells * cell+
+    r@ nfe>next @ +
+    
+    tuck !                         \ thread.state
+    cell+                          \ thread.matches
+    r@ nfe-parens@ 2* cells 1 chars /
+    move                           \ move the matches from the state in the thread
+    \ ToDo
+\    dup nfs-type@
+\    CASE
+\      nfs.split  OF 2dup nfs-out1@ r@ recurse 2dup nfs-out2@ r@ recurse ENDOF
+\      \ nfs.lparen OF 2dup nfs-data@ 2* cells + >r r@ 2@ 2>r 2dup nfs-out1@ r@ recurse 2r> >r 2! ENDOF ToDo
+\      \ nfs.rparen OF 2dup nfs-out1@ r@ recurse ENDOF ToDo
+\    ENDCASE
+  THEN
+  2drop
+  rdrop
+;
+
+
+: nfe+dump-threads   ( w:threads - = Dump the thread array )
+  \ ToDo
+\  >r
+\  ." nft:" r@ . cr
+\  ."  parens:" r@ nft>parens  ? cr
+\  ."  length:" r@ nft>length  ? cr
+\  r@ nft>parens r@ nft% +           \ s:parens addr
+\  r> nft>length @ 0 ?DO             \ Do for all states in thread
+\    dup @ nfs-id@ 0 .r              \   Print state id
+\    [char] : emit
+\    cell+
+\    over 0 ?DO                      \   Do for all matches for state
+\      [char] ( emit
+\      dup @ 0 .r cell+              \     Print start
+\      [char] , emit
+\      dup @ 0 .r cell+              \     Print end
+\      [char] ) emit
+\    LOOP
+\  LOOP
+\  2drop
+;
+
+
 ( Expression building words )
 
 : nfe-clear   ( w:nfe - = Clear the expression )
+  \ ToDo: free threads
   dup nfe-expression@ nfe+free
       nfe-init
 ;
@@ -217,12 +332,30 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 
 : nfe-close   ( w:outs w:start w:nfe - w:start = Close the expression by adding the match state )
+  \ ToDo: create threads
   >r
   0 r@ nfe-nparen         \ paren the full expression with level 0
   nil nfs.match 
   r@ nfe-new-nfs          \ new match state
   rot nfe+resolve         \ resolve outs -> match
   r> nfe>expression !     \ save the expression
+;
+
+( Private matching words )
+
+: nfe-start   ( c-addr u w:nfe - = Start the matching )
+  \ ToDo  
+;
+
+
+: nfe-step   ( f:case w:nfe - = Match a single character to the current list of nfs states )
+  \ ToDo
+;
+
+( Matching words )
+
+: nfe-match   ( c-addr u f:case w:nfe - false | matches true = Match a string )
+  \ ToDo
 ;
 
 
@@ -288,9 +421,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 : nfe-dump  ( w:nfe - = Dump the expression )
   ." nfe:" dup . cr
   ."  states    :" dup nfe-states@ . cr
-  ."  level     :"  dup nfe>level   ? cr
+  ."  level     :" dup nfe>level   ? cr
   ."  visit     :" dup nfe>visit   ? cr
-  ."  expression:" dup nfe-visit@ swap nfe-expression@ nfe+dump cr
+  ."  expression:" dup nfe-visit+@ swap nfe-expression@ nfe+dump cr
 ;
 
 [THEN]
