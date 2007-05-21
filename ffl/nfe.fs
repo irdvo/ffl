@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 05:33:19 $ $Revision: 1.8 $
+\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -60,21 +60,8 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   cell: nfe>matches    \ the match result
 ;struct
 
-
-( Private destruction word )
-
-: nfe-free-threads   ( w:nfe - = Free the thread arrays )
-  dup nfe>thread1 @ nil<> IF
-    dup nfe>thread1 @ free throw
-  THEN
-  dup nfe>thread2 @ nil<> IF
-    dup nfe>thread2 @ free throw
-  THEN
-  drop
-;
-
-
-( Expression creation, initialisation and destruction )
+  
+( Expression creation, initialisation and cleanup )
 
 : nfe-init         ( w:nfe - = Initialise the expression )
   dup nfe>expression nil!
@@ -92,12 +79,12 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-create       ( C: "name" - R: - w:nfe = Create a named expression in the dictionary )
+: nfe-create   ( C: "name" - R: - w:nfe = Create a named expression in the dictionary )
   create   here   nfe% allot   nfe-init
 ;
 
 
-: nfe-new          ( - w:nfe = Create a new expression on the heap )
+: nfe-new   ( - w:nfe = Create a new expression on the heap )
   nfe% allocate  throw  dup nfe-init
 ;
 
@@ -118,7 +105,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 : nfe-free   ( w:nfe - = Free the nfe structure from the heap )
   dup nfe>expression @ nfe+free-expression
   
-  dup nfe-free-threads
+  dup nfe>thread1 @ ?free
+  dup nfe>thread2 @ ?free
+  dup nfe>matches @ ?free
   
   free throw
 ;
@@ -284,7 +273,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ( Expression building words )
 
 : nfe-clear   ( w:nfe - = Clear the expression )
-  dup nfe-free-threads
+  dup nfe>thread1 @ ?free
+  dup nfe>thread2 @ ?free
+  dup nfe>matches @ ?free
   
   dup nfe-expression@ nfe+free-expression
   
@@ -362,12 +353,19 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   nil nfs.match 
   r@ nfe-new-nfs          \ new match state
   rot nfe+resolve         \ resolve outs -> match
+  
   r@ nfe>expression !     \ save the expression
+  
   r@ nfe-new-threads      \ create ..
   r@ nfe>thread1 !        \ .. thread1
   r@ nfe-new-threads      \ create ..
-  r> nfe>thread2 !        \ .. thread2
+  r@ nfe>thread2 !        \ .. thread2
+  
+  r@ nfe-parens@ 2* cells \ create ..
+  allocate throw          \ .. the ..
+  r> nfe>matches !        \ .. matches array
 ;
+
 
 ( Private matching words )
 
@@ -380,18 +378,26 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 : nfe-start   ( c-addr u w:nfe - = Start the matching )
   >r
-  r@ nfe>length  !       \ save the match string
+  r@ nfe>length  !       \ save the to be matched string
   r@ nfe>string  !
   r@ nfe>index  0!
                          \ setup the thread lists
   r@ nfe>thread1 @ r@ nfe>current !
   r@ nfe>thread2 @ r@ nfe>next    !
-                         \ create and init matches
-  r@ nfe>matches nil! \ ToDo: matches creeren en vullen met -1en
+                         \ init matches
+  r@ nfe>matches @                       
+  r@ nfe-parens@ 0 DO
+    -1 over !            \ matches.start = -1
+    cell+
+    -1 over !            \ matches.end   = -1
+    cell+
+  LOOP
+                         \ start using the next threads
+  r@ nfe-start-threads
                          \ add the start nfs to the thread list
- r@ nfe>matches @ r@ nfe>expression @ r@ nfe-add-thread
+  r@ nfe>matches @ r@ nfe>expression @ r@ nfe-add-thread
                          
- r> nfe-switch-threads                        
+  r> nfe-switch-threads                        
 ;
 
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.7 $
+\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -68,7 +68,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   
   dup r@ bar>size !
   
-  dup chars allocate throw         \ allocate the array
+  dup chars allocate throw   \ allocate the array
   
   tuck swap 0 fill           \ reset all bits
   

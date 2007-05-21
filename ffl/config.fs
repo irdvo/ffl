@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-06 19:03:53 $ $Revision: 1.34 $
+\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.35 $
 \
 \ ==============================================================================
 \
@@ -99,6 +99,15 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 
 : nil<>            ( w - f = Check for unequal to nil )
   nil <>
+;
+
+
+: ?free            ( addr - = Free the address [and throw] if not nil )
+  dup nil<> IF
+    free throw
+  ELSE
+    drop
+  THEN
 ;
 
 
