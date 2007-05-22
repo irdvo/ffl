@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.9 $
+\  $Date: 2007-05-22 19:40:05 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -53,6 +53,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   cell: nfe>string     \ the string the expression is matched against
   cell: nfe>length     \ the length of the string
   cell: nfe>index      \ the index in the string during matching
+  cell: nfe>case       \ is the match case sensitive ?
   cell: nfe>thread1    \ the first thread
   cell: nfe>thread2    \ the second thread
   cell: nfe>current    \ the current thread
@@ -71,6 +72,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   dup nfe>string     nil!
   dup nfe>length       0!
   dup nfe>index        0!
+  dup nfe>case        off
   dup nfe>thread1    nil!
   dup nfe>thread2    nil!
   dup nfe>current    nil!
@@ -141,6 +143,18 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
+( Private matches words )
+
+: nfe+match@   ( w:matches n:offset - n:ep n:sp = Get the offsetth match )
+  2* cells + 2@
+;
+
+
+: nfe+match!   ( n:ep n:sp w:matches n:offset - = Set the offsetth match )
+  2* cells + 2!
+;
+
+
 ( Private matching thread words )
 
 \ Dynamic array of thread structures:
@@ -182,35 +196,40 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 : nfe-add-thread   ( w:matches w:nfs w:nfe - = Add the nfs state with the matches to the next thread array [recursive] )
   >r 
   dup nfs-visit@ r@ nfe-visit@ <> IF
-    r@ nfe-visit@ over nfs-visit!  \ Set this state visited
+    r@ nfe-visit@ over nfs-visit!          \ Set this state visited
     
-    r@ nfe>next @ dup @ swap 1+!   \ fetch the offset and increase
+    2dup                                   \ Setup for storing
     
-    2dup                           \ Setup for storing
+    r@ nfe>next @ dup @ swap 1+!           \ fetch the offset and increase
     
-    r@ nfe-parens@                 \ offset > addr
+    r@ nfe-parens@                         \ offset > addr
     2* 1+ cells * cell+
     r@ nfe>next @ +
     
-    tuck !                         \ thread.state
-    cell+                          \ thread.matches
+    tuck !                                 \ thread.state
+    cell+                                  \ thread.matches
     r@ nfe-parens@ 2* cells 1 chars /
-    move                           \ move the matches from the state in the thread
-    \ ToDo
+    move                                   \ move the matches from the state in the thread
+    
     dup nfs-type@
-    CASE
+    CASE                                   \ if split then
       nfs.split OF 
-        2dup nfs-out1@ r@ recurse 
+        2dup nfs-out1@ r@ recurse          \   add the states of out1 and out2
         2dup nfs-out2@ r@ recurse 
         ENDOF
-      nfs.lparen OF 
-        \ ToDo: 2dup nfs-data@ 2* cells + >r r@ 2@ 2>r 
-        2dup nfs-out1@ r@ recurse 
-        \ 2r> >r 2! 
+      nfs.lparen OF                        \ if ( then
+        2dup  nfs-data@ nfe+match@         \   save the match state of this paren
+        2over -1 r@ nfe>index @ 
+        2swap nfs-data@ nfe+match!         \   set the start index 
+        2over nfs-out1@ r@ recurse         \   add the out state
+        2over nfs-data@ nfe+match!         \   restore the match state of this paren
         ENDOF
-      nfs.rparen OF 
-        \ ToDo
-        2dup nfs-out1@ r@ recurse 
+      nfs.rparen OF                        \ if ) then
+        2dup  nfs-data@ nfe+match@         \   save the match state of this paren
+        2over 2over nip r@ nfe>index @ swap 
+        2swap nfs-data@ nfe+match!         \   set the end index 
+        2over nfs-out1@ r@ recurse         \   add the out state
+        2over nfs-data@ nfe+match!         \   restore the match state of this paren
         ENDOF
     ENDCASE
   THEN
@@ -225,8 +244,8 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
     dup cell+ swap                    \ S: parens addr
     @ 0 ?DO                           \ Do for all states in thread
       dup @ nfs-id@ 0 .r              \   Print state id
-      [char] : emit
       cell+
+      [char] : emit
       over 0 ?DO                      \   Do for all matches for state
         [char] ( emit
         dup @ 0 .r cell+              \     Print start
@@ -234,6 +253,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
         dup @ 0 .r cell+              \     Print end
         [char] ) emit
       LOOP
+      [char] ; emit
     LOOP
   THEN
   2drop
@@ -376,8 +396,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-start   ( c-addr u w:nfe - = Start the matching )
+: nfe-start   ( c-addr u f:case w:nfe - = Start the matching )
   >r
+  r@ nfe>case    !       \ save the case sensitive matching indication
   r@ nfe>length  !       \ save the to be matched string
   r@ nfe>string  !
   r@ nfe>index  0!
@@ -392,6 +413,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
     -1 over !            \ matches.end   = -1
     cell+
   LOOP
+  drop
+                         \ increase the visit number
+  r@ nfe-visit+@ drop
                          \ start using the next threads
   r@ nfe-start-threads
                          \ add the start nfs to the thread list
@@ -401,14 +425,17 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-step   ( f:case w:nfe - = Match a single character to the current list of nfs states )
+: nfe-step   ( w:nfe - = Match a single character to the current list of nfs states )
   \ ToDo
 ;
 
 ( Matching words )
 
 : nfe-match   ( c-addr u f:case w:nfe - false | matches true = Match a string )
+  >r
+  r@ nfe-start
   \ ToDo
+  rdrop
 ;
 
 
@@ -480,10 +507,12 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   ."  string    :" dup nfe>string  ? cr
   ."  length    :" dup nfe>length  ? cr
   ."  index     :" dup nfe>index   ? cr
+  ."  case      :" dup nfe>case    ? cr
   ."  thread1   :" dup nfe>thread1 ? cr
   ."  thread2   :" dup nfe>thread2 ? cr
   ."  current   :" dup nfe>current @ over nfe-dump-threads cr
-  ."  next      :" dup nfe>next    @ swap nfe-dump-threads cr
+  ."  next      :" dup nfe>next    @ over nfe-dump-threads cr
+  ."  matches   :"     nfe>matches ? cr
 ;
 
 [THEN]
