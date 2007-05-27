@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-15 14:18:40 $ $Revision: 1.3 $
+\  $Date: 2007-05-27 10:02:13 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -46,8 +46,8 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
   cell: nfs>id       \ the state id
   cell: nfs>type     \ the state type
   cell: nfs>data     \ the state optional data
-  cell: nfs>out1     \ the next state
-  cell: nfs>out2     \ the split state
+  cell: nfs>out1     \ the next state (during building also used as next pointer )
+  cell: nfs>out2     \ the split state (during building also used as next pointer )
   cell: nfs>visit    \ the visit number
 ;struct
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 05:33:19 $ $Revision: 1.5 $
+\  $Date: 2007-05-27 10:02:13 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -128,18 +128,21 @@ defer rgx.parse-alternation
   r@ rgx-scan-token                     \ Scan the current token
   dup nfs.lparen = IF                   \ If token = ( Then
     2drop  
+    r@ nfe-level+@                      \   Get the paren level
     r@ rgx-scan-next                    \   Move to next token
     r@ rgx.parse-alternation IF         \   If an alternation expression is parsed Then
       r@ rgx-scan-token nip
       nfs.rparen = IF                   \     If current token = ) Then
-        r@ nfe-paren                    \      Paren the expression
+        rot r@ nfe-paren                \      Paren the expression with the paren level
         r@ rgx-scan-next                \      Move to the next token
         true
       ELSE                              \     Else (error)
-        nip nfe+free-expression         \       Free the expression
+        nfe+free-expression             \       Free the expression
+        2drop
         false
       THEN
     ELSE                                \   Else (error)
+      drop
       false
     THEN
   ELSE                                  \ Else
