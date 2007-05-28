@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-27 10:02:13 $ $Revision: 1.11 $
+\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ include ffl/config.fs
 
 include ffl/nfs.fs
 include ffl/chr.fs
+include ffl/chs.fs
 
 
 ( nfe = Non-deterministic finite automata expression )
@@ -95,11 +96,14 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 : nfe+free-expression   ( w:start - = Free all states in a [sub]expression [recursive] )
   dup nil<> IF
-    dup nfs-visit@ -1 <> IF     \ If start <> nil and not yet visited Then
-      -1 over nfs-visit!        \   Set visited
-      dup nfs-out1@ recurse     \   Recurse the out1 branch
-      dup nfs-out2@ recurse     \   Recurse the out2 branch
-      dup nfs-free              \   Free the state
+    dup nfs-visit@ -1 <> IF            \ If start <> nil and not yet visited Then
+      -1 over nfs-visit!               \   Set visited
+      dup nfs-out1@ recurse            \   Recurse the out1 branch
+      dup nfs-out2@ recurse            \   Recurse the out2 branch
+      dup nfs-type@ nfs.class = IF     \   If state is a class Then
+        dup nfs-data@ chs-free         \     Free the character set
+      THEN
+      dup nfs-free                     \   Free the state
     THEN
   THEN
   drop
@@ -455,7 +459,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-setup-char ( w:nfe - = Setup the char in the nfe structure )
+: nfe-setup-char    ( w:nfe - = Setup the char in the nfe structure )
   dup  nfe>index @ chars
   over nfe>string @ + 
   c@                     \ Read the character from the string
@@ -484,21 +488,36 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
         r@ nfe>icase @ IF
           chr-upper 
         THEN
-        = IF                       \     If match Then
-          2dup nfs-out1@ r@ nfe-add-next  \ Put1 out state in the next thread list
-        THEN
+        = 
         ENDOF
       
       nfs.any OF                   \   If any Then
-        2dup nfs-out1@ r@ nfe-add-next    \ Put out state in the next thread list
+        true                       \     Match
+        ENDOF
+        
+      nfs.class OF                 \   If class Then
+        r@ nfe>char @ over nfs-data@ chs-ch? \ Check if the character is in the set
+        r@ nfe>icase @ IF          \     If case insensitive, check also the lowercase char
+          over nfs-data@
+          r@ nfe>char @ chr-lower
+          swap chs-ch? OR
+        THEN
         ENDOF
         
       nfs.match OF                 \   If match Then
         over r@ nfe>matches @ r@ nfe-parens@ nfe+copy-matches \ Copy matches from state in matches
         2>r drop dup 2r>           \      Ready
+        false
         ENDOF
+        
+        false swap                 \ Default: no match
     ENDCASE
-    2drop
+        
+    IF                             \ If match Then
+      nfs-out1@ r@ nfe-add-next    \    Put out1 state in the next thread list
+    ELSE
+      2drop
+    THEN   
     1+
   REPEAT
   2drop
