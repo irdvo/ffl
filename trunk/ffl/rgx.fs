@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-28 06:46:13 $ $Revision: 1.7 $
+\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -47,6 +47,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
   nfe% field: rgx>nfe       \ the the regular expression is a non-deterministic finite automate expression
        cell:  rgx>pattern   \ the pattern during scanning
        cell:  rgx>length    \ the length of the pattern during scanning
+       cell:  rgx>next      \ the length of the last scanned token
        cell:  rgx>index     \ the index in the pattern during scanning
 ;struct
 
@@ -66,6 +67,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
   dup nfe-init              \ Initialise the base expression
   dup rgx>pattern    nil!
   dup rgx>length       0!
+  dup rgx>next         0!
       rgx>index        0!
 ;
 
@@ -94,32 +96,68 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ;
 
 
-: rgx-scan-token  ( w:rgx - w:data w:token = Scan the pattern for the current token )
-  dup rgx>index @  over rgx>length @ < IF
-    dup rgx>index @ chars swap rgx>pattern @ + c@
+: rgx-scan-backslash   ( w:rgx - w:data w:token = Scan for a backslash token )
+  >r
+  r@ rgx>index @ 1+ dup  r@ rgx>length @ < IF   \ If there one more character Then
+    chars r@ rgx>pattern @ + c@                 \   Fetch the char
+    r@ rgx>next 1+!                             \   Process two characters
     CASE
-      [char] . OF nil nfs.any          ENDOF
-      [char] | OF nil rgx.alternation  ENDOF
-      [char] ? OF nil rgx.zero-or-one  ENDOF
-      [char] * OF nil rgx.zero-or-more ENDOF
-      [char] + OF nil rgx.one-or-more  ENDOF
-      [char] ( OF nil nfs.lparen       ENDOF
-      [char] ) OF nil nfs.rparen       ENDOF
+      [char] n OF chr.lf                                  nfs.char  ENDOF
+      [char] r OF chr.cr                                  nfs.char  ENDOF
+      [char] t OF chr.ht                                  nfs.char  ENDOF
+      [char] d OF chs-new dup             chs-set-digit   nfs.class ENDOF
+      [char] D OF chs-new dup chs-set dup chs-reset-digit nfs.class ENDOF
+      [char] w OF chs-new dup             chs-set-alnum   nfs.class ENDOF
+      [char] W OF chs-new dup chs-set dup chs-reset-alnum nfs.class ENDOF
+      [char] s OF chs-new dup             chs-set-space   nfs.class ENDOF
+      [char] S of chs-new dup chs-set dup chs-reset-space nfs.class ENDOF
       nfs.char over
     ENDCASE
   ELSE
-    drop 
+    drop
     nil rgx.eos
   THEN
+  rdrop
+;
+
+
+: rgx-scan-token  ( w:rgx - w:data w:token = Scan the pattern for the current token )
+  >r
+  r@ rgx>index @ dup  r@ rgx>length @ < IF   \ If there is still a character Then
+    chars  r@ rgx>pattern @ + c@
+    1 r@ rgx>next !
+    CASE
+      [char] . OF nil nfs.any           ENDOF
+      [char] | OF nil rgx.alternation   ENDOF
+      [char] ? OF nil rgx.zero-or-one   ENDOF
+      [char] * OF nil rgx.zero-or-more  ENDOF
+      [char] + OF nil rgx.one-or-more   ENDOF
+      [char] ( OF nil nfs.lparen        ENDOF
+      [char] ) OF nil nfs.rparen        ENDOF
+      [char] \ OF r@ rgx-scan-backslash ENDOF
+      nfs.char over
+    ENDCASE
+  ELSE
+    drop
+    r@ rgx>next 0!
+    nil rgx.eos
+  THEN
+  rdrop
 ;
 
 
 : rgx-scan-next  ( w:rgx - = Move the scanner to the next token )
-  rgx>index 1+!
+  dup rgx>next @ swap rgx>index +!
 ;
 
 
 ( Private parser words )
+
+: rgx-cleanup   ( w:outs w:start - = Cleanup error expression )
+  swap nil swap nfe+resolve             \ Resolve the open outs to nil
+  nfe+free-expression                   \ Free the expression
+;
+
 
 defer rgx.parse-alternation
 
@@ -128,6 +166,7 @@ defer rgx.parse-alternation
   r@ rgx-scan-token                     \ Scan the current token
   dup nfs.lparen = IF                   \ If token = ( Then
     2drop  
+    r@ rgx>index @                      \   Save scanner state for error recovery
     r@ nfe-level+@                      \   Get the paren level
     r@ rgx-scan-next                    \   Move to next token
     r@ rgx.parse-alternation IF         \   If an alternation expression is parsed Then
@@ -135,19 +174,23 @@ defer rgx.parse-alternation
       nfs.rparen = IF                   \     If current token = ) Then
         rot r@ nfe-paren                \      Paren the expression with the paren level
         r@ rgx-scan-next                \      Move to the next token
+        rot drop                        \      Remove scanner state
         true
       ELSE                              \     Else (error)
-        swap nil swap nfe+resolve       \       Resolve all open outs to nil
-        nfe+free-expression             \       Free the expression
+        rgx-cleanup                     \       Cleanup
         drop
+        r@ rgx>index !                  \       Restore the scanner state
         false
       THEN
     ELSE                                \   Else (error)
       drop
+      r@ rgx>index !                    \     Restore the scanner state
       false
     THEN
   ELSE                                  \ Else
-    dup nfs.char = over nfs.any = OR IF \   If token = character or . Then
+    dup  nfs.char = 
+    over nfs.any  = OR 
+    over nfs.class = OR IF              \ If token = character or . or class Then
       r@ nfe-single                     \     Create single expression
       r@ rgx-scan-next                  \     Move to the next token
       true
@@ -221,8 +264,7 @@ defer rgx.parse-alternation
         r@ nfe-alternation        \       Put the two expressions as alternation
         true
       ELSE                        \     Else (error)
-        swap nil swap nfe+resolve \       Resolve all open outs to nil
-        nfe+free-expression       \       Free the expression
+        rgx-cleanup               \       Cleanup
         false
       THEN
     REPEAT
@@ -244,13 +286,12 @@ defer rgx.parse-alternation
   r@ rgx-scan-init                    \ Initialise the scanner
   
   r@ rgx-parse-alternation IF         \ If an expression is parsed Then
-    r@ rgx-scan-token rgx.eos = IF    \   If the expression ends Then
-      drop
+    r@ rgx-scan-token nip 
+    rgx.eos = IF                      \   If the expression ends Then
       r@ nfe-close                    \     Close the expression: match state, paren and storing
       true
-    ELSE                              \   Else
-      swap nil swap nfe+resolve       \     Resolve all open outs to nil
-      nfe+free-expression             \     Cleanup, error
+    ELSE                              \   Else (error)
+      rgx-cleanup                     \     Cleanup
       r@ rgx>index @
       false
     THEN
@@ -263,12 +304,12 @@ defer rgx.parse-alternation
 
 
 : rgx-match  ( c-addr u w:rgx - f = Match case sensitive a string with the regular expression )
-  \ ToDo
+  false swap nfe-match
 ;
 
 
 : rgx-imatch  ( c-addr u w:rgx - f = Match case insensitive a string with the regular expression )
-  \ ToDo
+  true swap nfe-match
 ;
 
 
@@ -277,14 +318,6 @@ defer rgx.parse-alternation
 
 
 : rgx-isearch ( c-addr u w:rgx - n:index = Search case insensitive in string for first match of regular expression )
-;
-
-
-: rgx-replace ( c-addr2 u2 c-addr u w:rgx - n:index = Replace in string the first match of regular expression with string2 )
-;
-
-
-: rgx-ireplace ( c-addr2 u2 c-addr u w:rgx - n:index = Replace in string the first case insensitive match of regular expression with string2 )
 ;
 
 
