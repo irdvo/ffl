@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-27 10:02:13 $ $Revision: 1.6 $
+\  $Date: 2007-05-28 06:46:13 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -137,8 +137,9 @@ defer rgx.parse-alternation
         r@ rgx-scan-next                \      Move to the next token
         true
       ELSE                              \     Else (error)
+        swap nil swap nfe+resolve       \       Resolve all open outs to nil
         nfe+free-expression             \       Free the expression
-        2drop
+        drop
         false
       THEN
     ELSE                                \   Else (error)
@@ -220,7 +221,8 @@ defer rgx.parse-alternation
         r@ nfe-alternation        \       Put the two expressions as alternation
         true
       ELSE                        \     Else (error)
-        nip nfe+free-expression   \       Free the expression
+        swap nil swap nfe+resolve \       Resolve all open outs to nil
+        nfe+free-expression       \       Free the expression
         false
       THEN
     REPEAT
@@ -247,7 +249,8 @@ defer rgx.parse-alternation
       r@ nfe-close                    \     Close the expression: match state, paren and storing
       true
     ELSE                              \   Else
-      nip nfe+free-expression         \     Cleanup, error
+      swap nil swap nfe+resolve       \     Resolve all open outs to nil
+      nfe+free-expression             \     Cleanup, error
       r@ rgx>index @
       false
     THEN
