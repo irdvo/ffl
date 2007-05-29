@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.3 $
+\  $Date: 2007-05-29 17:46:30 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -48,86 +48,124 @@ t{ s" ?"  rgx1 rgx-compile ?false 0 ?s }t
 
 t{ s" ((a)(b))" rgx1 rgx-compile ?true }t
 
-t{ s" ab" rgx1 rgx-match ?true }t
+t{ s" ab" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@ 0 ?s 2 ?s }t
-t{ 1 rgx1 nfe-match@ 0 ?s 2 ?s }t
-t{ 2 rgx1 nfe-match@ 0 ?s 1 ?s }t
-t{ 3 rgx1 nfe-match@ 1 ?s 2 ?s }t
+t{ 0 rgx1 rgx-result 0 ?s 2 ?s }t
+t{ 1 rgx1 rgx-result 0 ?s 2 ?s }t
+t{ 2 rgx1 rgx-result 0 ?s 1 ?s }t
+t{ 3 rgx1 rgx-result 1 ?s 2 ?s }t
 
 
 t{ s" (a)*" rgx1 rgx-compile ?true }t
 
-t{ s" aa" rgx1 rgx-match ?true }t
+t{ s" aa" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@ 0 ?s 2 ?s }t
-t{ 1 rgx1 nfe-match@ 1 ?s 2 ?s }t
+t{ 0 rgx1 rgx-result 0 ?s 2 ?s }t
+t{ 1 rgx1 rgx-result 1 ?s 2 ?s }t
 
 
 t{ s" (a)*b" rgx1 rgx-compile ?true }t
 
-t{ s" b" rgx1 rgx-match ?true }t
+t{ s" b" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@  0 ?s  1 ?s }t
-t{ 1 rgx1 nfe-match@ -1 ?s -1 ?s }t
+t{ 0 rgx1 rgx-result  0 ?s  1 ?s }t
+t{ 1 rgx1 rgx-result -1 ?s -1 ?s }t
 
 
 t{ s" (a*)b" rgx1 rgx-compile ?true }t
 
-t{ s" b" rgx1 rgx-match ?true }t
+t{ s" b" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@  0 ?s  1 ?s }t
-t{ 1 rgx1 nfe-match@  0 ?s  0 ?s }t
+t{ 0 rgx1 rgx-result  0 ?s  1 ?s }t
+t{ 1 rgx1 rgx-result  0 ?s  0 ?s }t
 
 
 t{ s" ((a*)b)*" rgx1 rgx-compile ?true }t
 
-t{ s" abb" rgx1 rgx-match ?true }t
+t{ s" abb" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@  0 ?s  3 ?s }t
-t{ 1 rgx1 nfe-match@  2 ?s  3 ?s }t
-t{ 2 rgx1 nfe-match@  2 ?s  2 ?s }t
+t{ 0 rgx1 rgx-result  0 ?s  3 ?s }t
+t{ 1 rgx1 rgx-result  2 ?s  3 ?s }t
+t{ 2 rgx1 rgx-result  2 ?s  2 ?s }t
 
 
 t{ s" ((a)*b)*" rgx1 rgx-compile ?true }t
 
-t{ s" abb" rgx1 rgx-match ?true }t
+t{ s" abb" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@  0 ?s  3 ?s }t
-t{ 1 rgx1 nfe-match@  2 ?s  3 ?s }t
-t{ 2 rgx1 nfe-match@  0 ?s  1 ?s }t
+t{ 0 rgx1 rgx-result  0 ?s  3 ?s }t
+t{ 1 rgx1 rgx-result  2 ?s  3 ?s }t
+t{ 2 rgx1 rgx-result  0 ?s  1 ?s }t
 
 
 t{ s" ((a)*b)*c" rgx1 rgx-compile ?true }t
 
-t{ s" c" rgx1 rgx-match ?true }t
+t{ s" c" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@   0 ?s   1 ?s }t
-t{ 1 rgx1 nfe-match@  -1 ?s  -1 ?s }t
-t{ 2 rgx1 nfe-match@  -1 ?s  -1 ?s }t
+t{ 0 rgx1 rgx-result   0 ?s   1 ?s }t
+t{ 1 rgx1 rgx-result  -1 ?s  -1 ?s }t
+t{ 2 rgx1 rgx-result  -1 ?s  -1 ?s }t
 
 
 t{ s" (a*)+" rgx1 rgx-compile ?true }t
 
-t{ s" aaa" rgx1 rgx-match ?true }t
+t{ s" aaa" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@ 0 ?s 3 ?s }t
-t{ 1 rgx1 nfe-match@ 0 ?s 3 ?s }t
+t{ 0 rgx1 rgx-result 0 ?s 3 ?s }t
+t{ 1 rgx1 rgx-result 0 ?s 3 ?s }t
 
 
 t{ s" (a|aa)(a|aa)" rgx1 rgx-compile ?true }t
 
-t{ s" aaa" rgx1 rgx-match ?true }t
+t{ s" aaa" rgx1 rgx-cmatch? ?true }t
 
-t{ 0 rgx1 nfe-match@ 0 ?s 3 ?s }t \ ToDo: is this okee ?
-t{ 1 rgx1 nfe-match@ 0 ?s 2 ?s }t
-t{ 2 rgx1 nfe-match@ 2 ?s 3 ?s }t
+t{ 0 rgx1 rgx-result 0 ?s 2 ?s }t
+t{ 1 rgx1 rgx-result 0 ?s 1 ?s }t
+t{ 2 rgx1 rgx-result 1 ?s 2 ?s }t
 
 
 t{ s" .*(Hello|Bye)" rgx1 rgx-compile ?true }t
 
-t{ s" This is then goodbye" rgx1 rgx-match ?false }t
-t{ s" This is then goodbye" rgx1 rgx-imatch ?true  }t
+t{ s" This is then goodbye" rgx1 rgx-cmatch? ?false }t
+t{ s" This is then goodbye" rgx1 rgx-imatch? ?true  }t
+
+
+t{ rgx-new value rgx2 }t
+
+t{ s" \*\|\\" rgx2 rgx-compile ?true }t
+
+t{ s" *|\"    rgx2 rgx-cmatch? ?true  }t
+t{ s" \*\|\\" rgx2 rgx-cmatch? ?false }t
+
+
+t{ s" \w\W\d\D\s\S" rgx2 rgx-compile ?true }t
+
+t{ s" a+0a a" rgx2 rgx-cmatch? ?true  }t
+t{ s" _=9! @" rgx2 rgx-cmatch? ?true  }t
+t{ s" 0aa0y " rgx2 rgx-cmatch? ?false }t
+
+
+t{ s" good|Bad" rgx2 rgx-compile ?true }t
+
+t{ s" This is a good day" rgx2 rgx-csearch 10 ?s }t
+t{ s" This is a bad day"  rgx2 rgx-csearch -1 ?s }t
+t{ s" This is a bad day"  rgx2 rgx-isearch 10 ?s }t
+t{ s" This is a good day" rgx2 rgx-isearch 10 ?s }t
+
+
+t{ s" (\+|-|\s)?\d+(\.\d+)?" rgx2 rgx-compile ?true }t     \ Float number
+
+t{ s" -0.7"         rgx2 rgx-cmatch? ?true  }t
+t{ s" +4"           rgx2 rgx-cmatch? ?true  }t
+t{ s" 400000000000" rgx2 rgx-cmatch? ?true  }t
+t{ s"  12.47"       rgx2 rgx-cmatch? ?true  }t
+t{ s" ^1.7"         rgx2 rgx-cmatch? ?false }t
+t{ s" +.4"          rgx2 rgx-cmatch? ?false }t
+
+t{ s" The price is 23.70 euro" rgx2 rgx-csearch 12 ?s }t
+t{ s" It is priceless"         rgx2 rgx-csearch -1 ?s }t
+
+t{ rgx2 rgx-free }t
 
 [THEN]
 

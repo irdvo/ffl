@@ -139,6 +139,5 @@ cfg: sys.* -> *
 rgx: ^ en $
 rgx: []
 rgx: [[]]
-rgx: \+
 
 fce: config.fs/make.fs naar cvs
