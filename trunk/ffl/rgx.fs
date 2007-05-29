@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.8 $
+\  $Date: 2007-05-29 17:46:30 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,30 @@ include ffl/nfe.fs
 
 ( rgx = Regular expression )
 ( The rgx module implements words for compiling and matching regular         )
-( expressions. ToDo: syntax rules                                            )
+( expressions.                                                               )
+( <pre>                                                                      )
+(                                                                            )
+(     This module uses the following syntax:                                 )
+(      .   Match any char [incl. newline]   *         Match zero or more     )
+(      +   Match one or more                ?         Match zero or one      )
+(      |   Match alternatives                                                )
+(          Group or subexpression                                            )
+(                                                                            )
+(     Backslash characters:                                                  )
+(      \.  Character .                     \*         Character *            )
+(      \+  Character +                     \?         Character ?            )
+(      \|  Character |                     \\         Backslash              )
+(                                                                            )
+(      \r  Carriage return                 \n         Line feed              )
+(      \t  Horizontal tab                  \e         Escape                 )
+(                                                                            )
+(      \d  Digits class: [0-9]             \D         No digits [^0-9]       )
+(      \w  Word class: [0-9a-zA-Z_]        \W         No word [^0-9a-zA-Z_]  )
+(      \s  Whitespace                      \S         No whitespace          )
+(                                                                            )
+(      All other backslash characters simply return the character, but this  )
+(      can change in the future versions.                                    )
+( </pre> )
 
 
 1 constant rgx.version
@@ -105,10 +128,11 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
       [char] n OF chr.lf                                  nfs.char  ENDOF
       [char] r OF chr.cr                                  nfs.char  ENDOF
       [char] t OF chr.ht                                  nfs.char  ENDOF
+      [char] e OF chr.esc                                 nfs.char  ENDOF
       [char] d OF chs-new dup             chs-set-digit   nfs.class ENDOF
       [char] D OF chs-new dup chs-set dup chs-reset-digit nfs.class ENDOF
-      [char] w OF chs-new dup             chs-set-alnum   nfs.class ENDOF
-      [char] W OF chs-new dup chs-set dup chs-reset-alnum nfs.class ENDOF
+      [char] w OF chs-new dup             chs-set-word    nfs.class ENDOF
+      [char] W OF chs-new dup chs-set dup chs-reset-word  nfs.class ENDOF
       [char] s OF chs-new dup             chs-set-space   nfs.class ENDOF
       [char] S of chs-new dup chs-set dup chs-reset-space nfs.class ENDOF
       nfs.char over
@@ -303,21 +327,28 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-match  ( c-addr u w:rgx - f = Match case sensitive a string with the regular expression )
-  false swap nfe-match
+: rgx-cmatch?   ( c-addr u w:rgx - f = Match case-sensitive a string with the regular expression )
+  false swap nfe-match?
 ;
 
 
-: rgx-imatch  ( c-addr u w:rgx - f = Match case insensitive a string with the regular expression )
-  true swap nfe-match
+: rgx-imatch?   ( c-addr u w:rgx - f = Match case-insensitive a string with the regular expression )
+  true swap nfe-match?
 ;
 
 
-: rgx-search ( c-addr u w:rgx - n:index = Search in string for first match of regular expression )
+: rgx-csearch   ( c-addr u w:rgx - n:index = Search case-sensitive in string for first match of regular expression )
+  false swap nfe-search
 ;
 
 
-: rgx-isearch ( c-addr u w:rgx - n:index = Search case insensitive in string for first match of regular expression )
+: rgx-isearch   ( c-addr u w:rgx - n:index = Search case-insensitive in string for first match of regular expression )
+  true swap nfe-search
+;
+
+
+: rgx-result   ( n:index w:rgx - n:ep n:sp = Get the match result of the indexth grouping )
+  nfe-result
 ;
 
 

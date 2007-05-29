@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.12 $
+\  $Date: 2007-05-29 17:46:30 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,8 @@ include ffl/chs.fs
 ( automata. An expression is a concatenation, repeation or alteration of     )
 ( non-deterministic finite automato states [nfs]. An not yet fully built     )
 ( expression consists of two cells on the stack: a list with the non resolved)
-( out states and a list of [nfs] states.                                     )
+( out states and a list of [nfs] states.<br>                                 )
+( The code is based on the Thompson NFA algorithm published by Russ Cox.     )
 
 
 1 constant nfe.version
@@ -361,8 +362,8 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 : nfe-alternation   ( w:outs2 w:start2 w:outs1 w:start1 w:nfe - w:outs w:start = Make an alternation [|] of two expressions )
   nil nfs.split rot
   nfe-new-nfs               \ new split state
-  >r   r@ nfs-out1!         \ split.out1 = start1
-  swap r@ nfs-out2!         \ split.out2 = start2
+  >r   r@ nfs-out2!         \ split.out1 = start2
+  swap r@ nfs-out1!         \ split.out2 = start1
   tuck                      \ append outs2 to outs1
   BEGIN
     dup @ dup nil<>
@@ -435,12 +436,18 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-start-matching   ( c-addr u f:icase w:nfe - = Start the matching )
-  >r
-  r@ nfe>icase   !       \ save the case insensitive matching indication
-  r@ nfe>length  !       \ save the to be matched string
-  r@ nfe>string  !
-  r@ nfe>index  0!
+: nfe-init-matching   ( c-addr u:length f:icase w:nfe - = Initialise the matching )
+  tuck nfe>icase   !       \ save the case insensitive matching indication
+  tuck nfe>length  !       \ save the to be matched string
+       nfe>string  !
+  
+;
+
+
+: nfe-start-matching   ( u:offset w:nfe - = Restart the matching )
+  >r 
+  r@ nfe>index !         \ Set the start offset in the string
+  
                          \ setup the thread lists
   r@ nfe>thread1 @ r@ nfe>current !
   r@ nfe>thread2 @ r@ nfe>next    !
@@ -532,24 +539,49 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-( Matching words )
-
-: nfe-match   ( c-addr u f:icase w:nfe - f = Match a string )
+: nfe-steps   ( w:nfe - f = Perform all steps for matching )
   >r
-  r@ nfe-start-matching
   BEGIN
-    r@ nfe>index @  r@ nfe>length @ <
-    r@ nfe-current-length@         0> AND
+    r@ nfe>index @  r@ nfe>length @ <       \ While still chars in string ..
+    r@ nfe-current-length@         0> AND   \ .. and states in the current thread Do
   WHILE
-    r@ nfe-setup-char
-    r@ nfe-step
-    r@ nfe-switch-threads
+    r@ nfe-setup-char                       \   Read a character
+    r@ nfe-step                             \   Check the current thread agains the char
+    r@ nfe-switch-threads                   \   Switch the threads
   REPEAT
-  r> nfe-stop-matching
+  rdrop
 ;
 
 
-: nfe-match@   ( n:index w:nfe - n:ep n:sp = Get the match result of the indexth grouping )
+( Matching words )
+
+: nfe-match?  ( c-addr u:length f:icase w:nfe - f = Match a string )
+  >r
+  r@ nfe-init-matching         \ Initialise the match with the string and case info
+  0 r@ nfe-start-matching      \ Start matching on string index 0
+  r@ nfe-steps                 \ Do the matching
+  r> nfe-stop-matching         \ Finish the matching
+;
+
+
+: nfe-search   ( c-addr u:length f:icase w:nfe - n = Search in a string [-1 is not found] )
+  >r
+  r@ nfe-init-matching
+  -1
+  r>
+  dup nfe>length @ 0 ?DO
+    I over nfe-start-matching
+    dup nfe-steps
+    dup nfe-stop-matching IF
+      swap drop I swap
+      LEAVE
+    THEN
+  LOOP
+  drop
+;
+
+
+: nfe-result   ( n:index w:nfe - n:ep n:sp = Get the match result of the indexth grouping )
   tuck nfe-parens@ index2offset
   swap
   2dup nfe-parens@ 0 swap within
@@ -557,7 +589,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
   nfe>matches @ swap nfe+match@
 ;
 
-  
+
 ( Private inspection words )
 
 : nfe+dump-out   ( w:nfs - = Dump the first out pointer )
