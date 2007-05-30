@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-29 17:46:30 $ $Revision: 1.9 $
+\  $Date: 2007-05-30 16:48:22 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -33,28 +33,28 @@ include ffl/config.fs
 include ffl/nfe.fs
 
 
-( rgx = Regular expression )
+( rgx = Regular expressions )
 ( The rgx module implements words for compiling and matching regular         )
 ( expressions.                                                               )
 ( <pre>                                                                      )
 (                                                                            )
 (     This module uses the following syntax:                                 )
-(      .   Match any char [incl. newline]   *         Match zero or more     )
-(      +   Match one or more                ?         Match zero or one      )
+(      .   Match any char [incl. newline]     *   Match zero or more         )
+(      +   Match one or more                  ?   Match zero or one          )
 (      |   Match alternatives                                                )
 (          Group or subexpression                                            )
 (                                                                            )
 (     Backslash characters:                                                  )
-(      \.  Character .                     \*         Character *            )
-(      \+  Character +                     \?         Character ?            )
-(      \|  Character |                     \\         Backslash              )
+(      \.  Character .                       \*   Character *                )
+(      \+  Character +                       \?   Character ?                )
+(      \|  Character |                       \\   Backslash                  )
 (                                                                            )
-(      \r  Carriage return                 \n         Line feed              )
-(      \t  Horizontal tab                  \e         Escape                 )
+(      \r  Carriage return                   \n   Line feed                  )
+(      \t  Horizontal tab                    \e   Escape                     )
 (                                                                            )
-(      \d  Digits class: [0-9]             \D         No digits [^0-9]       )
-(      \w  Word class: [0-9a-zA-Z_]        \W         No word [^0-9a-zA-Z_]  )
-(      \s  Whitespace                      \S         No whitespace          )
+(      \d  Digits class: [0-9]               \D   No digits: [^0-9]          )
+(      \w  Word class: [0-9a-zA-Z_]          \W   No word: [^0-9a-zA-Z_]     )
+(      \s  Whitespace                        \S   No whitespace              )
 (                                                                            )
 (      All other backslash characters simply return the character, but this  )
 (      can change in the future versions.                                    )
@@ -337,12 +337,12 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-csearch   ( c-addr u w:rgx - n:index = Search case-sensitive in string for first match of regular expression )
+: rgx-csearch   ( c-addr u w:rgx - n:index = Search case-sensitive in a string for the first match of the regular expression )
   false swap nfe-search
 ;
 
 
-: rgx-isearch   ( c-addr u w:rgx - n:index = Search case-insensitive in string for first match of regular expression )
+: rgx-isearch   ( c-addr u w:rgx - n:index = Search case-insensitive in a string for the first match of the regular expression )
   true swap nfe-search
 ;
 
