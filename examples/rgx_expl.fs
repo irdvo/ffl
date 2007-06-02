@@ -20,17 +20,17 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-30 16:48:22 $ $Revision: 1.1 $
+\  $Date: 2007-06-02 05:59:48 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/rgx.fs
 
- \ Create a regular expression variable rgx1 
+\ Create a regular expression variable rgx1 
 
 rgx-create rgx1
 
- \ Compile a regular expression and check the result
+\ Compile a regular expression and check the result
 
 s" ((a*)b)*" rgx1 rgx-compile [IF] 
   .( Expression succesfull compiled) cr
@@ -38,7 +38,7 @@ s" ((a*)b)*" rgx1 rgx-compile [IF]
   .( Compilation failed on position:) . cr
 [THEN]
 
- \ Match case sensitive a test string
+\ Match case sensitive a test string
  
 s" abb" rgx1 rgx-cmatch? [IF]
   .( Test string matched) cr
@@ -48,11 +48,11 @@ s" abb" rgx1 rgx-cmatch? [IF]
 
 
 
- \ Create a regular expression variable on the heap
+\ Create a regular expression variable on the heap
  
 rgx-new value rgx2
 
- \ Compile a regular expression for matching a float number
+\ Compile a regular expression for matching a float number
 
 s" (\+|-|\s)?\d+(\.\d+)?" rgx2 rgx-compile [IF]
   .( Expression succesfull compiled) cr
@@ -60,7 +60,7 @@ s" (\+|-|\s)?\d+(\.\d+)?" rgx2 rgx-compile [IF]
   .( Compilation failed on position:) . cr
 [THEN]
 
- \ Match a float number
+\ Match a float number
 
 s" -12.47" rgx2 rgx-cmatch? [IF]
   .( Float number matched) cr
@@ -68,9 +68,7 @@ s" -12.47" rgx2 rgx-cmatch? [IF]
   .( No match) cr
 [THEN]
 
- \ Free the variable from the heap
+\ Free the variable from the heap
 
 rgx2 rgx-free
 
-
-\ ==============================================================================
