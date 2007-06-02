@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-30 16:48:22 $ $Revision: 1.10 $
+\  $Date: 2007-06-02 05:59:48 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,8 @@ include ffl/nfe.fs
 
 ( rgx = Regular expressions )
 ( The rgx module implements words for compiling and matching regular         )
-( expressions.                                                               )
+( expressions. The module uses the nfe module for the actual expression      )
+( building and matching.                                                     )
 ( <pre>                                                                      )
 (                                                                            )
 (     This module uses the following syntax:                                 )
@@ -56,8 +57,8 @@ include ffl/nfe.fs
 (      \w  Word class: [0-9a-zA-Z_]          \W   No word: [^0-9a-zA-Z_]     )
 (      \s  Whitespace                        \S   No whitespace              )
 (                                                                            )
-(      All other backslash characters simply return the character, but this  )
-(      can change in the future versions.                                    )
+(      All other backslash characters simply return the trailing character,  )
+(      but this can change in future versions.                               )
 ( </pre> )
 
 
@@ -67,7 +68,7 @@ include ffl/nfe.fs
 ( Regular expression structure )
 
 struct: rgx%       ( - n = Get the required space for the rgx data structure )
-  nfe% field: rgx>nfe       \ the the regular expression is a non-deterministic finite automate expression
+  nfe% field: rgx>nfe       \ the regular expression is a non-deterministic finite automate expression
        cell:  rgx>pattern   \ the pattern during scanning
        cell:  rgx>length    \ the length of the pattern during scanning
        cell:  rgx>next      \ the length of the last scanned token
