@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.35 $
+\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.36 $
 \
 \ ==============================================================================
 \
@@ -57,7 +57,7 @@ sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits 
   
 sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )  
 
-sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
+sys.endian c@ 0=             constant bigendian?         ( - f = Check for bigendian hardware )
 
 
 ( Extension words )
@@ -78,6 +78,13 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
   sys.bits-in-cell swap - rshift r>
+  or
+;
+
+
+: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+  2dup rshift >r
+  sys.bits-in-cell swap - lshift r>
   or
 ;
 

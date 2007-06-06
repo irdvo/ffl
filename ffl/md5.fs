@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.10 $
+\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -122,7 +122,7 @@ create md5.pad       ( - addr = MD5 padding )
   128 md5.pad c!  
 
 
-sys.bigendian [IF]
+bigendian? [IF]
 : md5+buf@+        ( u n - u+buf[n] = Fetch and add with MD5 buffer )
   cells md5.buf + 
   dup c@
@@ -138,7 +138,7 @@ sys.bigendian [IF]
 [THEN]
 
 
-sys.bigendian [IF]
+bigendian? [IF]
 hex
 : md5!             ( w addr - = Store word on address, MD5 order )
   over                 FF and over c!
@@ -149,8 +149,8 @@ hex
 decimal
 [ELSE]
 : md5!             ( w addr - = Store word on address, MD5 order )
-  !
-;
+  postpone !
+; immediate
 [THEN]
 
 
