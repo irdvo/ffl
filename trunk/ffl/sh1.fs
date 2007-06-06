@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-11 18:00:41 $ $Revision: 1.6 $
+\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -110,14 +110,15 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 ( Private words )
 
-sys.bigendian [IF]
+[UNDEFINED] sha! [IF]
+  bigendian? [IF]
 : sha!             ( w addr - = Store word on address, SHA1 order )
-  !
-;
+  postpone !
+; immediate
 : sha@             ( addr - w = Fetch word on address, SHA1 order )
-  @
-;
-[ELSE]
+  postpone @
+; immediate
+  [ELSE]
 : sha!
         over 24 rshift 255 and over c!
   char+ over 16 rshift 255 and over c!
@@ -130,8 +131,9 @@ sys.bigendian [IF]
   swap char+ swap over c@  8 lshift or
   swap char+           c@           or
 ;
+  [THEN]
 [THEN]
-
+  
 
 : sh1-w-bounds     ( u:end u:start w:sh1 - u:addr-end u:addr-start = Bounds work buffer from start to end )
   sh1>w >r
