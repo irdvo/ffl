@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-04-01 04:40:12 $ $Revision: 1.10 $
+\  $Date: 2007-06-07 05:11:42 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 \
@@ -99,9 +99,26 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milliseconds timer )
 
 
+1 chars 1 = [IF]
+: char/            ( n:aus - n:chars = Convert address units to chars )
+; immediate
+[ELSE]
+: char/
+  1 chars /
+;
+[THEN]
+
+
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
   sys.bits-in-cell swap - rshift r>
+  or
+;
+
+
+: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+  2dup rshift >r
+  sys.bits-in-cell swap - lshift r>
   or
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.7 $
+\  $Date: 2007-06-07 05:11:37 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -51,7 +51,7 @@ include ffl/stc.fs
 
 
 16       constant sh1.b-size       \ Size of input buffer in cells
-sh1.b-size cells 1 chars /
+sh1.b-size cells char/
          constant sh1.b-csize      \ Size of input buffer in chars
          
 hex

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-14 07:10:34 $ $Revision: 1.8 $
+\  $Date: 2007-06-07 05:11:42 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 \
@@ -66,6 +66,26 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 ( Extension words )
 
+: ms@                                            ( - ud = Fetch milliseconds timer )
+  gettimeofday
+  1000 * swap
+  1000 / +
+;
+
+
+s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
+
+
+1 chars 1 = [IF]
+: char/            ( n:aus - n:chars = Convert address units to chars )
+; immediate
+[ELSE]
+: char/
+  1 chars /
+;
+[THEN]
+
+
 : rdrop            ( - )
   r> r> drop >r
 ;
@@ -82,14 +102,11 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ;
 
 
-: ms@                                            ( - ud = Fetch milliseconds timer )
-  gettimeofday
-  1000 * swap
-  1000 / +
+: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+  2dup rshift >r
+  sys.bits-in-cell swap - lshift r>
+  or
 ;
-
-
-s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
 
 
 : u<>              ( u u - f = Check if two unsigned words are unequal )
