@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 05:11:37 $ $Revision: 1.8 $
+\  $Date: 2007-06-07 08:56:28 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -47,12 +47,10 @@ include ffl/stc.fs
 
 ( Private constants )
 
-80       constant sh1.w-size       \ Size of work buffer in cells
+80       constant sh1.w%    \ Size of work buffer in cells
 
-
-16       constant sh1.b-size       \ Size of input buffer in cells
-sh1.b-size cells char/
-         constant sh1.b-csize      \ Size of input buffer in chars
+16 cells char/
+         constant sh1.b%    \ Size of input buffer in chars
          
 hex
 5A827999 constant sh1.k0
@@ -70,10 +68,10 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   cell:  sh1>h2
   cell:  sh1>h3
   cell:  sh1>h4
- sh1.w-size
+ sh1.w%
   cells: sh1>w
- sh1.b-size
-  cells: sh1>b               \ input buffer with data
+ sh1.b%
+  chars: sh1>b               \ input buffer with data
   cell:  sh1>length          \ total length of processed data
 ;struct
 
@@ -151,9 +149,9 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 
 : sh1-cmove        ( c-addr u w:sh1 - n:len f:full = Move characters from the string to the input buffer, update the length )
-  2dup sh1>length @ sh1.b-csize mod    \ index = sh1>length mod buf-size
-  tuck + sh1.b-csize >= >r >r          \ full  = (index + str-len >= buf-size )
-  swap sh1.b-csize r@ - min            \ copy-len = min(buf-size - index, str-len)
+  2dup sh1>length @ sh1.b% mod    \ index = sh1>length mod buf-size
+  tuck + sh1.b% >= >r >r          \ full  = (index + str-len >= buf-size )
+  swap sh1.b% r@ - min            \ copy-len = min(buf-size - index, str-len)
   2dup swap sh1>length +!              \ sh1>length += copy-len
   r> swap >r
   chars swap sh1>b + r@ cmove          \ copy(str->buf,copy-len)
@@ -231,7 +229,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   over chars +
   128 over c!                       \ Add 80h to buffer
   char+ 
-  swap 1+ sh1.b-csize swap - chars  \ Pad remaining with zero's
+  swap 1+ sh1.b% swap - chars  \ Pad remaining with zero's
   erase
 ;
 
@@ -263,19 +261,19 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 : sh1-finish       ( w:sh1 - u1 u2 u3 u4 u5 = Finish the SHA-1 calculation )
   >r
   
-  r@ sh1>length @ sh1.b-csize mod           \ index = sh1>length mod buf-size
+  r@ sh1>length @ sh1.b% mod           \ index = sh1>length mod buf-size
   
-  dup [ sh1.b-csize 2 cells - 1 chars - ] literal > IF
+  dup [ sh1.b% 2 cells - 1 chars - ] literal > IF
     r@ sh1>b sh1+pad                        \ If buffer is too full Then
     r@ sh1-transform                        \   Pad buffer and tranform
-    r@ sh1>b sh1.b-csize chars erase        \   Pad next buffer
+    r@ sh1>b sh1.b% chars erase        \   Pad next buffer
   ELSE                                      \ Else
     r@ sh1>b sh1+pad                        \   Pad buffer
   THEN
   
   r@ sh1>length @ sys.bits-in-char m*       \ Calculate bit length
   
-  [ sh1.b-csize 2 cells - ] literal chars   \ Index for bit length
+  [ sh1.b% 2 cells - ] literal chars   \ Index for bit length
   r@ sh1>b +                                \ Buffer location for bit length
   
   tuck sha! cell+ sha!                      \ Store the length
@@ -304,8 +302,8 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
   ." sh1:" r@ . cr
   ."  result :" r@ sh1>h0 @ r@ sh1>h1 @ r@ sh1>h2 @ r@ sh1>h3 @ r@ sh1>h4 @ sh1+to-string type cr
   ."  length :" r@ sh1>length ? cr
-  ."  buffer :" r@ sh1>b sh1.b-csize chars dump
-  ."  work   :" r> sh1>w sh1.w-size  cells dump
+  ."  buffer :" r@ sh1>b sh1.b% chars dump
+  ."  work   :" r> sh1>w sh1.w%  cells dump
 ;
 
 [ELSE]
