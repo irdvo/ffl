@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-28 18:01:55 $ $Revision: 1.26 $
+\  $Date: 2007-06-07 15:30:53 $ $Revision: 1.27 $
 \
 \ ==============================================================================
 
@@ -51,6 +51,7 @@ include rng_test.fs
 include scl_test.fs
 include snl_test.fs
 include sh1_test.fs
+include sh2_test.fs
 include str_test.fs
 include tis_test.fs
 include tmr_test.fs
