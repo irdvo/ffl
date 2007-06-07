@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 08:56:28 $ $Revision: 1.3 $
+\  $Date: 2007-06-07 15:30:53 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,7 +33,7 @@ include ffl/config.fs
 
 cell 4 =  1 chars 1 =  AND [IF]
 
-\ Based on the algoritms published in FIPS 180-1 and Wikipedia
+\ Based on the algoritms published in FIPS 180-2 and Wikipedia
 
 include ffl/stc.fs
 
@@ -85,7 +85,7 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
   cell:  sh2>g
   cell:  sh2>h
  sh2.work%
-  cells: sh2>work
+  cells: sh2>work            \ work buffer
  sh2.input%
   chars: sh2>input           \ input buffer with data
   cell:  sh2>length          \ total length of processed data
@@ -167,18 +167,17 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
   >r
   
   r@ sh2>work
-  r@ sh2>input 16 cell bounds DO       \ Move input (bigendian) in work buffer
+  r@ sh2>input 16 cells bounds DO      \ Move input (bigendian) in work buffer
     I sha@ over !
     cell+
   cell +LOOP                           \ S: sh2>work + 16 cells
      
-    
   48 cells bounds DO                   \ Extend 16 words in work buffer to 64 words in work buffer
     I 16 cells - @                     \ w[i] = w[i-16] + ..
     I 15 cells - @
-     dup   7 rroll
-     over 18 rroll  xor
-     swap 3  rshift xor +              \ .. + (w[i-15] rotr 7) xor (w[i-15] rotr 18) xor (w[i-15] rshift 3) + ..
+    dup   7 rroll
+    over 18 rroll  xor
+    swap 3  rshift xor +               \ .. + (w[i-15] rotr 7) xor (w[i-15] rotr 18) xor (w[i-15] rshift 3) + ..
     I 7  cells - @ +                   \ .. + w[i-7] + ..
     I 2  cells - @
     dup  17 rroll
@@ -190,28 +189,13 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
   r@ sh2>h0 r@ sh2>a 
   8 cells char/ move                   \ Initialise hash values: h0..h7 -> a..h
   
-  r@
+  r>
   sh2.work% cells 0 DO
-    I swap >r
+    sh2.k I + @                        \ k[i] + ..
+    over sh2>work I + @ +              \ .. + w[i] + ..
+    over sh2>h @ +                     \ w[i] + k[i] + h
     
-    r@ sh2>a @                         \ s0 = (a rotr 2) xor (a rotr 12) xor (a rotr 22)
-    dup   2 rroll
-    over 12 rroll xor
-    over 22 rroll xor
-    swap
-    
-    r@ sh2>b @                         \ maj = (a and b) xor (a and c) xor (b and c)
-    2dup
-    r@ sh2>c @
-    tuck
-    and >r and >r and r> xor r> xor
-    +                                  \ t1 = s0 + maj
-    
-    swap dup
-    sh2.k + @                          \ k[i]
-    swap r@ sh2>work + @               \ w[i]
-    +                                  \ w[i] + k[i]
-    r@ sh2>h @ +                       \ w[i] + k[i] + h
+    swap >r                            \ done with I, save sh2
     
     r@ sh2>e @                         \ s1 = (e rotr 6) xor (e rotr 11) xor (e rotr 25)
     dup   6 rroll
@@ -221,8 +205,20 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
     swap                               \ ch = (e and f) xor ((not e) and g)
     dup r@ sh2>f @ and
     swap invert r@ sh2>g @ and xor
+    + +                                \ t1 = w[i] + k[i] + h + s1 + ch
+
+    r@ sh2>a @                         \ s0 = (a rotr 2) xor (a rotr 12) xor (a rotr 22)
+    dup   2 rroll
+    over 13 rroll xor
+    over 22 rroll xor
+    swap
     
-    + +                                \ t2 = w[i] + k[i] + h + s1 + ch
+    r@ sh2>b @                         \ maj = (a and b) xor (a and c) xor (b and c)
+    2dup
+    r@ sh2>c @
+    tuck
+    and >r and >r and r> xor r> xor
+    +                                  \ t2 = s0 + maj
     
     over + r@ sh2>a
     tuck @! swap cell+                 \ a = t1 + t2
@@ -236,12 +232,13 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
     
     r>
   cell +LOOP
-    
-  r> sh2>a 8 cells bounds DO           \ Add hash values to current results
+  
+  dup sh2>h0
+  swap sh2>a 8 cells bounds DO              \ Add hash values to current results
     I @ over +!
     cell+
   cell +LOOP
-    
+  drop
 ;
 
 
@@ -323,7 +320,7 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
 : sh2-dump   ( w:sh2 - = Dump the sh2 state )
   >r
   ." sh2:" r@ . cr
-  ."  result :" r@ sh2>h0 @ r@ sh2>h1 @ r@ sh2>h2 @ r@ sh2>h3 @ r@ sh2>h4 @ sh2>h5 @ sh2>h6 @ sh2>h7 @ sh2+to-string type cr
+  ."  result :" r@ sh2>h0 @ r@ sh2>h1 @ r@ sh2>h2 @ r@ sh2>h3 @ r@ sh2>h4 @ r@ sh2>h5 @ r@ sh2>h6 @ r@ sh2>h7 @ sh2+to-string type cr
   ."  length :" r@ sh2>length ? cr
   ."  buffer :" r@ sh2>input sh2.input% chars dump
   ."  work   :" r> sh2>work sh2.work% cells dump
