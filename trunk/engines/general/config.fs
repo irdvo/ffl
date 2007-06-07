@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-13 05:30:41 $ $Revision: 1.5 $
+\  $Date: 2007-06-07 08:56:28 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -71,6 +71,16 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 ; immediate
 
 
+1 chars 1 = [IF]
+: char/            ( n:aus - n:chars = Convert address units to chars )
+; immediate
+[ELSE]
+: char/
+  1 chars /
+;
+[THEN]
+
+
 : rdrop            ( - ) 
   r> r> drop >r
 ;
@@ -83,7 +93,14 @@ sys.endian c@ 0=            constant sys.bigendian      ( - f = Check for bigend
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
-  [ cell 8 * ] literal swap - rshift r>
+  sys.bits-in-cell swap - rshift r>
+  or
+;
+
+
+: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+  2dup rshift >r
+  sys.bits-in-cell swap - lshift r>
   or
 ;
 
