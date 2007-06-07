@@ -1,4 +1,5 @@
 0.5.0
+* config.fs: new word char/ (2007-06-07)
 * config.fs: sys.bigendian -> bigendian? (2007-06-05)
 * sh2: new module (SHA-256) (2007-06-05)
 * config.fs: new word ?free for freeing memory blocks (2007-05-21)

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.1 $
+\  $Date: 2007-06-07 05:11:37 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -51,7 +51,7 @@ include ffl/stc.fs
 
 
 16       constant sh2.b-size       \ Size of input buffer in cells
-sh2.b-size cells 1 chars /
+sh2.b-size cells char/
          constant sh2.b-csize      \ Size of input buffer in chars
          
 create sh2.k
@@ -199,7 +199,7 @@ struct: sh2%       ( - n = Get the required space for the sha1 data structure )
   cell +LOOP
                                
   r@ sh2>h0 r@ sh2>a 
-  8 cells 1 chars / move       \ Initialise hash values: h0..h7 -> a..h
+  8 cells char/ move           \ Initialise hash values: h0..h7 -> a..h
   
   r@
   sh2.w-size cells 0 DO

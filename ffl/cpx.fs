@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-28 19:52:36 $ $Revision: 1.9 $
+\  $Date: 2007-06-07 05:11:36 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -384,7 +384,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
     nip
   THEN
   [char] j over c! char+
-  over - 1 chars /                     \ calculate number of chars
+  over - char/                         \ calculate number of chars
 ;
 
 

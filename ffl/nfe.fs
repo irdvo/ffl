@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-29 17:46:30 $ $Revision: 1.13 $
+\  $Date: 2007-06-07 05:11:37 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -175,8 +175,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 
 
 : nfe+copy-matches   ( w:from w:to n:number - = Copy number matches )
-  2* cells 
-  1 chars /
+  2* cells char/
   move
 ;
 
