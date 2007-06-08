@@ -78,19 +78,22 @@ At the moment there are four system setting:
 end-of-line
 
 This word defines the ascii end of line as a counted string. For unix this 
-is a linefeed, for dos systems it is carriage return and linefeed. You should 
-change the 'end-of-line' word if the default is not correct for you. For
-gforth the word 'newline' is used to determine the end of line. This is okee
-for all systems except dos. For bigforth, pfe, fina and minForth the default is 
-the unix end of line, for Win32Forth the default is dos.
+is a linefeed, for dos systems it is carriage return and linefeed. For
+gforth and fina the word 'newline' is used to determine the end of line.
+For bigforth, pfe and minForth the default is the unix end of line, for 
+Win32Forth the default is dos. You should change the 'end-of-line' word 
+if the default is not correct for you.
+
+Note: gforth 0.6.2 returns for dos an incorrect value for end-of-line, so
+if you use gforth 0.6.2 on dos, you should change the 'end-of-line' word.
 
 
 #bits/byte
 
-This word defines the number of bits in a byte. The config file queries the
+This word defines the number of bits in a byte. The library queries the
 forth environment for "address-unit-bits". If this is not present, the
-constant defaults to 8. In the unlikely event that your system does not
-support the environment query and the your system uses a different number of 
+value defaults to 8. In the unlikely event that your system does not
+support the environment query and your system uses a different number of 
 bits in a byte, then you should change this word.
 
 
