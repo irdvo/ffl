@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 08:56:28 $ $Revision: 1.9 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -261,19 +261,19 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 : sh1-finish       ( w:sh1 - u1 u2 u3 u4 u5 = Finish the SHA-1 calculation )
   >r
   
-  r@ sh1>length @ sh1.b% mod           \ index = sh1>length mod buf-size
+  r@ sh1>length @ sh1.b% mod                \ index = sh1>length mod buf-size
   
   dup [ sh1.b% 2 cells - 1 chars - ] literal > IF
     r@ sh1>b sh1+pad                        \ If buffer is too full Then
     r@ sh1-transform                        \   Pad buffer and tranform
-    r@ sh1>b sh1.b% chars erase        \   Pad next buffer
+    r@ sh1>b sh1.b% chars erase             \   Pad next buffer
   ELSE                                      \ Else
     r@ sh1>b sh1+pad                        \   Pad buffer
   THEN
   
-  r@ sh1>length @ sys.bits-in-char m*       \ Calculate bit length
+  r@ sh1>length @ #bits/char m*             \ Calculate bit length
   
-  [ sh1.b% 2 cells - ] literal chars   \ Index for bit length
+  [ sh1.b% 2 cells - ] literal chars        \ Index for bit length
   r@ sh1>b +                                \ Buffer location for bit length
   
   tuck sha! cell+ sha!                      \ Store the length

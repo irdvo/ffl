@@ -55,6 +55,7 @@ Index of used prefices
 3 md5 - MD5 module
 4 rng - Pseudo Random module
 4 sh1 - SHA1 module
+5 sh2 - SHA2 module
 4 tmr - Timer module
 ----- - ------------------------------------------------
       - Compound
@@ -102,7 +103,6 @@ Index of used prefices
 7 gzf - GZip file module
 7 gzp - GZip module
 6 htm - HTML module
-5 sh2 - SHA2 module
 6 xml - XML module / SAX module
 6 dom - XML-DOM module
       - css module

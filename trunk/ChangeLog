@@ -1,4 +1,7 @@
 0.5.0
+* config.fs: #bits/byte uses environment (2007-06-07)
+* config.fs: sys.eol -> end-of-line, sys.bits-in-byte -> #bits/byte,
+  sys.bits-in-char -> #bits/char, sys.bits-in-cell -> #bits/cell
 * config.fs: new word char/ (2007-06-07)
 * config.fs: sys.bigendian -> bigendian? (2007-06-05)
 * sh2: new module (SHA-256) (2007-06-05)

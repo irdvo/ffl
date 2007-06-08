@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2007-01-28 19:52:35 $ $Revision: 1.1 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
@@ -71,22 +71,26 @@ require timer.fs
 
 ( Private words )
 
-variable sys.endian   1 sys.endian !
+variable ffl.endian   1 ffl.endian !
 
 
 ( System Settings )
 
-create sys.eol     ( - c-addr = Counted string for the end of line for the current system )
+create end-of-line    ( - c-addr = Counted string for the end of line for the current system )
  newline s,
 
 
-8                            constant sys.bits-in-byte   ( - n = Number of bits in a byte )
+s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN] 
+  constant #bits/byte   ( - n = Number of bits in a byte )
+  
+#bits/byte 1 chars *
+  constant #bits/char   ( - n = Number of bits in a char )
+  
+#bits/byte cell *
+  constant #bits/cell   ( - n = Number of bits in a cell )  
 
-sys.bits-in-byte 1 chars *   constant sys.bits-in-char   ( - n = Number of bits in a char )
-
-sys.bits-in-byte cell *      constant sys.bits-in-cell   ( - n = Number of bits in a cell )
-
-sys.endian c@ 0=             constant sys.bigendian      ( - f = Check for bigendian hardware )
+ffl.endian c@ 0=             
+  constant bigendian?   ( - f = Check for bigendian hardware )
 
 
 ( Extension words )
@@ -106,8 +110,15 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
  2dup lshift >r
- sys.bits-in-cell swap - rshift r>
+ #bits/cell swap - rshift r>
  or
+;
+
+
+: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+  2dup rshift >r
+  #bits/cell swap - lshift r>
+  or
 ;
 
 
@@ -130,6 +141,15 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 
 : nil<>            ( w - f = Check for unequal to nil )
  nil <>
+;
+
+
+: ?free            ( addr - = Free the address [and throw] if not nil )
+  dup nil<> IF
+    free throw
+  ELSE
+    drop
+  THEN
 ;
 
 
