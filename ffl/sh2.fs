@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.5 $
+\  $Date: 2007-06-08 06:49:35 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -67,7 +67,7 @@ decimal
 
 ( SHA-256 structure )
 
-struct: sh2%   ( - n = Get the required space for the sha1 data structure )
+struct: sh2%   ( - n = Get the required space for the sha2 data structure )
   cell:  sh2>h0
   cell:  sh2>h1
   cell:  sh2>h2
@@ -92,7 +92,7 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
 ;struct
 
 
-( SHA-1 structure creation, initialisation and destruction )
+( SHA-256 structure creation, initialisation and cleanup )
 
 : sh2-init   ( w:sh2 - = Initialise the sh2 structure )
   [ hex ]
@@ -110,17 +110,17 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh2-create   ( C: "name" -  R: - w:sh2 = Create a named sha-256 structure in the dictionary )
+: sh2-create   ( C: "name" -  R: - w:sh2 = Create a named SHA-256 structure in the dictionary )
   create  here sh2% allot  sh2-init
 ;
 
 
-: sh2-new   ( - w:sh2 = Create a new sha-256 structure on the heap )
+: sh2-new   ( - w:sh2 = Create a new SHA-256 structure on the heap )
   sh2% allocate  throw   dup sh2-init
 ;
 
 
-: sh2-free   ( w:sh2 - = Free the sha-256 structure from the heap )
+: sh2-free   ( w:sh2 - = Free the SHA-256 structure from the heap )
   free throw
 ;
 
