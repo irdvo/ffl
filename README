@@ -8,8 +8,8 @@ a collection of words written in (ANS) Forth, in areas such as data types,
 collections, development support, interfaces and compound modules. The
 library is developped with gforth and pfe.
 
-At the moment the library is still under development. The FFL library and the 
-test files are licensed under the GNU GPL.
+At the moment the library is still under development. The FFL library, the 
+example and test files are licensed under the GNU GPL.
 
 
 Installation
@@ -23,13 +23,16 @@ In case of gforth the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/share/gforth/site-forth 
 
+
 In case of bigforth the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/lib/bigforth/src
 
+
 In case of pfe the 'ffl' directory (and its contents) should be copied to:
 
 /usr/local/share/pfe
+
 
 In case of Win32Forth the 'ffl' directory (and its contents) should be
 copied to:
@@ -38,6 +41,7 @@ copied to:
 
 (with <drive> the drive where Win32 is installed, normally this is 'C', or 
 in a directory that is in the search path of Win32Forth.)
+
 
 In case of minForth the 'ffl' directory (and its contents) should be 
 copied to your forth working directory.
@@ -71,29 +75,32 @@ The next step is editing the config.fs file for system settings.
 
 At the moment there are four system setting: 
 
-sys.eol 
+end-of-line
 
 This word defines the ascii end of line as a counted string. For unix this 
 is a linefeed, for dos systems it is carriage return and linefeed. You should 
-change the 'sys.eol' word if the default is not correct for you. For gforth, 
-bigforth and pfe the default is unix end of line, for Win32Forth the default 
-is dos. For minForth the default is unix.
+change the 'end-of-line' word if the default is not correct for you. For
+gforth the word 'newline' is used to determine the end of line. This is okee
+for all systems except dos. For bigforth, pfe, fina and minForth the default is 
+the unix end of line, for Win32Forth the default is dos.
 
 
-sys.bits-in-byte
+#bits/byte
 
-This word defines the number of bits in a byte. The default is 8. If your
-system uses a different number of bits in a byte, then you should change
-this word.
+This word defines the number of bits in a byte. The config file queries the
+forth environment for "address-unit-bits". If this is not present, the
+constant defaults to 8. In the unlikely event that your system does not
+support the environment query and the your system uses a different number of 
+bits in a byte, then you should change this word.
 
 
-sys.bits-in-cell
+#bits/cell
 
 This word defines the number of bits in a cell. The default is the number of
 bits in a byte multipied by the number of bytes in a cell.
 
 
-sys.bits-in-char
+#bits/char
 
 This word defines the number of bits in a char. The default is the number of
 bits in a byte multipied by the number of bytes in a char.
@@ -136,6 +143,7 @@ in the 'ffl' directory.
 Step three is to start the minForth engine (mf) and enter 
 'include ffl_test.fs'.
 
+
 The program will tell you which modules are tested and if there were any
 errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
 then all went well.
@@ -148,16 +156,14 @@ In the directory 'html' there is the HTML documentation of the library. The
 file 'index.html' contains an overview of all the modules in the library. In 
 the file 'words.html' all words of the libary are alphabetically listed.
 
-On the site there is also a manual. This manual is actually a wiki, so not
-only can you look for more information there, but you can also improve the
-manual.
+On the site there is also a manual. 
 
 
 Porting to other forth systems
 ------------------------------
 
 The library is developped on gforth and pfe. The intention is that only two 
-files are dependant of the (ANS) forth system:
+files are dependant on the (ANS) forth system:
 
  ./ffl/config.fs
  ./ffl/make.fs

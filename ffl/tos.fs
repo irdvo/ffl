@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:30 $ $Revision: 1.10 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -150,7 +150,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 
 : tos-write-line    ( w:tos - = Write end-of-line from config to the stream, not alignable )
-  sys.eol
+  end-of-line
   count bounds ?DO
     I c@ over tos-write-char
   1 chars +LOOP

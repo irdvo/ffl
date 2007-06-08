@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-06 06:28:00 $ $Revision: 1.11 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -331,7 +331,7 @@ decimal
 : md5-finish       ( w:md5 - u1 u2 u3 u4 = Finish the MD5 calculation )
   >r
   r@ md5>length @ dup
-  sys.bits-in-byte m* swap md5.length \ save the bit length
+  #bits/byte m* swap md5.length    \ save the bit length
   tuck md5! cell+ md5!
   
   md5.byte-size mod 

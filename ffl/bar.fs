@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.8 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -61,7 +61,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   >r
   1 max                      \ at least one bit in the array
   
-  dup sys.bits-in-char
+  dup #bits/char
   /mod swap 0<> IF
     1+
   THEN
@@ -125,7 +125,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
   
   0= exp-index-out-of-range AND throw
   
-  sys.bits-in-byte /mod      \ mask and offset
+  #bits/byte /mod            \ mask and offset
   
   swap 1 swap lshift         \ Convert remainder to bit mask
   
@@ -135,7 +135,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 : bar-next-bit     ( u:mask w:addr - u:mask w:addr = Move mask and address to the next bit )
   swap dup 
-  [ 1 sys.bits-in-char 1- lshift ] literal = IF   \ 128
+  [ 1 #bits/char 1- lshift ] literal = IF   \ 128
     drop 1
     swap char+
   ELSE

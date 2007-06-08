@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 15:30:53 $ $Revision: 1.4 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -288,7 +288,7 @@ struct: sh2%   ( - n = Get the required space for the sha1 data structure )
     r@ sh2>input sh2+pad                    \   Pad buffer
   THEN
   
-  r@ sh2>length @ sys.bits-in-char m*       \ Calculate bit length
+  r@ sh2>length @ #bits/char m*             \ Calculate bit length
   
   [ sh2.input% 2 cells - ] literal chars    \ Index for bit length
   r@ sh2>input +                            \ Buffer location for bit length

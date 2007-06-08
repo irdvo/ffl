@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-11 18:14:53 $ $Revision: 1.7 $
+\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -44,7 +44,7 @@ include ffl/chr.fs
 
 ( Private constant )
 
-128 sys.bits-in-char / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars / bytes in char
+128 #bits/char / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars )
   
   
 ( Character Set Structure )
@@ -97,7 +97,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 : chs-address      ( c w:chs - u:mask w:addr = Determine mask and array address for character )
   >r
-  sys.bits-in-char /mod           \ Mask and offset
+  #bits/char /mod           \ Mask and offset
   swap 1 swap lshift
   swap chars r> chs>set + 
 ;
