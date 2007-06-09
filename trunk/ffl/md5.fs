@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.12 $
+\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -372,7 +372,7 @@ decimal
 ;
 
 [ELSE]
-.( Warning: md5 only works with 4 byte cells and 1 byte chars ) cr
+.( Warning: md5 requires 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]

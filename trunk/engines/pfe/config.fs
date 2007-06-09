@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.10 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 \
@@ -124,11 +124,6 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
-  d<>
-;
-
-
 : sgn              ( n - n = Determine the sign of the number )
   dup 0= IF 
     EXIT 
@@ -160,11 +155,11 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free
   ELSE
-    drop
+    drop 0
   THEN
 ;
 

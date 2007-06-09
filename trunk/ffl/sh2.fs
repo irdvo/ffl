@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:49:35 $ $Revision: 1.6 $
+\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -47,10 +47,10 @@ include ffl/stc.fs
 
 ( Private constants )
 
-64       constant sh2.work%        \ Size of work buffer in cells
+64 constant sh2.work%        \ Size of work buffer in cells
 
 16 cells char/
-         constant sh2.input%       \ Size of input buffer in chars
+   constant sh2.input%       \ Size of input buffer in chars
          
 create sh2.k
 hex
@@ -251,9 +251,11 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2+#s   ( u - Put a single SHA-256 result in the hold area )
+[UNDEFINED] sha+#s [IF]
+: sha+#s   ( u - Put a single SHA result in the hold area )
   0 # # # # # # # # 2drop
 ;
+[THEN]
 
 
 ( SHA-256 words )
@@ -310,7 +312,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 
 : sh2+to-string   ( u1 u2 u3 u4 u5 u6 u7 u8 - c-addr u = Convert SHA-256 result to string, using the pictured output area )
   base @ >r hex
-  <#  sh2+#s sh2+#s sh2+#s sh2+#s sh2+#s sh2+#s sh2+#s sh2+#s 0. #>
+  <#  sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s 0. #>
   r> base !
 ;
 

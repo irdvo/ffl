@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.12 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 \
@@ -91,10 +91,6 @@ ffl.endian c@ 0=
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
 
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
-;
-
 
 : ms@              ( - u = Fetch milliseconds timer )
   msecs
@@ -133,11 +129,6 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 ;
 
 
-: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
-  d<>
-;
-
-
 : sgn              ( n - n = Determine the sign of the number )
   dup 0= IF 
     EXIT 
@@ -169,11 +160,11 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free 
   ELSE
-    drop
+    drop 0
   THEN
 ;
 
