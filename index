@@ -73,8 +73,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Data type
 ----- - ------------------------------------------------
-6 clr - Color module
-5 dts - Datetime text stream
+7 clr - Color module
 9     - Big Number module
 9     - Big Float module
 9     - Big Fraction module
@@ -91,6 +90,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
+6 stc - ANS structures
 6 log - Logger module
   hlp - Manual/help/info module
 ----- - ------------------------------------------------
@@ -118,6 +118,7 @@ A     - Font ??
       - Compound
 ----- - ------------------------------------------------
 6 arg - Argument parser
+6 dts - Datetime text stream
   gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
       - Components

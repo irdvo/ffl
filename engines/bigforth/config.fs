@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.13 $
+\  $Date: 2007-06-09 18:34:14 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 \
@@ -85,19 +85,11 @@ ffl.endian c@ 0=
 
 
 : ms@                                                    ( - u = Fetch milliseconds timer )
-  utime 1 1000 m*/ drop 
+  timer@ >us 1 1000 m*/ drop 
 ;
 
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
-
-
-: ms@              ( - u = Fetch milliseconds timer )
-  msecs
-;
-
-
-s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milliseconds timer )
 
 
 1 chars 1 = [IF]
@@ -186,6 +178,14 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Maximum value of the milli
 
 : @!               ( w a - w = First fetch the contents and then store the new value )
   dup @ -rot !
+;
+
+
+: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
+  caps @ >r
+  caps on
+  compare
+  r> caps !
 ;
 
 

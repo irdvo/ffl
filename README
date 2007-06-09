@@ -46,9 +46,12 @@ in a directory that is in the search path of Win32Forth.)
 In case of minForth the 'ffl' directory (and its contents) should be 
 copied to your forth working directory.
 
-
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.
+
+Note: at this moment (2006-06-11) fina is not yet released, so any
+installation and configuration directives are not possible. The config.fs
+file for fina is also preliminary.
 
 
 Configuration
@@ -138,8 +141,9 @@ Use 'include ffl_test.fs' to run the tests.
 
 For running the tests the minForth engine is too small configured.
 The first step is to extend the engine by editing the kernel.mfc file from
-minForth. Change in this file the NAMES to 512000, the HEAP to 640000 and
-the LIMIT to 1000000. Then rebuild the minForth engine.
+minForth. Change in this file the NAMES to 512000, the HEAP to 640000, the 
+LIMIT to 1000000, the SPMAX to 256 and the RPMAX to 256. Then rebuild the 
+minForth engine.
 Step two is to copy this new engine (mf and mf.i) to a directory with the
 test sources. Also make sure that in this directory the ffl is installed
 in the 'ffl' directory.
@@ -186,6 +190,7 @@ Bugs
 Because the library is still beta it is not impossible that you will find 
 bugs. You can send them or any suggestions to the email address which is 
 listed on the site: ffl.dvoudheusden.net.
+
 
 Thanks.
 Dick van Oudheusden
