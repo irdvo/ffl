@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.11 $
+\  $Date: 2007-06-09 18:34:14 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 \
@@ -62,7 +62,7 @@ s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN]
 #bits/byte 1 chars *
   constant #bits/char   ( - n = Number of bits in a char )
   
-#bits/byte cell *
+#bits/byte 1 cells *
   constant #bits/cell   ( - n = Number of bits in a cell )  
 
 ffl.endian c@ 0=             
@@ -179,6 +179,21 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
+: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
+  rot swap 2swap 2over
+  min 0 ?DO
+    over c@ toupper over c@ toupper - sgn ?dup IF
+      >r 2drop 2drop r>
+      unloop 
+      exit
+    THEN
+    1 chars + swap 1 chars + swap
+  LOOP
+  2drop
+  - sgn
+;
+
+
 : <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
   2dup = IF 
     2drop 0 EXIT 
@@ -209,6 +224,11 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 
 
 ( Float extension words )
+
+: float
+  1 floats
+;
+
 
 : f>r
   r> rp@ 1 floats - rp! rp@ f! >r 

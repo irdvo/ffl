@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.3 $
+\  $Date: 2007-06-09 18:34:14 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 \
@@ -96,11 +96,21 @@ ffl.endian c@ 0=
 ( Extension words )
 
 : ms@                                        ( - u = Fetch milliseconds timer )
- nstime 1 1000000 m*/ drop
+  nstime 1 1000000 m*/ drop
 ;
 
 
 s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the milliseconds timer )
+
+
+1 chars 1 = [IF]
+: char/            ( n:aus - n:chars = Convert address units to chars )
+; immediate
+[ELSE]
+: char/
+  1 chars /
+;
+[THEN]
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
