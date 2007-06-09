@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 05:11:37 $ $Revision: 1.14 $
+\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -114,9 +114,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 : nfe-free   ( w:nfe - = Free the nfe structure from the heap )
   dup nfe>expression @ nfe+free-expression
   
-  dup nfe>thread1 @ ?free
-  dup nfe>thread2 @ ?free
-  dup nfe>matches @ ?free
+  dup nfe>thread1 @ ?free throw
+  dup nfe>thread2 @ ?free throw
+  dup nfe>matches @ ?free throw
   
   free throw
 ;
@@ -320,9 +320,9 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ( Expression building words )
 
 : nfe-clear   ( w:nfe - = Clear the expression )
-  dup nfe>thread1 @ ?free
-  dup nfe>thread2 @ ?free
-  dup nfe>matches @ ?free
+  dup nfe>thread1 @ ?free throw
+  dup nfe>thread2 @ ?free throw
+  dup nfe>matches @ ?free throw
   
   dup nfe-expression@ nfe+free-expression
   

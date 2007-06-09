@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.2 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 \
@@ -103,11 +103,6 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the milliseconds timer )
 
 
-: 2+               ( n - n+2 = Add two to tos)
- 1+ 1+
-;
-
-
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
  2dup lshift >r
  #bits/cell swap - rshift r>
@@ -144,11 +139,11 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free 
   ELSE
-    drop
+    drop 0
   THEN
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.37 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.38 $
 \
 \ ==============================================================================
 \
@@ -47,7 +47,7 @@ variable ffl.endian   1 ffl.endian !
 ( System Settings )
 
 create end-of-line    ( - c-addr = Counted string for the end of line for the current system )
-  newline string,    \ All hosts except dos  (Anton Ertl)
+  newline string,    \ All hosts except dos  (gforth 0.6.2)
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
 
 
@@ -72,11 +72,6 @@ ffl.endian c@ 0=
 
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
-
-
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
-;
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
@@ -113,11 +108,11 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free
   ELSE
-    drop
+    drop 0
   THEN
 ;
 

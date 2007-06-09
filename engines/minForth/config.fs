@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.2 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 \
@@ -103,11 +103,6 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 ;
 
 
-: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
-  d<>
-;
-
-
 : u<=              ( u u - f = Compare for smaller equal )
   u> 0=
 ;
@@ -144,11 +139,11 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free
   ELSE
-    drop
+    drop 0
   THEN
 ;
 

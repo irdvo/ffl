@@ -131,13 +131,14 @@ A     - Font ??
 
 ToDo
 ----
-cpx: cotan ?
-stc: union,enum
-frc: lcm
-cfg: newline
-cfg: sys.* -> *
-rgx: ^ en $
-rgx: []
-rgx: [[]]
+[ ] cpx: cotan ?
+[ ] stc: union,enum
+[ ] frc: lcm
+[x] cfg: newline
+[x] cfg: sys.* -> *
+[ ] rgx: ^ en $
+[ ] rgx: []
+[ ] rgx: [[]]
+[ ] cfg: nil<>? ( addr - false | addr true )
 
 fce: config.fs/make.fs naar cvs

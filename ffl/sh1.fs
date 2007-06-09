@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.10 $
+\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -234,9 +234,11 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1+#s       ( u - Put a single SHA-1 result in the hold area )
+[UNDEFINED] sha+#s [IF]
+: sha+#s       ( u - Put a single SHA result in the hold area )
   0 # # # # # # # # 2drop
 ;
+[THEN]
 
 
 ( SHA-1 words )
@@ -290,7 +292,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 : sh1+to-string    ( u1 u2 u3 u4 u5 - c-addr u = Convert SHA-1 result to string, using the pictured output area )
   base @ >r hex
-  <#  sh1+#s sh1+#s sh1+#s sh1+#s sh1+#s 0. #>
+  <#  sha+#s sha+#s sha+#s sha+#s sha+#s 0. #>
   r> base !
 ;
 

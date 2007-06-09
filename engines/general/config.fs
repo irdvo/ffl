@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.7 $
+\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 \
@@ -91,11 +91,6 @@ ffl.endian c@ 0=
 ;
 
 
-: 2+               ( n - n+2 = Add two to tos)
-  1+ 1+
-;
-
-
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r
   #bits/cell swap - rshift r>
@@ -127,11 +122,6 @@ ffl.endian c@ 0=
 
 : d<>              ( d d - f = Check if two two double are unequal )
   d= 0=
-;
-
-
-: du<>             ( ud ud - f = Check if two unsigned doubles are unequal )
-  d<>
 ;
 
 
@@ -180,11 +170,11 @@ ffl.endian c@ 0=
 ;
 
 
-: ?free            ( addr - = Free the address [and throw] if not nil )
+: ?free            ( addr - wior = Free the address if not nil )
   dup nil<> IF
-    free throw
+    free
   ELSE
-    drop
+    drop 0
   THEN
 ;
 

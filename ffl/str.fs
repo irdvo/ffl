@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-21 19:07:24 $ $Revision: 1.19 $
+\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.20 $
 \
 \ ==============================================================================
 
@@ -98,9 +98,9 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-free         ( w:str - = Free the string from the heap )
-  dup str-data@ ?free   \ Free string data
+  dup str-data@ ?free throw  \ Free string data
   
-  free throw            \ Free struct
+  free throw                 \ Free struct
 ;
 
 
