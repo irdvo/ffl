@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-14 06:27:42 $ $Revision: 1.2 $
+\  $Date: 2007-06-11 05:07:03 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/ncn.fs
 1 constant nct.version
 
 
-( Pivate words )
+( Private words )
 
 : nct-delete-children ( w:dnl - = Delete all nodes [children] in the list )
   BEGIN

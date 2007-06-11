@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.15 $
+\  $Date: 2007-06-11 05:07:03 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -384,7 +384,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;  
 
 
-: nfe-zero-or-more   ( w:outs w:start w:nfe - w:outs w:start = Repeat nfe zero or more [*] times )
+: nfe-zero-or-more   ( w:outs w:start w:nfe - w:outs w:start = Repeat the expression zero or more [*] times )
   nil nfs.split rot
   nfe-new-nfs             \ new split state
   tuck nfs-out1!          \ split.out1 = start (lazy: nfs-out2)
@@ -395,7 +395,7 @@ struct: nfe%       ( - n = Get the required space for the nfe data structure )
 ;
 
 
-: nfe-one-or-more   ( w:outs w:start w:nfe - w:outs w:start = Repeat nfe one or more [+] times )
+: nfe-one-or-more   ( w:outs w:start w:nfe - w:outs w:start = Repeat the expression one or more [+] times )
   swap >r
   nil nfs.split rot
   nfe-new-nfs             \ new split state
