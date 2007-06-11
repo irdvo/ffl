@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-05-27 10:02:13 $ $Revision: 1.4 $
+\  $Date: 2007-06-11 05:07:03 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -57,8 +57,8 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 1 constant nfs.char   ( - n = State type char, data = char )
 2 constant nfs.any    ( - n = State type any, no data )
 3 constant nfs.class  ( - n = State type class, data = chs )
-4 constant nfs.lparen ( - n = State type left paren, no data )
-5 constant nfs.rparen ( - n = State type right paren, no data )
+4 constant nfs.lparen ( - n = State type left paren, data = paren level )
+5 constant nfs.rparen ( - n = State type right paren, data = paren level )
 6 constant nfs.split  ( - n = State type split, no data )
 7 constant nfs.match  ( - n = State type match, no data )
 
