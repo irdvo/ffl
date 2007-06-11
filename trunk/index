@@ -117,9 +117,9 @@ A     - Font ??
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
-6 arg - Argument parser
+  arg - Argument parser
 6 dts - Datetime text stream
-  gps - nmea handling, distance calculation
+6 gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------
@@ -141,5 +141,6 @@ ToDo
 [ ] rgx: []
 [ ] rgx: [[]]
 [ ] cfg: nil<>? ( addr - false | addr true )
+[ ] col: execute?
 
-fce: config.fs/make.fs naar cvs
+alf: config.fs/make.fs naar cvs
