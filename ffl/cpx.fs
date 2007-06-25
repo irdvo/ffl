@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 05:11:36 $ $Revision: 1.10 $
+\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -61,8 +61,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 ( Complex structure creation, initialisation and destruction )
 
 : cpx-init         ( w:cpx - = Initialise the zero complex number )
-  dup  0e0 cpx>re f!
-       0e0 cpx>im f!
+  dup  0E+0 cpx>re f!
+       0E+0 cpx>im f!
 ;
 
 
@@ -159,13 +159,13 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+sqrt         ( r:re r:im - r:re r:im = Calculate the square root for the complex number on stack )
   fswap
   f2dup fswap cpx+abs                  \ r = abs(re,im)
-  fover fabs f+ 2e0 f/ fsqrt           \ r = sqrt(0.5*(r+abs(re)))
+  fover fabs f+ 2E+0 f/ fsqrt          \ r = sqrt(0.5*(r+abs(re)))
   fdup f0= IF                          \ if r = 0 then
     fdrop fdrop fdrop                  \   re = 0
-    0e0 0e0                            \   im = 0
+    0E+0 0E+0                          \   im = 0
   ELSE
     fswap f0< IF                       \ else if re < 0
-      fover fabs fover f/ 2e0 f/       \   re = 0.5*(fabs(im)/r)
+      fover fabs fover f/ 2E+0 f/      \   re = 0.5*(fabs(im)/r)
       frot f0< IF                      \   if im < 0
         fswap                          \     im = -r
         fnegate
@@ -174,7 +174,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
       THEN
     ELSE                               \ else if re >= 0
       fswap                            \   re = r
-      fover f/ 2e0 f/                  \   im = 0.5*(im/r)
+      fover f/ 2E+0 f/                 \   im = 0.5*(im/r)
     THEN
   THEN
 ;
@@ -190,15 +190,15 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+ln           ( r:re r:im - r:re r:im = Calculate the natural logarithm for the complex number on stack )
   f2dup cpx+nrm                        \ r = nrm
-  fln 2e0 f/                           \ im = 0.5*ln(r)
+  fln 2E+0 f/                          \ im = 0.5*ln(r)
   f-rot fswap fatan2                   \ re = atan2(im,re)
 ;
 
 
 : cpx+sin          ( r:re r:im - r:re r:im = Calculate the trigonometric functions sine for the complex number on stack )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
-  frot fdup 1e0 fswap f/               \ v = 1 / u
-  ftuck f+ 2e0 f/                      \ u = 1/2 * (u+v)
+  frot fdup 1E+0 fswap f/              \ v = 1 / u
+  ftuck f+ 2E+0 f/                     \ u = 1/2 * (u+v)
   fdup frot f-                         \ v = u - v
   frot f*                              \ im = v * cos(re)
   f-rot f* fswap                       \ re = u * sin(re)
@@ -207,8 +207,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+cos          ( r:re r:im - r:re r:im = Calculate the trigonometric functions cosine for the complex number on stack)
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
-  frot fdup 1e0 fswap f/               \ v = 1 / u
-  ftuck f+ 2e0 f/                      \ u = 1/2 * (u+v)
+  frot fdup 1E+0 fswap f/              \ v = 1 / u
+  ftuck f+ 2E+0 f/                     \ u = 1/2 * (u+v)
   fdup frot f-                         \ v = u - v
   f>r f*                               \ re = u * cos(re)
   fswap fr> f* fnegate                 \ im = -v * sin(re)
@@ -217,8 +217,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+tan          ( r:re r:im - r:re r:im = Calculate the trigonometric functions trangent for the complex number on stack )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re) 
-  frot fdup 1e0 fswap f/               \ v = 1/u
-  ftuck f+ 2e0 f/                      \ u = (u+v)/2
+  frot fdup 1E+0 fswap f/              \ v = 1/u
+  ftuck f+ 2E+0 f/                     \ u = (u+v)/2
   fdup frot f-                         \ v = u - v
   frot fswap
   fover fdup f*                        \ c * c
@@ -233,8 +233,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+asin         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function sine for the complex number on stack )
   f2dup
   f2dup cpx+mul                        \ w = re,im * re,im
-  1e0 f-rot 
-  0e0 f-rot cpx+sub                    \ u = 1,0 - w
+  1E+0 f-rot 
+  0E+0 f-rot cpx+sub                   \ u = 1,0 - w
   cpx+sqrt                             \ u = sqrt(u)
   fswap frot f-                        \ v.re = u.re - im
   f-rot f+                             \ v.im = u.im + re
@@ -246,8 +246,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+acos         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function cosine for the complex number on stack)
   f2dup
   f2dup cpx+mul                        \ w = re,im * re,im
-  1e0 f-rot 
-  0e0 f-rot cpx+sub                    \ u = 1,0 - w
+  1E+0 f-rot 
+  0E+0 f-rot cpx+sub                   \ u = 1,0 - w
   cpx+sqrt                             \ u = sqrt(u)
   fswap frot f+                        \ re = re - v.im
   f-rot f-                             \ im = im + v.re
@@ -259,10 +259,10 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+atan         ( r:re r:im - r:re r:im = Calculate the inverse trigonometric function tangent for the complex number on stack )
   fnegate fswap                        \ u = -im,re
-  f>r f>r 1e0 0e0 fr> fr>
+  f>r f>r 1E+0 0E+0 fr> fr>
   f2dup f>r f>r
   cpx+add                              \ s = 1,0 + u
-  1e0 0e0 fr> fr> 
+  1E+0 0E+0 fr> fr> 
   cpx+sub                              \ w = 1,0 - u
   cpx+div                              \ s = s \ w
   cpx+ln                               \ s = ln(s)
@@ -273,8 +273,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+sinh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function sine for the complex number on stack )
   fsincos                              \ sin(im) cos(im)
   frot fexp                            \ u = exp(re)
-  1e0 fover f/                         \ v = 1/u
-  ftuck f+ 2e0 f/                      \ u = 0.5*(u+v)
+  1E+0 fover f/                        \ v = 1/u
+  ftuck f+ 2E+0 f/                     \ u = 0.5*(u+v)
   fdup frot f-                         \ v = u-v                
   frot f*                              \ re = cos(im) * v
   f-rot f*                             \ im = sin(im) * u
@@ -284,8 +284,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+cosh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function cosine for the complex number on stack )
   fsincos                              \ sin(im) cos(im)
   frot fexp                            \ u = exp(re)
-  1e0 fover f/                         \ v = 1/u
-  ftuck f+ 2e0 f/                      \ u = 0.5*(u+v)
+  1E+0 fover f/                        \ v = 1/u
+  ftuck f+ 2E+0 f/                     \ u = 0.5*(u+v)
   fdup frot f-                         \ v = u-v
   fswap frot f*                        \ re = cos(im) * u
   f-rot f*                             \ im = sin(im) * v
@@ -295,8 +295,8 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+tanh         ( r:re r:im - r:re r:im = Calculate the hyperbolic function tangent for the complex number on stack )
   fsincos                              \ s = sin(im) c = cos(im)
   frot fexp                            \ u = exp(re)
-  1e0 fover f/                         \ v = 1/u
-  ftuck f+ 2e0 f/                      \ u = 0.5*(u+v)
+  1E+0 fover f/                        \ v = 1/u
+  ftuck f+ 2E+0 f/                     \ u = 0.5*(u+v)
   fdup frot f-                         \ v = u-v
   frot fover fdup f*
   fover fdup f* f+ f>r                 \ d = c*c+v*v
@@ -308,7 +308,7 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 : cpx+asinh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function sine for the complex number on stack )
   f2dup                                \ w = (re,im)
   f2dup cpx+mul                        \ w = w * w
-  1e0 0e0 cpx+add                      \ u = (1,0) + w
+  1E+0 0E+0 cpx+add                    \ u = (1,0) + w
   cpx+sqrt                             \ u = sqrt(u)
   cpx+add                              \ (re,im) = (re,im) + u
   cpx+ln                               \ (re,im) = ln(re,im)
@@ -317,10 +317,10 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+acosh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function cosine for the complex number on stack )
   f2dup
-  f0= -1e0 f< AND                      \ f = (im = 0) AND (re < -1)
+  f0= -1E+0 f< AND                     \ f = (im = 0) AND (re < -1)
   f2dup                                \ w = (re,im)
   f2dup cpx+mul                        \ w = w * w
-  1e0 0e0 cpx+sub                      \ w = w - (1,0)
+  1E+0 0E+0 cpx+sub                    \ w = w - (1,0)
   cpx+sqrt                             \ w = sqrt(w)
   cpx+add                              \ w = (re,im) + w
   cpx+ln                               \ w = ln(w)
@@ -336,11 +336,11 @@ struct: cpx%       ( - n = Get the required space for the cpx data structure )
 
 : cpx+atanh        ( r:re r:im - r:re r:im = Calculate the inverse hyperbolic function tangent for the complex number on stack )
   f2dup f>r f>r
-  1e0 0e0 cpx+add                      \ u = (1,0) + (re,im)
-  1e0 0e0 fr> fr> cpx+sub              \ w = (1,0) - (re,im)
+  1E+0 0E+0 cpx+add                    \ u = (1,0) + (re,im)
+  1E+0 0E+0 fr> fr> cpx+sub            \ w = (1,0) - (re,im)
   cpx+div                              \ u = u / w
   cpx+ln                               \ u = ln(u)
-  0.5e0 cpx+rmul                       \ re,im = 0.5 * u
+  0.5E+0 cpx+rmul                      \ re,im = 0.5 * u
 ;
 
 

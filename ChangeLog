@@ -1,3 +1,5 @@
+0.6.0
+* config.fs: 0e0->0E+0, 1e0->1E+0, 2e0->2E+0 (2007-06-25)
 0.5.0
 * config.fs: #bits/byte uses environment (2007-06-07)
 * config.fs: sys.eol -> end-of-line, sys.bits-in-byte -> #bits/byte,
