@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:43 $ $Revision: 1.38 $
+\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.39 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000500 constant ffl.version
+000600 constant ffl.version
 
 
 ( Private words )
@@ -168,11 +168,11 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 
 ( Float extension constants )
 
-0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
+0E+0 fconstant 0e+0  ( - r:0e0 = Float constant 0.0 )
 
-1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+1E+0 fconstant 1e+0  ( - r:1e0 = Float constant 1.0 )
 
-2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+2E+0 fconstant 2e+0  ( - r:2e0 = Float constant 2.0 )
 
 
 ( Float extension words )
