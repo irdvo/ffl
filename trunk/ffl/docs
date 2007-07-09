@@ -1,4 +1,4 @@
 #/bin/sh
 
-ofcfrth --dir=../html --exa=../examples *.fs
-ofcfrth --dir=../webpage/docs --exa=../examples *.fs
+ofcfrth --title="Forth Foundation Library" --dir=../html --exa=../examples *.fs
+ofcfrth --title="Forth Foundation Library" --dir=../webpage/docs --exa=../examples *.fs

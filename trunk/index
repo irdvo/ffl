@@ -60,6 +60,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
+6 arg - Argument parser
 5 nfe - non-deterministic finite automate expression
 5 nfs - non-deterministic finite automata state
 5 rgx - Regular expression module
@@ -117,7 +118,6 @@ A     - Font ??
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
-  arg - Argument parser
 6 dts - Datetime text stream
 6 gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
