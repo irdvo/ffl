@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 15:30:53 $ $Revision: 1.27 $
+\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.28 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ tst-reset-tests
 
 \ the test sources
 include act_test.fs
+include arg_test.fs
 include bar_test.fs
 include bct_test.fs
 include car_test.fs

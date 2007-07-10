@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-09 17:38:09 $ $Revision: 1.1 $
+\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,6 +30,9 @@ include ffl/config.fs
 
 [UNDEFINED] arg.version [IF]
 
+[DEFINED] #args [DEFINED] arg AND [IF]
+
+
 include ffl/snl.fs
 include ffl/str.fs
 
@@ -37,9 +40,30 @@ include ffl/str.fs
 ( The arg parser module implements words for parsing command line arguments. )
 ( Due to the fact that the ANS standard does not specify words for arguments )
 ( this module has a environmental dependency.                                )
+( <pre>                                                                      )
+(                                                                            )
+(     Supported option formats:                                              )
+(        -v            short switch option                                   )
+(        -f a.txt      short option with parameter                           )
+(        -vq           multiple short swith options                          )
+(        --file=a.txt  long option with parameter                            )
+(        --verbose     long switch option                                    )
+(        --            stop parsing arguments                                )
+( </pre>                                                                     )
 
 
 1 constant arg.version
+
+
+
+( Global setting )
+
+[DEFINED] cols [IF]
+ 0 VALUE arg.cols    ( - n = Value with the number of columns for parser output [0=use cols word] )
+[ELSE]
+80 VALUE arg.cols
+[THEN]
+
 
 
 ( Private structure )
@@ -56,31 +80,60 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ;struct
 
 
-: arg-opt-init   ( c-addr:descr u c-addr:long u c:short f:switch w:data xt:callback w:opt - = Initialise the arg>opt structure )
+: arg-opt-init   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback w:opt - = Initialise the arg>opt structure )
   >r
-  r@ arg>opt>snn    snn-init
+  r@ arg>opt>snn      snn-init
   r@ arg>opt>xt     !
   r@ arg>opt>data   !
   r@ arg>opt>switch !
-  r@ arg>opt>short  c!
+  str-new dup 
+  r@ arg>opt>descr  ! str-set
   str-new dup 
   r@ arg>opt>long   ! str-set
-  str-new dup 
-  r> arg>opt>descr  ! str-set
+  r> arg>opt>short c!
 ;
 
 
-: arg-opt-new   ( c-addr:descr u c-addr:long u c:short f:switch xt - w:opt = Create a new arg-opt structure on the heap )
+: arg-opt-new   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback - w:opt = Create a new arg-opt structure on the heap )
   arg%opt% allocate  throw   >r r@ arg-opt-init r>
 ;
 
 
 : arg-opt-free   ( w:opt - = Free the arg.opt structure from the heap )
-  dup arg>opt>long  str-free
-  dup arg>opt>descr str-free
+  dup arg>opt>long  @ str-free
+  dup arg>opt>descr @ str-free
     
   free throw
 ;
+
+
+: arg-opt-print   ( n:length w:opt - n:length = Print one argument option )
+  >r
+  2 spaces
+  r@ arg>opt>short c@ ?dup IF          \ Print the optional short option
+    [char] - emit emit
+  ELSE
+    2 spaces
+  THEN
+                                       \ Print the comma if both are present
+  r@ arg>opt>short c@ 0<>  r@ arg>opt>long @ str-empty? 0= AND IF
+    [char] ,
+  ELSE
+    bl
+  THEN
+  emit space
+  
+  r@ arg>opt>long @ dup str-empty? 0= IF  \ Print the optional long option
+    [char] - dup emit emit
+    dup str-get type
+    over swap str-length@ -            \ Calculate number filling spaces
+  ELSE
+    drop dup
+  THEN
+  1+ spaces
+  r> arg>opt>descr @ str-get type cr   \ Print description: ToDo column
+;
+
 
 
 ( Argument parser structure )
@@ -94,7 +147,9 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   cell:  arg>tail       \ the program tail
   cell:  arg>data       \ the optional data
   cell:  arg>xt         \ the non-option callback xt
+  cell:  arg>length     \ the length of the longest long option
 ;struct
+
 
 
 ( Argument parser structure creation, initialisation and destruction )
@@ -144,28 +199,49 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 
 
-( Private print words )
+( Default print words )
+
+: arg-print-version   ( w:arg - = Print the version info )
+  arg>version @ str-get type cr
+  
+  \ ToDo: column
+  ." This is free software; see the source for copying conditions. There is NO" cr
+  ." warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." cr
+;
+
 
 : arg-print-help   ( w:arg - = Print the help info )
-  \ ToDo
+  >r
+  ." Usage: " 
+  r@ arg>usage  @ str-get type cr cr
+  r@ arg>length @ ['] arg-opt-print r@ arg>options snl-execute cr
+  r> arg>tail   @ str-get type cr
 ;
 
-
-: arg-print-usage   ( w:art - = Print the usage info )
-  \ ToDo
-;
 
 
 ( Argument parser words )
 
-: arg-add-option   ( c-addr:descr u c-addr:long u c:short f:switch w:data xt:callback w:arg - = Add an option to the argument parser )
-  \ ToDo
+: arg-add-option   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback w:arg - = Add an option to the argument parser )
+  >r
+  arg-opt-new                          \ Create the option
+  dup arg>opt>long @ str-length@       \ Determine length of long option
+  r@  arg>length @ max r@ arg>length ! \ Save the length of the longest long option
+  r>  arg>options snl-append           \ Append in the options list
 ;
 
 
-: arg-parse   ( w:data xt:callback w:arg - f  = Parse the command line arguments )
-  \ ToDo
+: arg-add-default-options   ( w:arg - = Add the default help and version options )
+  >r
+  [char] ? s" help"    s" show this help"    true r@ ['] arg-print-help    r@ arg-add-option
+         0 s" version" s" show version info" true r@ ['] arg-print-version r> arg-add-option
 ;
+       
+       
+: arg-parse   ( w:data xt w:arg - f:ok = Parse the command line arguments, xt is called for every argument that is not an option )
+  \ ToDo  
+;
+
 
 
 ( Inspection )
@@ -173,6 +249,10 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 : arg-dump   ( w:arg - = Dump the arg state )
   \ ToDo
 ;
+
+[ELSE]
+.( Module arg requires #args and arg.)
+[THEN]
 
 [THEN]
 
