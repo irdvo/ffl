@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.39 $
+\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.40 $
 \
 \ ==============================================================================
 \
@@ -72,6 +72,11 @@ ffl.endian c@ 0=
 
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
+
+
+: #args            ( - n = Return the number of arguments )
+  argc @
+;
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )

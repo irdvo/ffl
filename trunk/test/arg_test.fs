@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-09 17:38:09 $ $Revision: 1.1 $
+\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -32,16 +32,28 @@ include ffl/tst.fs
 
 .( Testing: arg) cr 
 
+t{ 40 TO arg.cols }t
+
 t{ s" test" 
-   s" Usage: test [OPTION] .. [FILES]" 
+   s" test [OPTION] .. [FILES]" 
    s" test v1.0" 
    s" Report bugs to bugs@bugs.com" arg-create arg1 }t
 
+   
+t{ arg1 arg-add-default-options }t
+
+t{ arg1 arg-print-version }t
+t{ arg1 arg-print-help    }t
 
 t{ s" alf" 
-   s" Usage: alf [OPTION] .. [FILE]" 
+   s" alf [OPTION] .. [FILE]" 
    s" alf v0.5   Copyright (c) 2007 by Dick van Oudheusden" 
    s" Report bugs to bugs@bugs.com" arg-new value arg2 }t
+   
+t{ arg2 arg-add-default-options }t
+
+t{ arg2 arg-print-version }t
+t{ arg2 arg-print-help    }t
 
 t{ arg2 arg-free }t
 
