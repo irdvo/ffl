@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.2 $
+\  $Date: 2007-07-12 18:29:38 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,6 +34,7 @@ include ffl/config.fs
 
 
 include ffl/snl.fs
+include ffl/sni.fs
 include ffl/str.fs
 
 ( arg = Arguments parser )
@@ -109,7 +110,7 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 
 : arg-opt-print   ( n:length w:opt - n:length = Print one argument option )
   >r
-  2 spaces
+  2 spaces                             \ ToDo: compacter
   r@ arg>opt>short c@ ?dup IF          \ Print the optional short option
     [char] - emit emit
   ELSE
@@ -141,6 +142,8 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 struct: arg%   ( - n = Get the required space for the arg data structure )
   snl%
   field: arg>options    \ the option list
+  sni%
+  field: arg>iter       \ the iterator on the option list
   cell:  arg>name       \ the program name
   cell:  arg>usage      \ the program usage
   cell:  arg>version    \ the program version
@@ -156,7 +159,8 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 : arg-init   ( c-addr:name u c-addr:usage u c-addr:version u c-addr:tail u w:arg - = Initialise the argument parser structure )
   >r
-  r@ arg>options snl-init
+  r@ arg>options             snl-init
+  r@ arg>options r@ arg>iter sni-init
   str-new dup
   r@ arg>tail    ! str-set
   str-new dup
@@ -198,29 +202,31 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-
 ( Default print words )
 
-: arg-print-version   ( w:arg - = Print the version info )
-  arg>version @ str-get type cr
+: arg-print-version   ( w:arg - false = Print the version info )
+  dup arg>name    @ str-get type space
+      arg>version @ str-get type cr
   
   \ ToDo: column
   ." This is free software; see the source for copying conditions. There is NO" cr
   ." warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." cr
+  false
 ;
 
 
-: arg-print-help   ( w:arg - = Print the help info )
+: arg-print-help   ( w:arg - false = Print the help info )
   >r
   ." Usage: " 
+  r@ arg>name   @ str-get type space
   r@ arg>usage  @ str-get type cr cr
-  r@ arg>length @ ['] arg-opt-print r@ arg>options snl-execute cr
+  r@ arg>length @ ['] arg-opt-print r@ arg>options snl-execute drop cr
   r> arg>tail   @ str-get type cr
+  false
 ;
 
 
-
-( Argument parser words )
+( Option words )
 
 : arg-add-option   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback w:arg - = Add an option to the argument parser )
   >r
@@ -236,12 +242,129 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   [char] ? s" help"    s" show this help"    true r@ ['] arg-print-help    r@ arg-add-option
          0 s" version" s" show version info" true r@ ['] arg-print-version r> arg-add-option
 ;
-       
-       
-: arg-parse   ( w:data xt w:arg - f:ok = Parse the command line arguments, xt is called for every argument that is not an option )
-  \ ToDo  
+
+
+( Private parser words )
+
+: arg-find-short   ( c:option w:arg - w:opt | nil = Find a short option in the option list )
+  arg>iter 
+  tuck sni-first                  \ Iterate the option list
+  BEGIN                           \ S: iter c opt
+    dup nil<> IF
+      2dup arg>opt>short c@ <>    \   Check for short option in list
+    ELSE
+      false
+    THEN
+  WHILE
+    drop over sni-next
+  REPEAT
+  nip nip
 ;
 
+
+: arg-parse-short   ( n:index c-addr:option u w:arg - n:index f = Parse a short option )
+;
+
+
+: arg-find-long   ( c-addr:option u w:arg - w:opt | nil = Find a long option the option list )
+  arg>iter 
+  dup sni-first                   \ Iterate the option list
+  BEGIN                           \ S: c-addr u iter opt
+    dup nil<> IF
+      2over 2over nip
+      arg>opt>long @ str-ccompare 0<>  \ Check for long option in list
+    ELSE
+      false
+    THEN
+  WHILE
+    drop dup sni-next
+  REPEAT
+  nip nip nip
+;
+
+
+: arg+split-option   ( c-addr u - u = Split a option in option and parameter )
+  0 -rot
+  bounds ?DO                 \ S: u
+    I c@ [char] = = IF
+      LEAVE
+    THEN
+    1+
+  LOOP
+;
+
+
+: arg-parse-long   ( n:index c-addr:option u w:arg - n:index f = Parse a long option )
+  >r
+  2dup arg+split-option
+  >r over r> tuck                 \ S: n c-addr u u' c-addr u'
+  
+  r> arg-find-long
+  
+  dup nil<> IF                    \ If long option found Then
+    >r
+    r@ arg>opt>switch @ IF        \   If switch option Then
+      over = IF                   \     If no '=' in option Then
+        2drop
+        r@ arg>opt>data @ r@ arg>opt>xt @ execute
+      ELSE
+        ." Unexpected parameter for switch option: --" type cr
+        false
+      THEN
+    ELSE                          \ Else
+      >r 2dup r> 1+ /string       \   Remove option= from option
+      dup 0> IF
+        r@ arg>opt>data @ r@ arg>opt>xt @ execute 
+        nip nip
+      ELSE
+        2drop
+        ." Expecting parameter for option: --" type cr
+        false
+      THEN
+    THEN
+    rdrop
+  ELSE
+    2drop 
+    ." Unknown option: --" type cr
+    false
+  THEN
+;
+
+
+( Parser words )
+
+: arg-parse   ( w:data xt w:arg - f:ok = Parse the command line arguments, xt is called for every argument that is not an option )
+  >r
+  true 1
+  BEGIN
+    2dup #args < AND
+  WHILE                                \ Do for arg1 to #args
+    nip
+    dup arg
+    over c@ [char] - = IF              \   If argument start with - Then
+      1 /string
+      dup 0> IF
+        over c@ [char] - = IF          \     If next in argument is - Then
+          1 /string
+          dup 0> IF                    \       If more in argument Then
+            r@ arg-parse-long          \         Parse long option
+          ELSE                         \       Else
+            drop #args true            \         Done ('--')
+          THEN
+        ELSE                           \     Else
+          r@ arg-parse-short           \       Parse short option
+        THEN
+      ELSE                             \    Else
+        ." Invalid option: -" cr       \      Invalid option
+        false
+      THEN
+    ELSE                               \   Else
+      r@ arg>data @ r@ arg>xt @ execute \    Not an option..
+    THEN
+    swap 1+
+  REPEAT
+  drop
+;
 
 
 ( Inspection )
