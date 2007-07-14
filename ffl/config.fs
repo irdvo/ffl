@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.40 $
+\  $Date: 2007-07-14 13:00:21 $ $Revision: 1.41 $
 \
 \ ==============================================================================
 \
@@ -74,10 +74,28 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
 
 
-: #args            ( - n = Return the number of arguments )
-  argc @
+\ No usable arguments in gforth
+: #args 
+  4
 ;
-
+: arg@ 
+  dup 0= IF
+    drop
+    s" --verbose" 
+  ELSE dup 1 = IF
+    drop
+    s" --file=hello"
+  ELSE dup 2 = IF
+    drop
+    s" --verbose"
+  ELSE dup 3 = IF
+    drop
+    s" nonoption"
+  ELSE
+    abort" Error"
+  THEN THEN THEN THEN
+;
+    
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
   2dup lshift >r

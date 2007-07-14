@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-12 18:29:38 $ $Revision: 1.3 $
+\  $Date: 2007-07-14 13:00:21 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -30,7 +30,7 @@ include ffl/config.fs
 
 [UNDEFINED] arg.version [IF]
 
-[DEFINED] #args [DEFINED] arg AND [IF]
+[DEFINED] #args [DEFINED] arg@ AND [IF]
 
 
 include ffl/snl.fs
@@ -42,14 +42,18 @@ include ffl/str.fs
 ( Due to the fact that the ANS standard does not specify words for arguments )
 ( this module has a environmental dependency.                                )
 ( <pre>                                                                      )
+(   Stack usage callbacks words:                                             )
+(      non-option callback word      : c-addr:option u    w:data - f:continu )
+(      switch option callback word   :                    w:data - f:continu )
+(      parameter option callback word: c-addr:parameter u w:data - f:continu )
 (                                                                            )
-(     Supported option formats:                                              )
-(        -v            short switch option                                   )
-(        -f a.txt      short option with parameter                           )
-(        -vq           multiple short swith options                          )
-(        --file=a.txt  long option with parameter                            )
-(        --verbose     long switch option                                    )
-(        --            stop parsing arguments                                )
+(   Supported option formats:                                                )
+(      -v            short switch option                                     )
+(      -f a.txt      short option with parameter                             )
+(      -vq           multiple short swith options                            )
+(      --file=a.txt  long option with parameter                              )
+(      --verbose     long switch option                                      )
+(      --            stop parsing arguments                                  )
 ( </pre>                                                                     )
 
 
@@ -147,7 +151,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   cell:  arg>name       \ the program name
   cell:  arg>usage      \ the program usage
   cell:  arg>version    \ the program version
-  cell:  arg>tail       \ the program tail
+  cell:  arg>tail       \ the program extra info
   cell:  arg>data       \ the optional data
   cell:  arg>xt         \ the non-option callback xt
   cell:  arg>length     \ the length of the longest long option
@@ -157,7 +161,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 ( Argument parser structure creation, initialisation and destruction )
 
-: arg-init   ( c-addr:name u c-addr:usage u c-addr:version u c-addr:tail u w:arg - = Initialise the argument parser structure )
+: arg-init   ( c-addr:name u c-addr:usage u c-addr:version u c-addr:info u w:arg - = Initialise the argument parser structure )
   >r
   r@ arg>options             snl-init
   r@ arg>options r@ arg>iter sni-init
@@ -174,12 +178,12 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-create   ( C: "name"  c-addr:name u c-addr:usage u c-addr:version u c-addr:tail u -  R: - w:arg = Create a named argument parser structure in the dictionary )
+: arg-create   ( C: "name"  c-addr:name u c-addr:usage u c-addr:version u c-addr:info u -  R: - w:arg = Create a named argument parser structure in the dictionary )
   create  here arg% allot  arg-init
 ;
 
 
-: arg-new   (  c-addr:name u  c-addr:usage u c-addr:version u c-addr:tail u - w:arg = Create a new argument parser structure on the heap )
+: arg-new   (  c-addr:name u  c-addr:usage u c-addr:version u c-addr:info u - w:arg = Create a new argument parser structure on the heap )
   arg% allocate  throw   >r r@ arg-init r>
 ;
 
@@ -263,6 +267,68 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 
 : arg-parse-short   ( n:index c-addr:option u w:arg - n:index f = Parse a short option )
+  >r
+  true
+  BEGIN                           \ While chars in option and continu
+    over 0> over AND
+  WHILE
+    drop
+    over c@
+    dup r@ arg-find-short
+    dup nil<> IF
+      >r
+      r@ arg>opt>switch @ IF
+        drop
+        r@ arg>opt>data @ r@ arg>opt>xt @ execute  \ S: n c-addr u f
+      ELSE
+        over 1 <> IF
+          ." Expecting parameter for option: " emit ."  in option: -" 2dup type cr
+          false
+        ELSE
+          nip nip 
+          swap 1+
+          tuck #args < IF
+            drop dup arg@
+            r@ arg>opt>data r@ arg>opt>xt @ execute
+          ELSE
+            ." Expecting parameter for option: -" emit cr
+            false
+          THEN
+          >r 0 0 r>
+        THEN
+      THEN
+      rdrop
+    ELSE
+      drop
+      ." Unknown option: -" emit cr
+      false
+    THEN
+    
+    dup IF                        \ If okee Then
+      >r 1 /string r>             \   Remove first char from option
+    THEN
+  REPEAT
+  rdrop
+  nip nip
+;
+
+
+: arg-compare-long   ( c-addr u c-addr u - f = Compare two long options )
+  rot
+  2dup < IF                       \ If option 2 is shorter than option 1 -> not equal
+    2drop 2drop
+    false exit
+  THEN
+  
+  tuck > IF                       \ If option 2 is longer than option 1 Then
+    2dup chars +
+    c@ [char] = <> IF             \   The longer char must be '=' else not equal
+      2drop drop
+      false exit
+    THEN
+  THEN
+  
+  tuck compare 0=                 \ Compare
 ;
 
 
@@ -272,7 +338,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   BEGIN                           \ S: c-addr u iter opt
     dup nil<> IF
       2over 2over nip
-      arg>opt>long @ str-ccompare 0<>  \ Check for long option in list
+      arg>opt>long @ str-get arg-compare-long 0=  \ Check for long option in list
     ELSE
       false
     THEN
@@ -335,12 +401,14 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 : arg-parse   ( w:data xt w:arg - f:ok = Parse the command line arguments, xt is called for every argument that is not an option )
   >r
-  true 1
+  r@ arg>xt   !
+  r@ arg>data !
+  true 0
   BEGIN
     2dup #args < AND
   WHILE                                \ Do for arg1 to #args
     nip
-    dup arg
+    dup arg@
     over c@ [char] - = IF              \   If argument start with - Then
       1 /string
       dup 0> IF
@@ -349,12 +417,14 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
           dup 0> IF                    \       If more in argument Then
             r@ arg-parse-long          \         Parse long option
           ELSE                         \       Else
+            2drop
             drop #args true            \         Done ('--')
           THEN
         ELSE                           \     Else
           r@ arg-parse-short           \       Parse short option
         THEN
       ELSE                             \    Else
+        2drop
         ." Invalid option: -" cr       \      Invalid option
         false
       THEN
@@ -363,6 +433,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
     THEN
     swap 1+
   REPEAT
+  rdrop
   drop
 ;
 
@@ -374,7 +445,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 [ELSE]
-.( Module arg requires #args and arg.)
+.( Module arg requires #args and arg@.)
 [THEN]
 
 [THEN]
