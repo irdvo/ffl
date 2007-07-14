@@ -20,21 +20,19 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-12 18:29:53 $ $Revision: 1.1 $
+\  $Date: 2007-07-14 13:00:21 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/arg.fs
 
-\ Variables for storing parsing results
-variable verbose  verbose off
 
 \ Create an argument parser on the heap
 
-s" argparser"                    \ program name
-s" [OPTION] .. [FILES]"          \ program usage
-s" v1.0"                         \ program version
-s" Report bugs to bugs@bugs.com" \ program tail
+s" argparser"                       \ program name
+s" [OPTION] .. [FILES]"             \ program usage
+s" v1.0"                            \ program version
+s" Report bugs to bugs@bugs.com"    \ program extra info
 arg-new value arg1
 
 \ Add the default help and version options
@@ -42,28 +40,71 @@ arg-new value arg1
 arg1 arg-add-default-options
 
 
-\ Create the verbose! callback function
+\ Create the callback word for the -v/--verbose switch option
+
+variable verbose  verbose off
 
 : verbose!  ( addr - f )
-  on                          \ set the verbose variable to on
-  true                        \ return true: continue
+  on                                \ in this example: data contains the variable to set on
+  ." Verbose option found.." cr     \ give some info
+  true                              \ return true: continue
 ;
 
-\ Add the verbose option: short name=v long name=verbose 
-\ description=activate verbose mode switch=true data=verbose xt=verbose!
+
+\ Add the -v/--verbose option switch
   
-char v  s" verbose" s" activate verbose mode" true verbose ' verbose! arg1 arg-add-option
+char v                              \ Short option name
+s" verbose"                         \ Long option name
+s" activate verbose mode"           \ Description
+true                                \ Switch -> true
+verbose                             \ Destination data
+' verbose!                          \ Callback word
+arg1 arg-add-option
+
+     
+\ Create the callback word for the -f/--file=FILE parameter option
+
+: print-parameter ( c-addr u nil - f )
+  drop                              \ in this example: no interest in the data, ..
+  ?dup IF                           \ Check if parameter is not empty
+    ." File parameter: " type cr    \ .. type the parameter, ..
+    true                            \ .. and continu
+  ELSE                              \ Else
+    drop
+    ." Error: empty parameter" type cr
+    false                           \   Error and stop parsing
+  THEN
+;
+
+\ Add the -f/--file=FILE option
+
+char f                              \ Short option name
+s" file=FILE"                       \ Long option name
+s" set input file"                  \ Description
+false                               \ Parameter -> false
+nil                                 \ No destination data
+' print-parameter                   \ Callback word
+arg1 arg-add-option
 
 
-\ Create the default callback function
+\ Print help
+
+arg1 arg-print-help
+
+
+\ Create the non-option callback word
 
 : non-option ( c-addr u data - f )
-  drop 
-  ." Non option found: " type cr
-  true
+  drop                             \ in this example: no interest in the data, ..
+  ." Non option found: " type cr   \ .. some feedback, ..
+  true                             \ .. and continu
 ;
 
+
+\ Parse the command line arguments
+
 nil ' non-option arg1 arg-parse drop
+
 
 \ Free the argument parser from the heap
 
