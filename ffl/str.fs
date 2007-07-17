@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\             str - the character string module in the ffl
+\             str - the dynamic text module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.20 $
+\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.21 $
 \
 \ ==============================================================================
 
@@ -34,11 +34,11 @@ include ffl/stc.fs
 include ffl/chr.fs
 
 
-( str = Character string )
-( The str module implements a dynamic text string. )
+( str = Dynamic text string )
+( The str module implements words for a dynamic text string. )
 
 
-1 constant str.version
+2 constant str.version
 
 
 ( String structure )
@@ -303,7 +303,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
     dup c@ chr.nul <>        \ while [str] <> 0 do
   WHILE
     swap 1+ swap             \  increase length
-    1 chars +                \  increase str
+    char+                    \  increase str
   REPEAT
   drop
   swap str-set               \ set in string
@@ -328,8 +328,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 : str-append-char    ( c w:str - = Append a character at the end of the string )
   1 over str-length+!
-  
-  chars swap str-data@ + c! \ store char at end of string
+    chars swap str-data@ + c! \ store char at end of string
 ;
 
 
@@ -550,7 +549,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
     dup r@ str-get-char chr.ht = IF    \   If str[offset] = tab then
       over 1 = IF                      \     If replace by one space then
         chr.sp over r@ str-set-char    \       Set the space
-        1 chars +
+        char+
       ELSE                             \     Else
         over 0> IF                     \       If replace by more spaces then
           2dup r@ str-insert-space     \         Insert space and fill with blanks
@@ -560,7 +559,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
         1 over r@ str-delete           \       Delete the tab
       THEN
     ELSE
-      1 chars +
+      char+
     THEN
   REPEAT
   2drop
@@ -606,7 +605,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
         I UNLOOP EXIT                  \  Return the index
       THEN
       drop
-      1 chars +
+      char+
     LOOP
   THEN
   2drop drop
@@ -633,6 +632,63 @@ struct: str%       ( - n = Get the required space for the str data structure )
   REPEAT
   drop 2drop 2drop
   rdrop
+;
+
+
+( Split words )
+
+: str+columns   ( c-addr u n:width - c-addr u ... n = Split the string in width columns strings [recursive] )
+  >r
+  BEGIN                           \ skip leading spaces
+    dup 0> IF
+      over c@ chr-space?
+    ELSE
+      false
+    THEN
+  WHILE
+    1 /string
+  REPEAT
+  r>
+  
+  over 0= IF                      \ If length = 0 Then
+    2drop drop                    \   No substring
+    0
+  ELSE                            \ Else
+    2dup > IF                     \   If string is longer then the width
+      >r
+      over r@ chars + r@          \     S: c-addr u c-end width
+      
+      BEGIN                       \     Find the last space in the string
+        dup 0> IF
+          over c@ chr-space? 0=
+        ELSE
+          false
+        THEN
+      WHILE
+        1-
+        swap 1 chars - swap
+      REPEAT
+    
+      dup 0= IF                   \     If no space found, than cut of at column width
+        drop 
+        r@ chars + r@
+      THEN
+    
+      >r                          \     Update the start of the string and the length
+      r@ -rot
+      swap r> -
+    
+      2swap 
+      r> -rot                     \     Put width in place for recurse
+      
+      2>r recurse 2r>             \     Save substring and recurse
+    
+      rot 1+                      \     Update the number of substrings
+    ELSE                          \   Else (string is equal or smaller than width)
+      drop                        \     Substring
+      1
+    THEN
+  THEN
 ;
 
 

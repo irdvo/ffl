@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-14 13:00:21 $ $Revision: 1.4 $
+\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -114,21 +114,24 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 
 : arg-opt-print   ( n:length w:opt - n:length = Print one argument option )
   >r
-  2 spaces                             \ ToDo: compacter
-  r@ arg>opt>short c@ ?dup IF          \ Print the optional short option
+  r@ arg>opt>short c@
+  r@ arg>opt>long   @
+  
+  2 spaces
+  over ?dup IF                         \ Print the optional short option
     [char] - emit emit
   ELSE
     2 spaces
   THEN
                                        \ Print the comma if both are present
-  r@ arg>opt>short c@ 0<>  r@ arg>opt>long @ str-empty? 0= AND IF
+  tuck str-empty? 0= AND IF
     [char] ,
   ELSE
     bl
   THEN
   emit space
   
-  r@ arg>opt>long @ dup str-empty? 0= IF  \ Print the optional long option
+  dup str-empty? 0= IF                 \ Print the optional long option
     [char] - dup emit emit
     dup str-get type
     over swap str-length@ -            \ Calculate number filling spaces

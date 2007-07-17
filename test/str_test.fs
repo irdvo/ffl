@@ -2,7 +2,7 @@
 \
 \          chr_test - the test words for the chr module in ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-04-08 08:25:01 $ $Revision: 1.6 $
+\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -236,6 +236,27 @@ t{ s" This is a logish strig" s1 str-ccompare ?0 }t
 t{ s" iii" s" i" s1 str-replace        }t
 t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
 
+\ split
+t{ s" this is a test of the column splitter" 10 str+columns 4 ?s
+   s" this is a"  compare ?0
+   s" test of"    compare ?0 
+   s" the column" compare ?0
+   s" splitter"   compare ?0 }t
+   
+t{ s" 1234567890" 10 str+columns 1 ?s
+   s" 1234567890" compare ?0 }t
+   
+t{ s" 1234567890    " 10 str+columns 1 ?s
+   s" 1234567890" compare ?0 }t
+   
+t{ s"     1234567890" 10 str+columns 1 ?s
+   s" 1234567890" compare ?0 }t
+
+t{ s" thisisatestofthecolumnsplitter" 10 str+columns 3 ?s
+   s" thisisates" compare ?0
+   s" tofthecolu" compare ?0 
+   s" mnsplitter" compare ?0 }t
+   
 t{ s2 str-free }t
 
 \ ==============================================================================
