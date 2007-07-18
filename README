@@ -46,6 +46,7 @@ in a directory that is in the search path of Win32Forth.)
 In case of minForth the 'ffl' directory (and its contents) should be 
 copied to your forth working directory.
 
+
 If your forth only looks in the current directory for forth sources, then copy 
 the directory 'ffl' and its contents to the current directory.
 
@@ -116,26 +117,33 @@ Testing
 -------
 
 After installing the source files the unit test sources in the 'test'
-directory can be started by:
+directory can be run to test the library. The test can be started by:
+
+(for PFE there are command line arguments. These are for test 
+purposes only and have no real meaning. Enter them in the correct case.)
 
 
 (for gforth):
 
 gforth ffl_test.fs
 
+
 (or bigforth):
 
 bigforth ffl_test.fs
 
+
 (or pfe)
 
-pfe ffl_test.fs
+pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
+
 
 (or Win32Forth)
 
 Use 'chdir' to move to the test directory.
 Remove from the 'ffl_test.fs' file the ending 'bye'.
 Use 'include ffl_test.fs' to run the tests.
+
 
 (or minForth)
 

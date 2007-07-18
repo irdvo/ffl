@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.13 $
+\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 \
@@ -79,6 +79,15 @@ ffl.endian c@ 0=
 
 
 s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
+
+
+: #args   ( - n = Get the number of command line arguments )
+  argc
+;
+
+: arg@   ( n - c-addr u = Get the nth command line argument )
+  argv
+;
 
 
 1 chars 1 = [IF]

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.14 $
+\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 \
@@ -72,6 +72,9 @@ ffl.endian c@ 0=
 
 
 s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of the milliseconds timer )
+
+
+\ No usable command line arguments in gforth
 
 
 : lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
@@ -168,11 +171,11 @@ s" MAX-U" environment? drop constant max-ms@            ( - u = Maximum value of
 
 ( Float extension constants )
 
-0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
+0E+0 fconstant 0e+0  ( - r:0e0 = Float constant 0.0 )
 
-1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
+1E+0 fconstant 1e+0  ( - r:1e0 = Float constant 1.0 )
 
-2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+2E+0 fconstant 2e+0  ( - r:2e0 = Float constant 2.0 )
 
 
 ( Float extension words )

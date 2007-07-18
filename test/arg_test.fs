@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-10 18:46:52 $ $Revision: 1.2 $
+\  $Date: 2007-07-18 19:16:10 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -30,32 +30,103 @@ include ffl/tst.fs
 
 [DEFINED] arg.version [IF]
 
-.( Testing: arg) cr 
+.( Testing: arg) cr
 
-t{ 40 TO arg.cols }t
+t{ 60 TO arg.cols }t
 
 t{ s" test" 
-   s" test [OPTION] .. [FILES]" 
-   s" test v1.0" 
-   s" Report bugs to bugs@bugs.com" arg-create arg1 }t
+   s" [OPTION] .. [FILES]" 
+   s" v1.0" 
+   s" Report bugs to bugs@bugs.com" arg-new value arg1 }t
 
-   
 t{ arg1 arg-add-default-options }t
 
-t{ arg1 arg-print-version }t
-t{ arg1 arg-print-help    }t
+variable arg-count   0 arg-count !
 
-t{ s" alf" 
-   s" alf [OPTION] .. [FILE]" 
-   s" alf v0.5   Copyright (c) 2007 by Dick van Oudheusden" 
-   s" Report bugs to bugs@bugs.com" arg-new value arg2 }t
+: arg-do-switch ( data - f )
+  1+! true
+;
+
+: arg-do-caption ( c-addr u data - f )
+  -rot
+  s" TEST" compare 0= IF
+    1+!
+  ELSE
+    drop ." do caption"
+  THEN
+  true
+;
+
+: arg-do-file ( c-addr u data - f )
+  -rot
+  s" FILE" compare 0= IF
+    1+!
+  ELSE
+    drop ." do file"
+  THEN
+  true
+;
+
+: arg-do-input ( c-addr u data - f )
+  -rot
+  s" input" compare 0= IF
+    1+!
+  ELSE
+    drop ." do input"
+  THEN
+  true
+;
+
+
+t{ char a
+   s" "
+   s" test option a"
+   true
+   arg-count
+   ' arg-do-switch
+   arg1 arg-add-option }t
    
-t{ arg2 arg-add-default-options }t
+t{ char b
+   s" bold"
+   s" test option b/bold"
+   true
+   arg-count
+   ' arg-do-switch
+   arg1 arg-add-option }t
+   
+t{ char c
+   s" caption"
+   s" test option c/caption"
+   false
+   arg-count
+   ' arg-do-caption
+   arg1 arg-add-option }t
+   
+t{ 0
+   s" verbose"
+   s" test option verbose"
+   true
+   arg-count
+   ' arg-do-switch
+   arg1 arg-add-option }t
+   
+t{ char f
+   s" file"
+   s" test option f/file"
+   false
+   arg-count
+   ' arg-do-file
+   arg1 arg-add-option }t
 
-t{ arg2 arg-print-version }t
-t{ arg2 arg-print-help    }t
+#args [IF]
 
-t{ arg2 arg-free }t
+t{ arg-count ' arg-do-input arg1 arg-parse ?true }t
+
+t{ arg-count @ 6 ?s }t
+
+[THEN]
+   
+t{ arg1 arg-free }t
 
 [THEN]
 
