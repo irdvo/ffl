@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.5 $
+\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/str.fs
 ( this module has a environmental dependency.                                )
 ( <pre>                                                                      )
 (   Stack usage callbacks words:                                             )
-(      non-option callback word      : c-addr:option u    w:data - f:continu )
+(      non-option callback word      : c-addr:argument u  w:data - f:continu )
 (      switch option callback word   :                    w:data - f:continu )
 (      parameter option callback word: c-addr:parameter u w:data - f:continu )
 (                                                                            )
@@ -63,12 +63,7 @@ include ffl/str.fs
 
 ( Global setting )
 
-[DEFINED] cols [IF]
- 0 VALUE arg.cols    ( - n = Value with the number of columns for parser output [0=use cols word] )
-[ELSE]
-80 VALUE arg.cols
-[THEN]
-
+79 VALUE arg.cols    ( - n = Value with the number of columns for parser output [def. 79] )
 
 
 ( Private structure )
@@ -112,10 +107,17 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ;
 
 
+: arg-opt-execute ( ... w:opt - ... = Execute an option )
+  dup  arg>opt>data @ 
+  swap arg>opt>xt   @ 
+  execute
+;
+
+
 : arg-opt-print   ( n:length w:opt - n:length = Print one argument option )
-  >r
-  r@ arg>opt>short c@
-  r@ arg>opt>long   @
+  swap >r
+  dup  arg>opt>short c@
+  over arg>opt>long   @
   
   2 spaces
   over ?dup IF                         \ Print the optional short option
@@ -134,14 +136,29 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
   dup str-empty? 0= IF                 \ Print the optional long option
     [char] - dup emit emit
     dup str-get type
-    over swap str-length@ -            \ Calculate number filling spaces
+    r@ swap str-length@ -              \ Calculate number filling spaces
   ELSE
-    drop dup
+    drop r@ 2+
   THEN
   1+ spaces
-  r> arg>opt>descr @ str-get type cr   \ Print description: ToDo column
+  
+  arg>opt>descr @ str-get
+  arg.cols 40 max r@ 9 + - str+columns \ Format the description in columns
+  
+  dup 0> IF                            \ print the first line after the options
+    >r type cr r>
+    1-
+  THEN
+  
+  BEGIN                               \ Type any remaining info on empty lines
+    dup 0>
+  WHILE
+    \ r@ 9 + spaces
+    >r type cr r>
+    1-
+  REPEAT
+  r>
 ;
-
 
 
 ( Argument parser structure )
@@ -214,10 +231,15 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 : arg-print-version   ( w:arg - false = Print the version info )
   dup arg>name    @ str-get type space
       arg>version @ str-get type cr
+      
+  s" This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      
+  arg.cols 20 max str+columns     \ Split the string in columns
   
-  \ ToDo: column
-  ." This is free software; see the source for copying conditions. There is NO" cr
-  ." warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." cr
+  0 DO                            \ Type the columns
+    type cr
+  LOOP
+  
   false
 ;
 
@@ -282,7 +304,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
       >r
       r@ arg>opt>switch @ IF
         drop
-        r@ arg>opt>data @ r@ arg>opt>xt @ execute  \ S: n c-addr u f
+        r@ arg-opt-execute        \ S: n c-addr u f
       ELSE
         over 1 <> IF
           ." Expecting parameter for option: " emit ."  in option: -" 2dup type cr
@@ -292,7 +314,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
           swap 1+
           tuck #args < IF
             drop dup arg@
-            r@ arg>opt>data r@ arg>opt>xt @ execute
+            r@ arg-opt-execute
           ELSE
             ." Expecting parameter for option: -" emit cr
             false
@@ -375,7 +397,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
     r@ arg>opt>switch @ IF        \   If switch option Then
       over = IF                   \     If no '=' in option Then
         2drop
-        r@ arg>opt>data @ r@ arg>opt>xt @ execute
+        r@ arg-opt-execute
       ELSE
         ." Unexpected parameter for switch option: --" type cr
         false
@@ -383,7 +405,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
     ELSE                          \ Else
       >r 2dup r> 1+ /string       \   Remove option= from option
       dup 0> IF
-        r@ arg>opt>data @ r@ arg>opt>xt @ execute 
+        r@ arg-opt-execute 
         nip nip
       ELSE
         2drop
@@ -440,15 +462,8 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   drop
 ;
 
-
-( Inspection )
-
-: arg-dump   ( w:arg - = Dump the arg state )
-  \ ToDo
-;
-
 [ELSE]
-.( Module arg requires #args and arg@.)
+.( Module arg requires #args and arg@.) cr
 [THEN]
 
 [THEN]

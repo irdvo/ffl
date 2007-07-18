@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.21 $
+\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.22 $
 \
 \ ==============================================================================
 
@@ -500,6 +500,19 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+: str+strip-leading   ( c-addr u - c-addr u = Strip leading spaces in the string )
+  BEGIN
+    dup 0> IF
+      over c@ chr-space?
+    ELSE
+      false
+    THEN
+  WHILE
+    1 /string
+  REPEAT
+;
+
+
 : str-strip-trailing  ( w:str - = Strip trailing spaces in the string )
   0 over str-bounds swap
   BEGIN
@@ -637,17 +650,9 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Split words )
 
-: str+columns   ( c-addr u n:width - c-addr u ... n = Split the string in width columns strings [recursive] )
+: str+columns   ( c-addr u n:width - c-addr u ... n = Split the string in substrings, width wide, skipping leading spaces [recursive] )
   >r
-  BEGIN                           \ skip leading spaces
-    dup 0> IF
-      over c@ chr-space?
-    ELSE
-      false
-    THEN
-  WHILE
-    1 /string
-  REPEAT
+  str+strip-leading
   r>
   
   over 0= IF                      \ If length = 0 Then

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-14 13:00:21 $ $Revision: 1.2 $
+\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,6 +34,7 @@ s" [OPTION] .. [FILES]"             \ program usage
 s" v1.0"                            \ program version
 s" Report bugs to bugs@bugs.com"    \ program extra info
 arg-new value arg1
+
 
 \ Add the default help and version options
 
@@ -49,7 +50,6 @@ variable verbose  verbose off
   ." Verbose option found.." cr     \ give some info
   true                              \ return true: continue
 ;
-
 
 \ Add the -v/--verbose option switch
   
@@ -80,16 +80,11 @@ arg1 arg-add-option
 
 char f                              \ Short option name
 s" file=FILE"                       \ Long option name
-s" set input file"                  \ Description
+s" set input file, any input file is allowed, as long as the description is multicolumn"  \ Description
 false                               \ Parameter -> false
 nil                                 \ No destination data
 ' print-parameter                   \ Callback word
 arg1 arg-add-option
-
-
-\ Print help
-
-arg1 arg-print-help
 
 
 \ Create the non-option callback word
@@ -103,10 +98,14 @@ arg1 arg-print-help
 
 \ Parse the command line arguments
 
-nil ' non-option arg1 arg-parse drop
+nil ' non-option arg1 arg-parse [IF]
+  .( All options okee !) cr
+[ELSE]
+  .( Error in one of the options, or help or version info requested.) cr
+[THEN]
 
 
 \ Free the argument parser from the heap
 
-\ arg1 arg-free
+arg1 arg-free
 
