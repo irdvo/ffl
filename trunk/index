@@ -66,6 +66,7 @@ Index of used prefices
 5 rgx - Regular expression module
 2 tis - Text Input Stream
 2 tos - Text Output Stream
+6 htm - HTML module
 ----- - ------------------------------------------------
 
 
@@ -103,7 +104,6 @@ Index of used prefices
 8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
-6 htm - HTML module
 6 xml - XML module / SAX module
 6 dom - XML-DOM module
       - css module
@@ -143,4 +143,3 @@ ToDo
 [ ] cfg: nil<>? ( addr - false | addr true )
 [ ] col: execute?
 
-alf: config.fs/make.fs naar cvs
