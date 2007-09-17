@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.22 $
+\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.23 $
 \
 \ ==============================================================================
 
@@ -38,7 +38,7 @@ include ffl/chr.fs
 ( The str module implements words for a dynamic text string. )
 
 
-2 constant str.version
+3 constant str.version
 
 
 ( String structure )
@@ -377,6 +377,18 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+: str-get-char?    ( n w:str - c true | false = Check and get the character from the nth position in the string )
+  tuck str-length@ index2offset   \ Convert index to offset
+  2dup swap str-offset? IF        \ Check offset inside string
+    chars swap str-data@ + c@     \ Yes: fetch character and success
+    true
+  ELSE
+    2drop                         \ No: no success
+    false
+  THEN
+;
+
+  
 : str-insert-char  ( c n w:str - = Insert the character on the nth position in the string )
   2>r 1 2r> 
   str-insert-space

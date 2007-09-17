@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-17 18:44:17 $ $Revision: 1.7 $
+\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -84,12 +84,16 @@ t{ s1 str-pop-char   char  a ?s }t
 t{ s1 str-length@          0 ?s }t
 
 
-t{ s" Hello" s1 str-set         }t
-t{ char h 0 s1 str-set-char     }t
-t{ 0 s1 str-get-char  char h ?s }t
-t{ -1 s1 str-get-char char o ?s }t
-t{ char O -1 s1 str-set-char    }t
-t{ -1 s1 str-get-char char O ?s }t
+t{ s" Hello" s1 str-set                }t
+t{ char h 0 s1 str-set-char            }t
+t{ 0 s1 str-get-char  char h ?s        }t
+t{ -1 s1 str-get-char char o ?s        }t
+t{ 4 s1 str-get-char?  ?true char o ?s }t
+t{ 5 s1 str-get-char?  ?false          }t
+t{ -5 s1 str-get-char? ?true char h ?s }t
+t{ -6 s1 str-get-char? ?false          }t
+t{ char O -1 s1 str-set-char           }t
+t{ -1 s1 str-get-char char O ?s        }t
 
 t{ s" Hello" s1 str-set                }t
 t{ chr.sp 3 s1 str-append-chars        }t
