@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-15 06:24:31 $ $Revision: 1.1 $
+\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -46,22 +46,25 @@ include ffl/str.fs
 
 ( Html reader constants )
 
-1 constant htm.done                    ( Html reader is ready with reading )
-2 constant htm.comment                 ( Html comment                      )
-3 constant htm.text                    ( Html normal text                  )
-4 constant htm.start-tag               ( Html start tag                    )
-5 constant htm.end-tag                 ( Html end tag                      )
-6 constant htm.markup                  ( Html markup                       )
-7 constant htm.processing-instruction  ( Html processing instruction       )
+0 constant htm.done                    ( Done reading  -                     )
+1 constant htm.error                   ( Error         - ..                  )
+2 constant htm.comment                 ( Comment       - c-addr u            )
+3 constant htm.text                    ( Normal text   - c-addr u            )
+4 constant htm.start-tag               ( Start tag     - c-addr u            )
+5 constant htm.tag-attribute           ( Tag attribute - c-addr u c-addr u   )
+6 constant htm.end-tag                 ( End tag       - c-addr u            )
+7 constant htm.markup                  ( Markup        - c-addr u            )
+8 constant htm.markup-parameter        ( Markup param. - c-addr u            )
+9 constant htm.processing-instruction  ( Proc. instr.  - c-addr u c-addr u   )
 
 
 ( Html reader and writer structure )
 
 struct: htm%   ( - n = Get the required space for the html reader data structure )
-  cell:  htm>string     \ the html string
+  str%
+  field: htm>string     \ the html string (extends the normal string)
   cell:  htm>index      \ the index in the html string
-  cell:  htm>start      \ the start of the current parsed item
-  cell:  htm>length     \ the length of the current parsed item
+  cell:  htm>next       \ the next expected token
   cell:  htm>reader     \ the xt of the reader (pull)
   cell:  htm>writer     \ the xt of the writer
   cell:  htm>data       \ the optional data for the reader and writer
@@ -72,11 +75,9 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 ( Html parser structure creation, initialisation and destruction )
 
 : htm-init   ( w:htm - = Initialise the html parser structure )
-  str-new
-  over htm>string  !
+  dup  htm>string  str-init
   dup  htm>index   0!
-  dup  htm>start   nil!
-  dup  htm>length  0!
+  dup  htm>next    0!
   dup  htm>reader  nil!
   dup  htm>writer  nil!
        htm>data    nil!
@@ -94,8 +95,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 
 : htm-free   ( w:htm - = Free the htmument parser structure from the heap )
-  dup htm>string @ str-free
-  free throw
+  str-free
 ;
 
 
@@ -105,7 +105,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
   >r
   r@ htm>reader !
   r@ htm>data   !
-  r@ htm>string @ str-clear
+  r@ htm>string str-clear
   r> htm>index  0!
 ;
 
@@ -121,6 +121,11 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 ( Private reader words )
 
+: htm-fetch-char  ( w:htm - c | chr.eos = Fetch the next character )
+  dup htm>index @ over htm>string str-length@ over >= IF
+    chars swap str-data@ + c@
+  ELSE
+    
 : htm-read-markup ( .. )
 ;
 
@@ -159,13 +164,19 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 ( Html writer words )
 
-: htm-write-markup ( c-addr u .. n c-addr u w:htm - = Write the markup with n parameters )
+: htm-write-markup ( c-addr u w:htm - = Write a HTML markup )
 ;
 
 
-: htm-write-start-tag ( c-addr u c-addr u .. n c-addr u w:htm - = Write the HTML start tag with n attributes )
+: htm-write-markup-parameter ( c-addr u w:htm - = Write a markup parameter )
 ;
 
+: htm-write-start-tag ( c-addr u w:htm - = Write the HTML start tag )
+;
+
+
+: htm-write-tag-attribute ( c-addr u c-addr u w:htm - = Write a HTML tag attribute )
+;
 
 : htm-write-end-tag ( c-addr u w:htm - = Write the HTML end tag )
 ;

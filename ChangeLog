@@ -1,4 +1,5 @@
 0.6.0
+* str.fs: new word str-get-char? (2007-09-17)
 * htm.fs: new module (HTML reader and writer) (2007-09-16)
 * str.fs: new word: str+columns (2007-07-17)
 * arg.fs: new module (Arguments parser) (2007-07-09)
