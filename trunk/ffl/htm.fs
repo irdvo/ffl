@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.2 $
+\  $Date: 2007-09-18 05:27:26 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -46,8 +46,8 @@ include ffl/str.fs
 
 ( Html reader constants )
 
-0 constant htm.done                    ( Done reading  -                     )
-1 constant htm.error                   ( Error         - ..                  )
+0 constant htm.error                   ( Error         - ..                  )
+1 constant htm.done                    ( Done reading  -                     )
 2 constant htm.comment                 ( Comment       - c-addr u            )
 3 constant htm.text                    ( Normal text   - c-addr u            )
 4 constant htm.start-tag               ( Start tag     - c-addr u            )
@@ -63,8 +63,8 @@ include ffl/str.fs
 struct: htm%   ( - n = Get the required space for the html reader data structure )
   str%
   field: htm>string     \ the html string (extends the normal string)
-  cell:  htm>index      \ the index in the html string
-  cell:  htm>next       \ the next expected token
+  cell:  htm>offset     \ the offset in the html string
+  cell:  htm>state      \ the current state
   cell:  htm>reader     \ the xt of the reader (pull)
   cell:  htm>writer     \ the xt of the writer
   cell:  htm>data       \ the optional data for the reader and writer
@@ -76,8 +76,9 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 : htm-init   ( w:htm - = Initialise the html parser structure )
   dup  htm>string  str-init
-  dup  htm>index   0!
-  dup  htm>next    0!
+  dup  htm>offset  0!
+  htm.done
+  over htm>state  !
   dup  htm>reader  nil!
   dup  htm>writer  nil!
        htm>data    nil!
@@ -106,48 +107,262 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
   r@ htm>reader !
   r@ htm>data   !
   r@ htm>string str-clear
-  r> htm>index  0!
+  r@ htm>offset 0!
+  htm.text
+  r> htm>state  !
 ;
 
 
 : htm-set-string  ( c-addr u w:htm - = Init the html reader for for reading from string )
   >r
   r@ htm>string str-set
-  r@ htm>index  0!
+  r@ htm>offset 0!
   r@ htm>reader nil!
-  r> htm>data   nil!
+  r@ htm>data   nil!
+  htm.text
+  r> htm>state  !
 ;
 
 
 ( Private reader words )
 
-: htm-fetch-char  ( w:htm - c | chr.eos = Fetch the next character )
-  dup htm>index @ over htm>string str-length@ over >= IF
-    chars swap str-data@ + c@
+: htm-fetch-char?  ( w:htm - c true | false = Fetch the next character )
+  >r
+  r@ htm>offset @  r@ htm>string
+  2dup str-offset? 0= IF
+    r@ htm>reader @ dup nil<> IF
+      r@ htm>data @ swap execute IF
+        r@ htm>string str-append-string
+      THEN
+    ELSE
+      drop
+    THEN
+  THEN
+  
+  2dup str-offset? IF
+    str-data@ swap chars + c@
+    true
   ELSE
-    
+    2drop
+    false
+  THEN
+  rdrop
+;
+
+
+: htm-next-char  ( w:htm - = Move to the next character )
+  htm>offset 1+!
+;
+
+
+: htm-prev-char  ( w:htm - = Move to the previous character )
+  htm>offset 1-!
+;
+
+
+: htm-read-name ( w:htm - c-addr u w:htm = Read a name from the source )
+  dup  htm>string str-data@       \ Save current string position
+  over htm>offset @ chars +
+  swap 1
+  BEGIN                           \ Read the tag name
+    over htm-next-char
+    over htm-fetch-char? IF
+      dup chr-space? over [char] > = OR swap [char] = = OR 0=
+    ELSE
+      false
+    THEN
+  WHILE
+    1+
+  REPEAT
+  swap
+;
+
+
+: htm-skip-spaces  ( w:htm - w:htm = Skip spaces in the source )
+  BEGIN                           \ Skip trailing spaces
+    dup htm-fetch-char? IF
+      chr-space?
+    ELSE
+      false
+    THEN
+  WHILE
+    dup htm-next-char
+  REPEAT
+;
+
+
+: htm-read-comment ( .. )
+;
+
+
 : htm-read-markup ( .. )
 ;
 
 
-: htm-read-start-tag ( .. )
+: htm-read-markup-parameter ( .. )
 ;
 
 
-: htm-read-end-tag ( .. )
+: htm-read-start-tag ( w:htm - c-addr u htm.start-tag = Read a start tag )
+  htm-read-name
+  htm-skip-spaces  
+  
+  dup htm-fetch-char? IF          \ Check for > or attributes
+    dup [char] > = IF
+      drop
+      dup htm-next-char
+    ELSE
+      chr-alpha? IF
+        htm.tag-attribute over htm>state !
+      ELSE
+        \ error
+      THEN
+    THEN
+  THEN
+  drop  
+  htm.start-tag
+;
+
+
+: htm-read-tag-attribute ( w:htm - c-addr u c-addr u htm.tag-attribute = Read a tag attribute )
+  htm-read-name
+  htm-skip-spaces
+  
+  dup htm-fetch-char? IF
+    dup [char] = = IF
+      drop
+      dup htm-skip-spaces
+      \ to be cont.
+    ELSE
+      dup chr-alpha? IF
+        2drop
+        nil 0
+      ELSE
+        [char] > = IF
+          drop
+          nil 0
+        ELSE
+          \ error
+        THEN
+      THEN
+    THEN
+  THEN
+  htm.tag-attribute
+;
+
+
+: htm-read-end-tag ( w:htm - c-addr u htm.end-tag = Read an end tag )
+  htm-read-name
+  htm-skip-spaces
+  
+  dup htm-fetch-char? IF          \ Check for > 
+    [char] > = IF
+      dup htm-next-char
+    ELSE
+       \ error !!
+    THEN
+  THEN
+  drop  
+  htm.end-tag
 ;
 
 
 : htm-read-processing-instruction ( .. )
 ;
 
-: htm-read-text ( .. )
+
+: htm-read-text ( w:htm - c-addr u htm.text = Read normal html text )
+  dup  htm>string str-data@ 
+  over htm>offset @ chars +
+  swap 1                           \ S: c-addr htm count
+  BEGIN
+    over htm-next-char
+    over htm-fetch-char? IF
+      [char] < <>
+    ELSE
+      false
+    THEN
+  WHILE
+    1+
+  REPEAT
+  nip
+  htm.text
+;
+
+
+: htm-do-text ( w:htm - .. = Scan in text )
+  .s
+  >r
+  r@ htm-fetch-char? IF
+    [char] < = IF
+      r@ htm-next-char
+      
+      r@ htm-fetch-char? IF
+        dup chr-alpha? IF
+          drop 
+          r@ htm-read-start-tag
+        ELSE
+          dup [char] / = IF
+            drop 
+            r@ htm-next-char
+            r@ htm-fetch-char? IF
+              chr-alpha? IF
+                r@ htm-read-end-tag
+              ELSE
+                r@ htm-prev-char
+                r@ htm-prev-char
+                r@ htm-read-text
+              THEN
+            ELSE
+              htm.done
+            THEN    
+          ELSE
+            dup [char] ! = IF
+              drop 
+              r@ htm-read-markup
+            ELSE
+              [char] ? = IF
+                r@ htm-read-processing-instruction
+              ELSE
+                r@ htm-prev-char
+                r@ htm-read-text
+              THEN
+            THEN
+          THEN
+        THEN
+      ELSE
+        htm.done
+      THEN
+    ELSE
+      r@ htm-read-text
+    THEN
+  ELSE
+    htm.done
+  THEN
+  rdrop
 ;
 
 
 ( Html reader word )
 
-: htm-read ( - HTM-DONE | .. )
+: htm-read ( w:htm - htm.done | c-addr u htm.text | c-addr u htm.start-tag | c-addr u htm.end-tag | ..  = Read the next html token from the source )
+  dup htm>state @
+  CASE
+    htm.done OF
+      drop htm.done
+      ENDOF
+    htm.tag-attribute OF
+      htm-read-tag-attribute
+      ENDOF
+    htm.markup-parameter OF
+      htm-read-markup-parameter
+      ENDOF
+    htm.comment OF
+      htm-read-comment
+      ENDOF
+      
+    >r htm-do-text r>             \ default: check text
+  ENDCASE
 ;
 
 
