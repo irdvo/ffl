@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.13 $
+\  $Date: 2007-10-09 17:31:08 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -130,7 +130,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   dup 0> IF
     r@ tis>pntr @ chars
-    r@ str>data   @ +                  \ Determine start of remaining chars in stream
+    r@ str-data@ +                     \ Determine start of remaining chars in stream
     swap
   THEN
   rdrop
@@ -274,6 +274,22 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
     drop 
     false
   THEN
+;
+
+
+: tis-read-all   ( w:tis - 0 | c-addr n = Read all remaining characters from the stream )
+  >r
+  r@ str-length@
+  r@ tis>pntr @ -
+  0 max                                \ Remaining characters
+  dup 0> IF
+    r@ tis>pntr @ chars
+    r@ str-data@ +                     \ c-addr
+    swap
+    r@ str-length@                     \ pntr = length
+    r@ tis>pntr !
+  THEN
+  rdrop
 ;
 
 
