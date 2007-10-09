@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.6 $
+\  $Date: 2007-10-09 17:31:07 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -35,22 +35,17 @@ include ffl/config.fs
 
 include ffl/snl.fs
 include ffl/sni.fs
-include ffl/str.fs
+include ffl/tis.fs
 
 ( arg = Arguments parser )
 ( The arg parser module implements words for parsing command line arguments. )
 ( Due to the fact that the ANS standard does not specify words for arguments )
 ( this module has a environmental dependency.                                )
 ( <pre>                                                                      )
-(   Stack usage callbacks words:                                             )
-(      non-option callback word      : c-addr:argument u  w:data - f:continu )
-(      switch option callback word   :                    w:data - f:continu )
-(      parameter option callback word: c-addr:parameter u w:data - f:continu )
-(                                                                            )
 (   Supported option formats:                                                )
 (      -v            short switch option                                     )
 (      -f a.txt      short option with parameter                             )
-(      -vq           multiple short swith options                            )
+(      -vq           multiple short switch options                           )
 (      --file=a.txt  long option with parameter                              )
 (      --verbose     long switch option                                      )
 (      --            stop parsing arguments                                  )
@@ -63,7 +58,16 @@ include ffl/str.fs
 
 ( Global setting )
 
-79 VALUE arg.cols    ( - n = Value with the number of columns for parser output [def. 79] )
+79 value arg.cols    ( - n = Value with the number of columns for parser output [def. 79] )
+
+
+( Constants )
+
+ 3 constant arg.version-option
+ 2 constant arg.help-option
+ 1 constant arg.non-option
+ 0 constant arg.done
+-1 constant arg.error
 
 
 ( Private structure )
@@ -71,8 +75,7 @@ include ffl/str.fs
 struct: arg%opt%   ( - n = Get the required size for the argument option structure )
   snn%
   field: arg>opt>snn         \ this structure is extending the single list node
-  cell:  arg>opt>data        \ the optional data for the callback
-  cell:  arg>opt>xt          \ the callback xt
+  cell:  arg>opt>id          \ the option id (4..)
   cell:  arg>opt>switch      \ is the option a switch (no parameter) ?
   char:  arg>opt>short       \ the short option or 0
   cell:  arg>opt>long        \ the long option or ""
@@ -80,21 +83,25 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ;struct
 
 
-: arg-opt-init   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback w:opt - = Initialise the arg>opt structure )
+: arg-opt-init   ( c:short c-addr:long u c-addr:descr u f:switch n:id w:opt - = Initialise the arg>opt structure [id=4..])
   >r
   r@ arg>opt>snn      snn-init
-  r@ arg>opt>xt     !
-  r@ arg>opt>data   !
+  
+  r@ arg>opt>id     !
+  
   r@ arg>opt>switch !
+  
   str-new dup 
   r@ arg>opt>descr  ! str-set
+  
   str-new dup 
   r@ arg>opt>long   ! str-set
+  
   r> arg>opt>short c!
 ;
 
 
-: arg-opt-new   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback - w:opt = Create a new arg-opt structure on the heap )
+: arg-opt-new   ( c:short c-addr:long u c-addr:descr u f:switch n:id - w:opt = Create a new arg-opt structure on the heap [id=4..])
   arg%opt% allocate  throw   >r r@ arg-opt-init r>
 ;
 
@@ -104,13 +111,6 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
   dup arg>opt>descr @ str-free
     
   free throw
-;
-
-
-: arg-opt-execute ( ... w:opt - ... = Execute an option )
-  dup  arg>opt>data @ 
-  swap arg>opt>xt   @ 
-  execute
 ;
 
 
@@ -138,7 +138,7 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
     dup str-get type
     r@ swap str-length@ -              \ Calculate number filling spaces
   ELSE
-    drop r@ 2+
+    drop r@ 1+ 1+
   THEN
   1+ spaces
   
@@ -153,10 +153,11 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
   BEGIN                               \ Type any remaining info on empty lines
     dup 0>
   WHILE
-    \ r@ 9 + spaces
+    r@ 9 + spaces
     >r type cr r>
     1-
   REPEAT
+  drop
   r>
 ;
 
@@ -164,6 +165,8 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ( Argument parser structure )
 
 struct: arg%   ( - n = Get the required space for the arg data structure )
+  tis%
+  field: arg>arg        \ the current argument
   snl%
   field: arg>options    \ the option list
   sni%
@@ -172,8 +175,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   cell:  arg>usage      \ the program usage
   cell:  arg>version    \ the program version
   cell:  arg>tail       \ the program extra info
-  cell:  arg>data       \ the optional data
-  cell:  arg>xt         \ the non-option callback xt
+  cell:  arg>index      \ the argument index
   cell:  arg>length     \ the length of the longest long option
 ;struct
 
@@ -185,16 +187,22 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   >r
   r@ arg>options             snl-init
   r@ arg>options r@ arg>iter sni-init
+  r@ arg>arg                 tis-init
+  
   str-new dup
   r@ arg>tail    ! str-set
+  
   str-new dup
   r@ arg>version ! str-set
+  
   str-new dup
   r@ arg>usage   ! str-set
+  
   str-new dup
   r@ arg>name    ! str-set
-  r@ arg>data nil!
-  r> arg>xt   nil!
+  
+  r@ arg>index  0!
+  r> arg>length 0!
 ;
 
 
@@ -222,13 +230,13 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   REPEAT
   2drop  
 
-  free throw
+  tis-free
 ;
 
 
 ( Default print words )
 
-: arg-print-version   ( w:arg - false = Print the version info )
+: arg-print-version   ( w:arg - = Print the version info )
   dup arg>name    @ str-get type space
       arg>version @ str-get type cr
       
@@ -239,25 +247,22 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
   0 DO                            \ Type the columns
     type cr
   LOOP
-  
-  false
 ;
 
 
-: arg-print-help   ( w:arg - false = Print the help info )
+: arg-print-help   ( w:arg - = Print the help info )
   >r
   ." Usage: " 
   r@ arg>name   @ str-get type space
   r@ arg>usage  @ str-get type cr cr
   r@ arg>length @ ['] arg-opt-print r@ arg>options snl-execute drop cr
   r> arg>tail   @ str-get type cr
-  false
 ;
 
 
 ( Option words )
 
-: arg-add-option   ( c:short c-addr:long u c-addr:descr u f:switch w:data xt:callback w:arg - = Add an option to the argument parser )
+: arg-add-option   ( c:short c-addr:long u c-addr:descr u f:switch n:id w:arg - = Add an option to the argument parser [id=4..])
   >r
   arg-opt-new                          \ Create the option
   dup arg>opt>long @ str-length@       \ Determine length of long option
@@ -266,16 +271,44 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-add-default-options   ( w:arg - = Add the default help and version options )
-  >r
-  [char] ? s" help"    s" show this help"    true r@ ['] arg-print-help    r@ arg-add-option
-         0 s" version" s" show version info" true r@ ['] arg-print-version r> arg-add-option
+: arg-add-help-option   ( w:arg - = Add the default help option )
+  >r [char] ? s" help" s" show this help" true arg.help-option r> arg-add-option
+;
+
+
+: arg-add-version-option   ( w:arg - = Add the default version option )
+  >r 0 s" version" s" show version info" true arg.version-option r> arg-add-option
+;
+
+
+( Private parser errors )
+
+: arg+exp-param-str   ( - c-addr u =  Expecting parameter for option string)
+  s" Expecting parameter for option: -"
+;
+
+: arg+unk-opt-str   ( - c-addr u =  Unknown option string)
+  s" Unknown option: -"  
+;
+
+: arg+inv-opt-str   ( - c c-addr u = Invalid option string)
+  [char] - s" Invalid option: " 
+;
+
+: arg+do-short-error   ( c c-addr u - id = Generate an error for a short option )
+  type emit cr
+  arg.error
+;
+
+: arg+do-long-error   ( c-addr u c-addr u - id = Generate an error for a long option )
+  type [char] - emit type cr
+  arg.error
 ;
 
 
 ( Private parser words )
 
-: arg-find-short   ( c:option w:arg - w:opt | nil = Find a short option in the option list )
+: arg-find-short   ( c w:arg - w:opt | nil = Find a short option in the option list )
   arg>iter 
   tuck sni-first                  \ Iterate the option list
   BEGIN                           \ S: iter c opt
@@ -291,50 +324,40 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-parse-short   ( n:index c-addr:option u w:arg - n:index f = Parse a short option )
+: arg-parse-short   ( w:arg - c-addr u n:id | n:id = Parse a short option )
   >r
-  true
-  BEGIN                           \ While chars in option and continu
-    over 0> over AND
-  WHILE
-    drop
-    over c@
-    dup r@ arg-find-short
-    dup nil<> IF
-      >r
-      r@ arg>opt>switch @ IF
-        drop
-        r@ arg-opt-execute        \ S: n c-addr u f
-      ELSE
-        over 1 <> IF
-          ." Expecting parameter for option: " emit ."  in option: -" 2dup type cr
-          false
-        ELSE
-          nip nip 
-          swap 1+
-          tuck #args < IF
-            drop dup arg@
-            r@ arg-opt-execute
+  r@ arg>arg tis-read-char IF               \ Read the option character
+    dup r@ arg-find-short                   \ Find it in the list
+    dup nil<> IF                            \ If found Then
+      dup arg>opt>switch @ IF               \   If switch Then return id
+        nip
+        arg>opt>id @
+      ELSE                                  \ Else If last option Then
+        r@ arg>arg tis-eof? IF
+          r@ arg>index @ #args < IF
+            nip
+            r@ arg>index dup @
+            swap 1+!
+            arg@                            \   Read next argument and return id
+            rot arg>opt>id @
           ELSE
-            ." Expecting parameter for option: -" emit cr
-            false
+            drop
+            arg+exp-param-str arg+do-short-error
           THEN
-          >r 0 0 r>
+        ELSE
+          drop
+          arg+exp-param-str arg+do-short-error
         THEN
       THEN
-      rdrop
     ELSE
       drop
-      ." Unknown option: -" emit cr
-      false
+      arg+unk-opt-str arg+do-short-error
     THEN
-    
-    dup IF                        \ If okee Then
-      >r 1 /string r>             \   Remove first char from option
-    THEN
-  REPEAT
+  ELSE
+    [char] - 
+    arg+inv-opt-str arg+do-short-error
+  THEN
   rdrop
-  nip nip
 ;
 
 
@@ -357,7 +380,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-find-long   ( c-addr:option u w:arg - w:opt | nil = Find a long option the option list )
+: arg-find-long   ( c-addr u w:arg - w:opt | nil = Find a long option in the option list )
   arg>iter 
   dup sni-first                   \ Iterate the option list
   BEGIN                           \ S: c-addr u iter opt
@@ -374,92 +397,91 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg+split-option   ( c-addr u - u = Split a option in option and parameter )
-  0 -rot
-  bounds ?DO                 \ S: u
-    I c@ [char] = = IF
-      LEAVE
+: arg-parse-long   ( w:arg - c-addr u n:id | n:id = Parse a long option )
+  >r
+  r@ arg>arg tis-eof? IF
+    arg.done                                \ Done ('--')
+  ELSE
+    [char] = r@ arg>arg tis-scan-char IF
+      2dup r@ arg-find-long
+      dup nil<> IF
+        dup arg>opt>switch @ IF
+          drop
+          ." Unexpected parameter for switch option: --" type cr
+          arg.error
+        ELSE
+          r@ arg>arg tis-eof? IF
+            drop
+            arg+exp-param-str arg+do-long-error
+          ELSE
+            nip nip
+            r@  arg>arg tis-read-all          \ read the parameter
+            rot arg>opt>id @
+          THEN
+        THEN
+      ELSE
+        drop
+        arg+unk-opt-str arg+do-long-error
+      THEN
+    ELSE
+      r@ arg>arg tis-read-all
+      2dup r@ arg-find-long
+      dup nil<> IF
+        dup arg>opt>switch @ IF
+          nip nip
+          arg>opt>id @
+        ELSE
+          drop
+          arg+exp-param-str arg+do-long-error
+        THEN
+      ELSE
+        drop
+        arg+unk-opt-str arg+do-long-error
+      THEN
     THEN
-    1+
-  LOOP
+  THEN
+  rdrop
 ;
 
 
-: arg-parse-long   ( n:index c-addr:option u w:arg - n:index f = Parse a long option )
+: arg-parse-opt   ( w:arg - c-addr u n:id | n:id = Parse the option )
   >r
-  2dup arg+split-option
-  >r over r> tuck                 \ S: n c-addr u u' c-addr u'
-  
-  r> arg-find-long
-  
-  dup nil<> IF                    \ If long option found Then
-    >r
-    r@ arg>opt>switch @ IF        \   If switch option Then
-      over = IF                   \     If no '=' in option Then
-        2drop
-        r@ arg-opt-execute
-      ELSE
-        ." Unexpected parameter for switch option: --" type cr
-        false
-      THEN
-    ELSE                          \ Else
-      >r 2dup r> 1+ /string       \   Remove option= from option
-      dup 0> IF
-        r@ arg-opt-execute 
-        nip nip
-      ELSE
-        2drop
-        ." Expecting parameter for option: --" type cr
-        false
-      THEN
-    THEN
-    rdrop
+  r@ arg>arg tis-eof? IF
+    arg+inv-opt-str arg+do-short-error
   ELSE
-    2drop 
-    ." Unknown option: --" type cr
-    false
+    [char] - r@ arg>arg tis-cmatch-char IF
+      r@ arg-parse-long
+    ELSE
+      r@ arg-parse-short
+    THEN
   THEN
+  rdrop
 ;
 
 
 ( Parser words )
 
-: arg-parse   ( w:data xt w:arg - f:ok = Parse the command line arguments, xt is called for every argument that is not an option )
+: arg-parse   ( w:arg - c-addr u n:id | n:id = Parse the next command line argument )
   >r
-  r@ arg>xt   !
-  r@ arg>data !
-  true 0
-  BEGIN
-    2dup #args < AND
-  WHILE                                \ Do for arg1 to #args
-    nip
-    dup arg@
-    over c@ [char] - = IF              \   If argument start with - Then
-      1 /string
-      dup 0> IF
-        over c@ [char] - = IF          \     If next in argument is - Then
-          1 /string
-          dup 0> IF                    \       If more in argument Then
-            r@ arg-parse-long          \         Parse long option
-          ELSE                         \       Else
-            2drop
-            drop #args true            \         Done ('--')
-          THEN
-        ELSE                           \     Else
-          r@ arg-parse-short           \       Parse short option
-        THEN
-      ELSE                             \    Else
-        2drop
-        ." Invalid option: -" cr       \      Invalid option
-        false
+  r@ arg>arg tis-eof? IF
+    r@ arg>index dup @ dup #args < IF
+      arg@ r@ arg>arg tis-set
+      1+!
+      
+      [char] - r@ arg>arg tis-cmatch-char IF
+        r@ arg-parse-opt
+      ELSE
+        r@ arg>arg tis-read-all
+        arg.non-option
       THEN
-    ELSE                               \   Else
-      r@ arg>data @ r@ arg>xt @ execute \    Not an option..
+    ELSE
+      2drop
+      arg.done
     THEN
-    swap 1+
-  REPEAT
+  ELSE
+    r@ arg-parse-short
+  THEN
   rdrop
-  drop
 ;
 
 [ELSE]

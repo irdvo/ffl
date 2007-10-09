@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.3 $
+\  $Date: 2007-10-09 17:31:07 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -38,72 +38,65 @@ arg-new value arg1
 
 \ Add the default help and version options
 
-arg1 arg-add-default-options
+arg1 arg-add-help-option
+
+arg1 arg-add-version-option
 
 
-\ Create the callback word for the -v/--verbose switch option
+\ Variable for the verbose switch
 
 variable verbose  verbose off
 
-: verbose!  ( addr - f )
-  on                                \ in this example: data contains the variable to set on
-  ." Verbose option found.." cr     \ give some info
-  true                              \ return true: continue
-;
 
 \ Add the -v/--verbose option switch
-  
+
 char v                              \ Short option name
 s" verbose"                         \ Long option name
 s" activate verbose mode"           \ Description
 true                                \ Switch -> true
-verbose                             \ Destination data
-' verbose!                          \ Callback word
+4                                   \ Option id
 arg1 arg-add-option
 
      
-\ Create the callback word for the -f/--file=FILE parameter option
-
-: print-parameter ( c-addr u nil - f )
-  drop                              \ in this example: no interest in the data, ..
-  ?dup IF                           \ Check if parameter is not empty
-    ." File parameter: " type cr    \ .. type the parameter, ..
-    true                            \ .. and continu
-  ELSE                              \ Else
-    drop
-    ." Error: empty parameter" type cr
-    false                           \   Error and stop parsing
-  THEN
-;
-
 \ Add the -f/--file=FILE option
 
 char f                              \ Short option name
 s" file=FILE"                       \ Long option name
 s" set input file, any input file is allowed, as long as the description is multicolumn"  \ Description
 false                               \ Parameter -> false
-nil                                 \ No destination data
-' print-parameter                   \ Callback word
+5                                   \ Option id
 arg1 arg-add-option
 
 
-\ Create the non-option callback word
-
-: non-option ( c-addr u data - f )
-  drop                             \ in this example: no interest in the data, ..
-  ." Non option found: " type cr   \ .. some feedback, ..
-  true                             \ .. and continu
-;
-
+: parse-options ( - )
+  BEGIN
+    arg1 arg-parse                 \ parse the next argument
+    dup arg.done <> over arg.error <> AND  \ stop parsing when ready or after an error
+  WHILE
+    
+    CASE
+      arg.help-option    OF arg1 arg-print-help             ENDOF  \ print default help info
+    
+      arg.version-option OF arg1 arg-print-version          ENDOF  \ print default version info
+      
+      arg.non-option     OF ." Non option found:" type cr   ENDOF  \ non option parameter, parameter on stack
+      
+      4                  OF verbose on ." Verbose is on" cr ENDOF  \ switch, no extra stack parameters
+      
+      5                  OF ." File parameter:" type cr     ENDOF  \ parameter switch, parameter on stack
+    ENDCASE
+  REPEAT
+  
+  arg.done = IF
+    ." All options okee." cr
+  ELSE
+    ." Error in one of the options." cr
+  THEN
+;  
 
 \ Parse the command line arguments
 
-nil ' non-option arg1 arg-parse [IF]
-  .( All options okee !) cr
-[ELSE]
-  .( Error in one of the options, or help or version info requested.) cr
-[THEN]
-
+parse-options
 
 \ Free the argument parser from the heap
 

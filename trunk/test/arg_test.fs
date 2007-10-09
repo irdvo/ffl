@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-18 19:16:10 $ $Revision: 1.3 $
+\  $Date: 2007-10-09 17:31:08 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -39,90 +39,62 @@ t{ s" test"
    s" v1.0" 
    s" Report bugs to bugs@bugs.com" arg-new value arg1 }t
 
-t{ arg1 arg-add-default-options }t
+   
+t{ arg1 arg-add-help-option }t
 
-variable arg-count   0 arg-count !
-
-: arg-do-switch ( data - f )
-  1+! true
-;
-
-: arg-do-caption ( c-addr u data - f )
-  -rot
-  s" TEST" compare 0= IF
-    1+!
-  ELSE
-    drop ." do caption"
-  THEN
-  true
-;
-
-: arg-do-file ( c-addr u data - f )
-  -rot
-  s" FILE" compare 0= IF
-    1+!
-  ELSE
-    drop ." do file"
-  THEN
-  true
-;
-
-: arg-do-input ( c-addr u data - f )
-  -rot
-  s" input" compare 0= IF
-    1+!
-  ELSE
-    drop ." do input"
-  THEN
-  true
-;
+t{ arg1 arg-add-version-option }t
 
 
 t{ char a
    s" "
    s" test option a"
    true
-   arg-count
-   ' arg-do-switch
+   4
    arg1 arg-add-option }t
    
 t{ char b
    s" bold"
    s" test option b/bold"
    true
-   arg-count
-   ' arg-do-switch
+   5
    arg1 arg-add-option }t
    
 t{ char c
    s" caption"
    s" test option c/caption"
    false
-   arg-count
-   ' arg-do-caption
+   6
    arg1 arg-add-option }t
    
 t{ 0
    s" verbose"
    s" test option verbose"
    true
-   arg-count
-   ' arg-do-switch
+   7
    arg1 arg-add-option }t
    
 t{ char f
-   s" file"
+   s" file=FILE"
    s" test option f/file"
    false
-   arg-count
-   ' arg-do-file
+   8
    arg1 arg-add-option }t
+   
 
 #args [IF]
 
-t{ arg-count ' arg-do-input arg1 arg-parse ?true }t
+\ test with -ab -c TEST --verbose --file=FILE input
 
-t{ arg-count @ 6 ?s }t
+\ t{ arg1 arg-print-help    }t
+\ t{ arg1 arg-print-version }t
+
+t{ arg1 arg-parse 4 ?s                                   }t
+t{ arg1 arg-parse 5 ?s                                   }t
+t{ arg1 arg-parse 6 ?s s" TEST" compare ?0               }t
+t{ arg1 arg-parse 7 ?s                                   }t
+t{ arg1 arg-parse 8 ?s s" FILE" compare ?0               }t
+t{ arg1 arg-parse arg.non-option ?s s" input" compare ?0 }t
+t{ arg1 arg-parse arg.done ?s                            }t
 
 [THEN]
    
