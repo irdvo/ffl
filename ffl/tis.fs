@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-09 17:31:08 $ $Revision: 1.14 $
+\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -43,9 +43,12 @@ include ffl/str.fs
 ( the stream pointer is updated; scan = scan for data, if the data is found )
 ( then the leading text is returned and the stream pointer is moved after   )
 ( the scanned data; skip = move the stream pointer after the skipped data.  )  
+( <pre>                                                                     )
+(   Stack usage reader word: tis-reader ( w:data - false | c-addr u true    )
+( </pre>                                                                    )
 
 
-1 constant tis.version
+2 constant tis.version
 
 
 ( Input stream structure )
@@ -53,6 +56,8 @@ include ffl/str.fs
 struct: tis%       ( - n = Get the required space for the tis data structure )
   str% field: tis>text
        cell:  tis>pntr
+       cell:  tis>reader
+       cell:  tis>data
 ;struct
 
 
@@ -74,7 +79,9 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-init         ( w:tis - = Initialise the empty input stream )
   dup str-init               \ Initialise the base string data structure
-      tis>pntr  0!
+  dup tis>pntr     0!
+  dup tis>reader nil!
+      tis>data     0!
 ;
 
 
@@ -90,77 +97,6 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-free         ( w:tis - = Free the input stream from the heap )
   str-free
-;
-
-
-( Stream words )
-
-: tis-reset        ( w:tis - = Reset the input stream )
-  tis>pntr 0!
-;
-
-
-: tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
-  dup tis>pntr @ swap str-length@ >=
-;
-
-
-( Fetch and next words )
-
-: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
-  dup tis>pntr @ over str-length@ over >= IF
-    chars swap str-data@ + c@
-    true
-  ELSE
-    2drop
-    false
-  THEN
-;
-
-
-: tis-next-char    ( w:tis - = Move the stream pointer one character after fetch-char )
-  tis>pntr 1+!
-;
-
-
-: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
-  >r
-  r@ str-length@ r@ tis>pntr @ -       \ Determine remaining length, limit between 0 and requested chars
-  min 0 max
-  
-  dup 0> IF
-    r@ tis>pntr @ chars
-    r@ str-data@ +                     \ Determine start of remaining chars in stream
-    swap
-  THEN
-  rdrop
-;
-
-
-: tis-next-chars   ( n w:tis - = Move the stream pointer n characters after fetch-chars )
-  tis>pntr +!
-;
-
-
-( Set and get words )
-
-: tis-set          ( c-addr u w:tis - = Set the string in the stream, reset the stream pointer )
-  dup tis-reset
-  str-set
-;
-
-
-: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
-  >r
-  r@ str-length@ r@ tis>pntr @ -       \ Determine remaining length
-  0 max
-  
-  dup 0> IF
-    r@ tis>pntr @ chars
-    r@ str>data @ +                    \ Determine start of remaining chars in stream
-    swap
-  THEN
-  rdrop
 ;
 
 
@@ -187,6 +123,126 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   tis-pntr?!
 ;
+
+
+( Reader words )
+
+: tis-set-reader  ( w:data xt w:tis - = Initialise the stream for reading using the reader callback )
+  >r
+  r@ tis>reader !
+  r@ tis>data   !
+  r@            str-clear
+  r> tis>pntr   0!
+;
+
+
+: tis-read-more   ( w:tis - f = Read more data from the reader )
+  >r
+  false
+  r@ tis>reader @ nil<> IF
+    r@ tis>data @  r@ tis>reader @  execute IF
+      r@ str-append-string
+      0=
+    THEN
+  THEN
+  rdrop
+;
+      
+      
+( String words )
+
+: tis-reset        ( w:tis - = Reset the input stream for reading from string)
+  tis>pntr 0!
+;
+
+
+: tis-set          ( c-addr u w:tis - = Initialise the stream for reading from a string )
+  dup tis-reset
+  str-set
+;
+
+
+: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
+  >r
+  r@ str-length@ r@ tis-pntr@ -        \ Determine remaining length
+  0 max
+  
+  dup 0> IF
+    r@ tis-pntr@ chars
+    r@ str-data@ +                     \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
+( Stream words )
+
+: tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
+  >r
+  r@ tis-pntr@  r@ str-length@ >= dup IF
+    drop
+    r@ tis-read-more 0=
+  THEN
+  rdrop
+;
+
+
+: tis-reduce   ( w:tis - = Reduce the stream size )
+  >r 
+  r@ tis-pntr@ 256 > IF
+    0 r@ tis>pntr @!  0 r@ str-delete  \ Remove leading string and reset pntr
+  THEN
+  rdrop
+;
+
+
+( Fetch and next words )
+
+: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
+  dup tis-eof? 0= dup IF
+    >r
+    dup  tis-pntr@ chars
+    swap str-data@ + c@
+    r>
+  ELSE
+    nip
+  THEN
+;
+
+
+: tis-next-char    ( w:tis - = Move the stream pointer one character after fetch-char )
+  tis>pntr 1+!
+;
+
+
+: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
+  >r
+  BEGIN
+    dup r@ str-length@ r@ tis-pntr@ - > IF
+      r@ tis-read-more 0=
+    ELSE
+      true
+    THEN
+  UNTIL
+
+  r@ str-length@ r@ tis>pntr @ -       \ Determine remaining length, limit between 0 and requested chars
+  min 0 max
+  
+  dup 0> IF
+    r@ tis>pntr @ chars
+    r@ str-data@ +                     \ Determine start of remaining chars in stream
+    swap
+  THEN
+  rdrop
+;
+
+
+: tis-next-chars   ( n w:tis - = Move the stream pointer n characters after fetch-chars )
+  tis>pntr +!
+;
+
+
 
 
 ( Match words: check for starting data)
@@ -279,11 +335,15 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-read-all   ( w:tis - 0 | c-addr n = Read all remaining characters from the stream )
   >r
+  BEGIN
+    r@ tis-read-more 0=                \ Read all data from the reader
+  UNTIL
+  
   r@ str-length@
-  r@ tis>pntr @ -
+  r@ tis-pntr@ -
   0 max                                \ Remaining characters
   dup 0> IF
-    r@ tis>pntr @ chars
+    r@ tis-pntr@ chars
     r@ str-data@ +                     \ c-addr
     swap
     r@ str-length@                     \ pntr = length
@@ -421,76 +481,151 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 : tis-scan-char    ( c w:tis - false | c-addr u true = Read characters till c )
   >r
-  0 swap
-  r@ tis-get ?dup IF                   \ If there are still characters in the stream
-    bounds ?DO                         \ Do for all remaining characters
-      dup I c@ = IF                    \  If scan character found then
-        drop
-        unloop
-        r@ tis-get drop swap           \   Return start of character
-        dup 1+ r> tis-next-chars       \   Set characters processed
-        true exit
+  r@ tis-pntr@ swap                    \ Save current pointer
+  
+  BEGIN
+    r@ tis-fetch-char IF               \ Fetch the current character
+      over = IF
+        true false                     \   If match found then found & ready
+      ELSE
+        true                           \   Else continue searching
       THEN
-      swap 1+ swap
-      1 chars
-    +LOOP
+    ELSE
+      false false                      \ If no more characters then not found & ready
+    THEN
+  WHILE
+    r@ tis-next-char                   \ Move to the next character in the stream
+  REPEAT
+  
+  nip                                  \ Drop scan character
+  IF
+    r@ tis-pntr@ over -                \ Length of leading string
+    swap chars r@ str-data@ + swap     \ Start of leading string
+    
+    r@ tis-next-char                   \ Skip scan character
+    
+    true
+  ELSE
+    r@ tis>pntr !                      \ Restore current pointer
+    false
   THEN
-  2drop rdrop
-  false
+  rdrop
 ;
 
 
 : tis-scan-chars   ( c-addr n w:tis - false | c-addr u c true = Read characters till one of characters )
   >r
-  0 -rot
-  r@ tis-get ?dup IF                   \ If there are remaing characters in the stream
-    bounds ?DO                         \ Do for the remaing characters
-      2dup I c@ chr-string? IF         \  If character in the string then
-        2drop
-        I c@
-        unloop
-        swap
-        r@ tis-get drop swap           \   Return the start of the remaining characters
-        dup 1+ r> tis-next-chars       \   Set characters processed
-        rot
-        true exit
+  r@ tis-pntr@ -rot                    \ Save the current pointer
+  
+  BEGIN
+    2dup
+    r@ tis-fetch-char IF               \ Fetch the current character
+      chr-string? IF
+        true false                     \   If current character in string of chars then found & ready
+      ELSE
+        true                           \   Else continue searching
       THEN
-      rot 1+ -rot
-      1 chars
-    +LOOP
+    ELSE
+      2drop
+      false false                      \ If no more characters then not found & ready
+    THEN
+  WHILE
+    r@ tis-next-char
+  REPEAT
+  
+  nip nip                              \ Drop string of chars
+  IF
+    r@ tis-pntr@ over -                \ Length of leading string
+    swap chars r@ str-data@ + swap     \ Start of leading string
+    
+    r@ tis-fetch-char drop             \ Fetch the scanned character
+    
+    r@ tis-next-char                   \ Skip scan character
+    
+    true
+  ELSE
+    r@ tis>pntr !                      \ Restore current pointer
+    false
   THEN
-  2drop drop rdrop
-  false
+  rdrop
 ;
 
 
 : tis-scan-string  ( c-addr n w:tis - false | c-addr u true = Read characters till a string )
   >r
-  0 -rot
-  r@ tis-get ?dup IF                   \ Check if there are remaing characters
-    swap >r over - r> swap             \ Calculate the number of remaining characters that can fit the string
-    dup 0> IF
-      bounds ?DO                       \ Do for the remaing character that can fit the string
-        2dup I over compare 0= IF      \  If the remaining characters has the string Then
-          nip
-          unloop
-          over +
-          r@ tis-get drop              \   Return the start of the remaing characters
-          swap r> tis-next-chars       \   Set characters processed
-          swap 
-          true exit
-        THEN
-        rot 1+ -rot
-        1 chars
-      +LOOP
+  r@ tis-pntr@ -rot                    \ Save the current pointer
+  
+  BEGIN
+    2dup
+    dup r@ tis-fetch-chars ?dup IF     \ Fetch the same string from the stream
+      compare 0= IF
+        true false                     \   If strings equal then found & ready
+      ELSE 
+        true                           \   Else continue searching
+      THEN
     ELSE
       2drop
+      false false                      \ If no more characters then not found & ready
     THEN
+  WHILE
+    r@ tis-next-char                   \ Move to next character in stream
+  REPEAT
+  
+  IF
+    nip
+    swap r@ tis-pntr@ over -           \ Length of leading string
+    swap chars r@ str-data@ + swap     \ Start of leading string
+    
+    rot r@ tis-next-chars              \ Skip scanned string
+    
+    true
+  ELSE
+    2drop
+    r@ tis>pntr !                      \ Restore current pointer
+    false
   THEN
-  2drop drop rdrop
-  false
+  rdrop
 ;
 
+
+: tis-iscan-string   ( c-addr n w:tis - false | c-addr u true = Read characters till a string [case insensitive] )
+  >r
+  r@ tis-pntr@ -rot                    \ Save the current pointer
+  
+  BEGIN
+    2dup
+    dup r@ tis-fetch-chars ?dup IF     \ Fetch the same string from the stream
+      icompare 0= IF
+        true false                     \   If strings equal then found & ready
+      ELSE 
+        true                           \   Else continue searching
+      THEN
+    ELSE
+      2drop
+      false false                      \ If no more characters then not found & ready
+    THEN
+  WHILE
+    r@ tis-next-char                   \ Move to next character in stream
+  REPEAT
+  
+  IF
+    nip
+    swap r@ tis-pntr@ over -           \ Length of leading string
+    swap chars r@ str-data@ + swap     \ Start of leading string
+    
+    rot r@ tis-next-chars              \ Skip scanned string
+    
+    true
+  ELSE
+    2drop
+    r@ tis>pntr !                      \ Restore current pointer
+    false
+  THEN
+  rdrop
+;
+
+
+( Skip words: skip data in the stream )
 
 : tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
   >r 0

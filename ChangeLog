@@ -1,4 +1,6 @@
 0.6.0
+* tis.fs: new word tis-iscan-string (2007-10-17)
+* tis.fs: new word tis-set-reader (2007-10-17)
 * tis.fs: new word tis-read-all (2007-10-08)
 * str.fs: new word str-get-char? (2007-09-17)
 * htm.fs: new module (HTML reader and writer) (2007-09-16)
