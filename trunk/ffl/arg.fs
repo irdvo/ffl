@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-09 17:31:07 $ $Revision: 1.7 $
+\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -63,11 +63,11 @@ include ffl/tis.fs
 
 ( Constants )
 
- 3 constant arg.version-option
- 2 constant arg.help-option
- 1 constant arg.non-option
- 0 constant arg.done
--1 constant arg.error
+ 3 constant arg.version-option   ( - n = Version option  )
+ 2 constant arg.help-option      ( - n = Help option     )
+ 1 constant arg.non-option       ( - n = Non option      )
+ 0 constant arg.done             ( - n = Done parsing    )
+-1 constant arg.error            ( - n = Error in option )
 
 
 ( Private structure )

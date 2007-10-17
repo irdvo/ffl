@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-18 05:27:26 $ $Revision: 1.3 $
+\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -30,11 +30,11 @@ include ffl/config.fs
 
 [UNDEFINED] htm.version [IF]
 
-include ffl/str.fs
+include ffl/tis.fs
 
 ( htm = HTML reader and writer )
 ( The htm module implements words for non-validating parsing of HTML sources )
-( and for writing HTML. ..more..                                             )
+( and for writing HTML.                                                      )
 ( <pre>                                                                      )
 (   Stack usage reader word: htm-reader ( w:data - false | c-addr u true     )
 (   Stack usage writer word: htm-writer ( c-addr u w:data - f                )
@@ -46,28 +46,22 @@ include ffl/str.fs
 
 ( Html reader constants )
 
-0 constant htm.error                   ( Error         - ..                  )
-1 constant htm.done                    ( Done reading  -                     )
-2 constant htm.comment                 ( Comment       - c-addr u            )
-3 constant htm.text                    ( Normal text   - c-addr u            )
-4 constant htm.start-tag               ( Start tag     - c-addr u            )
-5 constant htm.tag-attribute           ( Tag attribute - c-addr u c-addr u   )
-6 constant htm.end-tag                 ( End tag       - c-addr u            )
-7 constant htm.markup                  ( Markup        - c-addr u            )
-8 constant htm.markup-parameter        ( Markup param. - c-addr u            )
-9 constant htm.processing-instruction  ( Proc. instr.  - c-addr u c-addr u   )
+-1 constant htm.error                   ( - n = Error         -                                 )
+ 0 constant htm.done                    ( - n = Done reading  -                                 )
+ 1 constant htm.comment                 ( - n = Comment       - c-addr u                        )
+ 2 constant htm.text                    ( - n = Normal text   - c-addr u                        )
+ 3 constant htm.start-tag               ( - n = Start tag     - c-addr u c-addr u .. u c-addr u )
+ 4 constant htm.end-tag                 ( - n = End tag       - c-addr u                        )
+ 5 constant htm.markup                  ( - n = Markup        - c-addr u .. u c-addr u          )
+ 6 constant htm.processing-instruction  ( - n = Proc. instr.  - c-addr u .. u c-addr u          )
 
 
 ( Html reader and writer structure )
 
 struct: htm%   ( - n = Get the required space for the html reader data structure )
-  str%
-  field: htm>string     \ the html string (extends the normal string)
-  cell:  htm>offset     \ the offset in the html string
-  cell:  htm>state      \ the current state
-  cell:  htm>reader     \ the xt of the reader (pull)
+  tis%
+  field: htm>stream     \ the html string (extends the text input stream)
   cell:  htm>writer     \ the xt of the writer
-  cell:  htm>data       \ the optional data for the reader and writer
 ;struct
 
 
@@ -75,8 +69,8 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 ( Html parser structure creation, initialisation and destruction )
 
 : htm-init   ( w:htm - = Initialise the html parser structure )
-  dup  htm>string  str-init
-  dup  htm>offset  0!
+  
+  dup  htm>stream  tis-init
   htm.done
   over htm>state  !
   dup  htm>reader  nil!
@@ -106,7 +100,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
   >r
   r@ htm>reader !
   r@ htm>data   !
-  r@ htm>string str-clear
+  r@ htm>stream str-clear
   r@ htm>offset 0!
   htm.text
   r> htm>state  !
@@ -115,7 +109,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 : htm-set-string  ( c-addr u w:htm - = Init the html reader for for reading from string )
   >r
-  r@ htm>string str-set
+  r@ htm>stream str-set
   r@ htm>offset 0!
   r@ htm>reader nil!
   r@ htm>data   nil!
@@ -128,11 +122,11 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 : htm-fetch-char?  ( w:htm - c true | false = Fetch the next character )
   >r
-  r@ htm>offset @  r@ htm>string
+  r@ htm>offset @  r@ htm>stream
   2dup str-offset? 0= IF
     r@ htm>reader @ dup nil<> IF
       r@ htm>data @ swap execute IF
-        r@ htm>string str-append-string
+        r@ htm>stream str-append-string
       THEN
     ELSE
       drop
@@ -161,7 +155,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 
 : htm-read-name ( w:htm - c-addr u w:htm = Read a name from the source )
-  dup  htm>string str-data@       \ Save current string position
+  dup  htm>stream str-data@       \ Save current string position
   over htm>offset @ chars +
   swap 1
   BEGIN                           \ Read the tag name
@@ -272,7 +266,7 @@ struct: htm%   ( - n = Get the required space for the html reader data structure
 
 
 : htm-read-text ( w:htm - c-addr u htm.text = Read normal html text )
-  dup  htm>string str-data@ 
+  dup  htm>stream str-data@ 
   over htm>offset @ chars +
   swap 1                           \ S: c-addr htm count
   BEGIN
