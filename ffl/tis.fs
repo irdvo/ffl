@@ -2,7 +2,7 @@
 \
 \              tis - the text input stream module in the ffl
 \
-\               Copyright (C) 2006  Dick van Oudheusden
+\               Copyright (C) 2006-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.15 $
+\  $Date: 2007-10-18 15:50:06 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -477,6 +477,15 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
+( Private scan words )
+
+: tis-substring   ( pntr w:tis - c-addr u )
+  2dup str-data@ swap chars +          \ Start of string
+  -rot
+  tis-pntr@ swap -                     \ Length of string
+;
+
+
 ( Scan words: look for data in the stream )
 
 : tis-scan-char    ( c w:tis - false | c-addr u true = Read characters till c )
@@ -499,8 +508,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   nip                                  \ Drop scan character
   IF
-    r@ tis-pntr@ over -                \ Length of leading string
-    swap chars r@ str-data@ + swap     \ Start of leading string
+    r@ tis-substring                   \ Leading string
     
     r@ tis-next-char                   \ Skip scan character
     
@@ -535,8 +543,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   nip nip                              \ Drop string of chars
   IF
-    r@ tis-pntr@ over -                \ Length of leading string
-    swap chars r@ str-data@ + swap     \ Start of leading string
+    r@ tis-substring                   \ Leading string
     
     r@ tis-fetch-char drop             \ Fetch the scanned character
     
@@ -573,8 +580,8 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   IF
     nip
-    swap r@ tis-pntr@ over -           \ Length of leading string
-    swap chars r@ str-data@ + swap     \ Start of leading string
+    swap 
+    r@ tis-substring                   \ Leading string
     
     rot r@ tis-next-chars              \ Skip scanned string
     
@@ -610,8 +617,8 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
   
   IF
     nip
-    swap r@ tis-pntr@ over -           \ Length of leading string
-    swap chars r@ str-data@ + swap     \ Start of leading string
+    swap 
+    r@ tis-substring                   \ Leading string
     
     rot r@ tis-next-chars              \ Skip scanned string
     
