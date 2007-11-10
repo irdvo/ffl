@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\              hcn - the hash cell table node in the ffl
+\              hcn - the hash table cell node in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.6 $
+\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -30,10 +30,10 @@ include ffl/config.fs
 [UNDEFINED] hcn.version [IF]
 
 
-include ffl/stc.fs
+include ffl/hnn.fs
 
-( hcn = Hash Cell Table Node )
-( The hcn module implements the node in the hash table.)
+( hcn = Hash Table Cell Node )
+( The hcn module implements a node that stores cell wide data in a hash table.)
 
 
 1 constant hcn.version
@@ -42,12 +42,9 @@ include ffl/stc.fs
 ( Hash table node structure )
 
 struct: hcn%       ( - n = Get the required space for a hcn structure )
-  cell: hcn>hash        \ the hash code
-  cell: hcn>key         \ the pointer to the key
-  cell: hcn>klen        \ the key length
+  hnn%
+  field: hcn>hnn        \ the hcn node extends the hnn node
   cell: hcn>cell        \ the cell data
-  cell: hcn>next        \ the next node
-  cell: hcn>prev        \ the previous node    
 ;struct 
 
 
@@ -55,17 +52,8 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 
 : hcn-init     ( w c-addr u u:hash w:hcn - = Initialise the node with cell data, key and hash )
   >r
-  
-  over 0= exp-invalid-parameters AND throw
-  
-      r@ hcn>hash !
-  dup r@ hcn>klen !
-  dup chars allocate throw
-  dup r@ hcn>key  !
-  swap cmove
-      r@ hcn>cell !
-      r@ hcn>next nil!
-      r> hcn>prev nil!
+  r@ hnn-init  
+  r> hcn>cell !
 ;
 
 
@@ -75,29 +63,13 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 
 
 : hcn-free     ( w:hcn - = Free the node from the heap )
-  dup hcn>key @ free throw
-  free throw
+  hnn-free
 ;
 
 
 ( Private words )
 
-: hcn-next@    ( w:hcn - w:next = Get the next node )
-  hcn>next @
-;
-
-
-: hcn-prev@    ( w:hcn - w:prev = Get the previous node )
-  hcn>prev @
-;
-
-
-: hcn-hash@   ( w:hcn - u:hash = Get the hash value )
-  hcn>hash @
-;
-
-
-: hcn-cell@   ( w:hcn - w:cell = Get the cell value )
+: hcn-cell@   ( w:hnn - w:cell = Get the cell value )
   hcn>cell @
 ;
 
@@ -105,13 +77,8 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 ( Inspection )
 
 : hcn-dump     ( w:hcn - = Dump the node )
-  ." hcn:" dup . cr
-  ."  hash :" dup  hcn>hash  ?   cr
-  ."  key  :" dup  hcn>key   @ 
-              over hcn>klen  @   type cr
-  ."  cell :" dup  hcn>cell  ?   cr
-  ."  next :" dup  hcn>next  ?   cr
-  ."  prev :"      hcn>prev  ?   cr 
+  dup hnn-dump
+  ."  cell :" hcn>cell ? cr
 ;
 
 [THEN]

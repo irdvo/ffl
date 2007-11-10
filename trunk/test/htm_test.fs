@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-29 05:00:58 $ $Revision: 1.1 $
+\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,11 +34,11 @@ include ffl/tst.fs
 
 htm-create htm1
 
-t{ s" <body>hello</body>" htm1 htm-set-string }t
+t{ s" hello&amp;daag" htm1 htm-set-string }t
 
 t{ htm1 htm-read . type cr }t
-t{ htm1 htm-read . type cr }t
-t{ htm1 htm-read . type cr }t
+t{ htm1 htm-read . cr }t
+t{ htm1 htm-read . cr }t
 
 0 [IF]
 \ Reading via a reader

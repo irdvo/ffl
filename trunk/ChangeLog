@@ -1,11 +1,18 @@
 0.6.0
-* tis.fs: new word tis-iscan-string (2007-10-17)
-* tis.fs: new word tis-set-reader (2007-10-17)
-* tis.fs: new word tis-read-all (2007-10-08)
-* str.fs: new word str-get-char? (2007-09-17)
-* htm.fs: new module (HTML reader and writer) (2007-09-16)
-* str.fs: new word: str+columns (2007-07-17)
-* arg.fs: new module (Arguments parser) (2007-07-09)
+* hci: extends hni
+* hni: new module (Hash table base iterator) (2007-11-10)
+* hct: extends hnt
+* hnt: new module (Hash table base module) (2007-11-09)
+* hcn: extends hnn
+* hnn: new module (Hash Table base node) (2007-11-09)
+* msc: new module (Message Catalog) (2007-11-09)
+* tis: new word tis-iscan-string (2007-10-17)
+* tis: new word tis-set-reader (2007-10-17)
+* tis: new word tis-read-all (2007-10-08)
+* str: new word str-get-char? (2007-09-17)
+* htm: new module (HTML reader and writer) (2007-09-16)
+* str: new word: str+columns (2007-07-17)
+* arg: new module (Arguments parser) (2007-07-09)
 * config.fs: 0e0->0E+0, 1e0->1E+0, 2e0->2E+0 (2007-06-25)
 0.5.0
 * config.fs: #bits/byte uses environment (2007-06-07)
