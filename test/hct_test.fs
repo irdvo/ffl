@@ -20,13 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-12 04:55:25 $ $Revision: 1.7 $
+\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
 include ffl/tst.fs
 include ffl/hct.fs
-include ffl/hci.fs
+ include ffl/hci.fs
 include ffl/tos.fs
 
 .( Testing: hct, hcn and hci) cr 

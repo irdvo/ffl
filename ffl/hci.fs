@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.5 $
+\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -30,7 +30,7 @@ include ffl/config.fs
 [UNDEFINED] hci.version [IF]
 
 
-include ffl/stc.fs
+include ffl/hni.fs
 include ffl/hct.fs
 include ffl/hcn.fs
 
@@ -44,62 +44,34 @@ include ffl/hcn.fs
 
 ( Iterator structure )
 
-struct: hci%       ( - n = Get the required space for a hci data structure )
-  cell: hci>table       \ Refernce to the hash table
-  cell: hci>index       \ Index in the table
-  cell: hci>walk        \ Current node in the table
-;struct 
+hni% constant hci%  ( - n = Get the required space for a hash cell table iterator data structure )
 
 
-( Private words )
-
-: hci-search-table ( u:start w:hci - nil | u:index w:hcn = Search in the tabel for a node )
-  >r dup r>
-  hci>table @
-  hct-table-bounds ?DO                \ end and start of table for DO; S: index
-    I @
-    dup nil<> IF
-      UNLOOP
-      EXIT
-    ELSE
-      drop
-    THEN
-    1+
-  cell +LOOP
-  drop                                \ nothing found
-  nil
-;
-    
-    
 ( Iterator creation, initialisation and destruction words )
 
 : hci-init     ( w:hct w:hci - = Initialise the iterator with a hash table )
-  tuck hci>table    !
-  dup  hci>index   0!
-       hci>walk  nil!
+  hni-init
 ;
 
 
 : hci-create   ( C: w:hct "name" - R: - w = Create a named iterator in the dictionary )
-  create 
-    here  hci% allot  hci-init
+  hni-create
 ;
 
 
 : hci-new      ( w:hct - w:hci = Create an iterator on the heap )
-  hci% allocate  throw  tuck hci-init
+  hni-new
 ;
 
 
 : hci-free     ( w:hci - = Free iterator from heap )
-  free throw
+  hni-free
 ;
 
 
-( Member words )
+( Private words )
 
-: hci-get      ( w:hci - false | w true = Get the cell data from the current record )
-  hci>walk @
+: hci+get      ( w:hcn - false | w true = Get the cell data from the node )
   dup nil<> IF
     hcn-cell@
     true
@@ -110,22 +82,23 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
 ;
 
 
-: hci-key      ( w:hci - c-addr u = Get the key from the current record )
-  hci>walk @
-  dup nil<> IF
-    dup  hcn>key @
-    swap hcn>klen @
-  ELSE
-    exp-invalid-state throw
-  THEN    
+( Member words )
+
+: hci-get      ( w:hci - false | w true = Get the cell data from the current record )
+  hni-get hci+get
 ;
 
+
+: hci-key      ( w:hci - c-addr u = Get the key from the current record )
+  hni-key
+;
+
+
 : hci-set      ( w w:hci - = Set the cell data for the current record )
-  hci>walk @
-  dup nil<> IF
+  hni-get dup nil<> IF
     hcn>cell !
   ELSE
-    exp-invalid-state throw
+    drop
   THEN    
 ;
 
@@ -133,53 +106,12 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
 ( Iterator words )
 
 : hci-first    ( w:hci - w true | false = Move the iterator to the first record )
-  >r
-  r@ hci>index   0!
-  r@ hci>walk  nil!
-  
-  0 r@ hci-search-table      \ search a node in the table
-  
-  dup nil<> IF
-    r@ hci>walk  !           \ save hcn and index
-    r@ hci>index !
-  ELSE
-    drop
-  THEN
-  
-  r> hci-get
+  hni-first hci+get
 ;
 
 
 : hci-next     ( w:hci - w true | false = Move the iterator to the next record )
-  >r
-  r@ hci>walk @              \ check if current node has a next node
-  dup nil<> IF
-    hcn-next@
-    dup nil<> IF
-      dup r@ hci>walk !
-      hcn-cell@ true
-    ELSE                     \ else search the next node in the table 
-      drop
-      
-      r@ hci>index @ 1+  r@ hci-search-table
-      
-      dup nil<> IF
-        tuck
-        r@ hci>walk !
-        r@ hci>index !
-        
-        hcn-cell@ 
-        true
-      ELSE
-        r@ hci>walk   !
-        r@ hci>index 0!
-        false
-      THEN
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
-  rdrop
+  hni-next hci+get
 ;
 
 
@@ -193,57 +125,24 @@ struct: hci%       ( - n = Get the required space for a hci data structure )
     THEN
   UNTIL
   drop
-  hci>walk @ nil<>
+  hni>walk @ nil<>
 ;
 
 
 : hci-first?   ( w:hci - f = Check if the iterator is on the first record )
-  dup hci>walk @
-  dup nil<> IF
-    hcn-prev@                     \ if there is a previous record, then not the first
-    nil<> IF
-      false
-    ELSE
-      0 over hci-search-table
-      nil<> IF
-        over hci>index @ =        \ if a previous table element is present, then not the first 
-      ELSE
-        exp-invalid-state throw
-      THEN
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
-  nip
+  hni-first?
 ;
 
 
 : hci-last?    ( w:hci - f = Check if the iterator is on the last record )
-  dup hci>walk @
-  dup nil<> IF
-    hcn-next@
-    nil<> IF                      \ if there is a next record, then not the last
-      false
-    ELSE
-      dup hci>index @ 1+ over hci-search-table
-      nil= dup 0= IF              \ if a next table element is present, then not the last
-        nip
-      THEN
-    THEN
-  ELSE
-    exp-invalid-state throw
-  THEN
-  nip
+  hni-last?
 ;
 
 
 ( Inspection )
 
 : hci-dump     ( w:hci - = Dump the iterator )
-  ." hci:" dup . cr
-  ."  table :" dup hci>table ?  cr
-  ."  index :" dup hci>index ?  cr
-  ."  walk  :"     hci>walk  ?  cr
+  hni-dump
 ;
 
 [THEN]
