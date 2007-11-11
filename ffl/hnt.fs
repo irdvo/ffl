@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
+\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -299,9 +299,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
       dup nil<>              \ Iterate the lists in the table
     WHILE
       >r
-      r@            swap      \ execute xt with key and cell data
-      r@ hnn>key  @ swap
-      r@ hnn>klen @ swap
+      r@            swap     \ execute xt with node
       >r r@ execute r>       \ execute without private data
       r>
       hnn-next@

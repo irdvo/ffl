@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.2 $
+\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -77,6 +77,14 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 ;
 
 
+( Member words )
+
+: hnn-key@     ( w:hnn - c-addr u = Get the key )
+  dup  hnn>key  @
+  swap hnn>klen @
+;
+
+
 ( Private words )
 
 : hnn-next@    ( w:hnn - w:next = Get the next node )
@@ -99,8 +107,7 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 : hnn-dump     ( w:hnn - = Dump the node )
   ." hnn:" dup . cr
   ."  hash :" dup  hnn>hash  ?   cr
-  ."  key  :" dup  hnn>key   @ 
-              over hnn>klen  @   type cr
+  ."  key  :" dup  hnn-key@      type cr
   ."  next :" dup  hnn>next  ?   cr
   ."  prev :"      hnn>prev  ?   cr 
 ;
