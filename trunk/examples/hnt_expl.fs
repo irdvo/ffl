@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
+\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -70,8 +70,8 @@ struct: sc%
 
 \ Word for printing the scientific constant
 
-: sc-emit ( w c-addr u - = sc% key )
-  type ."  -> " sc>value f@ f. cr
+: sc-emit ( w:sc% - )
+  dup hnn-key@ type ."  -> " sc>value f@ f. cr
 ;
 
 

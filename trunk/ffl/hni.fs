@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.2 $
+\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -106,8 +106,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 : hni-key      ( w:hni - c-addr u = Get the key from the current record )
   hni>walk @
   dup nil<> IF
-    dup  hnn>key @
-    swap hnn>klen @
+    hnn-key@
   ELSE
     exp-invalid-state throw
   THEN    
