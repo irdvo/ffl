@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.1 $
+\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -154,7 +154,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
   >r
   swap
   r@ hnn-hash@
-  swap mod cells
+  swap mod abs cells
   +                          \ table element
   r@ r> rot @!               \ insert the new node, fetch the current node
   dup nil<> IF         

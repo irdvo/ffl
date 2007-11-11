@@ -20,11 +20,12 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.1 $
+\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/hnt.fs
+include ffl/hni.fs
 
 
 \ Example: store scientific constants in a hash table
@@ -63,8 +64,9 @@ struct: sc%
 
 \ Add the constants
 
-3.14158E+0 s" pi" sc-add
-
+3.14158E+0 s" pi"     sc-add
+2.71828E+0 s" euler"  sc-add
+1.61803E+0 s" golden" sc-add
 
 \ Word for printing the scientific constant
 
@@ -76,5 +78,32 @@ struct: sc%
 \ Print all scientific constants
 
 ' sc-emit sc-table hnt-execute                \ Execute the word sc-emit for all entries in the hash table
+
+
+\ Example hash table iterator
+
+\ Create the hash table iterator in the dictionary
+
+sc-table hni-create sc-iter                   \ Create an iterator named sc-iter on the sc-table hash table
+
+\ Moving the iterator
+
+sc-iter hni-first                             \ Move the iterator to the first record
+nil<> [IF]                                    \ If record exists Then ..
+  sc-iter hni-key type                        \   Type the key ..
+  .(  => )
+  sc-iter hni-get sc>value f@ f.              \   .. and the value
+  cr
+[THEN]
+
+sc-iter hni-next                              \ Move the iterator to the next record
+nil<> [IF]                                    \ If record exists Then ..
+  sc-iter hni-key type                        \   Type the key ..
+  .(  => )
+  sc-iter hni-get sc>value f@ f.              \   .. and the value
+  cr
+[ELSE]
+  .( No next record in the hash table) cr  
+[THEN]
 
 
