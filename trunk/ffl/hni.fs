@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.1 $
+\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ include ffl/hnn.fs
 
 
 ( hni = Hash Cell Table Iterator )
-( The hni module implements an iterator on the hash cell table [hct]. )
+( The hni module implements an iterator on the base hash table [hnt]. )
 
 
 1 constant hni.version

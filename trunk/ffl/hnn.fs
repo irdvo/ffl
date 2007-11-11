@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.1 $
+\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/stc.fs
 
 ( Hash table node structure )
 
-struct: hnn%       ( - n = Get the required space for a hnn structure )
+struct: hnn%       ( - n = Get the required space for a hash table node structure )
   cell: hnn>hash        \ the hash code
   cell: hnn>key         \ the pointer to the key
   cell: hnn>klen        \ the key length
@@ -66,7 +66,7 @@ struct: hnn%       ( - n = Get the required space for a hnn structure )
 ;
 
 
-: hnn-new      ( c-addr u u:hash - w:hnn = Create a new node on the heap )
+: hnn-new      ( c-addr u u:hash - w:hnn = Create a hash table node on the heap )
   hnn% allocate  throw  dup >r hnn-init r>
 ;
 

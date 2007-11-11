@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.10 $
+\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include ffl/hcn.fs
 
 ( hct = Hash Cell Table )
 ( The hct module implements a hash table that stores cell wide data.)
+
   
 
 1 constant hct.version
@@ -43,7 +44,7 @@ include ffl/hcn.fs
 
 ( Hash table structure )
 
-hnt% constant hct%  ( - n = Get the required space for the hct data structure )
+hnt% constant hct%  ( - n = Get the required space for the hash table structure )
 
 
 ( Hash table creation, initialisation and destruction )
@@ -58,12 +59,12 @@ hnt% constant hct%  ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-new      ( u - w:hct = Create a new hash table with an initial size on the heap )
+: hct-new      ( u - w:hct = Create a hash table with an initial size on the heap )
   hnt-new
 ;
 
 
-: hct-free     ( w:hct - = Free the table from the heap )
+: hct-free     ( w:hct - = Free the hash table from the heap )
   hnt-free
 ;
 
@@ -82,7 +83,7 @@ hnt% constant hct%  ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-length@  ( w:hct - u = Get the number of nodes in the list )
+: hct-length@  ( w:hct - u = Get the number of nodes in the table )
   hnt-length@
 ;
 
@@ -104,7 +105,7 @@ hnt% constant hct%  ( - n = Get the required space for the hct data structure )
 
 ( Hash table words )
 
-: hct-insert   ( w c-addr u w:hct - = Insert a cell with a key in the table )
+: hct-insert   ( w:data c-addr u w:hct - = Insert cell data with a key in the table )
   >r 
   2dup r@ hnt-search         \ Search for key
     
@@ -121,36 +122,39 @@ hnt% constant hct%  ( - n = Get the required space for the hct data structure )
 ;
 
 
-: hct-delete   ( c-addr u w:hct - false | w true = Delete key from the table )
-  hnt-delete IF
+: hct-delete   ( c-addr u w:hct - false | w true = Delete the key from the table )
+  hnt-delete 
+  dup nil<> IF
     dup  hcn-cell@                \ Key deleted, then return cell data
     swap hcn-free
     true
   ELSE
+    drop
     false
   THEN
 ;
 
 
-: hct-get      ( c-addr u w:hct - false | w true = Get the cell from the table )
-  hnt-get IF
+: hct-get      ( c-addr u w:hct - false | w true = Get the cell data from the table )
+  hnt-get 
+  dup nil<> IF
     hcn-cell@
     true
   ELSE
+    drop
     false
   THEN
 ;
 
-  \ Continue..
 
-: hct-has?     ( c-addr u w:hct - f = Check if key is present in the table )
-  hnt-search nip nil<> 
+: hct-has?     ( c-addr u w:hct - f = Check if a key is present in the table )
+  hnt-has?
 ;
 
 
 ( Special words )
 
-: hct-count    ( w w:hct - u = Count the occurences of cell data in the table )
+: hct-count    ( w:data w:hct - u = Count the occurences of cell data in the table )
   0 -rot                     \ counter = 0
   0 swap hnt-table-bounds DO \ Do for the table
     I @
@@ -194,7 +198,7 @@ hnt% constant hct%  ( - n = Get the required space for the hct data structure )
 
 ( Private words )
 
-: hct-emit-element    ( w c-addr u - = Emit the key and cell data of the node )
+: hct-emit-element    ( w:data c-addr u - = Emit the key and cell data of the node )
   type [char] = emit 0 .r [char] ; emit
 ;
 
