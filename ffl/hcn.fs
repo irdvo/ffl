@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.7 $
+\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -41,7 +41,7 @@ include ffl/hnn.fs
 
 ( Hash table node structure )
 
-struct: hcn%       ( - n = Get the required space for a hcn structure )
+struct: hcn%       ( - n = Get the required space for a hash table node structure )
   hnn%
   field: hcn>hnn        \ the hcn node extends the hnn node
   cell: hcn>cell        \ the cell data
@@ -57,7 +57,7 @@ struct: hcn%       ( - n = Get the required space for a hcn structure )
 ;
 
 
-: hcn-new      ( w c-addr u u:hash - w:hcn = Create a new node on the heap )
+: hcn-new      ( w c-addr u u:hash - w:hcn = Create a hash table node on the heap )
   hcn% allocate  throw  dup >r hcn-init r>
 ;
 
