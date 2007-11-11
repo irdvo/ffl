@@ -20,12 +20,12 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.1 $
+\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
 include ffl/hct.fs
-
+include ffl/hci.fs
 
 \ Example: store mountain heights in a hash table
 
@@ -38,20 +38,21 @@ include ffl/hct.fs
 \ Add the mountains (in meters)
 
 8300 s" mount everest" height-table hct-insert
-
+4819 s" mont blanc"    height-table hct-insert
+5642 s" mount elbrus"  height-table hct-insert
 
 \ Get a mountain height
 
 s" mount everest" height-table hct-get [IF]
-  ." Mount everest: " . cr
+  .( Mount everest: ) . cr
 [ELSE]
-  ." Unknown mountain" cr
+  .( Unknown mountain) cr
 [THEN]
 
-s" mont blanc" height-table hct-get [IF]
-  ." Height: " . cr
+s" vaalserberg" height-table hct-get [IF]
+  .( Vaalserberg: ) . cr
 [ELSE]
-  ." Unknown mountain" cr
+  .( Unknown mountain) cr
 [THEN]
 
 
@@ -67,3 +68,29 @@ s" mont blanc" height-table hct-get [IF]
 ' height-emit height-table hct-execute            \ Execute the word height-emit for all entries in the hash table
 
 
+
+\ Example hash table iterator
+
+\ Create the hash table iterator in the dictionary
+
+height-table hci-create height-iter               \ Create an iterator named height-iter on the height-table hash table
+
+\ Moving the iterator
+
+height-iter hci-first                         \ Move the iterator to the first record
+nil<> [IF]                                    \ If record exists Then ..
+  height-iter hci-key type                    \   Type the key ..
+  .(  => )
+  height-iter hci-get drop .                  \   .. and the value
+  cr
+[THEN]
+
+8300 height-iter hci-move                     \ Move the iterator to the mountain with a height of 8300
+[IF]                                          \ If mountain exists Then ..
+  height-iter hci-key type                    \   Type the name ..
+  .(  => )
+  height-iter hci-get drop .                  \   .. and the height
+  cr
+[ELSE]
+  .( No mountain found with a height of 8300) cr  
+[THEN]
