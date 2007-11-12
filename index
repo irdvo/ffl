@@ -60,6 +60,7 @@ Index of used prefices
 4 sh1 - SHA1 module
 5 sh2 - SHA2 module
 4 tmr - Timer module
+6 gmo - Gettexts mo-file import
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------

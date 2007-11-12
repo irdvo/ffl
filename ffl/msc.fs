@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.2 $
+\  $Date: 2007-11-12 07:01:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/hnt.fs
 ( msc = Message Catalog )
 ( The msc module implements words for building and using a message catalog.  )
 ( The catalog is used to translates a message to another message. It can be  )
-( used for internationalization of messages and for converting messages. The )
-( module supports reading gettexts mo-files.                                 )
+( used for internationalization of messages and for converting messages. Use )
+( the gmo module for importing gettexts mo-files in a message catalog.       )
 
 
 1 constant msc.version
@@ -59,20 +59,13 @@ struct: msc%msg%   ( - n = Get the required space the message node structure )
 
 ( Catalog structure )
 
-struct: msc%   ( - n = Get the required space for the msc data structure )
-  hnt%
-  field: msc>table           \ Hash table
-  cell:  msc>mo1
-  cell:  msc>mo2
-;struct
+hnt% constant msc%    ( - n = Get the required space for the message catalog structure )
 
 
 ( Catalog structure creation, initialisation and destruction )
 
-: msc-init   ( w:msc - = Initialise the msc structure )
-  10 over hnt-init
-  dup msc>mo1 0!
-  msc>mo2 0!
+: msc-init   ( w:msc - = Initialise the catalog structure )
+  10 swap hnt-init
 ;
 
 
@@ -81,7 +74,7 @@ struct: msc%   ( - n = Get the required space for the msc data structure )
 ;
 
 
-: msc-new   ( - w:msc = Create a new message catalog variable on the heap )
+: msc-new   ( - w:msc = Create a message catalog variable on the heap )
   msc% allocate  throw   dup msc-init
 ;
 
@@ -95,7 +88,7 @@ struct: msc%   ( - n = Get the required space for the msc data structure )
 
 ( Catalog words )
 
-: msc-add  ( c-addr:msg u c-addr:translation u w:msc - = Add a msg and translation to the catalog )
+: msc-add  ( c-addr:msg u c-addr:translation u w:msc - = Add a message and translation to the catalog )
   >r
   2swap
   2dup r@ hnt-search              \ Search for the key in the table
@@ -146,12 +139,6 @@ struct: msc%   ( - n = Get the required space for the msc data structure )
     drop
     false
   THEN
-;
-
-
-( MO-file words )
-
-: msc-read  ( c-addr u w:msc - ?? = Add the contents of the mo-file to the catalog )
 ;
 
 
