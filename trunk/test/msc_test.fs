@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.1 $
+\  $Date: 2007-11-12 07:01:48 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,7 +30,7 @@ include ffl/tst.fs
 
 .( Testing: msc) cr
 
-t{ msc-create msc1 }t
+t{ msc-new value msc1 }t
 
 \ Add translations
 
@@ -64,8 +64,8 @@ t{ s" bike" msc1 msc-remove ?false }t
 
 t{ s" tree" msc1 msc-translate s" tree" compare ?0 }t
 
+\ Free message catalog
 
-\ mo-file import
-
+t{ msc1 msc-free }t
 
 \ ==============================================================================
