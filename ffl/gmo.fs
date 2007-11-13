@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-12 07:12:40 $ $Revision: 1.1 $
+\  $Date: 2007-11-13 17:01:20 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -31,92 +31,189 @@ include ffl/config.fs
 [UNDEFINED] gmo.version [IF]
 
 include ffl/msc.fs
+include ffl/str.fs
+
 
 ( gmo = Gettexts mo-file )
-( The gmo module implements words for importing the contents of gettexts mo- )
-( file into a message catalog.                                               )
+( The gmo module implements words for importing the contents of gettexts     )
+( mo-file into a message catalog.                                            )
 
 
 1 constant gmo.version
 
 
-( File structure )
+( Private structures )
 
-struct: gmo%   ( - n = Get the required space for the gmo data structure )
-  cell:  gmo>file            \ File id
-  cell:  gmo>open            \ Is the file open ?
-  cell:  gmo>msc             \ Message catalog
-  2
-  cells: gmo>buffer          \ Input buffer
-  cell:  gmo>message         \ Message
-  cell:  gmo>translation     \ Translation
-  hnt%
-  field: gmo>table           \ Hash table
-  cell:  gmo>mo1
-  cell:  gmo>mo2
+struct: gmo%hdr%
+  cell:     gmo>hdr>magic         \ Magic number 
+  cell:     gmo>hdr>version       \ File version
+  cell:     gmo>hdr>number        \ Number of entries
+  cell:     gmo>hdr>msg-off       \ Offset for first message
+  cell:     gmo>hdr>trn-off       \ Offset for first translation
+;struct
+ 
+struct: gmo%msg%
+  cell:     gmo>msg>len           \ Message length
+  cell:     gmo>msg>off           \ Message offset
+;struct
+
+struct: gmo%
+  gmo%hdr%
+  field:    gmo>hdr               \ mo-file header
+  cell:     gmo>msgs              \ Messages
+  cell:     gmo>trns              \ Translations
+  cell:     gmo>file              \ File
+  cell:     gmo>msc               \ Message catalog
+  cell:     gmo>msg               \ message string
+  cell:     gmo>trn               \ Translation string
 ;struct
 
 
-( File structure creation, initialisation and destruction )
+( Private words )
 
-: gmo-init   ( w:gmo - = Initialise the mo-file structure )
-  \ ToDo
+: gmo-new  ( w:msc w:fileid - w:gmo = Build the gmo structure )
+  
+  gmo% allocate throw
+  
+  tuck gmo>file !
+  tuck gmo>msc  !
+  
+  dup  gmo>msgs nil!
+  dup  gmo>trns nil!
+  
+  dup  gmo>hdr>magic   0!
+  dup  gmo>hdr>version 0!
+  dup  gmo>hdr>number  0!
+  dup  gmo>hdr>msg-off 0!
+  dup  gmo>hdr>trn-off 0!
+  
+  str-new 
+  256 over str-size!              \ Start with reasonable size
+  over gmo>msg !
+  
+  str-new
+  256 over str-size!
+  over gmo>trn !
 ;
 
 
-: gmo-create   ( C: "name" -  R: - w:gmo = Create a named mo-file variable in the dictionary )
-  create  here gmo% allot  gmo-init
+: gmo-free  ( w:gmo - = Free the gmo structure)
+  
+  dup gmo>file @ close-file drop
+  
+  dup gmo>msg  @ str-free
+  dup gmo>trn  @ str-free
+  
+  dup gmo>msgs @ ?free throw        \ ??
+  dup gmo>trns @ ?free throw
+  
+  dup gmo>msc nil!
+  
+  free throw
 ;
 
+  
+: gmo-read-header  ( w:gmo - 0 | ior = Read the header from the gmo file)
+  >r
+  
+  r@ gmo>hdr gmo%hdr% r@ gmo>file @ read-file ?dup 0= IF
+    gmo%hdr% <> exp-no-data AND
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>magic @ [ hex ] 950412de [ decimal ] <> exp-wrong-file-type AND
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>version @ 0 <> exp-wrong-file-version AND
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>msg-off @ 0  r@ gmo>file @  reposition-file
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>number @ gmo%msg% *
+    
+    dup allocate throw
+    dup r@ gmo>msgs !
+    
+    over r@ gmo>file @ read-file ?dup 0= IF
+      <> exp-no-data AND
+    THEN
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>trn-off @ 0  r@ gmo>file @  reposition-file
+  THEN
+  
+  ?dup 0= IF
+    r@ gmo>hdr>number @ gmo%msg% *
+    
+    dup allocate throw
+    dup r@ gmo>trns !
+    
+    over r@ gmo>file @ read-file ?dup 0= IF
+      <> exp-no-data AND
+    THEN
+  THEN
+  rdrop
+;  
 
-: gmo-new   ( - w:gmo = Create a mo-file variable on the heap )
-  gmo% allocate  throw   dup gmo-init
+
+: gmo-read-msgs   ( w:gmo - 0 | ior = Read the messages from the mo-file and stores them in the message catalog )
+  >r
+  
+  r@ gmo>trns @                   \ trns pointer
+  r@ gmo>msgs @                   \ msgs pointer
+  r@ gmo>hdr>number @             \ count
+  0                               \ ior
+  BEGIN
+    2dup 0= swap 0> AND           \ While ior=0 AND count > 0 Do
+  WHILE
+    2over
+    
+    dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup 0= IF
+      
+      \ set the size of msg
+      \ read the msg
+      
+      \ reposition to the translation
+      
+      \ set the size of translation
+      \ read the translation
+      
+      \ add the message & translation in catalog
+    THEN
+    
+    
+    \ Move the pointers
+    \ Update the ior
+    
+  REPEAT
+  rdrop
+  nip nip nip
 ;
-
-
-: gmo-free   ( w:gmo - = Free the mo-file variable from the heap )
-  \ ToDo
-;
-
 
 ( File words )
 
-: gmo-open  ( c-addr u w:gmo - = Open the mo-file )
-  \ ToDo
-;
-
-
-: gmo-read  ( w:msc w:gmo - ?? = Read the mo-file, add the contents to the catalog )
-  >r
-  r@ gmo>mo1 2 cells char/ 2swap
+: gmo-read  ( c-addr u m:msc - 0 | ior = Read a gettexts mo-file and store the contents in the message catalog )
+  -rot
   
-  r/o bin open-file throw
-  >r
-  2dup r@ read-file throw
-  
-  over <> exp-no-data AND throw
-  
-  over dup @ swap cell+ @
-  
-  hex u. u. decimal
-  
-  2drop
-  r>
-  close-file throw
-  rdrop
-;
-
-
-: gmo-close   ( w:gmo - = Close the mo-file )
-  \ ToDo
-;
-
-
-( Inspection )
-
-: gmo-dump  ( w:gmo - = Dump mo-file variable )
-  ." gmo:" . cr 
-  \ ToDo
+  r/o bin open-file ?dup 0= IF
+    
+    gmo-new
+    
+    dup gmo-read-header ?dup 0= IF
+      
+      \ dup gmo-read-msgs
+      0
+    THEN
+    
+    swap gmo-free
+  ELSE
+    nip
+  THEN
 ;
 
 [THEN]
