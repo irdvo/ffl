@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-12 07:12:40 $ $Revision: 1.1 $
+\  $Date: 2007-11-13 17:01:20 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,10 +30,13 @@ include ffl/tst.fs
 
 .( Testing: gmo) cr
 
-t{ gmo-create gmo1 }t
+t{ msc-new value msc2 }t
 
-t{ s" wget.mo" gmo1 gmo-open }t
+t{ s" wget.mo" msc2 gmo-read .s ?0 }t
 
+msc2 msc-dump
+
+t{ msc2 msc-free }t
 
 
 

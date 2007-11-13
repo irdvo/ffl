@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-18 19:16:09 $ $Revision: 1.42 $
+\  $Date: 2007-11-13 17:01:20 $ $Revision: 1.43 $
 \
 \ ==============================================================================
 \
@@ -211,6 +211,8 @@ s" Index out of range" exception constant exp-index-out-of-range ( - n = Index o
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
 s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
 s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
+s" Wrong file type"    exception constant exp-wrong-file-type    ( - n = Wrong file type )
+s" Wrong flie version" exception constant exp-wrong-file-version ( - n = Wrong file version )
 
 [ELSE]
   drop
