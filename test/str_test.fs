@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.8 $
+\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -88,10 +88,6 @@ t{ s" Hello" s1 str-set                }t
 t{ char h 0 s1 str-set-char            }t
 t{ 0 s1 str-get-char  char h ?s        }t
 t{ -1 s1 str-get-char char o ?s        }t
-t{ 4 s1 str-get-char?  ?true char o ?s }t
-t{ 5 s1 str-get-char?  ?false          }t
-t{ -5 s1 str-get-char? ?true char h ?s }t
-t{ -6 s1 str-get-char? ?false          }t
 t{ char O -1 s1 str-set-char           }t
 t{ -1 s1 str-get-char char O ?s        }t
 

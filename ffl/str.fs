@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-09-17 05:38:30 $ $Revision: 1.23 $
+\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.24 $
 \
 \ ==============================================================================
 
@@ -72,10 +72,6 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-data@        ( w:str - a = Get the start of the string )
-  str>data @
-;
-
 
 ( String creation, initialisation and destruction )
 
@@ -98,9 +94,9 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 
 : str-free         ( w:str - = Free the string from the heap )
-  dup str-data@ ?free throw  \ Free string data
+  dup str>data @ ?free throw  \ Free string data
   
-  free throw                 \ Free struct
+  free throw                  \ Free struct
 ;
 
 
@@ -116,8 +112,19 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
+: str-length!      ( u w:str - = Set the length of the string )
+  tuck str>size @ min
+  swap str>length !
+;
+
+
 : str-index?       ( n w:str - f = Check if an index is valid in the string )
   tuck str-length@  index2offset  swap str-offset?
+;
+
+
+: str-data@        ( w:str - c-addr = Get the start of the string )
+  str>data @
 ;
 
 
@@ -377,18 +384,6 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-get-char?    ( n w:str - c true | false = Check and get the character from the nth position in the string )
-  tuck str-length@ index2offset   \ Convert index to offset
-  2dup swap str-offset? IF        \ Check offset inside string
-    chars swap str-data@ + c@     \ Yes: fetch character and success
-    true
-  ELSE
-    2drop                         \ No: no success
-    false
-  THEN
-;
-
-  
 : str-insert-char  ( c n w:str - = Insert the character on the nth position in the string )
   2>r 1 2r> 
   str-insert-space
