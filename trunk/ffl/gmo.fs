@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-13 17:01:20 $ $Revision: 1.2 $
+\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -104,7 +104,7 @@ struct: gmo%
   dup gmo>msg  @ str-free
   dup gmo>trn  @ str-free
   
-  dup gmo>msgs @ ?free throw        \ ??
+  dup gmo>msgs @ ?free throw
   dup gmo>trns @ ?free throw
   
   dup gmo>msc nil!
@@ -164,8 +164,8 @@ struct: gmo%
 : gmo-read-msgs   ( w:gmo - 0 | ior = Read the messages from the mo-file and stores them in the message catalog )
   >r
   
-  r@ gmo>trns @                   \ trns pointer
-  r@ gmo>msgs @                   \ msgs pointer
+  r@ gmo>trns @                   \ Translation pointer
+  r@ gmo>msgs @                   \ Message pointer
   r@ gmo>hdr>number @             \ count
   0                               \ ior
   BEGIN
@@ -173,23 +173,35 @@ struct: gmo%
   WHILE
     2over
     
-    dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup 0= IF
+    dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup IF
+      nip nip nip 
+    ELSE
+      dup gmo>msg>len @  r@ gmo>msg @  str-size!      \ set the size of msg
       
-      \ set the size of msg
-      \ read the msg
-      
-      \ reposition to the translation
-      
-      \ set the size of translation
-      \ read the translation
-      
-      \ add the message & translation in catalog
+      \ ToDo: gmo>msg>len @ -> 0!
+      r@ gmo>msg @ str-data@  swap gmo>msg>len @   r@ gmo>file @ read-file ?dup IF
+        nip nip 
+      ELSE
+        \ ToDo read-file length, check with gmo>msg>len, use str-length!
+        dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup IF
+          nip nip
+        ELSE
+          ~~
+          dup gmo>msg>len @  r@ gmo>trn @  str-size!
+          
+          r@ gmo>trn @ str-data@  swap gmo>msg>len @  r@ gmo>file @ read-file ?dup IF
+            nip
+          ELSE
+            ~~
+            r@ gmo>msg @ str-get type ." -> " r@ gmo>trn @ str-get type cr
+            \ add to catalog
+            drop 0
+          THEN
+        THEN
+      THEN
     THEN
     
-    
-    \ Move the pointers
-    \ Update the ior
-    
+    >r 1- >r gmo%msg% + >r gmo%msg% + r> r> r>   \ Update translation pointer, message pointer and counter
   REPEAT
   rdrop
   nip nip nip
@@ -206,8 +218,7 @@ struct: gmo%
     
     dup gmo-read-header ?dup 0= IF
       
-      \ dup gmo-read-msgs
-      0
+      dup gmo-read-msgs
     THEN
     
     swap gmo-free
