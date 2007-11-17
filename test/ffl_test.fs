@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.29 $
+\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.30 $
 \
 \ ==============================================================================
 
@@ -43,6 +43,7 @@ include dcl_test.fs
 include dnl_test.fs
 include dtm_test.fs
 include frc_test.fs
+include gmo_test.fs
 include hct_test.fs
 include md5_test.fs
 include msc_test.fs

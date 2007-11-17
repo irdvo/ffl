@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
+\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -213,7 +213,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ( Hash table words )
 
 : hnt-search   ( c-addr u w:hnt - u:hash w:hnn = Search the node based on the key )
-  over 0= exp-invalid-parameters AND throw
+  \ over 0= exp-invalid-parameters AND throw
   
   >r
   2dup hnt+hash dup
@@ -222,7 +222,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
   BEGIN                      \ look for the key                             
     dup nil<> IF
       2dup hnn-hash@ = IF
-        dup >r 2over  r@ hnn>key @ r> hnn>klen @ compare 0<>
+        dup >r 2over r> hnn-key@ compare 0<>
       ELSE                   \ check hash and key
         true
       THEN

@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                 gmo - the message catalog in the ffl
+\              gmo - the import mo-file module in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.3 $
+\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -30,13 +30,16 @@ include ffl/config.fs
 
 [UNDEFINED] gmo.version [IF]
 
+cell 4 =  1 chars 1 =  AND [IF]
+
 include ffl/msc.fs
 include ffl/str.fs
 
 
-( gmo = Gettexts mo-file )
-( The gmo module implements words for importing the contents of gettexts     )
-( mo-file into a message catalog.                                            )
+( gmo = Gettexts mo-file import )
+( The gmo module implements words for importing the contents of a gettexts   )
+( mo-file into a message catalog. The mo-file uses 4 byte pointers and 1     )
+( byte characters, so this module has an environmental dependency.           )
 
 
 1 constant gmo.version
@@ -52,9 +55,9 @@ struct: gmo%hdr%
   cell:     gmo>hdr>trn-off       \ Offset for first translation
 ;struct
  
-struct: gmo%msg%
-  cell:     gmo>msg>len           \ Message length
-  cell:     gmo>msg>off           \ Message offset
+struct: gmo%pair%
+  cell:     gmo>pair>len          \ Message length
+  cell:     gmo>pair>off          \ Message offset
 ;struct
 
 struct: gmo%
@@ -113,7 +116,7 @@ struct: gmo%
 ;
 
   
-: gmo-read-header  ( w:gmo - 0 | ior = Read the header from the gmo file)
+: gmo-read-header  ( w:gmo - 0 | ior = Read the header from the mo-file)
   >r
   
   r@ gmo>hdr gmo%hdr% r@ gmo>file @ read-file ?dup 0= IF
@@ -133,7 +136,7 @@ struct: gmo%
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>number @ gmo%msg% *
+    r@ gmo>hdr>number @ gmo%pair% *
     
     dup allocate throw
     dup r@ gmo>msgs !
@@ -148,7 +151,7 @@ struct: gmo%
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>number @ gmo%msg% *
+    r@ gmo>hdr>number @ gmo%pair% *
     
     dup allocate throw
     dup r@ gmo>trns !
@@ -159,6 +162,37 @@ struct: gmo%
   THEN
   rdrop
 ;  
+
+
+: gmo-read-msg    ( w:pair w:str w:file - 0 | ior = Read one message from the mo-file into the string )
+  rot 
+  dup gmo>pair>len @ >r                     \ Save length of message
+  
+  r@ 0= IF                                  \ If length = 0 Then
+    2drop
+    str-clear                               \   Clear string and okee
+    0
+  ELSE                                      \ Else move the file pointer to the offset
+    gmo>pair>off @  over  0 swap  reposition-file ?dup IF
+      nip nip                               \   No success, return ior
+    ELSE
+      over  r@  swap  str-size!             \ Else insure size of string and read the message
+      
+      over str-data@  r@  rot  read-file  ?dup IF
+        nip                                 \   No success, return ior
+      ELSE
+        dup r@ <> IF                        \   Success, check the return string length
+          2drop
+          exp-no-data                       \   Different string length, return exp-no-data as ior
+        ELSE
+          swap str-length!                  \   Else set the string length
+          0
+        THEN
+      THEN
+    THEN
+  THEN
+  rdrop
+;
 
 
 : gmo-read-msgs   ( w:gmo - 0 | ior = Read the messages from the mo-file and stores them in the message catalog )
@@ -172,44 +206,27 @@ struct: gmo%
     2dup 0= swap 0> AND           \ While ior=0 AND count > 0 Do
   WHILE
     2over
-    
-    dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup IF
-      nip nip nip 
-    ELSE
-      dup gmo>msg>len @  r@ gmo>msg @  str-size!      \ set the size of msg
-      
-      \ ToDo: gmo>msg>len @ -> 0!
-      r@ gmo>msg @ str-data@  swap gmo>msg>len @   r@ gmo>file @ read-file ?dup IF
-        nip nip 
-      ELSE
-        \ ToDo read-file length, check with gmo>msg>len, use str-length!
-        dup gmo>msg>off @ 0  r@ gmo>file @  reposition-file ?dup IF
-          nip nip
-        ELSE
-          ~~
-          dup gmo>msg>len @  r@ gmo>trn @  str-size!
-          
-          r@ gmo>trn @ str-data@  swap gmo>msg>len @  r@ gmo>file @ read-file ?dup IF
-            nip
-          ELSE
-            ~~
-            r@ gmo>msg @ str-get type ." -> " r@ gmo>trn @ str-get type cr
-            \ add to catalog
-            drop 0
-          THEN
-        THEN
-      THEN
+                                  \   Read the message
+    r@ gmo>msg @  r@ gmo>file @  gmo-read-msg ?dup IF
+      nip
+    ELSE                          \   Read the translation
+      r@ gmo>trn @  r@ gmo>file @  gmo-read-msg
     THEN
+    nip
     
-    >r 1- >r gmo%msg% + >r gmo%msg% + r> r> r>   \ Update translation pointer, message pointer and counter
+                                  \ Add the messages to the catalog
+    r@ gmo>msg @ str-get  r@ gmo>trn @ str-get  r@ gmo>msc @  msc-add
+    
+    >r 1- >r gmo%pair% + >r gmo%pair% + r> r> r>   \ Update translation pointer, message pointer and counter
   REPEAT
   rdrop
   nip nip nip
 ;
 
-( File words )
 
-: gmo-read  ( c-addr u m:msc - 0 | ior = Read a gettexts mo-file and store the contents in the message catalog )
+( Import )
+
+: gmo-read  ( c-addr u m:msc - 0 | ior = Read a mo-file and store the contents in the message catalog )
   -rot
   
   r/o bin open-file ?dup 0= IF
@@ -226,6 +243,10 @@ struct: gmo%
     nip
   THEN
 ;
+
+[ELSE]
+.( Warning: gmo requires 4 byte cells and 1 byte chars ) cr
+[THEN]
 
 [THEN]
 

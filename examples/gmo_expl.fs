@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\        gmo_test - the test words for the gmo module in the ffl
+\         gmo_expl - the gettexts mo-file import example in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,36 +20,19 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.3 $
+\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
 include ffl/gmo.fs
-include ffl/tst.fs
 
 
+\ Example: import nl.mo file in a message catalog
 
-bigendian? [IF]
+msc-new value en>nl                 \ Create a message catalog on the heap
 
-.( Testing: gmo skipped, no bigendian test file)  cr
+s" nl.mo" en>nl gmo-read throw      \ Import the nl.mo file in the catalog
 
-[ELSE]
+s" Sunday" en>nl msc-translate type cr  \ Use the catalog for the translations
 
-.( Testing: gmo) cr
-
-t{ msc-new value msc2 }t
-
-t{ s" nl.mo" msc2 gmo-read ?0 }t
-
-t{ msc2 hnt-length@ 38 ?s }t
-
-\ msc2 msc-dump
-
-t{ s" Sunday" msc2 msc-translate s" zondag" compare ?0 }t
-t{ s" Mar"    msc2 msc-translate s" maa"    compare ?0 }t
-
-t{ msc2 msc-free }t
-
-[THEN]
-
-\ ==============================================================================
+en>nl msc-free                      \ Free the message catalog from the heap
