@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
+\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -54,15 +54,22 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 
 : hnn-init     ( c-addr u u:hash w:hnn - = Initialise the base node with a key and hash )
   >r
-  over 0= exp-invalid-parameters AND throw
+  \ over 0= exp-invalid-parameters AND throw
   
       r@ hnn>hash !
   dup r@ hnn>klen !
-  dup chars allocate throw
-  dup r@ hnn>key  !
-  swap cmove
-      r@ hnn>next nil!
-      r> hnn>prev nil!
+      
+  ?dup 0= IF
+    r@ hnn>key nil!
+    drop
+  ELSE
+    dup chars allocate throw
+    dup r@ hnn>key  !
+    swap cmove
+  THEN
+  
+  r@ hnn>next nil!
+  r> hnn>prev nil!
 ;
 
 
@@ -107,7 +114,7 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 : hnn-dump     ( w:hnn - = Dump the node )
   ." hnn:" dup . cr
   ."  hash :" dup  hnn>hash  ?   cr
-  ."  key  :" dup  hnn-key@      type cr
+  ."  key  :" dup  hnn-key@  ?dup IF type ELSE drop THEN cr
   ."  next :" dup  hnn>next  ?   cr
   ."  prev :"      hnn>prev  ?   cr 
 ;

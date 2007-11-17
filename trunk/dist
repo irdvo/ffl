@@ -31,6 +31,9 @@ cp   engines/Win32Forth/*.fs  ${dest}/engines/Win32Forth
 cp   engines/fina/*.fs        ${dest}/engines/fina
 cp   engines/minForth/*.fs    ${dest}/engines/minForth
 
+cp      test/nl.po            ${dest}/test
+cp      test/nl.mo            ${dest}/test
+
 tar cvzf ${package}-${version}.tar.gz ${dest} 
 
 rm -rf ${dest}
