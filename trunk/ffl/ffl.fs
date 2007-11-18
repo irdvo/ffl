@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.36 $
+\  $Date: 2007-11-18 19:04:04 $ $Revision: 1.37 $
 \
 \ ==============================================================================
 
@@ -40,6 +40,7 @@ include ffl/dcl.fs
 include ffl/dcn.fs
 include ffl/dnl.fs
 include ffl/dnn.fs
+include ffl/dos.fs
 include ffl/dtm.fs
 include ffl/dti.fs
 include ffl/frc.fs
