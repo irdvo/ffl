@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\        msc_test - the test words for the msc module in the ffl
+\          stt_test - the test words for the stt module in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,52 +20,24 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.3 $
+\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include ffl/msc.fs
+include ffl/stt.fs
 include ffl/tst.fs
 
 
-.( Testing: msc) cr
+.( Testing: stt) cr
 
-t{ msc-new value msc1 }t
+begin-stringtable stt1
+," Forth"
+," Foundation"
+," Library"
+end-stringtable
 
-\ Add translations
-
-t{ s" yes"  s" ja"   msc1 msc-add }t
-t{ s" no"   s" nee"  msc1 msc-add }t
-t{ s" tree" s" boom" msc1 msc-add }t
-
-\ Translate
-
-t{ s" no"   msc1 msc-translate s" nee"  compare ?0 }t
-t{ s" tree" msc1 msc-translate s" boom" compare ?0 }t
-t{ s" bike" msc1 msc-translate s" bike" compare ?0 }t
-
-
-\ Update translations 
-
-t{ s" no"   s" neen"  msc1 msc-add }t
-
-t{ s" no"   msc1 msc-translate s" neen"  compare ?0 }t
-
-t{ s" no"   s" nee"  msc1 msc-add }t
-
-t{ s" no"   msc1 msc-translate s" nee"   compare ?0 }t
-
-
-\ Remove translations
-
-t{ s" yes"  msc1 msc-remove ?true  }t
-t{ s" tree" msc1 msc-remove ?true  }t
-t{ s" bike" msc1 msc-remove ?false }t
-
-t{ s" tree" msc1 msc-translate s" tree" compare ?0 }t
-
-\ Free message catalog
-
-t{ msc1 msc-free }t
+t{ 0 stt1 s" Forth"      compare ?0 }t
+t{ 1 stt1 s" Foundation" compare ?0 }t
+t{ 2 stt1 s" Library"    compare ?0 }t
 
 \ ==============================================================================

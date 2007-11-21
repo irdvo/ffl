@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-18 19:04:04 $ $Revision: 1.37 $
+\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.38 $
 \
 \ ==============================================================================
 
@@ -70,6 +70,7 @@ include ffl/snn.fs
 include ffl/sh1.fs
 include ffl/sh2.fs
 include ffl/str.fs
+include ffl/stt.fs
 include ffl/tis.fs
 include ffl/tmr.fs
 include ffl/tos.fs

@@ -50,6 +50,7 @@ Index of used prefices
 ----- - ------------------------------------------------
 1 stc - Struct definition
 1 tst - Unit tests
+6 stt - Stringtable defintion
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------
@@ -65,7 +66,7 @@ Index of used prefices
       - Compound
 ----- - ------------------------------------------------
 6 arg - Argument parser
-6 d0s - Datetime output stream
+6 dos - Datetime output stream
 5 nfe - non-deterministic finite automate expression
 5 nfs - non-deterministic finite automata state
 5 rgx - Regular expression module
@@ -89,7 +90,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
-6 fsm - Finite state machine module
+7 fsm - Finite state machine module
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module
@@ -99,7 +100,7 @@ Index of used prefices
       - Development
 ----- - ------------------------------------------------
 6 stc - ANS structures
-6 log - Logger module
+7 log - Logger module
   hlp - Manual/help/info module
 ----- - ------------------------------------------------
       - Interface
@@ -110,7 +111,8 @@ Index of used prefices
 8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
-6 xml - XML module / SAX module
+6 xis - XML/HTML reader module
+6 xos - XML/HTML writer module 
 6 dom - XML-DOM module
       - css module
       - url module
@@ -125,7 +127,8 @@ A     - Font ??
       - Compound
 ----- - ------------------------------------------------
 7 dis - DateTime input stream
-6 gps - nmea handling, distance calculation
+7 gps - nmea handling, distance calculation
+6 rdg - Random distribution generator
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------
@@ -148,4 +151,4 @@ ToDo
 [ ] rgx: [[]]
 [ ] cfg: nil<>? ( addr - false | addr true )
 [ ] col: execute?
-
+[ ] gmo: endian check

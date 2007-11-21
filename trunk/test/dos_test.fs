@@ -20,52 +20,33 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.3 $
+\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include ffl/msc.fs
+include ffl/dos.fs
 include ffl/tst.fs
 
 
-.( Testing: msc) cr
+.( Testing: dos) cr
 
-t{ msc-new value msc1 }t
+t{ dtm-create dtm4 }t
 
-\ Add translations
+t{ tos-create tos4 }t
 
-t{ s" yes"  s" ja"   msc1 msc-add }t
-t{ s" no"   s" nee"  msc1 msc-add }t
-t{ s" tree" s" boom" msc1 msc-add }t
+t{ 0 45 15 18 21 dtm.november 2007 dtm4 dtm-set }t
 
-\ Translate
+\ t{ dtm4 s" %A" tos4 dos-write-format }t
 
-t{ s" no"   msc1 msc-translate s" nee"  compare ?0 }t
-t{ s" tree" msc1 msc-translate s" boom" compare ?0 }t
-t{ s" bike" msc1 msc-translate s" bike" compare ?0 }t
+t{ dtm4 tos4 dos-write-date-time }t
 
+t{ tos4 str-get type cr }t
 
-\ Update translations 
+t{ tos4 tos-rewrite }t
 
-t{ s" no"   s" neen"  msc1 msc-add }t
+t{ dtm4 tos4 dos-write-ampm-time }t
 
-t{ s" no"   msc1 msc-translate s" neen"  compare ?0 }t
+t{ tos4 str-get type cr }t
 
-t{ s" no"   s" nee"  msc1 msc-add }t
-
-t{ s" no"   msc1 msc-translate s" nee"   compare ?0 }t
-
-
-\ Remove translations
-
-t{ s" yes"  msc1 msc-remove ?true  }t
-t{ s" tree" msc1 msc-remove ?true  }t
-t{ s" bike" msc1 msc-remove ?false }t
-
-t{ s" tree" msc1 msc-translate s" tree" compare ?0 }t
-
-\ Free message catalog
-
-t{ msc1 msc-free }t
 
 \ ==============================================================================

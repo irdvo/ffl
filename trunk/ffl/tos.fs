@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.11 $
+\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ include ffl/config.fs
 
 
 include ffl/str.fs
+include ffl/msc.fs
 
 
 ( tos = Text output stream )
@@ -39,17 +40,20 @@ include ffl/str.fs
 ( The data written to the stream is always appended. Alignment is normally   )
 ( done for the last written data. By using the start alignment pointers      )
 ( words the start of the alignment can be changed. The end of the alignment  )
-( is always the end of the stream.                                           )
+( is always the end of the stream. The message catalog can be used for       )
+( localisation of strings                                                    )
 
 
-1 constant tos.version
+2 constant tos.version
 
 
 ( Output stream structure )
 
 struct: tos%       ( - n = Get the required space for the tos data structure )
-  str% field: tos>text
-       cell:  tos>pntr
+  str% 
+  field: tos>text
+  cell:  tos>pntr
+  cell:  tos>msc             \ Reference to a message catalog
 ;struct
 
 
@@ -77,7 +81,9 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 : tos-init         ( w:tos - = Initialise the empty output stream )
   dup str-init               \ Initialise the base string data structure
-      tos-sync
+  dup tos-sync
+      tos>msc nil!
+  
 ;
 
 
@@ -111,7 +117,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr!        ( n w:tis - f = Set the alignment pointer from start [n>=0] or from end [n<0] )
+: tos-pntr!        ( n w:tos - f = Set the alignment pointer from start [n>=0] or from end [n<0] )
   over 0< IF
     tuck str-length@ +            \ Determine new pointer for negative value
     swap
@@ -121,11 +127,23 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr+!       ( n w:tis - f = Add an offset to the alignment pointer )
+: tos-pntr+!       ( n w:tos - f = Add an offset to the alignment pointer )
   tuck tos-pntr@ +
   swap
   
   tos-pntr?!
+;
+
+
+( Message catalog words )
+
+: tos-msc!         ( w:msc w:tos - = Set the message catalog for the output stream )
+  tos>msc !
+;
+
+
+: tos-msc@         ( w:tos - w:msc | nil = Get the message catalog for the output stream )
+  tos>msc @
 ;
 
 
@@ -143,9 +161,15 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-write-string  ( c-addr u w:tos - = Write string to the stream )
-  dup tos-sync
-  str-append-string
+: tos-write-string  ( c-addr u w:tos - = Write string to the stream, using the message catalog if present )
+  >r
+  r@ tos-sync
+  r@ tos-msc@ dup nil<> IF
+    msc-translate                 \ If message catalog present, than translate the string
+  ELSE
+    drop
+  THEN
+  r> str-append-string
 ;
 
 
@@ -243,7 +267,8 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 : tos-dump         ( w:tos - = Dump the text output stream )
   ." tos:" dup . cr
   dup tos>text str-dump
-  ."  pntr  :" tos>pntr ? cr
+  ."  pntr  :" dup tos>pntr ? cr
+  ."  msc   :"     tos>msc  ? cr
 ;
 
 [THEN]
