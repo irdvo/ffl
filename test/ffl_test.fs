@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.30 $
+\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.31 $
 \
 \ ==============================================================================
 
@@ -42,6 +42,7 @@ include crc_test.fs
 include dcl_test.fs
 include dnl_test.fs
 include dtm_test.fs
+include dos_test.fs
 include frc_test.fs
 include gmo_test.fs
 include hct_test.fs
@@ -56,6 +57,7 @@ include snl_test.fs
 include sh1_test.fs
 include sh2_test.fs
 include str_test.fs
+include stt_test.fs
 include tis_test.fs
 include tmr_test.fs
 include tos_test.fs

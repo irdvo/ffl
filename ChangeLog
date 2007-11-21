@@ -1,4 +1,6 @@
 0.6.0
+* tos: new words: tos-msc@,tos-msc! (2007-11-20)
+* stt: new module: (Stringtable) (2007-11-19)
 * dos: new module: (DateTime output stream) (2007-11-18)
 * hct: support for zero-length key
 * str: new words: str-data@,str-length!  (2007-11-14)
