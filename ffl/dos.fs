@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.2 $
+\  $Date: 2007-11-22 19:15:26 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -38,15 +38,15 @@ include ffl/stt.fs
 ( dos = Datetime output stream )
 ( The dos module implements words for formatting date and time in a string.  )
 ( It is built upon the tos structure. If the tos structure contains a        )
-( message catalog, it is used for locale weekday and months names. The       )
-( format word uses most of the same conversion characters as the strftime    )
-( c-function:                                                                )
+( message catalog, it is used for localisation of times, dates and names.    )
+( The format word uses most of the same conversion characters as the         )
+( strftime c-function:                                                       )
 ( <pre>                                                                      )
-( %a - the abbreviated weekday name according to the current locale          )
-( %A - the full weekday name according to the current locale                 )
-( %b - the abbreviated month name according to the current locale            )
-( %B - the full month name according to the current locale                   )
-( %c - the preferred date and time representation for the current locale     )
+( %a - the abbreviated weekday name using the streams catalog for locale     )
+( %A - the full weekday name using the streams catalog for locale            )
+( %b - the abbreviated month name using the streams catalog for locale       )
+( %B - the full month name using the streams catalog for locale              )
+( %c - the preferred date and time using the streams catalog for locale      )
 ( %C - the century number as a 2-digit integer                               )
 ( %d - the day of the month as a decimal number: 00..31                      )
 ( %D - equivalent to %m/%d/%y -- for Americans                               )
@@ -60,19 +60,20 @@ include ffl/stt.fs
 ( %l - the hour, 12-hour clock, as a decimal number: 1..12, leading space    )
 ( %m - the month as a decimal number: 01..12                                 )
 ( %M - the minute as a decimal number: 00..59                                )
-( %p - either 'AM' or 'PM' according to the given time value with locale     ) \  Noon is treated as 'pm' and midnight as 'am'
+( %p - either 'AM' or 'PM' according to the given time value with locale     )
 ( %P - like %p but in lowercase: 'am' with locale                            )
-( %r - the time in a.m. or p.m. notation, '%I:%M:%S %p'                      ) 
+( %r - the time in a.m. or p.m. notation, '%I:%M:%S %p'                      )
 ( %R - the time in 24-hour notation, %H:%M                                   )
 ( %s - the number of seconds since the 1970-01-01 00:00:00                   )
 ( %S - the second as a decimal number: 00..60                                )
 ( %T - the time in 24-hour notation, %H:%M:%S                                )
 ( %V - the ISO 8601 week number as a decimal number: 01..53                  )
 ( %w - the day of the week as a decimal, range 0 to 6, Sunday being 0        )
-( %x - the preferred date representation for the current locale              )
-( %X - the preferred time representation for the current locale              )
+( %x - the preferred date using the streams catalog for locale               )
+( %X - the preferred time using the streams catalog for locale               )
 ( %y - the year as a decimal number without a century: 00..99                )
 ( %Y - the year as a decimal number including the century                    )
+( %% - the character %                                                       )
 ( </pre> )
 
 1 constant dos.version
@@ -155,35 +156,35 @@ defer dos.write-format
 
 ( Date and time writing words )
 
-: dos-write-abbr-weekday-name   ( w:dtm w:tos - = Write the abbreviated weekday name, using the catalog for locale )
+: dos-write-abbr-weekday-name   ( w:dtm w:tos - = Write the abbreviated weekday name, using the streams catalog for locale )
   swap dtm-weekday dtm.sunday -
   dos.weekday-names 3 min         \ Abbreviate the name to 3 characters
   rot  tos-write-string
 ;
 
 
-: dos-write-weekday-name   ( w:dtm w:tos - = Write the full weekday name, using the catalog for locale )
+: dos-write-weekday-name   ( w:dtm w:tos - = Write the full weekday name, using the streams catalog for locale )
   swap dtm-weekday dtm.sunday -
   dos.weekday-names
   rot  tos-write-string
 ;
 
 
-: dos-write-abbr-month-name   ( w:dtm w:tos - = Write the abbreviated month name, using the catalog for locale )
+: dos-write-abbr-month-name   ( w:dtm w:tos - = Write the abbreviated month name, using the streams catalog for locale )
   swap dtm-month@ dtm.january -
   dos.month-names 3 min           \ Abbreviate the name to 3 characters
   rot  tos-write-string
 ;
 
 
-: dos-write-month-name   ( w:dtm w:tos - = Write the full month name, using the catalog for locale )
+: dos-write-month-name   ( w:dtm w:tos - = Write the full month name, using the streams catalog for locale )
   swap dtm-month@ dtm.january -
   dos.month-names
   rot  tos-write-string
 ;
 
 
-: dos-write-date-time   ( w:dtm w:tos - = Write the preferred time and date representation for the locale, else yyyy/mm/dd hh:mm:ss)
+: dos-write-date-time   ( w:dtm w:tos - = Write the preferred time and date using the streams catalog for the locale, else yyyy/mm/dd hh:mm:ss)
   >r
   s" %Y/%m/%d %H:%M:%S"
   r@ dos-translate
@@ -261,19 +262,19 @@ defer dos.write-format
 ;
 
 
-: dos-write-ampm   ( w:dtm w:tos - = Write the am or pm notation, using the catalog for locale )
+: dos-write-ampm   ( w:dtm w:tos - = Write the am or pm notation, using the streams catalog for locale )
   s" ampm" drop
   dos-write-ampm-str
 ;
 
 
-: dos-write-upper-ampm   ( w:dtm w:tos - = Write the AM or PM notation, using the catalog for locale )
+: dos-write-upper-ampm   ( w:dtm w:tos - = Write the AM or PM notation, using the streams catalog for locale )
   s" AMPM" drop
   dos-write-ampm-str
 ;
 
 
-: dos-write-ampm-time   ( w:dtum w:tos - = Write the time in ampm notation: hh:mm:ss ?m, using the catalog for locale)
+: dos-write-ampm-time   ( w:dtum w:tos - = Write the time in ampm notation: hh:mm:ss ?m, using the streams catalog for locale)
   >r
   s" %I:%M:%S %p" 
   r@ dos-translate
@@ -287,8 +288,8 @@ defer dos.write-format
 
 
 : dos-write-seconds-since-epoch  ( w:dtm w:tos - = Write the number of seconds since 1970-01-01 00:00:00)
-  swap 1970 swap dtm-calc-seconds-since-epoch
-  swap tos-write-number
+  1970 rot dtm-calc-seconds-since-epoch
+       rot tos-write-double
 ;
 
 
@@ -310,12 +311,12 @@ defer dos.write-format
 
 
 : dos-write-week-number   ( w:dtm w:tos - = Write the week number: 01..53 )
-  swap dtm-iso-weeknumber
-  dos-write-2zeroed
+  swap dtm-iso-weeknumber 
+  drop dos-write-2zeroed
 ;
 
 
-: dos-write-date   ( w:dtm w:tos - = Write the preferred date representation for the locale, else yyyy/mm/dd )
+: dos-write-date   ( w:dtm w:tos - = Write the preferred date using the streams catalog for the locale, else yyyy/mm/dd )
   >r
   s" %Y/%m/%d"
   r@ dos-translate
@@ -323,7 +324,7 @@ defer dos.write-format
 ;
 
 
-: dos-write-time   ( w:dtm w:tos - = Write the preferred time representation for the locale, else hh:mm:ss )
+: dos-write-time   ( w:dtm w:tos - = Write the preferred time using the stream catalog for the locale, else hh:mm:ss )
   >r
   s" %H:%M:%S"
   r@ dos-translate
@@ -345,87 +346,84 @@ defer dos.write-format
 
 ( Private formatting words )
 
-: dos-nothing   ( w:dtm w:tos - = Not a valid conversion character )
-  2drop
-;
-
 create dos.jump
   ' dos-write-weekday-name ,        \ A
   ' dos-write-month-name ,          \ B
   ' dos-write-century ,             \ C
   ' dos-write-american-date ,       \ D
-  ' dos-nothing ,                   \ E
+    nil ,                           \ E
   ' dos-write-iso8601-date ,        \ F
-  ' dos-nothing ,                   \ G
+    nil ,                           \ G
   ' dos-write-24hour ,              \ H
   ' dos-write-12hour ,              \ I
-  ' dos-nothing ,                   \ J
-  ' dos-nothing ,                   \ K
-  ' dos-nothing ,                   \ L
+    nil ,                           \ J
+    nil ,                           \ K
+    nil ,                           \ L
   ' dos-write-minute ,              \ M
-  ' dos-nothing ,                   \ N
-  ' dos-nothing ,                   \ O
+    nil ,                           \ N
+    nil ,                           \ O
   ' dos-write-ampm ,                \ P
-  ' dos-nothing ,                   \ Q
+    nil ,                           \ Q
   ' dos-write-hhmm-time ,           \ R
   ' dos-write-seconds ,             \ S
   ' dos-write-hhmmss-time ,         \ T
-  ' dos-nothing ,                   \ U
+    nil ,                           \ U
   ' dos-write-week-number ,         \ V
-  ' dos-nothing ,                   \ W
+    nil ,                           \ W
   ' dos-write-time ,                \ X
   ' dos-write-year ,                \ Y
-  ' dos-nothing ,                   \ Z
-  ' dos-nothing ,                   \ [
-  ' dos-nothing ,                   \ \
-  ' dos-nothing ,                   \ ]
-  ' dos-nothing ,                   \ ^
-  ' dos-nothing ,                   \ _
-  ' dos-nothing ,                   \ '
+    nil ,                           \ Z
+    nil ,                           \ [
+    nil ,                           \ \
+    nil ,                           \ ]
+    nil ,                           \ ^
+    nil ,                           \ _
+    nil ,                           \ '
   ' dos-write-abbr-weekday-name ,   \ a
   ' dos-write-abbr-month-name ,     \ b
   ' dos-write-date-time ,           \ c
   ' dos-write-monthday ,            \ d
   ' dos-write-spaced-monthday ,     \ e
-  ' dos-nothing ,                   \ f
-  ' dos-nothing ,                   \ g
+    nil ,                           \ f
+    nil ,                           \ g
   ' dos-write-abbr-month-name ,     \ h
-  ' dos-nothing ,                   \ i
+    nil ,                           \ i
   ' dos-write-yearday ,             \ j
   ' dos-write-spaced-24hour ,       \ k
   ' dos-write-spaced-12hour ,       \ l
   ' dos-write-month ,               \ m
-  ' dos-nothing ,                   \ n
-  ' dos-nothing ,                   \ o
+    nil ,                           \ n
+    nil ,                           \ o
   ' dos-write-upper-ampm ,          \ p
-  ' dos-nothing ,                   \ q
+    nil ,                           \ q
   ' dos-write-ampm-time ,           \ r
   ' dos-write-seconds-since-epoch , \ s
-  ' dos-nothing ,                   \ t
-  ' dos-nothing ,                   \ u
-  ' dos-nothing ,                   \ v
+    nil ,                           \ t
+    nil ,                           \ u
+    nil ,                           \ v
   ' dos-write-weekday ,             \ w
   ' dos-write-date ,                \ x
   ' dos-write-2year ,               \ y
-  ' dos-nothing ,                   \ z
+    nil ,                           \ z
   
   
-: dos+jump   ( .. c - .. = Execute the word related to the formatting conversion character 'a'..'Z' )
-  [char] A - cells dos.jump + @ execute
-;
-
-
 ( Date and time formatting word )
 
-: dos-write-format   ( w:dtm c-addr u w:tos - = Write a formatted date and time in the stream )
+: dos-write-format   ( w:dtm c-addr u w:tos - = Write date and time info with a format string in the stream )
   false 2swap
   bounds ?DO
     IF                            \ If previous char was '%' Then
-      I c@                        \   If char = A..z then call word
+      I c@                        \   If char = A..z then 
       dup [char] A [char] z 1+ within IF
-        >r 2dup r> dos+jump
+        dup [char] A - cells dos.jump + @
+        dup nil<> IF
+          nip >r 2dup r> execute  \     Execute format word if not nil
+        ELSE
+          drop
+          over tos-write-char     \     Write char if nil
+        THEN
       ELSE                        \   Else
-        over tos-write-char       \     Write character
+        over tos-write-char       \     Write char
       THEN
       false
     ELSE                          \ Else
