@@ -62,6 +62,8 @@ Index of used prefices
 5 sh2 - SHA2 module
 4 tmr - Timer module
 6 gmo - Gettexts mo-file import
+6 xis - XML/HTML reader module
+6 xos - XML/HTML writer module
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -72,7 +74,6 @@ Index of used prefices
 5 rgx - Regular expression module
 2 tis - Text Input Stream
 2 tos - Text Output Stream
-6 htm - HTML reader and writer module
 6 msc - Message Catalog
 ----- - ------------------------------------------------
 
@@ -111,8 +112,6 @@ Index of used prefices
 8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
-6 xis - XML/HTML reader module
-6 xos - XML/HTML writer module 
 6 dom - XML-DOM module
       - css module
       - url module

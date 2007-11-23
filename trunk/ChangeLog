@@ -1,4 +1,6 @@
 0.6.0
+* xos: new module (XML/HTML writer) (2007-11-22)
+* xis: new module (XML/HTML reader) (2007-11-22)
 * tos: new words: tos-msc@,tos-msc! (2007-11-20)
 * stt: new module: (Stringtable) (2007-11-19)
 * dos: new module: (DateTime output stream) (2007-11-18)
@@ -16,7 +18,6 @@
 * tis: new word tis-iscan-string (2007-10-17)
 * tis: new word tis-set-reader (2007-10-17)
 * tis: new word tis-read-all (2007-10-08)
-* htm: new module (HTML reader and writer) (2007-09-16)
 * str: new word: str+columns (2007-07-17)
 * arg: new module (Arguments parser) (2007-07-09)
 * config.fs: 0e0->0E+0, 1e0->1E+0, 2e0->2E+0 (2007-06-25)
