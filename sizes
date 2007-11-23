@@ -34,5 +34,6 @@ arg.fs: 133524
 tis.fs: 134516
 hn?.fs: 136140
 gmo.fs: 140104
+dos.fs: 144512
 
 fina: CompileSize=80186 CompileTime=10714 msec TestTime=24450 msec (without floats)
