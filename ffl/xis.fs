@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-23 06:21:52 $ $Revision: 1.1 $
+\  $Date: 2007-11-24 18:43:21 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -32,9 +32,9 @@ include ffl/config.fs
 
 include ffl/tis.fs
 
-( xis = XML reader )
+( xis = XML/HTML reader )
 ( The xis module implements words for non-validating parsing of XML sources. )
-( Due to the non-validating nature of the reader it can also parse HTML.     )
+( Due to the this nature of the reader it can also parse HTML.               )
 ( Some notes: the default entity references, &lt; &gt; &amp; and &quot;, are )
 ( automatically translated, but all others are simply returned in the text.  )
 ( <pre>                                                                      )
@@ -55,7 +55,8 @@ include ffl/tis.fs
  4 constant xis.end-tag                 ( - n = End tag       - c-addr u                        )
  5 constant xis.markup                  ( - n = Markup        - c-addr u .. n c-addr u          )
  6 constant xis.processing-instruction  ( - n = Proc. instr.  - c-addr u .. n c-addr u          )
-
+ 7 constant xis.dtd                     ( - n = DTD           - c-addr u c-addr u               )
+ 
 ( xisl reader and writer structure )
 
 struct: xis%   ( - n = Get the required space for the xisl reader data structure )
@@ -65,7 +66,7 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
 
 
 
-( XML parser structure creation, initialisation and destruction )
+( XML parser variable creation, initialisation and destruction )
 
 : xis-init   ( w:xis - = Initialise the xml parser structure )
   
