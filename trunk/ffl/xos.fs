@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-23 06:21:52 $ $Revision: 1.1 $
+\  $Date: 2007-11-24 18:43:21 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,96 +30,141 @@ include ffl/config.fs
 
 [UNDEFINED] xos.version [IF]
 
-include ffl/tis.fs
+include ffl/tos.fs
 
 ( xos = XML/HTML writer )
 ( The xos module implements words for writing xml and html to an output      )
-( stream.                                                                    )
+( stream. The xos module extends the tos module, so the xos words words on   )
+( tos variables.                                                             )
 
 
 1 constant xos.version
 
 
-( xml writer structure )
+( Private words )
 
-struct: xos%   ( - n = Get the required space for the xml writer data structure )
-  tos%
-  field: xos>tos        \ the xml string (extends the text output stream)
-;struct
-
-
-
-( xml writer structure creation, initialisation and destruction )
-
-: xos-init   ( w:xos - = Initialise the xml writer variable )
-  
-  xos>tos  tos-init
+: xos-write-string   ( c-addr u w:tos - = Write normal xml text )
+  -rot
+  bounds ?DO
+    I c@ 
+    CASE
+      [char] < OF dup s" &lt;"   rot tos-write-string ENDOF
+      [char] > OF dup s" &gt;"   rot tos-write-string ENDOF
+      [char] " OF dup s" &quot;" rot tos-write-string ENDOF
+      [char] & OF dup s" &amp;"  rot tos-write-string ENDOF
+      [char] ' OF dup s" &apos;" rot tos-write-string ENDOF
+      2dup swap tos-write-char
+    ENDCASE
+  1 chars +LOOP
+  drop
 ;
 
-
-: xos-create   ( C: "name" -  R: - w:xos = Create a named xml writer variable in the dictionary )
-  create  here xos% allot  xos-init
+: xos-write-starting-tag  ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml starting tag with n attributes )
+  >r
+  [char] <  r@ tos-write-char
+            r@ tos-write-string 
+  BEGIN
+    ?dup
+  WHILE                           \ while nr attributes > 0
+    bl r@ tos-write-char
+    
+    -rot
+       r@ tos-write-string
+    
+    -rot
+    ?dup IF
+      [char] = r@ tos-write-char
+      [char] " r@ tos-write-char
+               r@ xos-write-string
+      [char] " r@ tos-write-char
+    ELSE
+      drop
+    THEN
+    1-
+  REPEAT
+  rdrop
 ;
-
-
-: xos-new   ( - w:xos = Create a new xml writer variable on the heap )
-  xos% allocate  throw   dup xos-init
-;
-
-
-: xos-free   ( w:xos - = Free the xml writer variable from the heap )
-  tos-free
-;
-
-
-( xml writer init words )
-
-: xos-set-writer ( w:data xt w:xos - = Initialise the xml writer for writing using the writer callback )
-;
-
-
-: xos-clear-string ( w:xos - = Initialise the xml writer for writing to string )
-;
-
 
 ( xml writer words )
 
-: xos-write-markup ( c-addr u ... n c-addr u w:xos - = Write a xml markup with n parameters )
+: xos-write-start-document   ( c-addr:standalone u c-addr u c-addr u w:tos - = Write the start of a xml document )
+  >r
+  s" <?xml version=" r@ tos-write-string
+  r@ tos-write-string
+  [char] " r@ tos-write-char
+  
+  ?dup IF                         \ Optional encoding
+    s" encoding=" r@ tos-write-string
+    [char] " r@ tos-write-char
+    r@ tos-write-string
+    [char] " r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  
+  ?dup IF                         \ Optional standalone
+    s" standalone=" r@ tos-write-string
+    [char] " r@ tos-write-char
+    r@ tos-write-string
+    [char] " r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  s" ?>" r> tos-write-string
 ;
 
 
-: xos-write-start-tag ( c-addr u c-addr u ... n c-addr u w:xos - = Write a xml start tag with n attributes )
+: xos-write-text   ( c-addr u w:tos - = Write normal xml text )
+  xos-write-string
 ;
 
 
-: xos-write-end-tag ( c-addr u w:xos - = Write a xml end tag )
+: xos-write-start-tag ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml start tag with n attributes )
+  >r
+  r@ xos-write-starting-tag
+  [char] > r> tos-write-char
 ;
 
 
-: xos-write-processing-instruction ( c-addr u ... n c-addr u w:xos - = Write a xml processing instruction )
+: xos-write-end-tag ( c-addr u w:tos - = Write a xml end tag )
+  >r
+  [char] < r@ tos-write-char
+  [char] / r@ tos-write-char
+           r@ tos-write-string
+  [char] > r> tos-write-char
 ;
 
 
-: xos-write-text ( c-addr u w:xos - = Write normal xml text )
+: xos-write-start-end-tag   ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml start and end tag with n attributes )
+  >r
+  r@ xos-write-starting-tag
+  [char] / r@ tos-write-char
+  [char] > r> tos-write-char
 ;
 
 
-: xos-write-comment ( c-addr u w:xos - = Write xml comment )
+: xos-write-raw-text ( c-addr u w:tos - = Write unprocessed xml text )
+  tos-write-string
 ;
 
 
-: xos-write-entity-reference ( c-addr u u:xos - = Write a xml entity reference )
+: xos-write-comment ( c-addr u w:tos - = Write xml comment )
+  >r
+  s" <--" r@ tos-write-string
+          r@ tos-write-string
+  s" -->" r> tos-write-string
 ;
 
 
-( xml writer finish words )
-
-: xos-get-string ( w:xos - c-addr u = Get the xml string when writing to string )
+: xos-write-markup ( c-addr u ... n c-addr u w:tos - = Write a xml markup with n parameters )
 ;
 
-( Inspection )
 
-: xos-dump ( w:xos - = Dump the xml writer variable )
+: xos-write-proc-instr ( c-addr u ... n c-addr u w:tos - = Write a xml processing instruction )
+;
+
+
+: xos-write-dtd   ( c-addr u c-addr u w:tos - = Write a document type definition )
 ;
 
 [THEN]
