@@ -51,6 +51,7 @@ Index of used prefices
 1 stc - Struct definition
 1 tst - Unit tests
 6 stt - Stringtable defintion
+6 est - String with escaped characters
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------
