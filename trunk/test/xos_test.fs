@@ -20,11 +20,12 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 07:54:12 $ $Revision: 1.2 $
+\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
 include ffl/xos.fs
+include ffl/est.fs
 include ffl/tst.fs
 
 
@@ -35,7 +36,7 @@ t{ tos-create tos5 }t
 t{ s" yes" s" ISO-8559-1" s" 1.0"   tos5 xos-write-start-xml }t
 t{ s" this is comment"              tos5 xos-write-comment }t
 t{ s" on" s" mode" 1 s" pi"         tos5 xos-write-proc-instr }t
-t{ s" yes" s" important" 1 s" mail" tos5 xos-write-start-tag }t
+t{ s" <'>" s" code" 1 s" mail"      tos5 xos-write-start-tag }t
 t{ 0 s" to"                         tos5 xos-write-start-tag }t
 t{ s" Bill & Sara"                  tos5 xos-write-text }t
 t{ s" to"                           tos5 xos-write-end-tag }t
@@ -48,8 +49,9 @@ t{ s" contents"                     tos5 xos-write-end-tag }t
 t{ 0 s" others"                     tos5 xos-write-empty-element }t
 t{ s" mail"                         tos5 xos-write-end-tag }t
 
-t{ tos5 str-get type cr }t
-\ Todo: compare, lastig door " in string ..
+t{ tos5 str-get
+   s\" <?xml version=\"1.0\" encoding=\"ISO-8559-1\" standalone=\"yes\"?><!--this is comment--><?pi mode=\"on\"?><mail code=\"&lt;&apos;&gt;\"><to>Bill &amp; Sara</to><from>$#70;orth</from><contents><![CDATA[: 2dup dup dup ;]]></contents><others/></mail>"
+   compare ?0 }t
 
 
 \ test DTDs
@@ -57,11 +59,22 @@ t{ tos5 str-get type cr }t
 t{ tos5 tos-rewrite }t
 
 t{ s" order.dtd" s" order" tos5 xos-write-system-dtd }t
+
+t{ tos5 str-get s\" <!DOCTYPE order SYSTEM \"order.dtd\">" compare ?0 }t
+
+
+t{ tos5 tos-rewrite }t
+
 t{ s" <!ELEMENT mail (to+,from,contents,others+)>" s" mail" tos5 xos-write-internal-dtd }t
+
+t{ tos5 str-get s" <!DOCTYPE mail [<!ELEMENT mail (to+,from,contents,others+)>]>" compare ?0 }t
+
+
+t{ tos5 tos-rewrite }t
+
 t{ s" something" s" -//W3C//DTD HTML 4.0 Transitional//EN" s" HTML" tos5 xos-write-public-dtd }t
 
-t{ tos5 str-get type cr }t
-
+t{ tos5 str-get s\" <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"something\">" compare ?0 }t
 
 
  

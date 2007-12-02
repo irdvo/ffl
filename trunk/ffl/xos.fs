@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 07:50:43 $ $Revision: 1.3 $
+\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,9 +36,9 @@ include ffl/tos.fs
 ( The xos module implements words for writing xml and html to an output      )
 ( stream. The xos module extends the tos module, so the xos words works on   )
 ( tos variables. The module translates the normal entity references: &lt;,   )
-( &gt;, &quot; and &apos;. All other entity references should be written     )
+( &gt;, &quot;, &amp; and '. All other entity references should be written   )
 ( with the xos-write-raw-text word. Note: balancing of start and end tags    )
-( are not checked, so the module can also be used to write html output.      )
+( is not checked, so the module can also be used to write html output.       )
 
 
 1 constant xos.version
@@ -118,7 +118,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-text   ( c-addr u w:tos - = Write normal xml text with translation to entity references )
+: xos-write-text   ( c-addr u w:tos - = Write normal xml text with translation to the default entity references )
   xos-write-string
 ;
 
@@ -162,7 +162,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-cdata   ( c-addr u w:tos - = Write a CDATA section )
+: xos-write-cdata   ( c-addr u w:tos - = Write a xml CDATA section )
   >r
   s" <![CDATA[" r@ tos-write-string
                 r@ tos-write-string
