@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                 est - the escaped string in the ffl
+\           est - the string with escaped characters in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 07:54:12 $ $Revision: 1.2 $
+\  $Date: 2007-12-02 18:11:06 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -28,21 +28,21 @@
 include ffl/config.fs
 
 
-[UNDEFINED] stt.version [IF]
+[UNDEFINED] est.version [IF]
 
-( estt= String with escaped characters )
+( est = String with escaped characters )
 ( The est module implements a string with escaped characters. The code is    )
 ( inspired by the proposal for escaped strings by Stephen Pelc and Peter     )
 ( Knaggs. The following conversion characters are translated:                )
 ( <pre>                                                                      )
-( \a  - Bel = ascii 7                                                        )
-( \b  - Backspace = ascii 8                                                  )
-( \e  - Escape = ascii 27                                                    )
-( \f  - Formfeed = ascii 12                                                  )
-( \l  - Linefeed = ascii 10                                                  )
+( \a  - bel = ascii 7                                                        )
+( \b  - backspace = ascii 8                                                  )
+( \e  - escape = ascii 27                                                    )
+( \f  - formfeed = ascii 12                                                  )
+( \l  - linefeed = ascii 10                                                  )
 ( \m  - cr/lf = ascii 13,10                                                  )
 ( \n  - new line                                                             )
-( \q  - Quote = ascii 34                                                     )
+( \q  - quote = ascii 34                                                     )
 ( \r  - cr = ascii 13                                                        )
 ( \t  - ht = ascii 9                                                         )
 ( \v  - vt = ascii 11                                                        )
@@ -172,10 +172,10 @@ create est-table
       1 /string
     THEN
   REPEAT
-  dup IF
-    1 /string
-  THEN
-  r> count
+  dup IF 1+ THEN            \ Skip "
+  - >in +!                  \ Store processed chars
+  drop
+  r> count                  \ Parsed string
 ;
 [THEN]
 
@@ -192,7 +192,7 @@ create est-table
 
 
 [UNDEFINED] ,\" [IF]
-: ,\"   ( "..." - = Store a string with escaped characters )
+: ,\"   ( "..." - = Store a string with escaped characters in the dictionary )
   parse\"
   here 
   over char+ allot
