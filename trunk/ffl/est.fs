@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 07:50:42 $ $Revision: 1.1 $
+\  $Date: 2007-12-02 07:54:12 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -32,8 +32,8 @@ include ffl/config.fs
 
 ( estt= String with escaped characters )
 ( The est module implements a string with escaped characters. The code is    )
-( inspired by the proposal for escaped string by Stephen Pelc and Peter      )
-( Knagss. The following conversion characters are translated:                )
+( inspired by the proposal for escaped strings by Stephen Pelc and Peter     )
+( Knaggs. The following conversion characters are translated:                )
 ( <pre>                                                                      )
 ( \a  - Bel = ascii 7                                                        )
 ( \b  - Backspace = ascii 8                                                  )
