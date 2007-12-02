@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.31 $
+\  $Date: 2007-12-02 18:11:06 $ $Revision: 1.32 $
 \
 \ ==============================================================================
 
@@ -28,6 +28,7 @@
 include ffl/tst.fs
 
 tst-reset-tests
+
 
 \ the test sources
 include act_test.fs
@@ -43,6 +44,7 @@ include dcl_test.fs
 include dnl_test.fs
 include dtm_test.fs
 include dos_test.fs
+include est_test.fs
 include frc_test.fs
 include gmo_test.fs
 include hct_test.fs
