@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-11 07:56:07 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -35,9 +35,9 @@ include ffl/nnn.fs
 
 ( nnt = n-Tree base module )
 ( The nnt module implements a n-Tree that can handle variable size nodes. It  )
-( is the base module for more specialised trees, for example the nct module   )
-( [n-Tree cell module]. Due to the structure of a n-tree the words for        )
-( changing the tree [adding,removing children] are part of the iterator [nni].)
+( is the base module for more specialised trees, for example the cel  n-tree  )
+( [nct]. Due to the structure of a n-tree the words for changing the tree,    )
+( adding and removing children, are part of the iterator [nni].               )
 
 
 1 constant nnt.version
@@ -45,55 +45,55 @@ include ffl/nnn.fs
 
 ( Tree structure )
 
-struct: nnt%       ( - n = Get the required space for the nnt data structure )
-  cell: nnt>root
-  cell: nnt>length
-;struct
+begin-structure nnt%       ( -- n = Get the required space for a nnt variable )
+  field: nnt>root
+  field: nnt>length
+end-structure
 
 
 ( Tree creation, initialisation and destruction )
 
-: nnt-init     ( w:nnt - = Initialise the nnt-tree )
+: nnt-init     ( nnt -- = Initialise the n-tree )
   dup nnt>root    nil!
      nnt>length   0!
 ;
 
 
-: nnt-create   ( C: "name" - R: - w:nnt = Create a named nnt-tree in the dictionary )
+: nnt-create   ( "<spaces>name" -- ; -- nnt = Create a named n-tree in the dictionary )
   create   here   nnt% allot   nnt-init
 ;
 
 
-: nnt-new      ( - w:nnt = Create a new nnt-tree on the heap )
+: nnt-new      ( -- nnt = Create a new n-tree on the heap )
   nnt% allocate  throw  dup nnt-init
 ;
 
 
-: nnt-free     ( w:nnt - = Free the tree from the heap )
+: nnt-free     ( nnt -- = Free the tree from the heap )
   free  throw
 ;
 
 
 ( Member words )
 
-: nnt-length@  ( w:nnt - u = Get the number of nodes in the tree )
+: nnt-length@  ( nnt -- u = Get the number of nodes in the tree )
   nnt>length @
 ;
 
 
-: nnt-empty?   ( w:nnt - f = Check for empty tree )
+: nnt-empty?   ( nnt -- flag = Check for an empty tree )
   nnt-length@ 0=  
 ;
 
 
-: nnt-root@   ( w:nnt - w:nnn | nil  = Get the root of the tree )
+: nnt-root@   ( nnt -- nnn | nil  = Get the root of the tree )
   nnt>root @
 ;
 
 
 ( Tree words )
 
-: nnt-execute      ( ... xt w:nnt - ... = Execute xt for every node in tree )
+: nnt-execute      ( i*x xt nnt -- j*x = Execute xt for every node in tree )
   nnt-root@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -107,7 +107,7 @@ struct: nnt%       ( - n = Get the required space for the nnt data structure )
 ;
 
 
-: nnt-execute?     ( ... xt w:nnt - ... f = Execute xt for every node in the tree until xt returns true )
+: nnt-execute?     ( i*x xt nnt -- j*x flag = Execute xt for every node in the tree until xt returns true )
   nnt-root@                 \ walk = first
   false
   BEGIN
@@ -126,14 +126,14 @@ struct: nnt%       ( - n = Get the required space for the nnt data structure )
 
 ( Private words )
 
-: nnt-emit-node  ( w:nnn - = Emit the tree node )
+: nnt-emit-node  ( nnn -- = Emit the tree node )
   0 .r [char] ; emit
 ;
 
 
 ( Inspection )
 
-: nnt-dump     ( w:nnt - = Dump the tree )
+: nnt-dump     ( nnt -- = Dump the tree )
   ." nnt:" dup . cr
   ."  root  :" dup nnt>root ?  cr
   ."  length:" dup nnt>length ? cr

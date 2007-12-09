@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.7 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/dnn.fs
 ( dnl = Double Linked Node List )
 ( The dnl module implements a double linked list that can handle variable size )
 ( nodes. It is the base module for more specialised modules, for example the   )
-( dcl [double linked cell list] module. )
+( double linked cell list [dcl] module. )
   
 
 1 constant dnl.version
@@ -45,69 +45,69 @@ include ffl/dnn.fs
 
 ( List structure )
 
-struct: dnl%       ( - n = Get the required space for the dnl data structure )
-  cell: dnl>first
-  cell: dnl>last
-  cell: dnl>length
-;struct
+begin-structure dnl%       ( -- n = Get the required space for a dnl variable )
+  field: dnl>first
+  field: dnl>last
+  field: dnl>length
+end-structure
 
 
 ( List creation, initialisation and destruction )
 
-: dnl-init     ( w:dnl - = Initialise the dnl-list )
+: dnl-init     ( dnl -- = Initialise the list )
   dup dnl>first   nil!
   dup dnl>last    nil!
       dnl>length    0!
 ;
 
 
-: dnl-create   ( C: "name" - R: - w:dnl = Create a named dnl-list in the dictionary )
+: dnl-create   ( "<spaces>name" -- ; -- dnl = Create a named dnl list in the dictionary )
   create   here   dnl% allot   dnl-init
 ;
 
 
-: dnl-new      ( - w:dnl = Create a new dnl-list on the heap )
+: dnl-new      ( -- dnl = Create a new dnl list on the heap )
   dnl% allocate  throw  dup dnl-init
 ;
 
 
-: dnl-free     ( w:dnl - = Free the list from the heap )
+: dnl-free     ( dnl -- = Free the list from the heap )
   free  throw
 ;
 
 
 ( Member words )
 
-: dnl-length@  ( w:dnl - u = Get the number of nodes in the list )
+: dnl-length@  ( dnl -- u = Get the number of nodes in the list )
   dnl>length @
 ;
 
 
-: dnl-empty?   ( w:dnl - f = Check for empty list )
+: dnl-empty?   ( dnl -- flag = Check for empty list )
   dnl-length@ 0=  
 ;
 
 
-: dnl-first@   ( w:dnl - w:dnn | nil  = Get the first node )
+: dnl-first@   ( dnl -- dnn | nil  = Get the first node in the list )
   dnl>first @
 ;
 
 
-: dnl-last@    ( w:dnl - w:dnn | nil = Get the last node  )
+: dnl-last@    ( dnl -- dnn | nil = Get the last node in the list )
   dnl>last @
 ;
 
 
 ( Private words )
 
-: dnl+offset   ( n:index n:length - n:offset = Determine offset from index, incl. validation )
+: dnl+offset   ( n1 n2 -- n3 = Determine offset n3 from index n1 and length n2, incl. validation )
   tuck index2offset                    \ convert to offset
   dup rot 0 within                     \ check outside 0..length-1
   exp-index-out-of-range AND throw     \ raise exception
 ;
 
 
-: dnl-node  ( n:offset w:dnl - w:dnn | nil = Get the nth node in the list )
+: dnl-node  ( n dnl -- dnn | nil = Get the nth node in the list )
   dnl-first@                 \ cur  = first
   BEGIN
     2dup nil<> swap 0> AND   \ while n>0 and cur<> nil do
@@ -121,7 +121,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 ( List words )
 
-: dnl-append   ( w:dnn w:dnl - = Append a node in the list )
+: dnl-append   ( dnn dnl -- = Append the node dnn in the list )
   dup  dnl>length 1+!        \ dnl.length++
   over swap
   dup dnl-first@ nil= IF     \ If dnl.first = nil Then
@@ -136,7 +136,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-prepend  ( w:dnn w:dnl - = Prepend a node in the list )
+: dnl-prepend  ( dnn dnl -- = Prepend the node dnn in the list )
   dup  dnl>length 1+!        \ dnl.length++
   over swap
   dup dnl-last@ nil= IF      \ If dnl.last = nil Then
@@ -151,7 +151,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-insert-before  ( w:new w:ref w:dnl - = Insert a new node before the reference node in the list )
+: dnl-insert-before  ( dnn1 dnn2 dnl -- = Insert the new node dnn1 before the reference node dnn2 in the list )
   dup dnl>length 1+!
   >r
   2dup swap dnn-next!        \ new.next = ref
@@ -166,7 +166,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-insert-after  ( w:new w:ref w:dnl - = Insert a new node after the reference node in the list )
+: dnl-insert-after  ( dnn1 dnn2 dnl -- = Insert the new node dnn1 after the reference node dnn2 in the list )
   dup dnl>length 1+!
   >r
   2dup swap dnn-prev!        \ new.prev = ref
@@ -181,7 +181,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-remove   ( w:dnn w:dnl - = Remove a node from the list )
+: dnl-remove   ( dnn dnl -- = Remove the node dnn from the list )
   swap
   dup nil= exp-invalid-parameters AND throw
   
@@ -206,20 +206,20 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 ( Index words )
 
-: dnl-index?   ( n:index w:dnl - f = Check if an index is valid in the list )
+: dnl-index?   ( n dnl -- flag = Check if the index n is valid in the list )
   dnl-length@
   tuck index2offset
   swap 0 swap within
 ;
 
 
-: dnl-get      ( n:index w:dnl - w:dnn = Get the indexth node from the list )
+: dnl-get      ( n dnl -- dnn = Get the nth node from the list )
   tuck dnl-length@ dnl+offset     \ S: dnl offset
   swap dnl-node                   \ S: dnn | nil
 ;
 
 
-: dnl-insert   ( w:dnn n:index w:dnl - = Insert a node before the indexth node in the list )
+: dnl-insert   ( dnn n dnl -- = Insert the node dnn before the nth node in the list )
   tuck dnl-length@ 1+ dnl+offset  \ S: dnn dnl offset
   ?dup 0= IF
     dnl-prepend
@@ -235,7 +235,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-delete   ( n:index w:dnl - w:dnn = Delete the indexth node from the list )
+: dnl-delete   ( n dnl -- dnn = Delete the nth node from the list, return the deleted node )
   tuck dnl-length@ dnl+offset     \ S: dnl offset
   ?dup 0= IF                      \ If offset = 0 Then
     dup dnl-first@                \   First node
@@ -252,12 +252,12 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 ( LIFO words )
 
-: dnl-push     ( w:dnn w:dnl - = Push the node at the end of the list )
+: dnl-push     ( dnn dnl -- = Push the node dnn at the end of the list )
   dnl-append
 ;
 
 
-: dnl-pop      ( w:dnl - w:dnn | nil = Pop the node at the end of the list )
+: dnl-pop      ( dnl -- dnn | nil = Pop the node dnn from the end of the list )
   dup dnl-last@              \ dnn = dnl.last 
   dup nil<> IF               \ If dnn != nil Then
     dup rot dnl-remove
@@ -267,26 +267,26 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-tos      ( w:dnl - w:dnn | nil = Get the node at the end of the list )
+: dnl-tos      ( dnl -- dnn | nil = Get the node dnn from the end of the list )
   dnl-last@
 ;
 
 
 ( FIFO words )
 
-: dnl-enqueue  ( w:dnn w:dnl - = Enqueue the node at the start of the list )
+: dnl-enqueue  ( dnn dnl -- = Enqueue the node dnn at the start of the list )
   dnl-prepend
 ;
 
 
-: dnl-dequeue  ( w:dnl - w:dnn | nil = Dequeue the node at the end of the list )
+: dnl-dequeue  ( dnl -- dnn | nil = Dequeue the node dnn from the end of the list )
   dnl-pop
 ;
 
 
 ( Special words )
 
-: dnl-execute      ( ... xt w:dnl - ... = Execute xt for every node in list )
+: dnl-execute      ( i*x xt dnl -- j*x = Execute xt for every node in list )
   dnl-first@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -300,7 +300,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 ;
 
 
-: dnl-reverse  ( w:dnl - = Reverse or mirror the list )
+: dnl-reverse  ( dnl -- = Reverse or mirror the list )
   dup dnl-first@             \ walk = first
   BEGIN
     dup nil<>
@@ -322,7 +322,7 @@ struct: dnl%       ( - n = Get the required space for the dnl data structure )
 
 ( Inspection )
 
-: dnl-dump     ( w:dnl - = Dump the list )
+: dnl-dump     ( dnl -- = Dump the list )
   ." dnl:" dup . cr
   ."  first :" dup dnl>first ?  cr
   ."  last  :" dup dnl>last  ?  cr

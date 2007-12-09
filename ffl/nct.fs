@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-11 05:07:03 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,7 @@ include ffl/ncn.fs
 
 ( Private words )
 
-: nct-delete-children ( w:dnl - = Delete all nodes [children] in the list )
+: nct-delete-children ( dnl -- = Delete all nodes [children] in the list )
   BEGIN
     dup dnl-pop dup nil<>
   WHILE
@@ -57,27 +57,27 @@ include ffl/ncn.fs
 
 ( Tree structure )
 
-nnt% constant nct%  ( - n = Get the required space for the nct data structure )
+nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 
 
 ( Tree creation, initialisation and destruction )
 
-: nct-init     ( w:nct - = Initialise the nct-tree )
+: nct-init     ( nct -- = Initialise the tree )
   nnt-init
 ;
 
 
-: nct-create   ( C: "name" - R: - w:nct = Create a named nct-tree in the dictionary )
+: nct-create   ( "<spaces>name" -- ; -- nct = Create a named n-tree in the dictionary )
   create   here   nct% allot   nct-init
 ;
 
 
-: nct-new      ( - w:nct = Create a new nct-tree on the heap )
+: nct-new      ( -- nct = Create a new n-tree on the heap )
   nct% allocate  throw  dup nct-init
 ;
 
 
-: nct-delete-all  ( w:nct - = Delete all the nodes in the tree )
+: nct-delete-all  ( nct -- = Delete all the nodes in the tree )
   dup nnt-root@                    \ walk = nct.root
   BEGIN
     dup nil<>                  \ While walk <> nil Doe
@@ -107,7 +107,7 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 ;
 
 
-: nct-free     ( w:nct - = Free the tree from the heap )
+: nct-free     ( nct -- = Free the tree from the heap )
   dup nct-delete-all
   
   free  throw
@@ -116,29 +116,29 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 
 ( Member words )
 
-: nct-length@  ( w:nct - u = Get the number of nodes in the tree )
+: nct-length@  ( nct -- u = Get the number of nodes in the tree )
   nnt-length@
 ;
 
 
-: nct-empty?   ( w:nct - f = Check for empty tree )
+: nct-empty?   ( nct -- flag = Check for empty tree )
   nnt-empty?
 ;
 
 
 ( Private words )
 
-: nct+emit-node  ( w:data - = Emit the tree node )
+: nct+emit-node  ( x -- = Emit the cell data x from tree node )
   0 .r [char] ; emit
 ;
 
 
-: nct+equal?     ( w:data w:data - w:data f = Check if data is equal to the node data )
+: nct+equal?     ( x1 x2 -- x1 flag = Check if data x2 is equal to the node data x1 )
   over =
 ;
 
 
-: nct+count      ( w:count w:data w:data - w:count w:data = Count if data is equal to the node data )
+: nct+count      ( +n1 x1 x2 -- +n2 x1 = Count in n if data x2 is equal to the node data x1 )
   over = IF
     swap 1+ swap
   THEN
@@ -147,7 +147,7 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 
 ( Tree words )
 
-: nct-execute      ( ... xt w:nct - ... = Execute xt for every node in tree )
+: nct-execute      ( i*x xt nct -- j*x = Execute xt for every node in tree )
   nnt-root@                 \ walk = first
   BEGIN
     dup nil<>               \ while walk<>nil do
@@ -162,7 +162,7 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 ;
 
 
-: nct-execute?     ( ... xt w:nct - ... f = Execute xt for every node in the tree until xt returns true )
+: nct-execute?     ( i*x xt nct -- j*x flag = Execute xt for every node in the tree until xt returns true )
   nnt-root@                 \ walk = first
   false
   BEGIN
@@ -180,20 +180,20 @@ nnt% constant nct%  ( - n = Get the required space for the nct data structure )
 ;
   
 
-: nct-count      ( w:data w:nct - n = Count the occurences of the cell data in the tree )
+: nct-count      ( x nct -- u = Count the number of the occurences of the cell data x in the tree )
   0 -rot
   ['] nct+count  swap nct-execute drop
 ;
 
 
-: nct-has?       ( w:data w:nct - f = Check if the cell data is present in the tree )
+: nct-has?       ( x nct -- flag = Check if the cell data x is present in the tree )
   ['] nct+equal? swap nct-execute? nip
 ;
 
 
 ( Inspection )
 
-: nct-dump     ( w:nct - = Dump the tree )
+: nct-dump     ( nct -- = Dump the tree )
   dup nnt-dump
   ." nct:" dup . cr
   ."  nodes :" ['] nct+emit-node swap nct-execute cr

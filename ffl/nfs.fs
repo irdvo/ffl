@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-11 05:07:03 $ $Revision: 1.5 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -42,30 +42,30 @@ include ffl/stc.fs
 
 ( State structure )
 
-struct: nfs%       ( - n = Get the required space for the nfs data structure )
-  cell: nfs>id       \ the state id
-  cell: nfs>type     \ the state type
-  cell: nfs>data     \ the state optional data
-  cell: nfs>out1     \ the next state (during building also used as next pointer )
-  cell: nfs>out2     \ the split state (during building also used as next pointer )
-  cell: nfs>visit    \ the visit number
-;struct
+begin-structure nfs%       ( -- n = Get the required space for a nfs state )
+  field: nfs>id         \ the state id
+  field: nfs>type       \ the state type
+  field: nfs>data       \ the state optional data
+  field: nfs>out1       \ the next state (during building also used as next pointer )
+  field: nfs>out2       \ the split state (during building also used as next pointer )
+  field: nfs>visit      \ the visit number
+end-structure
 
 
 ( State types )
 
-1 constant nfs.char   ( - n = State type char, data = char )
-2 constant nfs.any    ( - n = State type any, no data )
-3 constant nfs.class  ( - n = State type class, data = chs )
-4 constant nfs.lparen ( - n = State type left paren, data = paren level )
-5 constant nfs.rparen ( - n = State type right paren, data = paren level )
-6 constant nfs.split  ( - n = State type split, no data )
-7 constant nfs.match  ( - n = State type match, no data )
+1 constant nfs.char   ( -- n = State type char, data = char )
+2 constant nfs.any    ( -- n = State type any, no data )
+3 constant nfs.class  ( -- n = State type class, data = chs )
+4 constant nfs.lparen ( -- n = State type left paren, data = paren level )
+5 constant nfs.rparen ( -- n = State type right paren, data = paren level )
+6 constant nfs.split  ( -- n = State type split, no data )
+7 constant nfs.match  ( -- n = State type match, no data )
 
 
 ( State creation, initialisation and destruction )
 
-: nfs-init     ( w:data n:type n:id w:nfs - = Initialise the state )
+: nfs-init     ( x n1 n2 nfs -- = Initialise the nfs state with data x, type n1 and id n2 )
   >r
   r@ nfs>id    !
   r@ nfs>type  !
@@ -76,66 +76,66 @@ struct: nfs%       ( - n = Get the required space for the nfs data structure )
 ;
 
 
-: nfs-new      ( w:data n:type n:id - w:nfs = Create a new state on the heap )
+: nfs-new      ( x n1 n2 -- nfs = Create a new nfs state on the heap with data x, type n1 and id n2 )
   nfs% allocate  throw  >r r@ nfs-init r>
 ;
 
 
-: nfs-free     ( w:nfs - = Free the state from the heap )
+: nfs-free     ( nfs -- = Free the state from the heap )
   free  throw
 ;
 
 
 ( Member words )
 
-: nfs-id@    ( w:nfs - n:id = Get the id of the state )
+: nfs-id@    ( nfs -- n = Get the id of the state )
   nfs>id @
 ;
 
 
-: nfs-type@  ( w:nfs - n:type = Get the type of the state )
+: nfs-type@  ( nfs -- n = Get the type of the state )
   nfs>type @
 ;
 
 
-: nfs-data@  ( w:nfs - w:data = Get the optional data of the state )
+: nfs-data@  ( nfs -- x = Get the optional data of the state )
   nfs>data @
 ;
 
 
-: nfs-out1!  ( w:nfs1 w:nfs - = Set the out1 in the state )
+: nfs-out1!  ( nfs1 nfs2 -- = Set out1 in the nfs2 state to the nfs1 state )
   nfs>out1 !
 ;
 
 
-: nfs-out1@  ( w:nfs - w:nfs = Get the out1 of the state )
+: nfs-out1@  ( nfs1 -- nfs2 = Get the out1 state of the nfs1 state )
   nfs>out1 @
 ;
 
 
-: nfs-out2!  ( w:nfs2 w:nfs - = Set the out2 in the state )
+: nfs-out2!  ( nfs1 nfs2 -- = Set out2 in the nfs2 state to the nfs1 state )
   nfs>out2 !
 ;
 
 
-: nfs-out2@  ( w:nfs - w:nfs = Get the out2 of the state )
+: nfs-out2@  ( nfs1 -- nfs2 = Get the out2 nfs state of nfs1 state )
   nfs>out2 @
 ;
 
 
-: nfs-visit!  ( n w:nfs - = Set the visit number [0>=] )
+: nfs-visit!  ( n nfs -- = Set the visit number [0>=] )
   nfs>visit !
 ;
 
 
-: nfs-visit@  ( w:nfs - n = Get the visit number )
+: nfs-visit@  ( nfs -- n = Get the visit number )
   nfs>visit @
 ;
 
 
 ( Inspection )
 
-: nfs-dump     ( w:nfs - = Dump the state )
+: nfs-dump     ( nfs -- = Dump the nfs state )
   ." nfs:" dup . cr
   ."  id   :" dup nfs>id    ? cr
   ."  type :" dup nfs>type  ? cr

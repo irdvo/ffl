@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/dtm.fs
 
 
 ( dti = Date time iterator module )
-( The dti module implements words for iterating date and time.  )
-( This module extends the dtm module with extra words.          )
+( The dti module implements a Date and time iterator. This module extends    )
+( the dtm data type with extra words.                                        )
 
 
 1 constant dti.version
@@ -45,7 +45,7 @@ include ffl/dtm.fs
 
 ( Year iterator words )
 
-: dti-year-        ( w:dtm - = Decrease the date/time with one year )
+: dti-year-        ( dtm -- = Decrease the date/time with one year )
   >r
   r@ dtm-year@ 1-
   r@ dtm-day@ over
@@ -56,7 +56,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-year+        ( w:dtm - = Increase the date/time with one year )
+: dti-year+        ( dtm -- = Increase the date/time with one year )
   >r
   r@ dtm-year@ 1+
   r@ dtm-day@ over
@@ -69,7 +69,7 @@ include ffl/dtm.fs
 
 ( Month iterator words )
 
-: dti-month-       ( w:dtm - = Decrease the date/time with one months )
+: dti-month-       ( dtm -- = Decrease the date/time with one months )
   >r 
   r@ dtm-month@
   1- dup 1 < IF         \ ToDo: Day valid?
@@ -83,7 +83,7 @@ include ffl/dtm.fs
 ;
 
   
-: dti-month+       ( w:dtm - = Increase the date/time with one months )
+: dti-month+       ( dtm -- = Increase the date/time with one months )
   >r 
   r@ dtm-month@
   1+ dup 12 > IF       
@@ -99,7 +99,7 @@ include ffl/dtm.fs
 
 ( Day iterator words )
 
-: dti-day-         ( w:dtm - = Decrease the date/time with one day )
+: dti-day-         ( dtm -- = Decrease the date/time with one day )
   >r
   r@ dtm-day@
   1- dup 1 < IF
@@ -110,7 +110,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-day+         ( w:dtm - = Increase the date/time with one day )
+: dti-day+         ( dtm -- = Increase the date/time with one day )
   >r
   r@ dtm-day@
   1+ dup r@ dtm-month@ r@ dtm-year@ dtm+days-in-month > IF
@@ -121,7 +121,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-days+        ( d:days w:dtm - = Increase the date/time with d days )
+: dti-days+        ( d dtm -- = Increase the date/time with d days )
   >r
   dtm.start-epoch r@ dtm-calc-days-since-epoch
   d+
@@ -129,14 +129,14 @@ include ffl/dtm.fs
 ;
 
 
-: dti-days-        ( d:days w:dtm - = Decrease the date/time with d days )
+: dti-days-        ( d dtm -- = Decrease the date/time with d days )
   >r dnegate r> dti-days+
 ;
 
 
 ( Hour iterator words )
 
-: dti-hour-        ( w:dtm - = Decrease the date/time with one hour )
+: dti-hour-        ( dtm -- = Decrease the date/time with one hour )
   dup dtm-hour@
   1- dup 0< IF
     over dti-day-
@@ -146,7 +146,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-hour+        ( w:dtm - = Increase the date/time with one hour )
+: dti-hour+        ( dtm -- = Increase the date/time with one hour )
   dup dtm-hour@
   1+ dup 23 > IF
     over dti-day+
@@ -158,7 +158,7 @@ include ffl/dtm.fs
 
 ( Minute iterator words )
 
-: dti-minute-      ( w:dtm - = Decrease the date/time with one minute )
+: dti-minute-      ( dtm -- = Decrease the date/time with one minute )
   dup dtm-minute@
   1- dup 0< IF
     over dti-hour-
@@ -168,7 +168,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-minute+      ( w:dtm - = Increase the date/time with one minute )
+: dti-minute+      ( dtm -- = Increase the date/time with one minute )
   dup dtm-minute@
   1+ dup 59 > IF
     over dti-hour+
@@ -180,7 +180,7 @@ include ffl/dtm.fs
 
 ( Seconds iterator words )
 
-: dti-second-      ( w:dtm - = Decrease the date/time with one second )
+: dti-second-      ( dtm -- = Decrease the date/time with one second )
   dup dtm-second@
   1- dup 0< IF
     over dti-minute-
@@ -190,7 +190,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-second+      ( w:dtm - = Increase the date/time with one second )
+: dti-second+      ( dtm -- = Increase the date/time with one second )
   dup dtm-second@
   1+ dup 59 > IF
     over dti-minute+
@@ -200,7 +200,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-seconds+     ( d:seconds w:dtm - = Increase the date/time with d seconds )
+: dti-seconds+     ( d dtm -- = Increase the date/time with d seconds )
   >r
   dtm.start-epoch r@ dtm-calc-seconds-since-epoch
   d+
@@ -208,14 +208,14 @@ include ffl/dtm.fs
 ;
 
 
-: dti-seconds-     ( d:seconds w:dtm - = Decrease the date/time with d seconds )
+: dti-seconds-     ( d dtm -- = Decrease the date/time with d seconds )
   >r dnegate r> dti-seconds+
 ;
 
 
 ( Milliseconds iterator words )
 
-: dti-milli+       ( w:dtm - = Increase the date/time with one millisecond )
+: dti-milli+       ( dtm -- = Increase the date/time with one millisecond )
   dup dtm-milli@
   1+ dup 999 > IF
     over dti-second+
@@ -225,7 +225,7 @@ include ffl/dtm.fs
 ;
 
 
-: dti-milli-       ( w:dtm - = Decrease the date/time with one millisecond )
+: dti-milli-       ( dtm -- = Decrease the date/time with one millisecond )
   dup dtm-milli@
   1- dup 0< IF
     over dti-second-
@@ -233,7 +233,6 @@ include ffl/dtm.fs
   THEN
   swap dtm-milli!
 ;
-
 
 [THEN]
 

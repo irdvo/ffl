@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 18:40:35 $ $Revision: 1.10 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -34,8 +34,8 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( dtm = Date time module )
-( The dtm module implements words for using [gregorian] date and time. )
+( dtm = Date time data type )
+( The dtm module implements a [gregorian] date and time data type. )
 
 
 2 constant dtm.version
@@ -43,15 +43,15 @@ include ffl/stc.fs
 
 ( Date time structure )
 
-struct: dtm%       ( - n = Get the required space for the dtm data structure )
-  cell:  dtm>year
-  cell:  dtm>month
-  cell:  dtm>day
-  cell:  dtm>hour
-  cell:  dtm>minute
-  cell:  dtm>second
-  cell:  dtm>milli
-;struct
+begin-structure dtm%       ( -- n = Get the required space for a dtm variable )
+  field: dtm>year
+  field: dtm>month
+  field: dtm>day
+  field: dtm>hour
+  field: dtm>minute
+  field: dtm>second
+  field: dtm>milli
+end-structure
 
 
 
@@ -63,47 +63,47 @@ struct: dtm%       ( - n = Get the required space for the dtm data structure )
     swap 1- cells + @
 ;
 
-dtm.create-month-table dtm.days-in-month    ( n:month - n:days = Get the number of days in a month )
+dtm.create-month-table dtm.days-in-month    ( n1 -- n2 = Get the number of days in a month n1 )
   31 , 28 , 31 , 30 , 31  , 30  , 31  , 31  , 30  , 31  , 30  , 31  ,
   
-dtm.create-month-table dtm.days-till-month  ( n:month - n:days = Get the number of days till a month )
+dtm.create-month-table dtm.days-till-month  ( n1 -- n2 = Get the number of days till a month n1 )
   0 ,  31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 ,
 
-dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month offset for week day calculation )
+dtm.create-month-table dtm.month-offsets    ( n1 -- n2 = Get the offset for month n1 for week day calculation )
   0 ,  3 ,  3  ,  6 ,  1  ,  4  ,  6  ,  2  ,  5  ,  0  ,  3  ,  5  ,
 
 
 ( Constants )
 
-1970 constant dtm.unix-epoch  ( - n = Unix epoch [1970] )
-1583 constant dtm.start-epoch ( - n = Start epoch [1583] )
+1970 constant dtm.unix-epoch  ( -- n = Unix epoch [1970] )
+1583 constant dtm.start-epoch ( -- n = Start epoch [1583] )
 
-0  constant dtm.sunday     ( - n = Sunday )
-1  constant dtm.monday     ( - n = Monday )
-2  constant dtm.tuesday    ( - n = Tuesday )
-3  constant dtm.wednesday  ( - n = Wednesday )
-4  constant dtm.thursday   ( - n = Thursday )
-5  constant dtm.friday     ( - n = Friday )
-6  constant dtm.saturday   ( - n = Saturday )
+0  constant dtm.sunday     ( -- n = Sunday )
+1  constant dtm.monday     ( -- n = Monday )
+2  constant dtm.tuesday    ( -- n = Tuesday )
+3  constant dtm.wednesday  ( -- n = Wednesday )
+4  constant dtm.thursday   ( -- n = Thursday )
+5  constant dtm.friday     ( -- n = Friday )
+6  constant dtm.saturday   ( -- n = Saturday )
 
-1  constant dtm.january    ( - n = January )
-2  constant dtm.february   ( - n = February )
-3  constant dtm.march      ( - n = March )
-4  constant dtm.april      ( - n = April )
-5  constant dtm.may        ( - n = May )
-6  constant dtm.june       ( - n = June )
-7  constant dtm.july       ( - n = July )
-8  constant dtm.august     ( - n = August )
-9  constant dtm.september  ( - n = September )
-10 constant dtm.october    ( - n = October )
-11 constant dtm.november   ( - n = November )
-12 constant dtm.december   ( - n = December )
+1  constant dtm.january    ( -- n = January )
+2  constant dtm.february   ( -- n = February )
+3  constant dtm.march      ( -- n = March )
+4  constant dtm.april      ( -- n = April )
+5  constant dtm.may        ( -- n = May )
+6  constant dtm.june       ( -- n = June )
+7  constant dtm.july       ( -- n = July )
+8  constant dtm.august     ( -- n = August )
+9  constant dtm.september  ( -- n = September )
+10 constant dtm.october    ( -- n = October )
+11 constant dtm.november   ( -- n = November )
+12 constant dtm.december   ( -- n = December )
 
 
 
-( Date time structure creation, initialisation and destruction )
+( Date time variable creation, initialisation and destruction )
 
-: dtm-init         ( w:dtm - = Initialise the structure with the current date and time )
+: dtm-init         ( dtm -- = Initialise the date/time with the current date and time )
   >r
   time&date
   r@ dtm>year !
@@ -116,17 +116,17 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-create       ( C: "name" - R: - w:dtm = Create a date/time structure with the current date/time )
+: dtm-create       ( "<spaces>name" -- ; -- dtm = Create a date/time variable in the dictionary with the current date/time )
   create  here  dtm% allot  dtm-init
 ;
 
 
-: dtm-new          ( - w:dtm = Allocate a date/time structure with the current date/time on the heap )
+: dtm-new          ( -- dtm = Allocate a date/time variable on the heap with the current date/time )
   dtm% allocate throw  dup dtm-init
 ;
 
 
-: dtm-free         ( w:dtm - = Free the structure from the heap )
+: dtm-free         ( dtm -- = Free the date/time variable from the heap )
   free throw
 ;
 
@@ -134,30 +134,30 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Module words )
 
-: dtm+leap-year?   ( n:year - f = Check if the year is a leap year )
+: dtm+leap-year?   ( n -- flag = Check if the year n is a leap year )
   dup  400 mod 0=
   over 100 mod 0<> OR
   swap 4   mod 0=  AND
 ;
 
 
-: dtm+calc-leap-years  ( n:end n:start - n = Calculate the number of leap years in a year range )
+: dtm+calc-leap-years  ( n1 n2 -- n3 = Calculate the number of leap years in the year range [n2..n1] )
   1-
-  over 100 / over 100 / - 
+  over 100 / over 100 / -
   >r
-  over 4   / over 4   / - 
+  over 4   / over 4   / -
   r> - >r
   swap 400 / swap 400 / -
   r> +
 ;
 
 
-: dtm+days-in-year   ( n:year - n = Get the number of days in a year )
+: dtm+days-in-year   ( n1 -- n2 = Get the number of days in the year n1 )
   dtm+leap-year? IF 366 ELSE 365 THEN
 ;
 
 
-: dtm+days-in-month  ( n:month n:year - n = Get the number of days in a month )
+: dtm+days-in-month  ( n1 n2 -- n3 = Get the number of days in the month n1 and year n2 )
   over 1 13 within 0= exp-invalid-parameters AND throw
   
   over dtm.days-in-month
@@ -172,7 +172,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm+days-till-month  ( n:month n:year - n = Get the number of days till the month )
+: dtm+days-till-month  ( n1 n2 -- n3 = Get the number of days till the month n1 and year n2 )
   over 1 13 within 0= exp-invalid-parameters AND throw
   
   over dtm.days-till-month
@@ -187,37 +187,37 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm+milli?       ( n:millis - f = Check if milliseconds are valid )
+: dtm+milli?       ( n -- flag = Check if the milliseconds n are valid )
   0 1000 within
 ;
 
 
-: dtm+second?      ( n:seconds - f = Check if seconds are valid )
+: dtm+second?      ( n -- flag = Check if the seconds n are valid )
   0 60 within
 ;
 
 
-: dtm+minute?      ( n:minutes - f = Check if minutes are valid )
+: dtm+minute?      ( n -- flag = Check if the minutes n are valid )
   0 60 within
 ;
 
 
-: dtm+hour?        ( n:hour - f = Check if hours are valid )
+: dtm+hour?        ( n -- flag = Check if the hours n are valid )
   0 24 within
 ;
 
 
-: dtm+day?         ( n:day n:month n:year - f = Check if the day is valid )
+: dtm+day?         ( n1 n2 n3 -- flag = Check if the day n1 in the month n2 and year n3 is valid )
   dtm+days-in-month 1+ 1 swap within  
 ;
 
 
-: dtm+month?       ( n:month - f = Check if the month is valid )
+: dtm+month?       ( n -- flag = Check if the month n is valid )
   1 13 within
 ;
 
 
-: dtm+year?        ( n:year - f = Check if the year [>1582] is valid )
+: dtm+year?        ( n -- flag = Check if the year n [>1582] is valid )
   dtm.start-epoch >=
 ;
 
@@ -225,84 +225,84 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Member words )
 
-: dtm-milli@       ( w:dtm - n = Get the milliseconds )
+: dtm-milli@       ( dtm -- n = Get the milliseconds )
   dtm>milli @
 ;
 
 
-: dtm-milli!       ( n w:dtm - = Set the milliseconds )
+: dtm-milli!       ( n dtm -- = Set the milliseconds )
   swap 
   dup dtm+milli?   0= exp-invalid-parameters AND throw
   swap dtm>milli !
 ;
 
 
-: dtm-second@      ( w:dtm - n = Get the seconds )
+: dtm-second@      ( dtm -- n = Get the seconds )
   dtm>second @
 ;
 
 
-: dtm-second!      ( n w:dtm - = Set the seconds )
+: dtm-second!      ( n dtm -- = Set the seconds )
   swap 
   dup dtm+second?   0= exp-invalid-parameters AND throw
   swap dtm>second !
 ;
 
 
-: dtm-minute@      ( w:dtm - n = Get the minutes )
+: dtm-minute@      ( dtm -- n = Get the minutes )
   dtm>minute @
 ;
 
 
-: dtm-minute!      ( n w:dtm - = Set the minutes )
+: dtm-minute!      ( n dtm -- = Set the minutes )
   swap 
   dup dtm+minute?   0= exp-invalid-parameters AND throw
   swap dtm>minute !
 ;
 
 
-: dtm-hour@        ( w:dtm - n = Get the hour )
+: dtm-hour@        ( dtm -- n = Get the hour )
   dtm>hour @
 ;
 
 
-: dtm-hour!        ( n w:dtm - = Set the hour )
+: dtm-hour!        ( n dtm -- = Set the hour )
   swap 
   dup dtm+hour?   0= exp-invalid-parameters AND throw
   swap dtm>hour !
 ;
 
 
-: dtm-day@         ( w:dtm - n = Get the day )
+: dtm-day@         ( dtm -- n = Get the day )
   dtm>day @
 ;
 
 
-: dtm-day!         ( n w:dtm - = Set the day )
+: dtm-day!         ( n dtm -- = Set the day )
   >r 
   dup r@ dtm>month @ r@ dtm>year @ dtm+day?  0= exp-invalid-parameters AND throw
   r> dtm>day !
 ;
 
 
-: dtm-month@       ( w:dtm - n = Get the month )
+: dtm-month@       ( dtm -- n = Get the month )
   dtm>month @
 ;
 
 
-: dtm-month!       ( n w:dtm - = Set the month )
+: dtm-month!       ( n dtm -- = Set the month )
   swap 
   dup dtm+month?   0= exp-invalid-parameters AND throw
   swap dtm>month !
 ;
 
 
-: dtm-year@        ( w:dtm - n = Get the year )
+: dtm-year@        ( dtm -- n = Get the year )
   dtm>year @
 ;
 
 
-: dtm-year!        ( n w:dtm - = Set the year )
+: dtm-year!        ( n dtm -- = Set the year )
   swap 
   dup dtm+year?   0= exp-invalid-parameters AND throw
   swap dtm>year !
@@ -311,7 +311,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Set words )
 
-: dtm-set-date     ( n:day n:month n:year w:dtm - = Set the date )
+: dtm-set-date     ( n1 n2 n3 dtm -- = Set the date with day n1, month n2 and year n3 )
   >r
   r@ dtm-year!
   r@ dtm-month!
@@ -319,7 +319,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-set-time     ( n:mili n:sec n:min n:hour w:dtm - = Set the time )
+: dtm-set-time     ( n1 n2 n3 n4 dtm -- = Set the time with milliseconds n1, seconds n2, minutes n3 and hours n4 )
   >r
   r@ dtm-hour!
   r@ dtm-minute!
@@ -327,21 +327,21 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
   r> dtm-milli!
 ;
   
-: dtm-set          ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - = Set the date/time )
+: dtm-set          ( n1 n2 n3 n4 n5 n6 n7 dtm -- = Set the date/time with milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 )
   >r
   r@ dtm-set-date
   r> dtm-set-time
 ;
 
 
-: dtm-set-now      ( w:dtm - = Set the date time with the current date/time )
+: dtm-set-now      ( dtm -- = Set the date time with the current date/time )
   >r
   0 time&date
   r> dtm-set
 ;
 
 
-: dtm-set-with-days  ( d:days n:epoch w:dtm - = Set the date with days since epoch )
+: dtm-set-with-days  ( d1 n2 dtm -- = Set the date with days d1 since epoch n2 )
   >r >r
   BEGIN
     2dup 
@@ -378,7 +378,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-set-with-seconds ( d:secs n:epoch w:dtm - = Set the date/time with seconds since epoch )
+: dtm-set-with-seconds ( d n dtm -- = Set the date/time with d seconds since epoch n )
   swap >r >r
   2dup 60 fm/mod drop             \ dtm.seconds = secs % 60
   r@ dtm-second!
@@ -396,7 +396,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Private words )
 
-: dtm+iso-weekday   ( n:yday n:wday - n = Calculate the iso-weekday )
+: dtm+iso-weekday   ( n1 n2 -- n3 = Calculate the iso-weekday for weekday n2 and year n1 )
   over swap -                   \ yday - wday
   4 +                           \ + iso-week1-wday
   [ 366 7 / 2 + 7 * ] literal + \ + keep it positive
@@ -408,7 +408,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Get words )
 
-: dtm-get          ( w:dtm - n:mili n:sec n:min n:hour n:day n:month n:year = Get the date/time )
+: dtm-get          ( dtm -- n1 n2 n3 n4 n5 n6 n7 = Get the date/time, return milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 )
   >r
   r@ dtm-milli@
   r@ dtm-second@
@@ -420,7 +420,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-get-date     ( w:dtm - n:day n:month n:year = Get the date )
+: dtm-get-date     ( dtm -- n1 n2 n3 = Get the date, return day n1, month n2 and year n3 )
   >r
   r@ dtm-day@
   r@ dtm-month@
@@ -428,7 +428,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-get-time     ( w:dtm - n:mili n:sec n:min n:hour = Get the time )
+: dtm-get-time     ( dtm -- n1 n2 n3 n4 = Get the time, return milliseconds n1, seconds n2, minutes n3 and hours n4 )
   >r
   r@ dtm-milli@
   r@ dtm-second@
@@ -436,7 +436,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
   r> dtm-hour@
 ;
 
-: dtm-weekday       ( w:dtm - n = Get the week day from the date )
+: dtm-weekday       ( dtm -- n = Get the week day from the date )
   >r
   3  
   r@ dtm-year@ 100 / 4 mod - 2*              \   (3 - (century mod 4)) * 2
@@ -453,14 +453,14 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-yearday   ( w:dtm - n = Get the day number [in the year] from the date )
+: dtm-yearday   ( dtm -- n = Get the day number [in the year] from the date )
   dup dtm-month@ over dtm-year@ 
   dtm+days-till-month
   swap dtm-day@ + 
 ;
 
 
-: dtm-iso-weeknumber  ( w:dtm - n:weeknumber n:year = Get the iso week number from the date )
+: dtm-iso-weeknumber  ( dtm -- n1 n2 = Get the iso week number n1 and year n2 from the date )
   >r
   r@ dtm-year@
   r@ dtm-yearday 1-                    \ Change range from 1..366 till 365
@@ -490,7 +490,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Epoch words )
 
-: dtm-calc-days-since-epoch  ( n:epoch w:dtm - d = Calculate the number of days since epoch from the date )
+: dtm-calc-days-since-epoch  ( n dtm -- d = Calculate the number of days since epoch n from the date )
   >r
   r@ dtm-year@ swap
   2dup - 365 m*                           \ days for the years
@@ -501,7 +501,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm-calc-seconds-since-epoch ( n:epoch w:dtm - d = Calculate the number of seconds since epoch from the date/time )
+: dtm-calc-seconds-since-epoch ( n dtm -- d = Calculate the number of seconds since epoch n from the date/time )
   >r
   r@ dtm-calc-days-since-epoch            \ days
   24 1 m*/
@@ -515,7 +515,7 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 
 ( Compare words )
 
-: dtm-compare      ( n:mili n:sec n:min n:hour n:day n:month n:year w:dtm - n = Compare the date/time )
+: dtm-compare      ( n1 n2 n3 n4 n5 n6 n7 dtm -- n = Compare the date/time with millisconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 )
   >r
   r@ dtm-year@ - sgn
   
@@ -559,14 +559,14 @@ dtm.create-month-table dtm.month-offsets    ( n:month - n:offset = Get the month
 ;
 
 
-: dtm^compare      ( w:dtm w:dtm - n = Compare two date/times )
+: dtm^compare      ( dtm1 dtm2 -- n = Compare two date/times, return the compare result [-1,0,1] )
   >r dtm-get r> dtm-compare
 ;
 
 
 ( Inspection )
 
-: dtm-dump         ( w:dtm - = Dump the date/time structure )
+: dtm-dump         ( dtm -- = Dump the date/time variable )
   ." dtm:" dup . cr
   ."  year  :" dup dtm>year ? cr
   ."  month :" dup dtm>month ? cr

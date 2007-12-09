@@ -2,7 +2,7 @@
 \
 \           bcn - the Binary tree cell node module in the ffl
 \
-\               Copyright (C) 2006  Dick van Oudheusden
+\             Copyright (C) 2006-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -35,27 +35,27 @@ include ffl/stc.fs
 
 
 ( bcn = Binary tree cell node module )
-( The bcn module implements the a node in an unbalanced binary tree. )
+( The bcn module implements a node in an unbalanced binary tree. )
 
 
 1 constant bcn.version
 
 
-( Tree node structure )
+( Node structure )
 
-struct: bcn%       ( - n = Get the required space for the bcn structure )
-  cell:  bcn>parent          \ the parent node
-  cell:  bcn>left            \ the left node
-  cell:  bcn>right           \ the right node
-  cell:  bcn>key             \ the key
-  cell:  bcn>cell            \ the cell data
-;struct
+begin-structure bcn%       ( -- n = Get the required space for a bcn node )
+  field:  bcn>parent         \ the parent node
+  field:  bcn>left           \ the left node
+  field:  bcn>right          \ the right node
+  field:  bcn>key            \ the key
+  field:  bcn>cell           \ the cell data
+end-structure
 
 
 
-( Tree node creation, initialisation and destruction )
+( Node creation, initialisation and destruction )
 
-: bcn-init         ( w:data w:key w:parant w:bcn - = Initialise the bcn structure with a key, data and parent )
+: bcn-init         ( x1 x2 bcn1 bcn2 -- = Initialise the node bcn2 with the parent bcn1, key x2 and data x1 )
   tuck bcn>parent    !
   dup  bcn>left   nil!
   dup  bcn>right  nil!
@@ -64,12 +64,12 @@ struct: bcn%       ( - n = Get the required space for the bcn structure )
 ;
 
 
-: bcn-new          ( w:data w:key w:parent - w:bcn = Create a new tree node on the heap )
+: bcn-new          ( x1 x2 bcn1 -- bcn2 = Create a new node on the heap with the parent bcn1, key x2 and data x1 )
   bcn% allocate  throw   >r r@ bcn-init r>
 ;
 
 
-: bcn-free         ( w:bcn - = Free the tree node from the heap )
+: bcn-free         ( bcn -- = Free the node from the heap )
   free throw 
 ;
 
@@ -77,22 +77,22 @@ struct: bcn%       ( - n = Get the required space for the bcn structure )
 ( Private words )
 
 
-: bcn-left@        ( w:bcn - w:left = Get the left tree node )
+: bcn-left@        ( bcn1 -- bcn2 = Get the left node from the node bcn1)
   bcn>left @
 ;
 
 
-: bcn-right@       ( w:bcn - w:right = Get the right tree node )
+: bcn-right@       ( bcn1 -- bcn2 = Get the right node from the node bcn1)
   bcn>right @
 ;
 
 
-: bcn-parent@      ( w:bcn - w:parent = Get the parent tree node )
+: bcn-parent@      ( bcn1 -- bcn2 = Get the parent from the node bcn1 )
   bcn>parent @
 ;
 
 
-: bcn-parent!      ( w:parent w:bcn - = Set the parent, if bcn is not nil )
+: bcn-parent!      ( bcn1 bcn2 -- = Set for the node bcn2 the parent to bcn1, if bcn2 is not nil )
   dup nil<> IF
     bcn>parent !
   ELSE
@@ -101,7 +101,7 @@ struct: bcn%       ( - n = Get the required space for the bcn structure )
 ;
 
 
-: bcn-compare-key  ( w:key xt w:node - w:key xt w:node w:result = Compare the key in the node with the key )
+: bcn-compare-key  ( x xt bcn -- x xt bcn n = Compare with xt the key in the node bcn with the key x resulting in n )
   >r
   2dup r@ bcn>key @ swap execute
   r> swap
@@ -110,7 +110,7 @@ struct: bcn%       ( - n = Get the required space for the bcn structure )
 
 ( Inspection )
 
-: bcn-dump         ( w:bcn - = Dump the tree node structure )
+: bcn-dump         ( bcn -- = Dump the node )
   ." bcn:" dup . cr
   ."   parent :" dup bcn>parent  ? cr
   ."   left   :" dup bcn>left    ? cr

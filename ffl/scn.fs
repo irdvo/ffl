@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.5 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/snn.fs
 
 
 ( scn = Single Linked Cell Node )
-( The scn module implements the node in the scl-list.)
+( The scn module implements a node in the single linked list [scl].          )
 
 
 2 constant scn.version
@@ -42,46 +42,46 @@ include ffl/snn.fs
 
 ( Node structure )
 
-struct: scn%       ( - n = Get the required space for a scn structure )
-  snn% field: scn>snn        \ Extend the snn structure with ..
-       cell:  scn>cell       \ .. a cell
-;struct 
+begin-structure scn%       ( -- n = Get the required space for a scn node )
+  snn% 
+  +field scn>snn        \ Extend the snn structure with ..
+  field: scn>cell       \ .. a cell
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: scn-init     ( w w:scn - = Initialise the node with cell data )
+: scn-init     ( x scn -- = Initialise the node with cell data x )
   dup  snn-init
-       scn>cell     !
+       scn>cell !
 ;
 
 
-: scn-new      ( w - w:scn = Create a new node on the heap )
+: scn-new      ( x -- scn = Create a new node on the heap with cell data x )
   scn% allocate  throw  tuck scn-init
 ;
 
 
-: scn-free     ( w:scn - = Free the node from the heap )
+: scn-free     ( scn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: scn-cell@    ( w:scn - w:data = Get the cell data from the node )
+: scn-cell@    ( scn -- x = Get the cell data x from the node )
   scn>cell @
 ;
 
 
-: scn-cell!    ( w:data w:scn - = Set the cell data in the node )
+: scn-cell!    ( x scn -- = Set the cell data x in the node )
   scn>cell !
 ;
 
 
-
 ( Inspection )
 
-: scn-dump     ( w:scn - = Dump the node )
+: scn-dump     ( scn -- = Dump the node )
   dup snn-dump
   ."  cell :" scn>cell  ?  cr
 ;

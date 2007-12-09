@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 08:07:01 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -43,34 +43,34 @@ include ffl/dni.fs
 
 ( Iterator structure )
 
-dni% constant dci%  ( - n = Get the required space for a dci data structure )
+dni% constant dci%  ( -- n = Get the required space for a dci variable )
 
 
 ( Iterator creation, initialisation and destruction )
 
-: dci-init     ( w:dcl w:dci - = Initialise the iterator with a dcl list )
+: dci-init     ( dcl dci -- = Initialise the iterator with a dcl list )
   dni-init
 ;
 
 
-: dci-create   ( C: w:dcl "name" - R: - w = Create a named iterator in the dictionary )
+: dci-create   ( dcl "<spaces>name" -- ; -- dci = Create a named iterator in the dictionary with a dcl list )
   create   here  dci% allot  dci-init
 ;
 
 
-: dci-new      ( w:dcl - w:dci = Create an iterator on the heap )
+: dci-new      ( dcl -- dci = Create an iterator on the heap with a dcl list )
   dci% allocate  throw  tuck dci-init
 ;
 
 
-: dci-free     ( w:dci - = Free the iterator from the heap )
+: dci-free     ( w:dci -- = Free the iterator from the heap )
   dni-free
 ;
 
 
 ( Private words )
 
-: dci+get      ( w:dcn - w:data true | false = Get the cell data from the node )
+: dci+get      ( dcn -- x true | false = Get the cell data x from the node )
   dup nil<> IF
     dcn-cell@ true
   ELSE
@@ -81,12 +81,12 @@ dni% constant dci%  ( - n = Get the required space for a dci data structure )
 
 ( Member words )
 
-: dci-get      ( w:dci - w true | false = Get the cell data from the current record )
+: dci-get      ( dci -- x true | false = Get the cell data x from the current record )
   dni-get dci+get
 ;
 
 
-: dci-set      ( w w:dci - = Set the cell data for the current record )
+: dci-set      ( x dci -- = Set the cell data x for the current record )
   dni-get
   dup nil<> IF
     dcn-cell!
@@ -98,27 +98,27 @@ dni% constant dci%  ( - n = Get the required space for a dci data structure )
 
 ( Iterator words )
 
-: dci-first    ( w:dci - w true | false = Move the iterator to the first record )
+: dci-first    ( dci -- x true | false = Move the iterator to the first record, return the cell data x )
   dni-first dci+get
 ;
 
 
-: dci-next     ( w:dci - w true | false = Move the iterator to the next record )
+: dci-next     ( dci -- x true | false = Move the iterator to the next record, return the cell data x )
   dni-next dci+get
 ;
 
 
-: dci-prev     ( w:dci - w true | false = Move the iterator to the previous record )
+: dci-prev     ( dci -- x true | false = Move the iterator to the previous record, return the cell data x )
   dni-prev dci+get
 ;
 
 
-: dci-last     ( w:dci - w true | false = Move the iterator to the last record )
+: dci-last     ( dci -- x true | false = Move the iterator to the last record, return the cell data x )
   dni-last dci+get
 ;
 
 
-: dci-move     ( w w:dci - f = Move the iterator to the <next?> record with the cell data )
+: dci-move     ( x dci -- false = Move the iterator to the next record with the cell data x )
   swap
   BEGIN
     over dci-next IF
@@ -132,17 +132,17 @@ dni% constant dci%  ( - n = Get the required space for a dci data structure )
 ;
 
 
-: dci-first?   ( w:dci - f = Check if the iterator is on the first record )
+: dci-first?   ( dci -- flag = Check if the iterator is on the first record )
   dni-first?
 ;
 
 
-: dci-last?    ( w:dci - f = Check if the iterator is on the last record )
+: dci-last?    ( dci -- flag = Check if the iterator is on the last record )
   dni-last?
 ;
 
 
-: dci-insert-after ( w w:dci - = Insert the cell data after the current record )
+: dci-insert-after ( x dci -- = Insert the cell data x after the current record )
   dup dni>dnl @
   swap dni-get
   dup nil<> IF
@@ -156,7 +156,7 @@ dni% constant dci%  ( - n = Get the required space for a dci data structure )
 
 ( Inspection )
 
-: dci-dump     ( w:dci - = Dump the iterator )
+: dci-dump     ( dci -- = Dump the iterator )
   dni-dump
 ;
 

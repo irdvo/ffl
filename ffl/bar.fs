@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.9 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -47,17 +47,17 @@ include ffl/stc.fs
 
 ( Bit array structure )
 
-struct: bar%       ( - n = Get the required space for the bar data structure )
-  cell:  bar>length
-  cell:  bar>size            \ the size of bits
-  cell:  bar>bits
-;struct
+begin-structure bar%       ( -- n = Get the required space for a bar variable )
+  field: bar>length
+  field: bar>size            \ the size of bits
+  field: bar>bits
+end-structure
 
 
 
-( Bit array creation, initialisation and destruction )
+( Array creation, initialisation and destruction )
 
-: bar-init         ( n:length w:bar - = Initialise the bit array )
+: bar-init         ( +n bar -- = Initialise the array with length n)
   >r
   1 max                      \ at least one bit in the array
   
@@ -77,17 +77,17 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-create       ( C: n:length "name" - R: - w:bar = Create a bit array in the dictionary )
+: bar-create       ( +n "<spaces>name" -- ; -- bar = Create a bit array in the dictionary with length n )
   create  here  bar% allot  bar-init
 ;
 
 
-: bar-new          ( n:length - w:bar = Create a bit array on the heap )
+: bar-new          ( n -- bar = Create a bit array on the heap with length n )
   bar% allocate throw  dup >r bar-init r> 
 ;
 
 
-: bar-free         ( w:bar - = Free the bit array from the heap )
+: bar-free         ( bar -- = Free the array from the heap )
   dup bar>bits @ free throw
   free throw
 ;
@@ -96,7 +96,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Private words )
 
-: bar-offset?      ( n w:bar - f = Check if the offset is valid in the bit array )
+: bar-offset?      ( +n bar -- flag = Check if the offset n is valid in the array )
   0 swap bar>length @ within
 ;
 
@@ -104,12 +104,12 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Member words )
 
-: bar-length@      ( w:bar - u = Get the number of bits in the bit array )
+: bar-length@      ( bar -- +n = Get the number of bits in the array )
   bar>length @
 ;
 
 
-: bar-index?       ( n w:bar - f = Check if an index is valid in the bit array )
+: bar-index?       ( n bar -- flag = Check if the index n is valid in the array )
   tuck bar-length@ index2offset 
   swap bar-offset?
 ;
@@ -118,7 +118,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Private words )
 
-: bar-address      ( n w:bar - u:mask w:addr = Determine address and bit mask for an index )
+: bar-address      ( n bar -- u addr = Determine address addr and bit mask u for index n )
   tuck bar-length@ index2offset
   
   2dup swap bar-offset?
@@ -133,7 +133,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-next-bit     ( u:mask w:addr - u:mask w:addr = Move mask and address to the next bit )
+: bar-next-bit     ( u1 addr1 -- u2 addr2 = Move mask and address to the next bit )
   swap dup 
   [ 1 #bits/char 1- lshift ] literal = IF   \ 128
     drop 1
@@ -144,7 +144,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-end-address?   ( u:mask w:addr u:mask w:addr - f = Has the first address reached the second, end address ? )
+: bar-end-address?   ( u1 addr1 u2 addr2 -- flag = Has the first address reached the second, end address ? )
   rot
   2dup < IF                  \ first byte address is smaller than the second address
     2drop 2drop false
@@ -158,7 +158,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-emit-bit     ( f - = Emit the state of the flag )
+: bar-emit-bit     ( flag -- = Emit the state of the flag )
   1 AND [char] 0 + emit
 ;
 
@@ -166,14 +166,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Bit set words )
 
-: bar-set-bit      ( n w:bar - = Set the indexth bit )
+: bar-set-bit      ( n bar -- = Set the nth bit in the array )
   bar-address
   tuck c@ OR
   swap c!
 ;
 
 
-: bar-set-bits     ( u:number n:start w:bar - = Set a range of bits )
+: bar-set-bits     ( u n bar -- = Set a range of bits in the array, starting from the nth bit, u bits long )
   >r
   over 0<> IF
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
@@ -196,7 +196,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-set          ( w:bar - = Set all bits in the bit array )
+: bar-set          ( bar -- = Set all bits in the array )
   dup bar>bits @ swap bar>size @ -1 fill
 ;
 
@@ -204,14 +204,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Bit reset words )
 
-: bar-reset-bit    ( n w:bar - = Reset the indexth bit )
+: bar-reset-bit    ( n bar -- = Reset the nth bit )
   bar-address
   swap invert over c@ AND
   swap c!
 ;
 
 
-: bar-reset-bits   ( u:number n:start w:bar - = Reset a range of bits )
+: bar-reset-bits   ( u n bar -- = Reset a range of bits in the array, starting from the nth bit, u bits long )
   >r
   over 0<> IF
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
@@ -234,7 +234,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-reset        ( w:bar - = Reset all bits in the bit array )
+: bar-reset        ( bar -- = Reset all bits in the array )
   dup bar>bits @ swap bar>size @ 0 fill
 ;
 
@@ -242,14 +242,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Bit invert words )
 
-: bar-invert-bit   ( n w:bar - = Invert the indexth bit )
+: bar-invert-bit   ( n bar -- = Invert the nth bit )
   bar-address
   tuck c@ XOR
   swap c!
 ;
 
 
-: bar-invert-bits  ( u:number n:start w:bar - = Invert a range of bits )
+: bar-invert-bits  ( u n bar -- = Invert a range of bits in the array, starting from the nth bit, u bits long )
   >r
   over 0<> IF
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
@@ -272,7 +272,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-invert       ( w:bar - = Invert all bits in the bit array )
+: bar-invert       ( bar -- = Invert all bits in the array )
   dup bar-length@
   swap 0
   swap bar-invert-bits
@@ -282,13 +282,13 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Bit check words )
 
-: bar-get-bit      ( n w:bar - f = Check if the indexth bit is set )
+: bar-get-bit      ( n bar -- flag = Check if the nth bit is set )
   bar-address
   c@ AND 0<>
 ;
 
 
-: bar-count-bits   ( n:number n:start w:bar - u = Count the number of bits set in a range )
+: bar-count-bits   ( +n1 n2 bar -- u = Count the number of bits set in a range in the array, starting from the n2th bit, n1 bits long )
   0 >r                       \ count = 0
   -rot over 0<> IF           \ number > 0
     tuck + 1-                \ end index
@@ -312,14 +312,14 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 ;
 
 
-: bar-count        ( w:bar - u = Count the number of bits set in the bit array )
+: bar-count        ( bar -- u = Count the number of bits set in the array )
   dup bar-length@
   swap 0
   swap bar-count-bits
 ;
 
 
-: bar-execute      ( ... xt w:bar - ... = Execute xt for every bit in the bit array )
+: bar-execute      ( i*x xt bar -- j*x = Execute xt for every bit in the array )
   -1 over bar-address               \ end address
   rot 0 swap bar-address            \ start address
   
@@ -344,7 +344,7 @@ struct: bar%       ( - n = Get the required space for the bar data structure )
 
 ( Inspection )
 
-: bar-dump         ( w:bar - = Dump the bit array )
+: bar-dump         ( bar -- = Dump the bit array )
   ." bar:" dup . cr
   ."  length:" dup bar>length ? cr
   ."  size  :" dup bar>size   ? cr

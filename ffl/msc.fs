@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-12 07:01:48 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,10 +33,10 @@ include ffl/config.fs
 include ffl/hnt.fs
 
 ( msc = Message Catalog )
-( The msc module implements words for building and using a message catalog.  )
+( The msc module implements a message catalog.                               )
 ( The catalog is used to translates a message to another message. It can be  )
 ( used for internationalization of messages and for converting messages. Use )
-( the gmo module for importing gettexts mo-files in a message catalog.       )
+( the [gmo] module for importing gettexts mo-files in a message catalog.     )
 
 
 1 constant msc.version
@@ -44,42 +44,42 @@ include ffl/hnt.fs
 
 ( Private structure )
 
-struct: msc%msg%   ( - n = Get the required space the message node structure )
+begin-structure msc%msg%   ( -- n = Get the required space a message node )
   hnn%
-  field: msc>msg>node        \ Hash table node
-  cell:  msc>msg>length      \ Translation length
-  cell:  msc>msg>text        \ Translation text
-;struct
+  +field  msc>msg>node       \ Hash table node
+  field:  msc>msg>length     \ Translation length
+  field:  msc>msg>text       \ Translation text
+end-structure
 
 
-: msc-msg-free   ( w:msg - = Free the text in the node )
+: msc-msg-free   ( msg -- = Free the text in the node )
   msc>msg>text @ free throw
 ;
 
 
 ( Catalog structure )
 
-hnt% constant msc%    ( - n = Get the required space for the message catalog structure )
+hnt% constant msc%    ( -- n = Get the required space for a message catalog )
 
 
-( Catalog structure creation, initialisation and destruction )
+( Catalog creation, initialisation and destruction )
 
-: msc-init   ( w:msc - = Initialise the catalog structure )
+: msc-init   ( msc -- = Initialise the catalog )
   10 swap hnt-init
 ;
 
 
-: msc-create   ( C: "name" -  R: - w:msc = Create a named message catalog variable in the dictionary )
+: msc-create   ( "<spaces>name" --  ; -- msc = Create a named message catalog in the dictionary )
   create  here msc% allot  msc-init
 ;
 
 
-: msc-new   ( - w:msc = Create a message catalog variable on the heap )
+: msc-new   ( -- msc = Create a message catalog on the heap )
   msc% allocate  throw   dup msc-init
 ;
 
 
-: msc-free   ( w:msc - = Free the message catalog variable from the heap )
+: msc-free   ( msc -- = Free the message catalog from the heap )
   ['] msc-msg-free over hnt-execute    \ Free the texts in the nodes
   
   hnt-free                             \ Free the nodes and the tree
@@ -88,7 +88,7 @@ hnt% constant msc%    ( - n = Get the required space for the message catalog str
 
 ( Catalog words )
 
-: msc-add  ( c-addr:msg u c-addr:translation u w:msc - = Add a message and translation to the catalog )
+: msc-add  ( c-addr1 u1 c-addr2 u2 msc -- = Add the message c-addr1 u1 and translation c-addr2 u2 to the catalog )
   >r
   2swap
   2dup r@ hnt-search              \ Search for the key in the table
@@ -118,7 +118,7 @@ hnt% constant msc%    ( - n = Get the required space for the message catalog str
 ;
 
 
-: msc-translate  ( c-addr u w:msc - c-addr u = Translate a message with the catalog, return message if not found )
+: msc-translate  ( c-addr1 u1 msc -- c-addr2 u2 = Translate the message c-addr1 u1 with the catalog, return message if not found )
   >r 2dup r>                      \ Save the message
   hnt-get dup nil<> IF            \ Search for the message, if found
     nip nip                       \   Drop old message and 
@@ -130,7 +130,7 @@ hnt% constant msc%    ( - n = Get the required space for the message catalog str
 ;
 
 
-: msc-remove  ( c-addr u w:msc - f = Remove a message from the catalog )
+: msc-remove  ( c-addr u msc -- flag = Remove the message c-addr u from the catalog, return success )
   hnt-delete dup nil<> IF         \ If node is removed Then
     dup msc-msg-free              \   Free text and node
     hnn-free
@@ -144,7 +144,7 @@ hnt% constant msc%    ( - n = Get the required space for the message catalog str
 
 ( Private words )
 
-: msc-emit-msg  ( w:msg - = Emit the message and the translation )
+: msc-emit-msg  ( msg -- = Emit the message and the translation )
   dup hnn-key@ type 
   ."  -> " 
   dup msc>msg>text @ swap msc>msg>length @ type
@@ -154,7 +154,7 @@ hnt% constant msc%    ( - n = Get the required space for the message catalog str
 
 ( Inspection )
 
-: msc-dump  ( w:msc - = Dump the catalog )
+: msc-dump  ( msc -- = Dump the message catalog )
   ." msc:" cr 
   ['] msc-emit-msg swap hnt-execute
 ;

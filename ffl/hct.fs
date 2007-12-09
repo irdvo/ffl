@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.12 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -44,68 +44,68 @@ include ffl/hcn.fs
 
 ( Hash table structure )
 
-hnt% constant hct%  ( - n = Get the required space for the hash table structure )
+hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 
 
 ( Hash table creation, initialisation and destruction )
 
-: hct-init     ( u w:hct - = Initialise the hash table with an initial size )
+: hct-init     ( u hct -- = Initialise the hash table with an initial size u )
   hnt-init
 ;
      
 
-: hct-create   ( C: "name" u - R: - w:hct = Create a named hash table with an initial size in the dictionary )
+: hct-create   ( u "<spaces>name" -- ; -- hct = Create a named hash table with an initial size u in the dictionary )
   hnt-create
 ;
 
 
-: hct-new      ( u - w:hct = Create a hash table with an initial size on the heap )
+: hct-new      ( u -- hct = Create a hash table with an initial size u on the heap )
   hnt-new
 ;
 
 
-: hct-free     ( w:hct - = Free the hash table from the heap )
+: hct-free     ( hct -- = Free the hash table from the heap )
   hnt-free
 ;
 
 
 ( Module words )
 
-: hct+hash     ( c-addr u - u = Calculate the hash value of a key )
+: hct+hash     ( c-addr1 u1 -- u2 = Calculate the hash value of a key )
   hnt+hash
 ;
 
   
 ( Member words )
 
-: hct-empty?   ( w:hct - f = Check for empty table )
+: hct-empty?   ( hct -- flag = Check if the table is empty )
   hnt-empty?
 ;
 
 
-: hct-length@  ( w:hct - u = Get the number of nodes in the table )
+: hct-length@  ( hct -- u = Get the number of nodes in the table )
   hnt-length@
 ;
 
 
-: hct-load@    ( w:hct - u = Get the load factor [*100%] )
+: hct-load@    ( hct -- u = Get the load factor [*100%] )
   hnt-load@
 ;
 
 
-: hct-load!    ( u w:hct - = Set the load factor [*100%] )
+: hct-load!    ( u hct -- = Set the load factor [*100%] )
   hnt-load!
 ;
 
 
-: hct-size!    ( u w:hct - = Resize the hash table )
+: hct-size!    ( u hct -- = Resize the hash table to size u )
   hnt-size!
 ;
 
 
 ( Hash table words )
 
-: hct-insert   ( w:data c-addr u w:hct - = Insert cell data with a key in the table )
+: hct-insert   ( x c-addr u hct -- = Insert cell data x with the key c-addr u in the table )
   >r 
   2dup r@ hnt-search         \ Search for key
     
@@ -122,7 +122,7 @@ hnt% constant hct%  ( - n = Get the required space for the hash table structure 
 ;
 
 
-: hct-delete   ( c-addr u w:hct - false | w true = Delete the key from the table )
+: hct-delete   ( c-addr u hct -- false | x true = Delete the key c-addr u from the table, return the cell data related to the key )
   hnt-delete 
   dup nil<> IF
     dup  hcn-cell@                \ Key deleted, then return cell data
@@ -135,7 +135,7 @@ hnt% constant hct%  ( - n = Get the required space for the hash table structure 
 ;
 
 
-: hct-get      ( c-addr u w:hct - false | w true = Get the cell data from the table )
+: hct-get      ( c-addr u hct -- false | x true = Get the cell data x related to the key c-addr u from the table )
   hnt-get 
   dup nil<> IF
     hcn-cell@
@@ -147,14 +147,14 @@ hnt% constant hct%  ( - n = Get the required space for the hash table structure 
 ;
 
 
-: hct-has?     ( c-addr u w:hct - f = Check if a key is present in the table )
+: hct-has?     ( c-addr u hct -- flag = Check if the key c-addr u is present in the table )
   hnt-has?
 ;
 
 
 ( Special words )
 
-: hct-count    ( w:data w:hct - u = Count the occurences of cell data in the table )
+: hct-count    ( x hct -- u = Count the number of occurences of the cell data x in the table )
   0 -rot                     \ counter = 0
   0 swap hnt-table-bounds DO \ Do for the table
     I @
@@ -175,7 +175,7 @@ hnt% constant hct%  ( - n = Get the required space for the hash table structure 
 ;
 
 
-: hct-execute      ( ... xt w:hct - ... = Execute xt for every key and cell data in table )
+: hct-execute      ( i*x xt hct -- j*x = Execute xt for every key and cell data in table )
   0 swap hnt-table-bounds DO  \ Do for the whole table
     I @
     BEGIN
@@ -198,14 +198,14 @@ hnt% constant hct%  ( - n = Get the required space for the hash table structure 
 
 ( Private words )
 
-: hct-emit-element    ( w:data c-addr u - = Emit the key and cell data of the node )
+: hct-emit-element    ( x c-addr u -- = Emit the key and cell data of the node )
   type [char] = emit 0 .r [char] ; emit
 ;
 
 
 ( Inspection )
 
-: hct-dump     ( w:hct - = Dump the table )
+: hct-dump     ( hct -- = Dump the hash table )
   dup hnt-dump
   ."  nodes :" ['] hct-emit-element swap hct-execute cr
 ;

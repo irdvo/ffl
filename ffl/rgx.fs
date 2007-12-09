@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-02 05:59:48 $ $Revision: 1.11 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -34,9 +34,9 @@ include ffl/nfe.fs
 
 
 ( rgx = Regular expressions )
-( The rgx module implements words for compiling and matching regular         )
-( expressions. The module uses the nfe module for the actual expression      )
-( building and matching.                                                     )
+( The rgx module implements regular expressions. It supports words for      )
+( compiling and matching regular expressions. The module uses the nfe module )
+( for the actual expression building and matching.                           )
 ( <pre>                                                                      )
 (                                                                            )
 (     This module uses the following syntax:                                 )
@@ -67,27 +67,28 @@ include ffl/nfe.fs
 
 ( Regular expression structure )
 
-struct: rgx%       ( - n = Get the required space for the rgx data structure )
-  nfe% field: rgx>nfe       \ the regular expression is a non-deterministic finite automate expression
-       cell:  rgx>pattern   \ the pattern during scanning
-       cell:  rgx>length    \ the length of the pattern during scanning
-       cell:  rgx>next      \ the length of the last scanned token
-       cell:  rgx>index     \ the index in the pattern during scanning
-;struct
+begin-structure rgx%     ( -- n = Get the required space for a rgx variable )
+  nfe% 
+  +field rgx>nfe       \ the regular expression is a non-deterministic finite automate expression
+  field: rgx>pattern   \ the pattern during scanning
+  field: rgx>length    \ the length of the pattern during scanning
+  field: rgx>next      \ the length of the last scanned token
+  field: rgx>index     \ the index in the pattern during scanning
+end-structure
 
 
 ( Private scanner types )
 
-100 constant rgx.eos          ( - n = End of pattern )
-101 constant rgx.alternation  ( - n = Alternation [|] )
-102 constant rgx.zero-or-one  ( - n = Zero or one [?] )
-103 constant rgx.zero-or-more ( - n = Zero or more [*] )
-104 constant rgx.one-or-more  ( - n = One or more [+] )
+100 constant rgx.eos          ( -- n = End of pattern )
+101 constant rgx.alternation  ( -- n = Alternation [|] )
+102 constant rgx.zero-or-one  ( -- n = Zero or one [?] )
+103 constant rgx.zero-or-more ( -- n = Zero or more [*] )
+104 constant rgx.one-or-more  ( -- n = One or more [+] )
 
 
 ( Regular expression creation, initialisation and destruction )
 
-: rgx-init     ( w:rgx - = Initialise the regular expression )
+: rgx-init     ( rgx -- = Initialise the regular expression )
   dup nfe-init              \ Initialise the base expression
   dup rgx>pattern    nil!
   dup rgx>length       0!
@@ -96,31 +97,31 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ;
 
 
-: rgx-create   ( C: "name" - R: - w:rgx = Create a named regular expression in the dictionary )
+: rgx-create   ( "<spaces>name" -- ; -- rgx = Create a named regular expression in the dictionary )
   create   here   rgx% allot   rgx-init
 ;
 
 
-: rgx-new   ( w:data n:type - w:rgx = Create a new regular expression on the heap )
+: rgx-new   ( -- rgx = Create a new regular expression on the heap )
   rgx% allocate  throw  dup rgx-init
 ;
 
 
-: rgx-free   ( w:rgx - = Free the regular expression from the heap )
+: rgx-free   ( rgx -- = Free the regular expression from the heap )
   nfe-free
 ;
 
 
 ( Private scanner words )
 
-: rgx-scan-init  ( c-addr u w:rgx - = Initialise the regular expression scanner )
+: rgx-scan-init  ( c-addr u rgx -- = Initialise the regular expression scanner )
   tuck rgx>length   !
   tuck rgx>pattern  !
        rgx>index   0!
 ;
 
 
-: rgx-scan-backslash   ( w:rgx - w:data w:token = Scan for a backslash token )
+: rgx-scan-backslash   ( rgx -- x n = Scan for a backslash token, return the type n and data x for the expression )
   >r
   r@ rgx>index @ 1+ dup  r@ rgx>length @ < IF   \ If there one more character Then
     chars r@ rgx>pattern @ + c@                 \   Fetch the char
@@ -146,7 +147,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ;
 
 
-: rgx-scan-token  ( w:rgx - w:data w:token = Scan the pattern for the current token )
+: rgx-scan-token  ( rgx -- x n = Scan the pattern for the expression, return the type n and data x )
   >r
   r@ rgx>index @ dup  r@ rgx>length @ < IF   \ If there is still a character Then
     chars  r@ rgx>pattern @ + c@
@@ -171,14 +172,14 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 ;
 
 
-: rgx-scan-next  ( w:rgx - = Move the scanner to the next token )
+: rgx-scan-next  ( rgx -- = Move the scanner to the next token )
   dup rgx>next @ swap rgx>index +!
 ;
 
 
 ( Private parser words )
 
-: rgx-cleanup   ( w:outs w:start - = Cleanup error expression )
+: rgx-cleanup   ( nfs1 nfs2 -- = Cleanup an error expression )
   swap nil swap nfe+resolve             \ Resolve the open outs to nil
   nfe+free-expression                   \ Free the expression
 ;
@@ -186,7 +187,7 @@ struct: rgx%       ( - n = Get the required space for the rgx data structure )
 
 defer rgx.parse-alternation
 
-: rgx-parse-single   ( w:rgx - expr true | false = Parse a single token )
+: rgx-parse-single   ( rgx -- nfs1 nfs2 true | false = Parse a single token, return the expression )
   >r
   r@ rgx-scan-token                     \ Scan the current token
   dup nfs.lparen = IF                   \ If token = ( Then
@@ -228,7 +229,7 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-parse-repeat   ( w:rgx - expr true | false = Parse a repeat token )
+: rgx-parse-repeat   ( rgx -- nfs1 nfs2 true | false = Parse a repeat token, return the expression )
   >r
   r@ rgx-parse-single IF          \ If a single expression is parsed Then
     BEGIN
@@ -260,7 +261,7 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-parse-concat   ( w:rgx - expr true | false = Parse a concatenation of repeat tokens )
+: rgx-parse-concat   ( rgx -- nfs1 nfs2 true | false = Parse a concatenation of repeat tokens, return the expression )
   >r
   r@ rgx-parse-repeat IF          \ If a repeat expression is parsed Then
     BEGIN
@@ -276,7 +277,7 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-parse-alternation   ( w:rgx - expr true | false = Parse an alternation of two expressions )
+: rgx-parse-alternation   ( rgx -- nfs1 nfs2 true | false = Parse an alternation of two expressions, return the expression )
   >r
   r@ rgx-parse-concat IF          \ If a concatted expression is parsed Then
     true 
@@ -304,7 +305,7 @@ defer rgx.parse-alternation
 
 ( Regular expression words )
 
-: rgx-compile  ( c-addr u w:rgx - true | n:index false = Compile a pattern as regular expression)
+: rgx-compile  ( c-addr u rgx -- true | n false = Compile a pattern as regular expression, return success and optional the error offset n )
   >r
   r@ nfe-clear                        \ Free the current expression
   
@@ -328,34 +329,34 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-cmatch?   ( c-addr u w:rgx - f = Match case-sensitive a string with the regular expression )
+: rgx-cmatch?   ( c-addr u rgx -- flag = Match case-sensitive a string with the regular expression, return match result )
   false swap nfe-match?
 ;
 
 
-: rgx-imatch?   ( c-addr u w:rgx - f = Match case-insensitive a string with the regular expression )
+: rgx-imatch?   ( c-addr u rgx -- flag = Match case-insensitive a string with the regular expression, return match result )
   true swap nfe-match?
 ;
 
 
-: rgx-csearch   ( c-addr u w:rgx - n:index = Search case-sensitive in a string for the first match of the regular expression )
+: rgx-csearch   ( c-addr u rgx -- n = Search case-sensitive in a string for the first match of the regular expression, return offset in string, or -1 for not found )
   false swap nfe-search
 ;
 
 
-: rgx-isearch   ( c-addr u w:rgx - n:index = Search case-insensitive in a string for the first match of the regular expression )
+: rgx-isearch   ( c-addr u rgx -- n:index = Search case-insensitive in a string for the first match of the regular expression, return offset in string, or -1 if not found )
   true swap nfe-search
 ;
 
 
-: rgx-result   ( n:index w:rgx - n:ep n:sp = Get the match result of the indexth grouping )
+: rgx-result   ( n rgx -- n1 n2 = Get the match result of the nth grouping, return match start n2 and end n1 )
   nfe-result
 ;
 
 
 ( Inspection )
 
-: rgx-dump     ( w:rgx - = Dump the regular expression )
+: rgx-dump     ( rgx -- = Dump the regular expression )
   dup nfe-dump
   ." rgx:" dup . cr
   ."  pattern   :" dup rgx>pattern ? cr
@@ -366,4 +367,3 @@ defer rgx.parse-alternation
 [THEN]
 
 \ ==============================================================================
- 

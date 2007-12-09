@@ -1,4 +1,6 @@
 0.6.0
+* Stack notation changed to ANSish (2006-12-06)
+! stc: structures are changed to ANS structures (2006-12-04)
 * est: new module: String with escaped characters (2007-12-03)
 * xos: new module: XML/HTML writer (2007-11-22)
 * xis: new module: XML/HTML reader (2007-11-22)

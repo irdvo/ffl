@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/stc.fs
 
 
 ( rng = Pseudo random number generator module )
-( The rng module implements words for generating pseudo random numbers;   )
+( The rng module implements a pseudo random number generator;             )
 ( it uses the Mersenne Twister as generator with a period of 2^19937 - 1. )
 
 \
@@ -53,25 +53,25 @@ include ffl/stc.fs
 ( Private words )
 
 hex
-FFFFFFFF constant rng.mask  ( - u = 32 bit mask )
+FFFFFFFF constant rng.mask  ( -- u = 32 bit mask )
 decimal
 
-624      constant rng.n     ( - n = MT n value )
-397      constant rng.m     ( - n = MT m value )
+624      constant rng.n     ( -- n = MT n value )
+397      constant rng.m     ( -- n = MT m value )
 
 
-( Generator structure )
+( Random generator structure )
 
-struct: rng%       ( - n = Get the required space for the rng data structure )
-  cell:  rng>mti             \ mt index 
+begin-structure rng%       ( -- n = Get the required space for a rng variable )
+  field:  rng>mti             \ mt index 
   rng.n
-  cells: rng>mt              \ mt state
-;struct
+  fields: rng>mt              \ mt state
+end-structure
 
 
 ( Private words )
 
-: rng-init-mt      ( u:seed w:rng - = Initialise the mt with a seed )
+: rng-init-mt      ( u rng -- = Initialise the mt with the seed u )
   swap rng.mask AND          \ only 32 bits in seed
   over rng>mt
   2dup !                     \ mt[0] = seed
@@ -91,7 +91,7 @@ struct: rng%       ( - n = Get the required space for the rng data structure )
 
     
 hex
-: rng-twist        ( u u u - u = Twist values )
+: rng-twist        ( u1 u2 u3 -- u4 = Twist values )
        80000000 AND          
   swap 7FFFFFFF AND OR       
   tuck 1 rshift XOR         
@@ -101,7 +101,7 @@ hex
 decimal
 
 
-: rng-refill-mt    ( w:rng - = Refill the mt array )
+: rng-refill-mt    ( rng -- = Refill the mt array )
   dup rng>mti 0!
   rng>mt 
   [ rng.n rng.m - cells ] literal over + over DO
@@ -130,36 +130,36 @@ decimal
 ;
 
 
-( Random generator structure creation, initialisation and destruction )
+( Random generator creation, initialisation and destruction )
 
-: rng-init         ( u:seed w:rng - = Initialise the rng structure with a seed )
+: rng-init         ( u rng -- = Initialise the generator with the seed u )
   rng-init-mt
 ;
 
 
-: rng-create       ( u:seed "name" - = Create a named random generator in the dictionary )
+: rng-create       ( u "<spaces>name" -- ; -- rng = Create a named random generator in the dictionary with seed u )
   create   here   rng% allot   rng-init
 ;
 
 
-: rng-new          ( u:seed - w:rng = Create a new random generator on the heap )
+: rng-new          ( u -- rng = Create a new random generator on the heap with seed u )
   rng% allocate  throw  tuck rng-init
 ;
 
 
-: rng-free         ( w:rng - = Free the random generator from the heap )
+: rng-free         ( rng -- = Free the random generator from the heap )
   free throw 
 ;
 
 
 ( Random generator words )
 
-: rng-seed          ( u:seed w:rng - = Initialise the generator with a seed value )
+: rng-seed          ( u rng -- = Initialise the generator with the seed u )
   rng-init-mt
 ;
 
 
-: rng-next-number  ( w:rng - n = Calculate the next pseudo random number [32 bit] )
+: rng-next-number  ( rng -- n = Calculate the next pseudo random number, 32 bit )
   >r
   r@ rng>mti @ rng.n >= IF  \ Check for refill of mt 
     r@ rng-refill-mt
@@ -177,7 +177,7 @@ decimal
 
 
 [DEFINED] f/ [IF]
-: rng-next-float   ( w:rng - r = Calculate the next pseudo random float [0,1> )
+: rng-next-float   ( rng -- r = Calculate the next pseudo random float number, range [0,1> )
   rng-next-number 0 d>f 4294967296e0 f/
 ;
 [THEN]
@@ -185,7 +185,7 @@ decimal
 
 ( Inspection )
 
-: rng-dump         ( w:rng - = Dump the random generator structure )
+: rng-dump         ( rng -- = Dump the random generator )
   ." rng:" dup . cr
   ."   mti:" dup rng>mti ? cr
   ."   mt:"      rng>mt  rng.n cells dump cr

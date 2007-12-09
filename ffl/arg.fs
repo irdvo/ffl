@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.8 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -32,13 +32,13 @@ include ffl/config.fs
 
 [DEFINED] #args [DEFINED] arg@ AND [IF]
 
-
 include ffl/snl.fs
 include ffl/sni.fs
 include ffl/tis.fs
 
+
 ( arg = Arguments parser )
-( The arg parser module implements words for parsing command line arguments. )
+( The arg parser module implements a command line arguments parser.          )
 ( Due to the fact that the ANS standard does not specify words for arguments )
 ( this module has a environmental dependency.                                )
 ( <pre>                                                                      )
@@ -58,32 +58,32 @@ include ffl/tis.fs
 
 ( Global setting )
 
-79 value arg.cols    ( - n = Value with the number of columns for parser output [def. 79] )
+79 value arg.cols    ( -- n = Value with the number of columns for parser output [def. 79] )
 
 
 ( Constants )
 
- 3 constant arg.version-option   ( - n = Version option  )
- 2 constant arg.help-option      ( - n = Help option     )
- 1 constant arg.non-option       ( - n = Non option      )
- 0 constant arg.done             ( - n = Done parsing    )
--1 constant arg.error            ( - n = Error in option )
+ 3 constant arg.version-option   ( -- n = Version option  )
+ 2 constant arg.help-option      ( -- n = Help option     )
+ 1 constant arg.non-option       ( -- n = Non option      )
+ 0 constant arg.done             ( -- n = Done parsing    )
+-1 constant arg.error            ( -- n = Error in option )
 
 
 ( Private structure )
 
-struct: arg%opt%   ( - n = Get the required size for the argument option structure )
+begin-structure arg%opt%   ( -- n = Get the required size for an argument option )
   snn%
-  field: arg>opt>snn         \ this structure is extending the single list node
-  cell:  arg>opt>id          \ the option id (4..)
-  cell:  arg>opt>switch      \ is the option a switch (no parameter) ?
-  char:  arg>opt>short       \ the short option or 0
-  cell:  arg>opt>long        \ the long option or ""
-  cell:  arg>opt>descr       \ the description of option
-;struct
+  +field  arg>opt>snn        \ this structure is extending the single list node
+  field:  arg>opt>id         \ the option id (4..)
+  field:  arg>opt>switch     \ is the option a switch (no parameter) ?
+  field:  arg>opt>short      \ the short option or 0
+  field:  arg>opt>long       \ the long option or ""
+  field:  arg>opt>descr      \ the description of option
+end-structure
 
 
-: arg-opt-init   ( c:short c-addr:long u c-addr:descr u f:switch n:id w:opt - = Initialise the arg>opt structure [id=4..])
+: arg-opt-init ( char c-addr1 u1 c-addr2 u2 flag n opt -- = Initialise a option with the short option char, the long option c-addr1 u1, the description c-addr2 u2, the switch flag and the identifier n [id=4..])
   >r
   r@ arg>opt>snn      snn-init
   
@@ -101,12 +101,12 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ;
 
 
-: arg-opt-new   ( c:short c-addr:long u c-addr:descr u f:switch n:id - w:opt = Create a new arg-opt structure on the heap [id=4..])
+: arg-opt-new   ( char c-addr1 u1 c-addr2 u2 flag n -- opt = Create a new option on the heap with the short option char, the long option c-addr1 u1, the description c-addr2 u2, the switch flag and the identifier n [id=4..])
   arg%opt% allocate  throw   >r r@ arg-opt-init r>
 ;
 
 
-: arg-opt-free   ( w:opt - = Free the arg.opt structure from the heap )
+: arg-opt-free   ( opt -- = Free the option from the heap )
   dup arg>opt>long  @ str-free
   dup arg>opt>descr @ str-free
     
@@ -114,7 +114,7 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 ;
 
 
-: arg-opt-print   ( n:length w:opt - n:length = Print one argument option )
+: arg-opt-print   ( n opt -- n = Print one option with maximum length n )
   swap >r
   dup  arg>opt>short c@
   over arg>opt>long   @
@@ -164,26 +164,26 @@ struct: arg%opt%   ( - n = Get the required size for the argument option structu
 
 ( Argument parser structure )
 
-struct: arg%   ( - n = Get the required space for the arg data structure )
+begin-structure arg%   ( -- n = Get the required space for an argument parser variable )
   tis%
-  field: arg>arg        \ the current argument
+  +field arg>arg        \ the current argument
   snl%
-  field: arg>options    \ the option list
+  +field arg>options    \ the option list
   sni%
-  field: arg>iter       \ the iterator on the option list
-  cell:  arg>name       \ the program name
-  cell:  arg>usage      \ the program usage
-  cell:  arg>version    \ the program version
-  cell:  arg>tail       \ the program extra info
-  cell:  arg>index      \ the argument index
-  cell:  arg>length     \ the length of the longest long option
-;struct
+  +field arg>iter       \ the iterator on the option list
+  field: arg>name       \ the program name
+  field: arg>usage      \ the program usage
+  field: arg>version    \ the program version
+  field: arg>tail       \ the program extra info
+  field: arg>index      \ the argument index
+  field: arg>length     \ the length of the longest long option
+end-structure
 
 
 
 ( Argument parser structure creation, initialisation and destruction )
 
-: arg-init   ( c-addr:name u c-addr:usage u c-addr:version u c-addr:info u w:arg - = Initialise the argument parser structure )
+: arg-init ( c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 arg -- = Initialise the parser with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 )
   >r
   r@ arg>options             snl-init
   r@ arg>options r@ arg>iter sni-init
@@ -206,17 +206,17 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-create   ( C: "name"  c-addr:name u c-addr:usage u c-addr:version u c-addr:info u -  R: - w:arg = Create a named argument parser structure in the dictionary )
+: arg-create ( c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 "<spaces>name" -- ; -- arg = Create a named parser in the dictionary with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 )
   create  here arg% allot  arg-init
 ;
 
 
-: arg-new   (  c-addr:name u  c-addr:usage u c-addr:version u c-addr:info u - w:arg = Create a new argument parser structure on the heap )
+: arg-new (  c-addr1 u1  c-addr2 u2 c-addr3 u3 c-addr4 u4 -- arg = Create a new parser on the heap with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 )
   arg% allocate  throw   >r r@ arg-init r>
 ;
 
 
-: arg-free   ( w:arg - = Free the argument parser structure from the heap )
+: arg-free   ( arg -- = Free the parser from the heap )
   dup arg>name    @ str-free
   dup arg>usage   @ str-free
   dup arg>version @ str-free
@@ -236,7 +236,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 ( Default print words )
 
-: arg-print-version   ( w:arg - = Print the version info )
+: arg-print-version   ( arg -- = Print the version info )
   dup arg>name    @ str-get type space
       arg>version @ str-get type cr
       
@@ -250,7 +250,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-print-help   ( w:arg - = Print the help info )
+: arg-print-help   ( arg -- = Print the help info )
   >r
   ." Usage: " 
   r@ arg>name   @ str-get type space
@@ -262,7 +262,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 ( Option words )
 
-: arg-add-option   ( c:short c-addr:long u c-addr:descr u f:switch n:id w:arg - = Add an option to the argument parser [id=4..])
+: arg-add-option ( char c-addr1 u1 c-addr2 u2 flag n arg -- = Add an option to the parser with the short option char, the long option c-addr1 u1, the description c-addr2 u2, the switch flag and the identifier n [id=4..])
   >r
   arg-opt-new                          \ Create the option
   dup arg>opt>long @ str-length@       \ Determine length of long option
@@ -271,36 +271,36 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-add-help-option   ( w:arg - = Add the default help option )
+: arg-add-help-option   ( arg -- = Add the default help option )
   >r [char] ? s" help" s" show this help" true arg.help-option r> arg-add-option
 ;
 
 
-: arg-add-version-option   ( w:arg - = Add the default version option )
+: arg-add-version-option   ( arg -- = Add the default version option )
   >r 0 s" version" s" show version info" true arg.version-option r> arg-add-option
 ;
 
 
 ( Private parser errors )
 
-: arg+exp-param-str   ( - c-addr u =  Expecting parameter for option string)
+: arg+exp-param-str   ( -- c-addr u = Warning: Expecting parameter for option string)
   s" Expecting parameter for option: -"
 ;
 
-: arg+unk-opt-str   ( - c-addr u =  Unknown option string)
+: arg+unk-opt-str   ( -- c-addr u = Warning: Unknown option string)
   s" Unknown option: -"  
 ;
 
-: arg+inv-opt-str   ( - c c-addr u = Invalid option string)
+: arg+inv-opt-str   ( -- c c-addr u = Warning: Invalid option string)
   [char] - s" Invalid option: " 
 ;
 
-: arg+do-short-error   ( c c-addr u - id = Generate an error for a short option )
+: arg+do-short-error   ( char c-addr u -- n = Generate an error for short option char, return the error code )
   type emit cr
   arg.error
 ;
 
-: arg+do-long-error   ( c-addr u c-addr u - id = Generate an error for a long option )
+: arg+do-long-error   ( c-addr1 u1 c-addr2 u2 -- id = Generate an error c-addr2 u2 for a long option c-addr1 u1, return the error code )
   type [char] - emit type cr
   arg.error
 ;
@@ -308,7 +308,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 ( Private parser words )
 
-: arg-find-short   ( c w:arg - w:opt | nil = Find a short option in the option list )
+: arg-find-short   ( char arg -- opt | nil = Find a short option char in the option list )
   arg>iter 
   tuck sni-first                  \ Iterate the option list
   BEGIN                           \ S: iter c opt
@@ -324,7 +324,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-parse-short   ( w:arg - c-addr u n:id | n:id = Parse a short option )
+: arg-parse-short   ( arg -- c-addr u n | n = Parse a short option, return the option identifier and optional the parameter )
   >r
   r@ arg>arg tis-read-char IF               \ Read the option character
     dup r@ arg-find-short                   \ Find it in the list
@@ -361,7 +361,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-compare-long   ( c-addr u c-addr u - f = Compare two long options )
+: arg-compare-long   ( c-addr1 u1 c-addr2 u2 -- flag = Compare two long options )
   rot
   2dup < IF                       \ If option 2 is shorter than option 1 -> not equal
     2drop 2drop
@@ -380,7 +380,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-find-long   ( c-addr u w:arg - w:opt | nil = Find a long option in the option list )
+: arg-find-long   ( c-addr u arg -- opt | nil = Find a long option c-addr u in the option list, return the option )
   arg>iter 
   dup sni-first                   \ Iterate the option list
   BEGIN                           \ S: c-addr u iter opt
@@ -397,7 +397,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-parse-long   ( w:arg - c-addr u n:id | n:id = Parse a long option )
+: arg-parse-long   ( arg -- c-addr u n | n = Parse a long option, return the option identifier and optional the parameter )
   >r
   r@ arg>arg tis-eof? IF
     arg.done                                \ Done ('--')
@@ -444,7 +444,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 ;
 
 
-: arg-parse-opt   ( w:arg - c-addr u n:id | n:id = Parse the option )
+: arg-parse-opt   ( arg -- c-addr u id | id = Parse the next option, return the option identifier and optional the parameter )
   >r
   r@ arg>arg tis-eof? IF
     arg+inv-opt-str arg+do-short-error
@@ -461,7 +461,7 @@ struct: arg%   ( - n = Get the required space for the arg data structure )
 
 ( Parser words )
 
-: arg-parse   ( w:arg - c-addr u n:id | n:id = Parse the next command line argument )
+: arg-parse   ( arg -- c-addr u n | n = Parse the next command line argument, return the option identifier and optional the parameter )
   >r
   r@ arg>arg tis-eof? IF
     r@ arg>index dup @ dup #args < IF

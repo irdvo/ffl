@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-14 06:27:42 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -43,34 +43,34 @@ include ffl/nct.fs
 
 ( Iterator structure )
 
-nni% constant nci% ( - n = Get the required space for a nci data structure )
+nni% constant nci% ( -- n = Get the required space for a nci variable )
 
 
 ( Iterator creation, initialisation and destruction )
 
-: nci-init     ( w:nct w:nci - = Initialise the iterator with a n-tree )
+: nci-init     ( nct nci -- = Initialise the iterator with the n-tree nct )
   nni-init
 ;
 
 
-: nci-create   ( C: w:nct "name" - R: - w = Create a named iterator in the dictionary )
+: nci-create   ( nct "<spaces>name" -- ; -- nci = Create a named iterator in the dictionary on the n-tree nct )
   create  here  nci% allot  nci-init
 ;
 
 
-: nci-new      ( w:nct - w:nci = Create an iterator on the heap )
+: nci-new      ( nct -- nci = Create an iterator on the heap on the n-tree nct )
   nci% allocate  throw  tuck nci-init
 ;
 
 
-: nci-free     ( w:nci - = Free iterator from heap )
+: nci-free     ( nci -- = Free the iterator from heap )
   free throw
 ;
 
 
 ( Private words )
 
-: nni+get      ( w:ncn - w:data true | false = Get the cell data from the current node )
+: nni+get      ( ncn -- x true | false = Get the cell data x from the current node )
   dup nil<> IF
     ncn-cell@ true
   ELSE
@@ -81,103 +81,103 @@ nni% constant nci% ( - n = Get the required space for a nci data structure )
 
 ( Member words )
 
-: nci-get      ( w:nci - w:data true | false = Get the cell data from the current node )
+: nci-get      ( nci -- x true | false = Get the cell data x from the current node )
   nni-get nni+get
 ;
 
 
 ( Tree iterator words )
 
-: nci-root?    ( w:nci - f = Check if the current node is the root node )
+: nci-root?    ( nci -- flag = Check if the current node is the root node )
   nni-root?
 ;
 
 
-: nci-root     ( w:nci - w:data true | false = Move the iterator to the root of the tree )
+: nci-root     ( nci -- x true | false = Move the iterator to the root of the tree, return the cell data x from this node )
   nni-root nni+get
 ;
 
 
-: nci-parent   ( w:nci - w:data true | false = Move the iterator to the parent of the current node )
+: nci-parent   ( nci -- x true | false = Move the iterator to the parent of the current node, return the cell data x from this node )
   nni-parent nni+get
 ;
 
 
-: nci-children   ( w:nci - n = Return the number of children of the current node )
+: nci-children   ( nci -- n = Return the number of children of the current node )
   nni-children
 ;
 
 
-: nci-children?  ( w:nci - f = Check if the current node has children )
+: nci-children?  ( nci -- flag = Check if the current node has children )
   nni-children?
 ;
 
 
-: nci-child    ( w:nci - w:data true | false = Move the iterator to the first child of the current node )
+: nci-child    ( nci -- x true | false = Move the iterator to the first child of the current node, return the cell data x of this node )
   nni-child nni+get
 ;
 
 
-: nci-prepend-child  ( w:data w:nci - = Prepend data as child to the children of the current node, iterator is moved to the new child )
+: nci-prepend-child  ( x nci -- = Prepend data x as child to the children of the current node, iterator is moved to the new child )
   >r ncn-new r> nni-prepend-child
 ;
 
 
-: nci-append-child  ( w:data w:nci - = Append a child to the children of the current node, iterator is moved to the new child )
+: nci-append-child  ( x nci -- = Append data x as child to the children of the current node, iterator is moved to the new child )
   >r ncn-new r> nni-append-child
 ;
 
 
 ( Sibling iterator words )
 
-: nci-first    ( w:nci - w:data true | false = Move the iterator to the first sibling )
+: nci-first    ( nci -- x true | false = Move the iterator to the first sibling, return the cell data x from this node )
   nni-first nni+get
 ;
 
 
-: nci-next     ( w:nci - w:data true | false = Move the iterator to the next sibling )
+: nci-next     ( nci -- x true | false = Move the iterator to the next sibling, return the cell data x from this node )
   nni-next nni+get
 ;
 
 
-: nci-prev     ( w:nci - w:data true | false = Move the iterator to the previous sibling )
+: nci-prev     ( nci -- x true | false = Move the iterator to the previous sibling, return the cell data x from this node )
   nni-prev nni+get
 ;
 
 
-: nci-last     ( w:nci - w:data true | false = Move the iterator to the last sibling )
+: nci-last     ( nci -- x true | false = Move the iterator to the last sibling, return the cell data x from this node )
   nni-last nni+get
 ;
 
 
-: nci-first?   ( w:nci - f = Check if the iterator is on the first sibling )
+: nci-first?   ( nci -- flag = Check if the iterator is on the first sibling )
   nni-first?
 ;
 
 
-: nci-last?    ( w:nci - f = Check if the iterator is on the last sibling )
+: nci-last?    ( nci -- flag = Check if the iterator is on the last sibling )
   nni-last?
 ;
 
 
-: nci-insert-before  ( w:nnn w:nci - = Insert a sibling before the current sibling in the tree)
+: nci-insert-before  ( x nci -- = Insert data x as sibling before the current sibling in the tree )
   >r ncn-new r> nni-insert-before
 ;
 
 
-: nci-insert-after  ( w:nnn w:nci - = Insert a sibling after the current sibling in the tree)
+: nci-insert-after  ( x nci -- = Insert data x as sibling after the current sibling in the tree )
   >r ncn-new r> nni-insert-after
 ;
 
 
-: nci-remove        ( w:nci - w:data true | false = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node )
+: nci-remove        ( nci -- x true | false = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node, return the cell data x of the removed node )
   nni-remove nni+get
 ;
 
   
 ( Inspection )
 
-: nci-dump     ( w:nci - = Dump the iterator )
+: nci-dump     ( nci -- = Dump the iterator )
   nni-dump
 ;
 

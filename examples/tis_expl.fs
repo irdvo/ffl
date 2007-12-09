@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-17 18:34:21 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -81,7 +81,7 @@ tis-new value tis2
 
 \ Setup the reader callback word
 
-: tis-reader ( file-id - false | c-addr u true )
+: tis-reader ( fileid -- false | c-addr u true )
   pad 64 rot read-file throw
   ?dup IF
     pad swap
@@ -95,7 +95,7 @@ s" index.html" r/o open-file throw dup  ' tis-reader   tis2 tis-set-reader   \ S
 
 
 \ Scan with the reader 
-: show-links   ( - = example: Type all links in html file )
+: show-links   ( -- = example: Type all links in html file )
   ." Links:" cr
   BEGIN
     true

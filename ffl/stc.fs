@@ -2,7 +2,7 @@
 \
 \                 stc - the struct module in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -30,79 +30,117 @@ include ffl/config.fs
 [UNDEFINED] stc.version [IF]
 
 
-( stc = Struct module )
-( The stc module implements a simple struct mechanism for forth. )
+( stc = ANS Structure module )
+( The stc module implements ANS structures. )
 
 
-1 constant stc.version
+2 constant stc.version
 
 
-( Structure syntax words )
+( ANS Structure syntax words )
 
-: struct:      ( C: "name" - w 0 R: - n = Start a named struct definition, leave the size on stack )
-  create 
-    here  1 cells allot  dup 0! 0
+[UNDEFINED] begin-structure [IF]
+: begin-structure   ( "<spaces>name" -- addr 0 ; -- n = Start definition of a named structure, return the structure size )
+  create
+    here 0 , 0
   does>
     @
 ;
+[THEN]
 
 
-: ;struct      ( w n - = End a struct definition )
+[UNDEFINED] end-structure [IF]
+: end-structure   ( addr n -- = End a structure definition )
   swap !
-;
-
-
-( Field definition words )
-
-: field:       ( C: w n "name" - w R: w - w = Create a named structure field, add offset to address )
-  create 
-    over , + 
-  does>
-    @ +
-;
-
-
-: char:        ( C: w "name" - w R: w - w = Create a named char structure field, add offset to address )
-  1 chars field:
-;
-
-
-: chars:       ( C: w n "name" - w R: w - w = Create named char array structure field, add offset to address )
-  chars field:
-;
-
-
-: cell:        ( C: w "name" - w R: w - w = Create a named cell structure field, add offset to address )
-  aligned  1 cells field:
-;
-
-
-: cells:       ( C: w n "name" - w R: w - w = Create named cell array structure field, add offset to address )
-  swap aligned swap  cells field:
-;
-
-
-: double:      ( C: w "name" - w R: w - w = Create named double structure field, add offset to address )
-  aligned  2 cells field:
-;
-
-
-: doubles:     ( C: w n "name" - w R: w - w = Create named double array structure field, add offset to address )
-  swap aligned swap 2* cells field:
-;
-
-[DEFINED] faligned [IF]
-
-: float:       ( C: w "name" - w R: w - w = Create a named float structure field, add offset to address )
-  faligned  1 floats field:
-;
-
-
-: floats:      ( C: w n "name" - w R: w - w = Create named float array structure field, add offset to address )
-  swap faligned swap  floats field:
 ;
 [THEN]
 
+
+( ANS field definition words )
+
+[UNDEFINED] +field [IF]
+: +field   ( n "<spaces>name" -- ; addr1 -- addr2 = Create a structure field of size n bytes, return the field address )
+  create
+    over , +
+  does>
+    @ +
+;
+[THEN]
+
+
+[UNDEFINED] cfield: [IF]
+: cfield:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 char, return the field address )
+  1 chars +field
+;
+[THEN]
+
+
+[UNDEFINED] field: [IF]
+: field:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 cell, return the field address )
+  aligned cell +field
+;
+[THEN]
+
+
+[UNDEFINED] dfield: [IF]
+: dfield:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 double, return the field address )
+  aligned 2 cells +field
+;
+[THEN]
+
+
+[UNDEFINED] ffield: [DEFINED] faligned AND [IF]
+: ffield:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 float, return the field address )
+  faligned 1 floats +field
+;
+[THEN]
+
+
+[UNDEFINED] sffield: [DEFINED] sfaligned AND [IF]
+: sffield:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 single float, return the field address )
+  sfaligned 1 sfloats +field
+;
+[THEN]
+
+
+[UNDEFINED] dffield: [DEFINED] dfaligned AND [IF]
+: dffield:   ( n1 "<spaces>name" -- n2 ; addr1 -- addr2 = Create a structure field of 1 double float, return the field address )
+  dfaligned 1 dfloats +field
+;
+[THEN]
+
+
+( Array field definition words )
+
+[UNDEFINED] cfields: [IF]
+: cfields:   ( n1 n2 "<spaces>name" -- n3 ; addr1 -- addr2 = Create a structure field of n2 chars, return the field address )
+  chars +field
+;
+[THEN]
+
+
+[UNDEFINED] fields: [IF]
+: fields:   ( n1 n2 "<spaces>name" -- n3 ; addr1 -- addr2 = Create a structure field of n2 cells, return the field address )
+  swap aligned swap cells +field
+;
+[THEN]
+
+
+[UNDEFINED] dfields: [IF]
+: dfields:   ( n1 n2 "<spaces>name" -- n3 ; addr1 -- addr2 = Create a structure field of n2 doubles, return the field address )
+  swap aligned swap 2* cells +field
+;
+[THEN]
+
+
+[UNDEFINED] ffields: [DEFINED] faligned AND [IF]
+: ffields:   ( n1 n2 "<spaces>name" -- n3 ; addr1 -- addr2 = Create a structure field of n2 floats, return the field address )
+  swap faligned swap floats +field
+;
+[THEN]
+
+
+[THEN]
 [THEN]
 
 \ ==============================================================================

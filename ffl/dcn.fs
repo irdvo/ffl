@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-31 06:50:17 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/dnn.fs
 
 
 ( dcn = Double Linked Cell List Node )
-( The dcn module implements the node in the dcl-list.)
+( The dcn module implements a node in a dcl list.)
 
 
 1 constant dcn.version
@@ -42,45 +42,46 @@ include ffl/dnn.fs
 
 ( Node structure )
 
-struct: dcn%       ( - n = Get the required space for a dcn structure )
-  dnn% field: dcn>dnn        \ extend the dnn structure with ..
-       cell:  dcn>cell       \ .. a cell
-;struct 
+begin-structure dcn%   ( -- n = Get the required space for a dcn node )
+  dnn% 
+  +field dcn>dnn        \ extend the dnn structure with ..
+  field: dcn>cell       \ .. a cell
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: dcn-init     ( w:data w:dcn - = Initialise the node )
+: dcn-init     ( x dcn -- = Initialise the node with data x )
   dup  dnn-init
        dcn>cell !
 ;
 
 
-: dcn-new      ( w:data - w:dcn = Create a new node on the heap )
+: dcn-new      ( x -- dcn = Create a new node on the heap with data x )
   dcn% allocate  throw  tuck dcn-init
 ;
 
 
-: dcn-free     ( w:dcn - = Free the node from the heap )
+: dcn-free     ( dcn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: dcn-cell@    ( w:dcn - w:data = Get the cell data from the node )
+: dcn-cell@    ( dcn -- x = Get the cell data x from the node )
   dcn>cell @
 ;
 
 
-: dcn-cell!    ( w:data w:dcn - = Set the cell data in the node )
+: dcn-cell!    ( x dcn -- = Set the cell data x in the node )
   dcn>cell !
 ;
 
 
 ( Inspection )
 
-: dcn-dump     ( w:dcn - = Dump the node )
+: dcn-dump     ( dcn -- = Dump the node )
   dup dnn-dump
   ."  cell :" dcn>cell  ?  cr
 ;

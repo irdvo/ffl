@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -44,16 +44,16 @@ include ffl/hnn.fs
 
 ( Iterator structure )
 
-struct: hni%       ( - n = Get the required space for a hash table base iterator data structure )
-  cell: hni>table       \ Refernce to the hash table
-  cell: hni>index       \ Index in the table
-  cell: hni>walk        \ Current node in the table
-;struct 
+begin-structure hni%       ( -- n = Get the required space for a hash table base iterator variable )
+  field: hni>table      \ Refernce to the hash table
+  field: hni>index      \ Index in the table
+  field: hni>walk       \ Current node in the table
+end-structure
 
 
 ( Private words )
 
-: hni-search-table ( u:start w:hni - nil | u:index w:hnn = Search in the tabel for a node )
+: hni-search-table ( u:start hni -- nil | u:index w:hnn = Search in the tabel for a node )
   >r dup r>
   hni>table @
   hnt-table-bounds ?DO                \ end and start of table for DO; S: index
@@ -73,37 +73,37 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
     
 ( Iterator creation, initialisation and destruction words )
 
-: hni-init     ( w:hnt w:hni - = Initialise the iterator with a hash table )
+: hni-init     ( hnt hni -- = Initialise the iterator with the hash table hnt )
   tuck hni>table    !
   dup  hni>index   0!
        hni>walk  nil!
 ;
 
 
-: hni-create   ( C: w:hnt "name" - R: - w = Create a named iterator in the dictionary )
+: hni-create   ( hnt "<spaces>name" -- ; -- hni = Create a named iterator in the dictionary on the hash table hnt )
   create 
     here  hni% allot  hni-init
 ;
 
 
-: hni-new      ( w:hct - w:hni = Create an iterator on the heap )
+: hni-new      ( hnt -- hni = Create an iterator on the heap on the hash table hnt)
   hni% allocate  throw  tuck hni-init
 ;
 
 
-: hni-free     ( w:hni - = Free iterator from heap )
+: hni-free     ( hni -- = Free iterator from heap )
   free throw
 ;
 
 
 ( Member words )
 
-: hni-get      ( w:hni - w:hnn | nil = Get the node from the current record )
+: hni-get      ( hni -- w:hnn | nil = Get the node from the current record )
   hni>walk @
 ;
 
 
-: hni-key      ( w:hni - c-addr u = Get the key from the current record )
+: hni-key      ( hni -- c-addr u = Get the key from the current record )
   hni>walk @
   dup nil<> IF
     hnn-key@
@@ -115,7 +115,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 
 ( Iterator words )
 
-: hni-first    ( w:hni - w:hnn | nil = Move the iterator to the first record )
+: hni-first    ( hni -- w:hnn | nil = Move the iterator to the first record, return the node in this record )
   >r
   r@ hni>index   0!
   r@ hni>walk  nil!
@@ -133,7 +133,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 ;
 
 
-: hni-next     ( w:hni - w:hnn | nil = Move the iterator to the next record )
+: hni-next     ( hni -- w:hnn | nil = Move the iterator to the next record, return the node in this record )
   >r
   r@ hni>walk @              \ check if current node has a next node
   dup nil<> IF
@@ -161,7 +161,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 ;
 
 
-: hni-first?   ( w:hni - f = Check if the iterator is on the first record )
+: hni-first?   ( hni -- flag = Check if the iterator is on the first record )
   dup hni>walk @
   dup nil<> IF
     hnn-prev@                     \ if there is a previous record, then not the first
@@ -182,7 +182,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 ;
 
 
-: hni-last?    ( w:hni - f = Check if the iterator is on the last record )
+: hni-last?    ( hni -- flag = Check if the iterator is on the last record )
   dup hni>walk @
   dup nil<> IF
     hnn-next@
@@ -203,7 +203,7 @@ struct: hni%       ( - n = Get the required space for a hash table base iterator
 
 ( Inspection )
 
-: hni-dump     ( w:hni - = Dump the iterator )
+: hni-dump     ( hni -- = Dump the iterator )
   ." hni:" dup . cr
   ."  table :" dup hni>table ?  cr
   ."  index :" dup hni>index ?  cr

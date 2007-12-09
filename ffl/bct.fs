@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-12 19:45:52 $ $Revision: 1.9 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ include ffl/bcn.fs
 
 
 ( bct = binary cell tree module )
-( The bct module implements an unbalanced binary tree with the key and data ) 
-( cell based. The implementation is non-recursive. )
+( The bct module implements an unbalanced binary tree with the key and data )
+( cell based. The implementation is non-recursive.                          )
 
 
 1 constant bct.version
@@ -45,34 +45,34 @@ include ffl/bcn.fs
 
 ( Binary tree structure )
 
-struct: bct%       ( - n = Get the required space for the bct structure )
-  cell:  bct>root            \ the root of the tree
-  cell:  bct>length          \ the number of nodes in the tree
-  cell:  bct>compare         \ the compare word for the key
-;struct
+begin-structure bct%       ( -- n = Get the required space for a bct variable )
+  field: bct>root            \ the root of the tree
+  field: bct>length          \ the number of nodes in the tree
+  field: bct>compare         \ the compare word for the key
+end-structure
 
 
 
 ( Tree creation, initialisation and destruction )
 
-: bct-init         ( w:data w:key w:bct - = Initialise the bct structure with a key and data )
+: bct-init         ( bct -- = Initialise the tree )
   dup          bct>root   nil!
   dup          bct>length   0!
   ['] <=> swap bct>compare   !
 ;
 
 
-: bct-create       ( C: "name" -  R: - w:bct = Create a named binary tree in the dictionary )
+: bct-create       ( "<spaces>name" -- ; -- bct = Create a named binary tree in the dictionary )
   create  here bct% allot  bct-init
 ;
 
 
-: bct-new          ( - w:bct = Create a new binary tree on the heap )
+: bct-new          ( -- bct = Create a new binary tree on the heap )
   bct% allocate  throw   dup bct-init
 ;
 
 
-: bct-free         ( w:bct - = Free the tree node from the heap )
+: bct-free         ( bct -- = Free the tree node from the heap )
   dup bct>root @
   BEGIN                           \ Free the nodes in the tree
     dup nil<>
@@ -98,29 +98,29 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 ( Member words )
 
-: bct-length@      ( w:bct - u = Get the number of elements in the tree )
+: bct-length@      ( bct -- u = Get the number of elements in the tree )
   bct>length @
 ;
 
 
-: bct-empty?       ( w:bct - f = Check for an empty tree )
+: bct-empty?       ( bct -- flag = Check for an empty tree )
   bct-length@ 0=
 ;
 
 
-: bct-compare@     ( w:bct - xt = Get the compare execution token for comparing keys )
+: bct-compare@     ( bct -- xt = Get the compare execution token for comparing keys )
   bct>compare @
 ;
 
 
-: bct-compare!     ( xt w:bct - = Set the compare execution token for comparing keys )
+: bct-compare!     ( xt bct -- = Set the compare execution token for comparing keys )
   bct>compare !
 ;
 
 
 ( Private words )
 
-: bct-smallest-node  ( w:bcn - w:bcn = Find the smallest node in the subtree )
+: bct-smallest-node  ( bcn1 -- bcn2 = Find the smallest node in the subtree, starting from node bcn1 )
   dup
   BEGIN
     dup nil<>
@@ -132,7 +132,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-next-node    ( w:bcn - w:bcn = Find the next node in the tree )
+: bct-next-node    ( bcn1 -- bcn2 = Find the next node in the tree )
   dup bcn-right@ nil<> IF         \ If right subtree is present then
     bcn-right@ bct-smallest-node  \   Go to the smallest node in this subtree
   ELSE                            \ Else
@@ -148,7 +148,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-greatest-node  ( w:bcn - w:bcn = Find the greatest node in the subtree )
+: bct-greatest-node  ( bcn1 -- bcn2 = Find the greatest node in the subtree, starting from node bcn1 )
   dup
   BEGIN
     dup nil<>
@@ -160,7 +160,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-prev-node    ( w:bcn - w:bcn = Find the previous node in the tree )
+: bct-prev-node    ( bcn1 -- bcn2 = Find the previous node in the tree )
   dup bcn-left@ nil<> IF          \ If left subtree is present then
     bcn-left@ bct-greatest-node   \   Go to the greatest node in this subtree
   ELSE                            \ Else
@@ -176,7 +176,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-insert-node  ( xt w:data w:key w:bct - w:bcn f = Insert data with a key in the tree )
+: bct-insert-node  ( xt x1 x2 bct -- bcn flag = Create a node with xt with key x2 and data x1 and insert it in the tree )
   >r
   r@ bct>root @ nil= IF           \ first element in tree
     rot nil swap 
@@ -227,7 +227,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-search-node  ( w:key w:bct - w:node | nil = Search a node )
+: bct-search-node  ( x bct -- bcn | nil = Search a node with key x )
   dup  bct-compare@
   swap bct>root @
   BEGIN
@@ -248,7 +248,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-replace-node ( w:bcn - w:bcn = Replace the node with another node )
+: bct-replace-node ( bcn1 -- bcn2 = Replace the node with another node )
   dup bcn-left@ nil<> over bcn-right@ nil<> AND IF
     dup bcn-right@ bct-smallest-node        \ Both branches not nil Then
     2dup bcn>key  @ swap bcn>key  !         \   Find the smallest in the right subtree
@@ -257,7 +257,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-delete-node  ( w:bcn w:bct - = Delete the node from the tree )
+: bct-delete-node  ( bcn bct -- = Delete the node from the tree )
   >r
   dup bcn-left@ nil= IF                     \ Find the child node
     dup bcn-right@
@@ -284,14 +284,14 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 ( Tree words )
 
-: bct-insert       ( w:data w:key w:bct - = Insert data with a key in the tree )
+: bct-insert       ( x1 x2 bct -- = Insert data x2 with key x1 in the tree )
   >r ['] bcn-new -rot r>
   bct-insert-node
   2drop                           \ no balancing: drop flag and node  
 ;
 
 
-: bct-delete       ( w:key w:bct - false | w:data true = Delete the key from the tree )
+: bct-delete       ( x1 bct -- false | x2 true = Delete key x1 from the tree, return the cell data x2 )
   >r
   r@ bct-search-node
   dup nil<> IF
@@ -308,7 +308,7 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-get          ( w:key w:bct - false | w:data true = Get the data from the tree )
+: bct-get          ( x1 bct -- false | x2 true = Get the data x2 related to key x1 from the tree )
   bct-search-node
   dup nil<> IF
     bcn>cell @
@@ -319,13 +319,13 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 ;
 
 
-: bct-has?         ( w:key w:bct - f = Check if the key is present in the tree )
+: bct-has?         ( x1 bct -- flag = Check if the key x1 is present in the tree )
   bct-search-node
   nil<>
 ;
 
 
-: bct-execute      ( ... xt w:bct - ... = Execute xt for every key and data in the tree )
+: bct-execute      ( i*x xt bct -- j*x = Execute xt for every key and data in the tree )
   bct>root @
   bct-smallest-node               \ find the smallest node
   BEGIN                           \ while not nil do
@@ -346,14 +346,14 @@ struct: bct%       ( - n = Get the required space for the bct structure )
 
 ( Private words )
 
-: bct-emit-element ( w:data w:key - = Emit the key and cell data )
+: bct-emit-element ( x1 x2 -- = Emit the key x2 and cell data x1 )
   0 .r [char] = emit 0 .r [char] ; emit
 ;
 
 
 ( Inspection )
 
-: bct-dump         ( w:bct - = Dump the tree node structure )
+: bct-dump         ( bct -- = Dump the tree node structure )
   ." bct:" dup . cr
   ."   root   :" dup bct>root    ? cr
   ."   length :" dup bct>length  ? cr

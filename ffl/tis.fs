@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-18 15:50:06 $ $Revision: 1.16 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,7 @@ include ffl/str.fs
 ( the stream pointer is updated, read = read data, if data is returned then )
 ( the stream pointer is updated; scan = scan for data, if the data is found )
 ( then the leading text is returned and the stream pointer is moved after   )
-( the scanned data; skip = move the stream pointer after the skipped data.  )  
+( the scanned data; skip = move the stream pointer after the skipped data.  )
 ( <pre>                                                                     )
 (   Stack usage reader word: tis-reader ( w:data - false | c-addr u true    )
 ( </pre>                                                                    )
@@ -53,17 +53,18 @@ include ffl/str.fs
 
 ( Input stream structure )
 
-struct: tis%       ( - n = Get the required space for the tis data structure )
-  str% field: tis>text
-       cell:  tis>pntr
-       cell:  tis>reader
-       cell:  tis>data
-;struct
+begin-structure tis%       ( -- n = Get the required space for a tis variable )
+  str% 
+  +field  tis>text
+  field:  tis>pntr
+  field:  tis>reader
+  field:  tis>data
+end-structure
 
 
 ( Private words )
 
-: tis-pntr?!       (  n w:tos - = Update the stream pointer after range check )
+: tis-pntr?!       (  n tis -- = Set the stream pointer u, with range check )
   2dup str-length@ 
   over > swap 0>= and IF          \ Check for pointer range
     tis>pntr !
@@ -77,7 +78,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Input stream creation, initialisation and destruction )
 
-: tis-init         ( w:tis - = Initialise the empty input stream )
+: tis-init         ( tis -- = Initialise the empty input stream )
   dup str-init               \ Initialise the base string data structure
   dup tis>pntr     0!
   dup tis>reader nil!
@@ -85,29 +86,29 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-create       ( C: "name" - R: - w:tis = Create a named input stream in the dictionary )
+: tis-create       ( "<spaces>name" -- ; -- tis = Create a named input stream in the dictionary )
   create   here   tis% allot   tis-init
 ;
 
 
-: tis-new          ( - w:tis = Create a new input stream on the heap )
+: tis-new          ( -- tis = Create a new input stream on the heap )
   tis% allocate  throw  dup tis-init
 ;
 
 
-: tis-free         ( w:tis - = Free the input stream from the heap )
+: tis-free         ( tis -- = Free the input stream from the heap )
   str-free
 ;
 
 
 ( Seek and tell words: position in the stream )
 
-: tis-pntr@        ( w:tis - u = Get the stream pointer )
+: tis-pntr@        ( tis -- u = Get the stream pointer )
   tis>pntr @
 ;
 
 
-: tis-pntr!        ( n w:tis - f = Set the stream pointer from start {>=0} or from end {<0} )
+: tis-pntr!        ( n tis -- flag = Set the stream pointer from start {>=0} or from end {<0} )
   over 0< IF
     tuck str-length@ +                 \ Determine new pointer for negative value
     swap
@@ -117,7 +118,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-pntr+!       ( n w:tis - f = Add an offset to the stream pointer )
+: tis-pntr+!       ( n tis -- flag = Add the offset u to the stream pointer )
   tuck tis-pntr@ +
   swap 
   
@@ -127,7 +128,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Reader words )
 
-: tis-set-reader  ( w:data xt w:tis - = Initialise the stream for reading using the reader callback )
+: tis-set-reader  ( x xt tis -- = Initialise the stream for reading using the reader callback xt and its data x )
   >r
   r@ tis>reader !
   r@ tis>data   !
@@ -136,7 +137,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-more   ( w:tis - f = Read more data from the reader )
+: tis-read-more   ( tis -- flag = Read more data from the reader )
   >r
   false
   r@ tis>reader @ nil<> IF
@@ -151,18 +152,18 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
       
 ( String words )
 
-: tis-reset        ( w:tis - = Reset the input stream for reading from string)
+: tis-reset        ( tis -- = Reset the input stream for reading from string)
   tis>pntr 0!
 ;
 
 
-: tis-set          ( c-addr u w:tis - = Initialise the stream for reading from a string )
+: tis-set          ( c-addr u tis -- = Initialise the stream for reading from a string )
   dup tis-reset
   str-set
 ;
 
 
-: tis-get          ( w:tis - 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
+: tis-get          ( tis -- 0 | addr u = Get the remaining characters from the stream, stream pointer is not changed )
   >r
   r@ str-length@ r@ tis-pntr@ -        \ Determine remaining length
   0 max
@@ -178,7 +179,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Stream words )
 
-: tis-eof?         ( w:tis - f = Check if the end of the stream is reached )
+: tis-eof?         ( tis -- flag = Check if the end of the stream is reached )
   >r
   r@ tis-pntr@  r@ str-length@ >= dup IF
     drop
@@ -188,7 +189,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-reduce   ( w:tis - = Reduce the stream size )
+: tis-reduce   ( tis -- = Reduce the stream size )
   >r 
   r@ tis-pntr@ 256 > IF
     0 r@ tis>pntr @!  0 r@ str-delete  \ Remove leading string and reset pntr
@@ -199,7 +200,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Fetch and next words )
 
-: tis-fetch-char   ( w:tis - false | c true = Fetch the next character from the stream )
+: tis-fetch-char   ( tis -- false | char true = Fetch the next character from the stream )
   dup tis-eof? 0= dup IF
     >r
     dup  tis-pntr@ chars
@@ -211,12 +212,12 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-next-char    ( w:tis - = Move the stream pointer one character after fetch-char )
+: tis-next-char    ( tis -- = Move the stream pointer one character after fetch-char )
   tis>pntr 1+!
 ;
 
 
-: tis-fetch-chars  ( n w:tis - 0 | addr u = Fetch maximum of n next characters from the stream )
+: tis-fetch-chars  ( n tis -- 0 | addr u = Fetch maximum of n next characters from the stream )
   >r
   BEGIN
     dup r@ str-length@ r@ tis-pntr@ - > IF
@@ -238,7 +239,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-next-chars   ( n w:tis - = Move the stream pointer n characters after fetch-chars )
+: tis-next-chars   ( n tis -- = Move the stream pointer n characters after fetch-chars )
   tis>pntr +!
 ;
 
@@ -247,7 +248,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Match words: check for starting data)
 
-: tis-imatch-char  ( c w:tis - f = Match case-insensitive a character )
+: tis-imatch-char  ( char tis -- flag = Match case-insensitive a character )
   >r
   chr-lower
   r@ tis-fetch-char IF
@@ -261,7 +262,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-cmatch-char  ( c w:tis - f = Match case-sensitive a character )
+: tis-cmatch-char  ( char tis -- flag = Match case-sensitive a character )
   >r
   r@ tis-fetch-char IF
     = dup IF
@@ -274,7 +275,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-cmatch-chars ( c-addr n w:tis - false | c true = Match one of the characters case-sensitive )
+: tis-cmatch-chars ( c-addr n tis -- false | char true = Match one of the characters in the string case-sensitive )
   >r
   r@ tis-fetch-char IF
     dup >r chr-string? r> over IF
@@ -290,7 +291,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-cmatch-string  ( c-addr n w:tis - f = Match case-sensitive a string )
+: tis-cmatch-string  ( c-addr n tis -- flag = Match case-sensitive a string )
   >r
   dup r@ tis-fetch-chars ?dup IF
     dup >r compare 0= r> over IF
@@ -305,7 +306,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-imatch-string  ( c-addr n w:tis - f = Match case-insensitive a string )
+: tis-imatch-string  ( c-addr n tis -- flag = Match case-insensitive a string )
   >r
   dup r@ tis-fetch-chars ?dup IF
     dup >r icompare 0= r> over IF
@@ -322,7 +323,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Read data words )
 
-: tis-read-char    ( w:tis - false | c true = Read character from the stream )
+: tis-read-char    ( tis -- false | char true = Read character from the stream )
   dup tis-fetch-char IF
     swap tis-next-char
     true
@@ -333,7 +334,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-all   ( w:tis - 0 | c-addr n = Read all remaining characters from the stream )
+: tis-read-all   ( tis -- 0 | c-addr n = Read all remaining characters from the stream )
   >r
   BEGIN
     r@ tis-read-more 0=                \ Read all data from the reader
@@ -353,7 +354,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-string  ( n w:tis - 0 | c-addr n = Read u characters from the stream )
+: tis-read-string  ( n tis -- 0 | c-addr n = Read n characters from the stream )
   >r
   r@ tis-fetch-chars
   dup 0> IF
@@ -363,7 +364,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-line    ( w:tis - 0 | c-addr n = Read characters till cr and/or lf )
+: tis-read-line    ( tis -- 0 | c-addr n = Read characters till cr and/or lf )
   >r
   1 r@ tis-fetch-chars dup 0> IF
     drop 0
@@ -392,7 +393,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
     
 
-: tis-read-number  ( w:tis - false | n true = Read a cell number in the current base )
+: tis-read-number  ( tis -- false | n true = Read a cell number in the current base from the stream )
   >r
   r@ tis-pntr@
   false                                \ Process leading +/-
@@ -434,7 +435,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-read-double  ( w:tis - false | d true = Read a double value in the current base )
+: tis-read-double  ( tis -- false | d true = Read a double value in the current base from the stream )
   >r
   r@ tis-pntr@
   false                                \ Process leading +/-
@@ -479,7 +480,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Private scan words )
 
-: tis-substring   ( pntr w:tis - c-addr u )
+: tis-substring   ( n tis -- c-addr u = Get a substring from the string, starting from n till tis-pntr )
   2dup str-data@ swap chars +          \ Start of string
   -rot
   tis-pntr@ swap -                     \ Length of string
@@ -488,7 +489,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Scan words: look for data in the stream )
 
-: tis-scan-char    ( c w:tis - false | c-addr u true = Read characters till c )
+: tis-scan-char    ( char tis -- false | c-addr u true = Read characters till the char )
   >r
   r@ tis-pntr@ swap                    \ Save current pointer
   
@@ -521,7 +522,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-scan-chars   ( c-addr n w:tis - false | c-addr u c true = Read characters till one of characters )
+: tis-scan-chars   ( c-addr1 n1 tis -- false | c-addr2 u2 char true = Read characters till one of characters in c-addr1 u1 )
   >r
   r@ tis-pntr@ -rot                    \ Save the current pointer
   
@@ -558,7 +559,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-scan-string  ( c-addr n w:tis - false | c-addr u true = Read characters till a string )
+: tis-scan-string  ( c-addr1 n2 tis -- false | c-addr1 u2 true = Read characters till the string c-addr1 n1 )
   >r
   r@ tis-pntr@ -rot                    \ Save the current pointer
   
@@ -595,7 +596,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 ;
 
 
-: tis-iscan-string   ( c-addr n w:tis - false | c-addr u true = Read characters till a string [case insensitive] )
+: tis-iscan-string   ( c-addr1 n1 tis -- false | c-addr2 u2 true = Read characters till the string c-addr1 n1 [case insensitive] )
   >r
   r@ tis-pntr@ -rot                    \ Save the current pointer
   
@@ -634,7 +635,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Skip words: skip data in the stream )
 
-: tis-skip-spaces  ( w:tis - n = Skip whitespace in the stream )
+: tis-skip-spaces  ( tis -- n = Skip whitespace in the stream, return the number of skipped whitespace characters )
   >r 0
   BEGIN
     r@ tis-fetch-char IF
@@ -652,7 +653,7 @@ struct: tis%       ( - n = Get the required space for the tis data structure )
 
 ( Inspection )
 
-: tis-dump         ( w:tis - = Dump the text input stream )
+: tis-dump         ( tis -- = Dump the text input stream )
   ." tis:" dup . cr
   dup tis>text str-dump
   ."  pntr  :" tis>pntr ? cr

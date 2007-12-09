@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-30 06:19:02 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -38,29 +38,26 @@ include ffl/stc.fs
 
 
 ( tmr = Timer module )
-( The tmr module implements words for using a pollable interval timer. Due to )
-( the fact that the ANS standard does not define a way to fetch milliseconds, )
-( this module has a environmental dependency.                                 )
+( The tmr module implements a pollable interval timer. Due to the fact that   )
+( the ANS standard does not define a way to fetch milliseconds, this module   )
+( has a environmental dependency.                                             )
 
 
 1 constant tmr.version
 
 
-( Private constants )
-
-
 ( Timer structure )
 
-struct: tmr%       ( - n = Get the required space for the timer data structure )
-  cell:  tmr>now             \ start of timer
-  cell:  tmr>timeout         \ timeout time
-  cell:  tmr>rem             \ remaining ms after expired? or wait
-;struct
+begin-structure tmr%       ( - n = Get the required space for the timer variable )
+  field:  tmr>now            \ start of timer
+  field:  tmr>timeout        \ timeout time
+  field:  tmr>rem            \ remaining ms after expired? or wait
+end-structure
 
 
-( Timer structure creation, initialisation and destruction )
+( Timer variable creation, initialisation and destruction )
 
-: tmr-init         ( u:timeout w:tmr - = Initialise the timer structure )
+: tmr-init         ( u tmr -- = Initialise the timer with timeout u )
   >r
       r@ tmr>timeout  !
   ms@ r@ tmr>now      !
@@ -68,29 +65,29 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 ;
 
 
-: tmr-create       ( C: "name" u:timeout -  R: - w:tmr = Create a named timer structure in the dictionary )
+: tmr-create       ( u "<spaces>name" -- ; -- tmr = Create a named timer variable in the dictionary with timeout u )
   create  here tmr% allot  tmr-init
 ;
 
 
-: tmr-new          ( u:timeout - w:tmr = Create a new timer structure on the heap )
+: tmr-new          ( u -- tmr = Create a new timer variable on the heap with timeout u )
   tmr% allocate  throw   >r r@ tmr-init r>
 ;
 
 
-: tmr-free         ( w:tmr - = Free the timer from the heap )
+: tmr-free         ( tmr -- = Free the timer from the heap )
   free throw
 ;
 
 
 ( Member words )
 
-: tmr-timeout@     ( w:tmr - u:timeout = Get the time out value )
+: tmr-timeout@     ( tmr -- u = Get the timeout value from the timer )
   tmr>timeout @
 ;
 
 
-: tmr-timer@       ( w:tmr - u:timer = Get the running time of the timer in ms, after last [re]start, expired? or wait )
+: tmr-timer@       ( tmr -- u = Get the running time u from the timer in ms, after last [re]start, expired? or wait )
   >r
   ms@ r@ tmr>now @
   2dup u< IF
@@ -105,18 +102,18 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 ( Timer words )
 
 
-: tmr-start        ( u:timeout w:tmr - = Start the timer with a timeout value )
+: tmr-start        ( u tmr -- = Start the timer with a timeout value u )
   tmr-init
 ;
 
 
-: tmr-restart      ( w:tmr - = Restart the timer with the current timeout value )
+: tmr-restart      ( tmr -- = Restart the timer with the current timeout value )
   ms@ over tmr>now  !
            tmr>rem 0!
 ;
 
 
-: tmr-expired?     ( w:tmr - f = Check if the timer is expired, if so the timer is restarted )
+: tmr-expired?     ( tmr -- flag = Check if the timer is expired, if so the timer is restarted )
   >r
   r@ tmr-timer@ r@ tmr-timeout@
   2dup u< IF
@@ -131,7 +128,7 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 ;
 
 
-: tmr-wait         ( w:tmr - = Wait till the timer expires and restart the timer )
+: tmr-wait         ( tmr -- = Wait till the timer expires and restart the timer )
   >r
   r@ tmr-timer@ r@ tmr-timeout@
   2dup u< IF
@@ -146,7 +143,7 @@ struct: tmr%       ( - n = Get the required space for the timer data structure )
 
 ( Inspection )
 
-: tmr-dump         ( w:tmr - = Dump the tmr state )
+: tmr-dump         ( tmr -- = Dump the tmr state )
   ." tmr:" dup . cr
   ."  now      :" dup tmr>now @ u. cr
   ."  timeout  :" dup tmr>timeout @ u. cr

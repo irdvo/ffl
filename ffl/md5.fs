@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.13 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/stc.fs
 
 
 ( md5 = MD5 Message Digest Algorithm )
-( The md5 module implements words for using the MD5 algorithm.)
+( The md5 module implements the MD5 algorithm.)
   
 
 1 constant md5.version
@@ -48,21 +48,21 @@ include ffl/stc.fs
 
 ( Private constants )
 
-16 constant md5.cell-size   ( - n = Size of buffer in cells )
-64 constant md5.byte-size   ( - n = Size of buffer in bytes )
+16 constant md5.cell-size   ( -- n = Size of buffer in cells )
+64 constant md5.byte-size   ( -- n = Size of buffer in bytes )
 
 
 ( MD5 Structure )
 
-struct: md5%       ( - n = Get the required space for the md5 data structure )
-  cell:  md5>a
-  cell:  md5>b
-  cell:  md5>c
-  cell:  md5>d
+begin-structure md5%       ( -- n = Get the required space for a md5 variable )
+  field:  md5>a
+  field:  md5>b
+  field:  md5>c
+  field:  md5>d
  md5.cell-size 
-  cells: md5>buffer
-  cell:  md5>length       
-;struct
+  fields: md5>buffer
+  field:  md5>length       
+end-structure
 
 
 ( Private words )
@@ -86,44 +86,44 @@ struct: md5%       ( - n = Get the required space for the md5 data structure )
 21 constant md5.s44
 
 
-: md5+f            ( x y z - r = basic MD5 F function )
+: md5+f            ( x y z -- r = basic MD5 F function )
   invert and or + +
 ;
 
 
-: md5+g            ( x y z  - r = basic MD5 G function )
+: md5+g            ( x y z  -- r = basic MD5 G function )
   invert and or + +
 ;
 
 
-: md5+h            ( x y z - r = basic MD5 H function )
+: md5+h            ( x y z -- r = basic MD5 H function )
   xor xor + +
 ;
 
 
-: md5+i            ( x y z  - r = basic MD5 I function )
+: md5+i            ( x y z  -- r = basic MD5 I function )
   invert or xor + +
 ;
 
 
-0 value md5.a        ( - a = MD5 variable local a )
-0 value md5.b        ( - b = MD5 variable local b )
-0 value md5.c        ( - c = MD5 variable local c )
-0 value md5.d        ( - d = MD5 variable local d )
-0 value md5.buf      ( - addr = Current MD5 buffer )
+0 value md5.a        ( -- a = MD5 variable local a )
+0 value md5.b        ( -- b = MD5 variable local b )
+0 value md5.c        ( -- c = MD5 variable local c )
+0 value md5.d        ( -- d = MD5 variable local d )
+0 value md5.buf      ( -- addr = Current MD5 buffer )
 
 
-2variable md5.length ( - addr = MD5 length in bits )
+2variable md5.length ( -- addr = MD5 length in bits )
 
 
-create md5.pad       ( - addr = MD5 padding )
+create md5.pad       ( -- addr = MD5 padding )
   md5.cell-size cells allot   
   md5.pad md5.cell-size cells erase   
   128 md5.pad c!  
 
 
 bigendian? [IF]
-: md5+buf@+        ( u n - u+buf[n] = Fetch and add with MD5 buffer )
+: md5+buf@+        ( u n -- u+buf[n] = Fetch and add with MD5 buffer )
   cells md5.buf + 
   dup c@
   swap char+ swap over c@ 8  lshift or
@@ -132,7 +132,7 @@ bigendian? [IF]
   +
 ;
 [ELSE]
-: md5+buf@+        ( u n - u+buf[n] = Fetch and add with MD5 buffer )
+: md5+buf@+        ( u n -- u+buf[n] = Fetch and add with MD5 buffer )
   cells md5.buf + @ +
 ;
 [THEN]
@@ -140,7 +140,7 @@ bigendian? [IF]
 
 bigendian? [IF]
 hex
-: md5!             ( w addr - = Store word on address, MD5 order )
+: md5!             ( x addr -- = Store word on address, MD5 order )
   over                 FF and over c!
   char+ over 8  rshift FF and over c!
   char+ over 10 rshift FF and over c!
@@ -148,7 +148,7 @@ hex
 ;
 decimal
 [ELSE]
-: md5!             ( w addr - = Store word on address, MD5 order )
+: md5!             ( x addr -- = Store word on address, MD5 order )
   postpone !
 ; immediate
 [THEN]
@@ -236,7 +236,7 @@ hex
 decimal
 
 
-: md5-transform    ( w:md5 - = MD5 Basic transformation )
+: md5-transform    ( md5 -- = MD5 Basic transformation )
   >r
   
   r@ md5>a @ to md5.a     \ copy to values for easy access
@@ -257,7 +257,7 @@ decimal
 ;
 
 
-: md5+cmove        ( c-addr u n:index - n:processed f:full = Move data from source to buffer )
+: md5+cmove        ( c-addr u n1 -- n2 flag = Move data from source to buffer, return number processed and full indication )
   2dup + md5.byte-size min md5.byte-size = >r   \ full buffer ?
   tuck md5.byte-size swap - min >r              \ number of chars taken from source
   chars md5.buf + r@ chars cmove                \ move source in the buffer
@@ -266,7 +266,7 @@ decimal
 
 
 hex
-: md5+#s       ( u - = Convert one MD5 number in hold area )
+: md5+#s       ( u -- = Convert one MD5 number in hold area )
   dup 18 rshift FF and 0 # # 2drop
   dup 10 rshift FF and 0 # # 2drop
   dup  8 rshift FF and 0 # # 2drop
@@ -275,9 +275,9 @@ hex
 decimal
 
 
-( MD5 structure creation, initialisation and destruction )
+( MD5 variable creation, initialisation and destruction )
 
-: md5-init     ( w:md5 - = Initialise the MD5 )
+: md5-init     ( md5 -- = Initialise the MD5 variable )
   >r
   [ hex ]
   67452301 r@ md5>a !
@@ -290,29 +290,29 @@ decimal
 ;
 
 
-: md5-create   ( C: "name" - R: - w:md5 = Create a named MD5 in the dictionary )
+: md5-create   ( "<spaces>name" -- ; -- md5 = Create a named MD5 variable ein the dictionary )
   create   here   md5% allot   md5-init
 ;
 
 
-: md5-new      ( - w:md5 = Create a new MD5 on the heap )
+: md5-new      ( -- md5 = Create a new MD5 variable on the heap )
   md5% allocate  throw  dup md5-init
 ;
 
 
-: md5-free     ( w:md5 - = Free the MD5 from the heap )
+: md5-free     ( md5 -- = Free the MD5 variable from the heap )
   free throw 
 ;
 
 
 ( MD5 words )
 
-: md5-reset        ( w:md5 - = Reset the MD5 state )
+: md5-reset        ( md5 -- = Reset the MD5 state )
   md5-init
 ;
 
 
-: md5-update       ( c-addr u w:md5 - = Update the MD5 with more data )
+: md5-update       ( c-addr u md5 -- = Update the MD5 with more data c-addr u )
   >r
   r@ md5>buffer to md5.buf
   
@@ -328,7 +328,7 @@ decimal
 ;
 
 
-: md5-finish       ( w:md5 - u1 u2 u3 u4 = Finish the MD5 calculation )
+: md5-finish       ( md5 -- u1 u2 u3 u4 = Finish the MD5 calculation, return the result u1 u2 u3 u4 )
   >r
   r@ md5>length @ dup
   #bits/byte m* swap md5.length    \ save the bit length
@@ -354,7 +354,7 @@ decimal
 ;
 
 
-: md5+to-string    ( u1 u2 u3 u4 - c-addr u = Convert MD5 result to string, using the pictured output area )
+: md5+to-string    ( u1 u2 u3 u4 -- c-addr u = Convert MD5 result to the string, using the pictured output area )
   base @ >r hex
   <# md5+#s md5+#s md5+#s md5+#s 0. #>
   r> base !
@@ -363,7 +363,7 @@ decimal
 
 ( Inspection )
 
-: md5-dump         ( w:md5 - = Dump the md5 state )
+: md5-dump         ( md5 -- = Dump the md5 variable )
   >r
   ." md5:" r@ . cr
   ."  result :" r@ md5>a @ r@ md5>b @ r@ md5>c @ r@ md5>d @ md5+to-string type cr

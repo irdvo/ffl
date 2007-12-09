@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.12 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ include ffl/msc.fs
 
 ( tos = Text output stream )
 ( The tos module implements a text output stream. It extends the str module, )
-( so all words from the str module, can be used on the tos data structure.   )
+( so all words from the str module, can be used on a tos variable.           )
 ( The data written to the stream is always appended. Alignment is normally   )
 ( done for the last written data. By using the start alignment pointers      )
 ( words the start of the alignment can be changed. The end of the alignment  )
@@ -49,23 +49,23 @@ include ffl/msc.fs
 
 ( Output stream structure )
 
-struct: tos%       ( - n = Get the required space for the tos data structure )
+begin-structure tos%       ( -- n = Get the required space for a tos variable )
   str% 
-  field: tos>text
-  cell:  tos>pntr
-  cell:  tos>msc             \ Reference to a message catalog
-;struct
+  +field tos>text
+  field:  tos>pntr
+  field:  tos>msc             \ Reference to a message catalog
+end-structure
 
 
 ( Private words )
 
-: tos-sync         ( w:tos - = Synchronize the string length and the alignment start pointer )
+: tos-sync         ( tos -- = Synchronize the string length and the alignment start pointer )
   dup  str-length@
   swap tos>pntr !
 ;
 
 
-: tos-pntr?!       ( n w:tos - = Update the alignment start pointer after range check )
+: tos-pntr?!       ( n tos -- flag = Set the alignment start pointer after range check )
   2dup str-length@ 
   over > swap 0>= and IF          \ Check for pointer range
     tos>pntr !
@@ -79,7 +79,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Output stream creation, initialisation and destruction )
 
-: tos-init         ( w:tos - = Initialise the empty output stream )
+: tos-init         ( tos -- = Initialise the empty output stream )
   dup str-init               \ Initialise the base string data structure
   dup tos-sync
       tos>msc nil!
@@ -87,24 +87,24 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-create       ( C: "name" - R: - w:tos = Create a named output stream in the dictionary )
+: tos-create       ( "<spaces>name" -- ; -- tos = Create a named output stream in the dictionary )
   create   here   tos% allot   tos-init
 ;
 
 
-: tos-new          ( - w:tos = Create a new output stream on the heap )
+: tos-new          ( -- tos = Create a new output stream on the heap )
   tos% allocate  throw  dup tos-init
 ;
 
 
-: tos-free         ( w:tos - = Free the output stream from the heap )
+: tos-free         ( tos -- = Free the output stream from the heap )
   str-free
 ;
 
 
 ( Stream words )
 
-: tos-rewrite      ( w:tos - = Rewrite the output stream )
+: tos-rewrite      ( tos -- = Rewrite the output stream )
   dup tos>text   str-clear
       tos-sync
 ;
@@ -112,12 +112,12 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Alignment start pointer words )
 
-: tos-pntr@       ( w:tos - u = Get the current alignment start pointer )
+: tos-pntr@       ( tos -- u = Get the current alignment start pointer )
   tos>pntr @
 ;
 
 
-: tos-pntr!        ( n w:tos - f = Set the alignment pointer from start [n>=0] or from end [n<0] )
+: tos-pntr!        ( n tos -- flag = Set the alignment pointer from start [n>=0] or from end [n<0], return success )
   over 0< IF
     tuck str-length@ +            \ Determine new pointer for negative value
     swap
@@ -127,7 +127,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-pntr+!       ( n w:tos - f = Add an offset to the alignment pointer )
+: tos-pntr+!       ( n tos -- flag = Add the offset n to the alignment pointer, return success )
   tuck tos-pntr@ +
   swap
   
@@ -137,31 +137,31 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Message catalog words )
 
-: tos-msc!         ( w:msc w:tos - = Set the message catalog for the output stream )
+: tos-msc!         ( msc tos -- = Set the message catalog for the output stream )
   tos>msc !
 ;
 
 
-: tos-msc@         ( w:tos - w:msc | nil = Get the message catalog for the output stream )
+: tos-msc@         ( tos -- msc | nil = Get the message catalog for the output stream )
   tos>msc @
 ;
 
 
 ( Write data words )
 
-: tos-write-char    ( c w:tos - = Write character to the stream )
+: tos-write-char    ( char tos -- = Write character to the stream )
   dup tos-sync
   str-append-char
 ;
 
 
-: tos-write-chars   ( c u w:tos - = Write u characters to the stream )
+: tos-write-chars   ( char u tos -- = Write u chars to the stream )
   dup tos-sync
   str-append-chars
 ;
 
 
-: tos-write-string  ( c-addr u w:tos - = Write string to the stream, using the message catalog if present )
+: tos-write-string  ( c-addr u tos -- = Write the string c-addr u to the stream, using the message catalog if present )
   >r
   r@ tos-sync
   r@ tos-msc@ dup nil<> IF
@@ -173,7 +173,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-write-line    ( w:tos - = Write end-of-line from config to the stream, not alignable )
+: tos-write-line    ( tos -- = Write end-of-line from config to the stream, not alignable )
   end-of-line
   count bounds ?DO
     I c@ over tos-write-char
@@ -182,7 +182,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;  
 
 
-: tos-write-number  ( n w:tos - = Write a number in the current base to the stream )
+: tos-write-number  ( n tos -- = Write the number n in the current base to the stream )
   dup tos-sync swap
   s>d
   swap over dabs
@@ -191,7 +191,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-write-double  ( d w:tos - = Write a double in the current base to the stream )
+: tos-write-double  ( d tos -- = Write the double d in the current base to the stream )
   dup tos-sync -rot
   swap over dabs
   <# #s rot sign #>
@@ -201,7 +201,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Alignment words )
 
-: tos-align        ( c:pad u:trailing u:leading w:tos - = Align the previous written data )
+: tos-align        ( char u1 u2 tos -- = Align the previous written data with padding character char, u1 trailing chars and u2 leading chars )
   >r
   r@ tos>pntr @ r@ str-length@ < IF    \ Something to align ?
     >r over r>
@@ -226,7 +226,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-align-left   ( c:pad u:width w:tos - = Align left the previous written data )
+: tos-align-left   ( char u tos -- = Align the previous written data to the left, using padding character char with width u )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
@@ -238,7 +238,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-align-right  ( c:pad u:width w:tos - = Align right the previous written data )
+: tos-align-right  ( char u tos -- = Align the previous written data to the right, using padding character char with width u )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
@@ -250,7 +250,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 ;
 
 
-: tos-center       ( c:pad u:width w:tos - = Center the previous written data )
+: tos-center       ( char u tos -- = Center the previous written data, using padding character char with width u )
   >r
   r@ str-length@ r@ tos-pntr@ -        \ Determine length previous written text
   - dup 0> IF                          \ If width > length previous written text then
@@ -264,7 +264,7 @@ struct: tos%       ( - n = Get the required space for the tos data structure )
 
 ( Inspection )
 
-: tos-dump         ( w:tos - = Dump the text output stream )
+: tos-dump         ( tos -- = Dump the text output stream )
   ." tos:" dup . cr
   dup tos>text str-dump
   ."  pntr  :" dup tos>pntr ? cr

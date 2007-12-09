@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -39,63 +39,63 @@ include ffl/bct.fs
 ( act = AVL binary tree cell module )
 ( The act module implements an AVL binary tree with the key and data cell      )
 ( based. The act module is a specialisation of the bct module. As a result the )
-( bci iterator can be used as iterator for the act tree. The implementation is )
+( bci iterator can be used as iterator on the act tree. The implementation is  )
 ( non-recursive.                                                               )
 
 
 1 constant act.version
 
 
-bct% constant act%      ( - n = Get the required space for the act structure )
+bct% constant act%      ( -- n = Get the required space for an act variable )
 
 
 ( Tree creation, initialisation and destruction )
 
-: act-init         ( w:data w:key w:act - = Initialise the act structure with a key and data )
+: act-init         ( act -- = Initialise the act tree )
   bct-init
 ;
 
 
-: act-create       ( C: "name" -  R: - w:act = Create a named binary tree in the dictionary )
+: act-create       ( "<spaces>name" -- ; -- act = Create a named tree in the dictionary )
   bct-create
 ;
 
 
-: act-new          ( - w:act = Create a new binary tree on the heap )
+: act-new          ( -- act = Create a new tree on the heap )
   bct-new
 ;
 
 
-: act-free         ( w:act - = Free the tree node from the heap )
+: act-free         ( act -- = Free the tree from the heap )
   bct-free
 ;
 
 
 ( Member words )
 
-: act-length@      ( w:act - u = Get the number of elements in the tree )
+: act-length@      ( act -- u = Get the number of elements in the tree )
   bct-length@
 ;
 
 
-: act-empty?       ( w:act - f = Check for an empty tree )
+: act-empty?       ( act -- flag = Check for an empty tree )
   bct-empty?
 ;
 
 
-: act-compare@     ( w:act - xt = Get the compare execution token for comparing keys )
+: act-compare@     ( act -- xt = Get the compare execution token for comparing keys )
   bct-compare@
 ;
 
 
-: act-compare!     ( xt w:act - = Set the compare execution token for comparing keys )
+: act-compare!     ( xt act -- = Set the compare execution token for comparing keys )
   bct-compare!
 ;
 
 
 ( Private words )
 
-: act-rotate-left  ( w:root w:act - w:root' = Rotate nodes to the left for balance )
+: act-rotate-left  ( acn1 act -- acn2 = Rotate nodes to the left for balance, return the root node of the subtree )
   >r
   dup bcn-right@                       \ root' = root.right
   2dup bcn-left@ swap bcn>right !      \ root.right = root'.left
@@ -119,7 +119,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-rotate-right ( w:root w:act - w:root' = Rotate nodes to the right for balance )
+: act-rotate-right ( acn1 act -- acn2 = Rotate nodes to the right for balance, return the new root node of the subtree )
   >r
   dup bcn-left@                        \ root' = root.left
   2dup bcn-right@ swap bcn>left !      \ root.left = root'.right
@@ -143,7 +143,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-heavy-left   ( w:acn w:act - w:acn = Change the tree if tree is left heavy )
+: act-heavy-left   ( acn1 act -- acn2 = Change the tree if tree is left heavy, return the new root node of the subtree)
   >r
   dup bcn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
     dup acn>balance 0!                 \   node.balance = equal
@@ -170,7 +170,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-heavy-right  ( w:acn w:act - w:acn = Change the tree if tree is right heavy )
+: act-heavy-right  ( acn1 act -- acn2 = Change the tree if tree is right heavy, return the new root node of the subtree )
   >r
   dup bcn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
     dup acn>balance 0!                 \   node.balance = equal
@@ -197,7 +197,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-grown-left   ( w:acn w:act - w:acn f:rebalance? = Update balance for the node after grown to the left )
+: act-grown-left   ( acn1 act -- acn2 flag = Update balance for the node after grown to the left, return new root subtree and rebalance flag )
   >r
   dup acn-balance@ ?dup 0= IF               \ If this node was balanced Then
     -1 over acn>balance !                   \   Heavy to the left
@@ -214,7 +214,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-grown-right  ( w:acn w:act - w:acn f:rebalance? = Update balance for the node after grown to the right )
+: act-grown-right  ( acn1 act -- acn2 flag = Update balance for the node after grown to the right, return new root subtree and rebalance flag )
   >r
   dup acn-balance@ ?dup 0= IF               \ If this node was balanced Then
     1 over acn>balance !                    \   Heavy to the right
@@ -231,7 +231,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
  
-: act-replace-node ( w:acn - w:acn = Replace the node with another node )
+: act-replace-node ( acn1 -- acn2 = Replace the node with another node )
   dup bcn-left@ nil<> over bcn-right@ nil<> AND IF \ Both branches not nil Then
     dup acn-balance@ 0< IF                  \ If subtree is left heavy Then
       dup bcn-left@ bct-greatest-node       \   Find the replacement in the left subtree
@@ -245,7 +245,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-light-right  ( w:acn w:act - w:acn f:rebalance = Change the tree if tree is right light )
+: act-light-right  ( acn1 act -- acn2 flag = Change the tree if tree is right light, return new root subtree and rebalance flag )
   >r
   dup bcn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
     dup acn>balance 0!                 \   node.balance = equal
@@ -281,7 +281,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-light-left   ( w:acn w:act - w:acn f:rebalancing? = Change the tree if tree is left light )
+: act-light-left   ( acn1 act -- acn2 flag = Change the tree if tree is left light, return new root subtree and rebalance flag )
   >r
   dup bcn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
     dup acn>balance 0!                 \   node.balance = equal
@@ -317,7 +317,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-shrunk-left   ( w:acn w:act - w:acn f:rebalance? = Update balance for the node after shrunk to the left )
+: act-shrunk-left   ( acn1 act -- acn2 flag = Update balance for the node after shrunk to the left, return new root subtree and rebalance flag )
   >r
   dup acn-balance@ ?dup 0= IF               \ If this node was balanced Then
     1 over acn>balance !                    \   Heavy to the right
@@ -334,7 +334,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-shrunk-right  ( w:acn w:act - w:acn f:rebalance? = Update balance for the node after shrunk to the right )
+: act-shrunk-right  ( acn1 act -- acn2 flag = Update balance for the node after shrunk to the right, return new root subtree and rebalance flag )
   >r
   dup acn-balance@ ?dup 0= IF               \ If this node was balanced Then
     -1 over acn>balance !                   \   Heavy to the left
@@ -351,7 +351,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-shrunk       ( w:acn w:act - = Rebalance after the tree is shrunk )
+: act-shrunk       ( acn act -- = Rebalance after the tree is shrunk )
   >r
   dup bcn-parent@ true               \   Balance the tree
   BEGIN
@@ -371,7 +371,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
    
 ( Tree words )
 
-: act-insert       ( w:data w:key w:act - = Insert data with a key in the tree )
+: act-insert       ( x1 x2 act -- = Insert data x1 with key x2 in the tree )
   >r ['] acn-new -rot r@
   bct-insert-node
   
@@ -394,7 +394,7 @@ bct% constant act%      ( - n = Get the required space for the act structure )
 ;
 
 
-: act-delete       ( w:key w:act - false | w:data true = Delete the key from the tree )
+: act-delete       ( x1 act -- false | x2 true = Delete key x1 from the tree, return the data x2 if found )
   >r
   r@ bct-search-node
   dup nil<> IF
@@ -412,24 +412,24 @@ bct% constant act%      ( - n = Get the required space for the act structure )
   rdrop
 ;
 
-: act-get          ( w:key w:act - false | w:data true = Get the data from the tree )
+: act-get          ( x1 act -- false | x2 true = Get the data x2 related to key x1 from the tree )
   bct-get
 ;
 
 
-: act-has?         ( w:key w:act - f = Check if the key is present in the tree )
+: act-has?         ( x1 act -- flag = Check if the key x1 is present in the tree )
   bct-has?
 ;
 
 
-: act-execute      ( ... xt w:act - ... = Execute xt for every key and data in the tree )
+: act-execute      ( i*x xt act -- i*x = Execute xt for every key and data in the tree )
   bct-execute
 ;
 
 
 ( Inspection )
 
-: act-dump         ( w:act - = Dump the tree node structure )
+: act-dump         ( act -- = Dump the tree variable )
   bct-dump
 ;
 
