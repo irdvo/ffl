@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/hnn.fs
 ( hnt = Base Hash Table )
 ( The hnt module implements a base hash table that can handle variable size  )
 ( nodes. It is the base module for more specialised hash tables, for example )
-( the hct module.                                                            )
+( the cell hash table [hct].                                                 )
   
 
 1 constant hnt.version
@@ -45,17 +45,17 @@ include ffl/hnn.fs
 
 ( Hash table structure )
 
-struct: hnt%       ( - n = Get the required space for the hash table structure )
-  cell: hnt>table        \ array of pointers to the nodes
-  cell: hnt>size         \ number of elements in the array of pointers
-  cell: hnt>length       \ number of nodes in the hash table
-  cell: hnt>load         \ load factor (* 100)
-;struct
+begin-structure hnt%       ( -- n = Get the required space for a hash table variable )
+  field: hnt>table      \ array of pointers to the nodes
+  field: hnt>size       \ number of elements in the array of pointers
+  field: hnt>length     \ number of nodes in the hash table
+  field: hnt>load       \ load factor (* 100)
+end-structure
 
 
 ( Private words )
 
-: hnt-allocate-table ( u - w:table = allocate a table with size u )
+: hnt-allocate-table ( u -- a-addr = Allocate a table with size u )
   dup 0= exp-invalid-parameters AND throw  
   
   dup cells allocate throw             \ table
@@ -68,19 +68,19 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ;
 
 
-: hnt-table@       ( w:hnt - w:table = Get the table )
+: hnt-table@       ( hnt -- a-addr = Get the table )
   hnt>table @
 ;
 
 
-: hnt-size@        ( w:hnt - u:size = Get the size )
+: hnt-size@        ( hnt -- u = Get the size of the table )
   hnt>size @
 ;
 
 
 ( Hash table creation, initialisation and destruction )
 
-: hnt-init     ( u w:hnt - = Initialise the hash table with an initial size )
+: hnt-init     ( u hnt -- = Initialise the hash table with an initial size u )
       dup  hnt>length 0!
   100 over hnt>load    !     \ load = 100%
       
@@ -91,17 +91,17 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ;
      
 
-: hnt-create   ( C: "name" u - R: - w:hnt = Create a named hash table with an initial size in the dictionary )
+: hnt-create   ( u "<spaces>name" -- ; -- hnt = Create a named hash table with an initial size u in the dictionary )
   create   here   hnt% allot   hnt-init
 ;
 
 
-: hnt-new      ( u - w:hnt = Create a hash table with an initial size on the heap )
+: hnt-new      ( u -- hnt = Create a hash table with an initial size u on the heap )
   hnt% allocate  throw  tuck hnt-init
 ;
 
 
-: hnt-free     ( w:hnt - = Free the table from the heap )
+: hnt-free     ( hnt -- = Free the hash table from the heap )
   dup hnt-table@             \ Free the nodes:
   over hnt-size@ 0 DO        \ Do for the whole table
     dup @
@@ -124,7 +124,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 
 ( Module words )
 
-: hnt+hash     ( c-addr u - u = Calculate the hash value of a key )
+: hnt+hash     ( c-addr1 u1 -- u2 = Calculate the hash value of the key c-addr1 u1 )
   0 -rot
   bounds ?DO
     dup 5 lshift +
@@ -136,21 +136,21 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
   
 ( Private words )
 
-: hnt-table-pntr ( u:hash w:hnt - w:pntr = Get pointer in table for hash )
+: hnt-table-pntr ( u hnt -- a-addr = Get the pointer in table for hash u )
   >r 
   r@ hnt-size@ mod abs cells
   r> hnt-table@ +
 ;
 
 
-: hnt-table-bounds ( u:start w:hnt - w:table-end w:table-start = Get the table bounds for DO )
+: hnt-table-bounds ( u hnt -- a-addr1 a-addr2 = Get the table bounds for DO, return the start a-addr1 and end a-addr2 )
   dup hnt-table@ >r
   hnt-size@ cells r@ +       \ table-end
   swap cells r> +            \ table-start
 ;
 
 
-: hnt-insert-node ( u:size w:table w:hnn - = Insert the node in the table )
+: hnt-insert-node ( u a-addr hnn -- = Insert the node hnn in the table a-addr with size u )
   >r
   swap
   r@ hnn-hash@
@@ -169,27 +169,27 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 
 ( Member words )
 
-: hnt-empty?   ( w:hnt - f = Check for an empty table )
+: hnt-empty?   ( hnt -- flag = Check for an empty table )
   hnt>length @ 0=  
 ;
 
 
-: hnt-length@  ( w:hnt - u = Get the number of nodes in the table )
+: hnt-length@  ( hnt -- u = Get the number of nodes in the table )
   hnt>length @
 ;
 
 
-: hnt-load@    ( w:hnt - u = Get the load factor [*100%] )
+: hnt-load@    ( hnt -- u = Get the load factor [*100%] )
   hnt>load @
 ;
 
 
-: hnt-load!    ( u w:hnt - = Set the load factor [*100%] )
+: hnt-load!    ( u hnt -- = Set the load factor [*100%] )
   hnt>load !
 ;
 
 
-: hnt-size!    ( u w:hnt - = Resize the hash table )
+: hnt-size!    ( u hnt -- = Resize the hash table )
   >r
   dup hnt-allocate-table          \ allocate the new table
   0 r@ hnt-table-bounds DO        \ S: old-table new-size new-table
@@ -212,7 +212,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 
 ( Hash table words )
 
-: hnt-search   ( c-addr u w:hnt - u:hash w:hnn = Search the node based on the key )
+: hnt-search   ( c-addr u hnt -- u hnn = Search the node based on the key, return the hash u and the node hnn )
   \ over 0= exp-invalid-parameters AND throw
   
   >r
@@ -237,7 +237,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ;
 
 
-: hnt-insert   ( w:hnn w:hnt - = Insert a node with a key in the table, double keys are NOT checked )
+: hnt-insert   ( hnn hnt -- = Insert the node hnn in the table, double keys are NOT checked )
   >r 
                                       
   r@ hnt-size@ swap          \ offset in table, based on hash
@@ -255,7 +255,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ;
 
 
-: hnt-delete   ( c-addr u w:hnt - nil | w:hnn = Delete the key from the table )
+: hnt-delete   ( c-addr u hnt -- nil | hnn = Delete the key c-addr u from the table, return the deleted node hnn )
   >r
   r@ hnt-search nip
   
@@ -280,19 +280,19 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 ;
 
 
-: hnt-get      ( c-addr u w:hnt - nil | hnn = Get the node from the table )
+: hnt-get      ( c-addr u hnt -- nil | hnn = Get the node related to the key c-addr u from the table, return the node hnn )
   hnt-search nip
 ;
 
 
-: hnt-has?     ( c-addr u w:hnt - f = Check if key is present in the table )
+: hnt-has?     ( c-addr u hnt -- flag = Check if the key c-addr u is present in the table )
   hnt-search nip nil<> 
 ;
 
 
 ( Special words )
 
-: hnt-execute      ( ... xt w:hnt - ... = Execute xt for every key and node in table )
+: hnt-execute      ( i*x xt hnt -- j*x = Execute xt for every key and node in table )
   0 swap hnt-table-bounds DO  \ Do for the whole table
     I @
     BEGIN
@@ -313,7 +313,7 @@ struct: hnt%       ( - n = Get the required space for the hash table structure )
 
 ( Inspection )
 
-: hnt-dump     ( w:hnt - = Dump the table )
+: hnt-dump     ( hnt -- = Dump the hash table )
   ." hnt:" dup . cr
   ."  table :" dup hnt>table  ?  cr
   ."  size  :" dup hnt>size   ?  cr

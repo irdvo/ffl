@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -33,12 +33,12 @@ include ffl/config.fs
 include ffl/tos.fs
 
 ( xos = XML/HTML writer )
-( The xos module implements words for writing xml and html to an output      )
-( stream. The xos module extends the tos module, so the xos words works on   )
-( tos variables. The module translates the normal entity references: &lt;,   )
-( &gt;, &quot;, &amp; and '. All other entity references should be written   )
-( with the xos-write-raw-text word. Note: balancing of start and end tags    )
-( is not checked, so the module can also be used to write html output.       )
+( The xos module implements an xml and html writer. The xos module extends   )
+( the tos module with extra words, so the xos words work on tos variables.   )
+( The module translates the normal entity references: &lt;, &gt;, &quot;,    )
+( &amp; and '. All other entity references should be written with the word   )
+( xos-write-raw-textd. Note: balancing of start and end tags is not checked, )
+( so the module can also be used to write html output.                       )
 
 
 1 constant xos.version
@@ -46,7 +46,7 @@ include ffl/tos.fs
 
 ( Private words )
 
-: xos-write-string   ( c-addr u w:tos - = Write normal xml text with entity reference translation )
+: xos-write-string   ( c-addr u tos -- = Write the normal xml text c-addr u with entity reference translation )
   -rot
   bounds ?DO
     I c@ 
@@ -62,7 +62,7 @@ include ffl/tos.fs
   drop
 ;
 
-: xos-write-name-attr  ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml name with n attributes )
+: xos-write-name-attr  ( c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- = Write a xml tag c-addr u with the n attributes c-addr* n* and values c-addr* n*)
   >r
   r@ tos-write-string 
   BEGIN
@@ -90,7 +90,7 @@ include ffl/tos.fs
 
 ( xml writer words )
 
-: xos-write-start-xml   ( c-addr:standalone u c-addr:encoding u c-addr:version u w:tos - = Write the start of a xml document )
+: xos-write-start-xml   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- = Write the start of a xml document with the version c-addr3 u3, the encoding c-addr2 u2 and standalone c-addr1 u1 )
   >r
   s" <?xml version=" r@ tos-write-string
   [char] " r@ tos-write-char
@@ -118,12 +118,12 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-text   ( c-addr u w:tos - = Write normal xml text with translation to the default entity references )
+: xos-write-text   ( c-addr u tos -- = Write normal xml text c-addr u with translation to the default entity references )
   xos-write-string
 ;
 
 
-: xos-write-start-tag ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml start tag with n attributes )
+: xos-write-start-tag ( c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- = Write the xml start tag c-addr u with n attributes and values c-addr* u* )
   >r
   [char] < r@ tos-write-char
            r@ xos-write-name-attr
@@ -131,7 +131,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-end-tag ( c-addr u w:tos - = Write a xml end tag )
+: xos-write-end-tag ( c-addr u tos -- = Write the xml end tag c-addr u )
   >r
   [char] < r@ tos-write-char
   [char] / r@ tos-write-char
@@ -140,7 +140,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-empty-element   ( c-addr u c-addr u ... n c-addr u w:tos - = Write a xml start and end tag with n attributes )
+: xos-write-empty-element   ( c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- = Write the xml start and end tag c-addr u with n attributes and values c-addr* u*)
   >r
   [char] < r@ tos-write-char
            r@ xos-write-name-attr
@@ -149,12 +149,12 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-raw-text ( c-addr u w:tos - = Write unprocessed xml text )
+: xos-write-raw-text ( c-addr u tos -- = Write unprocessed xml text )
   tos-write-string
 ;
 
 
-: xos-write-comment ( c-addr u w:tos - = Write xml comment )
+: xos-write-comment ( c-addr u tos -- = Write a xml comment )
   >r
   s" <!--" r@ tos-write-string
           r@ tos-write-string
@@ -162,7 +162,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-cdata   ( c-addr u w:tos - = Write a xml CDATA section )
+: xos-write-cdata   ( c-addr u tos -- = Write a xml CDATA section )
   >r
   s" <![CDATA[" r@ tos-write-string
                 r@ tos-write-string
@@ -170,7 +170,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-proc-instr ( ...  c-addr:value u c-addr:name u n c-addr:target u w:tos - = Write a xml processing instruction )
+: xos-write-proc-instr ( c-addr1 u1 c-addr2n u2n n c-addr u tos -- = Write a xml processing instruction with target c-addr u and n attributes and values c-addr* u* )
   >r
   s" <?" r@ tos-write-string
          r@ xos-write-name-attr
@@ -178,7 +178,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-internal-dtd   ( c-addr:markup u c-addr:name u w:tos - = Write an internal document type definition )
+: xos-write-internal-dtd   ( c-addr1 u1 c-addr2 u2 tos -- = Write an internal document type definition with name c-addr2 u2 and markup c-addr1 u1 )
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string
@@ -188,7 +188,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-system-dtd   ( c-addr:system u c-addr:name u w:tos - = Write a system document type definition )
+: xos-write-system-dtd   ( c-addr1 u1 c-addr2 u2 tos -- = Write a system document type definition with name c-addr2 u2 and system c-addr1 u1 )
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string
@@ -200,7 +200,7 @@ include ffl/tos.fs
 ;
 
 
-: xos-write-public-dtd   ( c-addr:system u c-addr:publicid u c-addr:name u w:tos - = Write a public document type definition )
+: xos-write-public-dtd   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- = Write a public document type definition with name c-addr3 u3, public-id c-addr2 u2 and system c-addr1 u1 )
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -37,9 +37,9 @@ include ffl/str.fs
 
 
 ( gmo = Gettexts mo-file import )
-( The gmo module implements words for importing the contents of a gettexts   )
-( mo-file into a message catalog. The mo-file uses 4 byte pointers and 1     )
-( byte characters, so this module has an environmental dependency.           )
+( The gmo module implements the import of the contents of a gettexts mo-file )
+( into a message catalog. The mo-file uses 4 byte pointers and 1 byte        )
+( characters, so this module has an environmental dependency.                )
 
 
 1 constant gmo.version
@@ -47,34 +47,34 @@ include ffl/str.fs
 
 ( Private structures )
 
-struct: gmo%hdr%
-  cell:     gmo>hdr>magic         \ Magic number 
-  cell:     gmo>hdr>version       \ File version
-  cell:     gmo>hdr>number        \ Number of entries
-  cell:     gmo>hdr>msg-off       \ Offset for first message
-  cell:     gmo>hdr>trn-off       \ Offset for first translation
-;struct
+begin-structure gmo%hdr%
+  field:    gmo>hdr>magic         \ Magic number 
+  field:    gmo>hdr>version       \ File version
+  field:    gmo>hdr>number        \ Number of entries
+  field:    gmo>hdr>msg-off       \ Offset for first message
+  field:    gmo>hdr>trn-off       \ Offset for first translation
+end-structure
  
-struct: gmo%pair%
-  cell:     gmo>pair>len          \ Message length
-  cell:     gmo>pair>off          \ Message offset
-;struct
+begin-structure gmo%pair%
+  field:    gmo>pair>len          \ Message length
+  field:    gmo>pair>off          \ Message offset
+end-structure
 
-struct: gmo%
+begin-structure gmo%
   gmo%hdr%
-  field:    gmo>hdr               \ mo-file header
-  cell:     gmo>msgs              \ Messages
-  cell:     gmo>trns              \ Translations
-  cell:     gmo>file              \ File
-  cell:     gmo>msc               \ Message catalog
-  cell:     gmo>msg               \ message string
-  cell:     gmo>trn               \ Translation string
-;struct
+  +field    gmo>hdr               \ mo-file header
+  field:    gmo>msgs              \ Messages
+  field:    gmo>trns              \ Translations
+  field:    gmo>file              \ File
+  field:    gmo>msc               \ Message catalog
+  field:    gmo>msg               \ message string
+  field:    gmo>trn               \ Translation string
+end-structure
 
 
 ( Private words )
 
-: gmo-new  ( w:msc w:fileid - w:gmo = Build the gmo structure )
+: gmo-new  ( msc fileid -- gmo = Build the gmo variable with the message catalog and the file )
   
   gmo% allocate throw
   
@@ -100,7 +100,7 @@ struct: gmo%
 ;
 
 
-: gmo-free  ( w:gmo - = Free the gmo structure)
+: gmo-free  ( gmo -- = Free the gmo variable )
   
   dup gmo>file @ close-file drop
   
@@ -116,7 +116,7 @@ struct: gmo%
 ;
 
   
-: gmo-read-header  ( w:gmo - 0 | ior = Read the header from the mo-file)
+: gmo-read-header  ( gmo -- 0 | ior = Read the header from the mo-file )
   >r
   
   r@ gmo>hdr gmo%hdr% r@ gmo>file @ read-file ?dup 0= IF
@@ -164,7 +164,7 @@ struct: gmo%
 ;  
 
 
-: gmo-read-msg    ( w:pair w:str w:file - 0 | ior = Read one message from the mo-file into the string )
+: gmo-read-msg    ( pair str fileid -- 0 | ior = Read one message from the mo-file into the string )
   rot 
   dup gmo>pair>len @ >r                     \ Save length of message
   
@@ -195,7 +195,7 @@ struct: gmo%
 ;
 
 
-: gmo-read-msgs   ( w:gmo - 0 | ior = Read the messages from the mo-file and stores them in the message catalog )
+: gmo-read-msgs   ( gmo -- 0 | ior = Read the messages from the mo-file and stores them in the message catalog )
   >r
   
   r@ gmo>trns @                   \ Translation pointer
@@ -226,7 +226,7 @@ struct: gmo%
 
 ( Import )
 
-: gmo-read  ( c-addr u m:msc - 0 | ior = Read a mo-file and store the contents in the message catalog )
+: gmo-read  ( c-addr u msc -- 0 | ior = Read the mo-file c-addr u and store the contents in the message catalog msc )
   -rot
   
   r/o bin open-file ?dup 0= IF

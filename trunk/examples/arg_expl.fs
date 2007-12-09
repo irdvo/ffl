@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-09 17:31:07 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -68,7 +68,7 @@ false                               \ Parameter -> false
 arg1 arg-add-option
 
 
-: parse-options ( - )
+: parse-options ( -- )
   BEGIN
     arg1 arg-parse                 \ parse the next argument
     dup arg.done <> over arg.error <> AND  \ stop parsing when ready or after an error

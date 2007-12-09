@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 18:11:06 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -87,13 +87,13 @@ create est-table
        0 c,     \ z
   
        
-: est-add-char   ( ch c-addr - = Add the character to the counted string )
+: est-add-char   ( char c-addr -- = Add the char to the counted string )
   tuck count + c!
   dup c@ 1+ swap c!
 ;
 
 
-: est-add-2hex   ( c-addr u c-addr - c-addr' u' = Add a character in two hex digits to the counted string )
+: est-add-2hex  ( c-addr1 u1 c-addr2 -- c-addr3 u3 = Read a two hex digit from string c-addr1 u1, convert it to a character and store it in c-addr2 and return the string after the two digits )
   base @ >r                  \ Save current base
   >r
   hex
@@ -109,7 +109,7 @@ create est-table
 
 
 [UNDEFINED] place [IF]
-: place   ( c-addr1 u1 c-addr2 - = Place string1 at address c-addr2 as counted string )
+: place   ( c-addr1 u1 c-addr2 -- = Place string c-addr1 u1 at address c-addr2 as counted string )
   2dup c!
   char+ swap cmove
 ;
@@ -119,7 +119,7 @@ create est-table
 ( String words )
 
 [UNDEFINED] parse-esc [IF]
-: parse-esc   ( c-addr u c-addr - c-addr' u' = Parse a escaped character )
+: parse-esc   ( c-addr1 u1 c-addr2 -- c-addr3 u3 = Parse the escaped character in string c-addr1 u1, store the result in string c-addr2 and return the remaining string c-addr3 u3 )
   over 0<> IF
     >r
     over c@
@@ -153,7 +153,7 @@ create est-table
 
 
 [UNDEFINED] parse\" [IF]
-: parse\"   ( - c-addr u = Parse the input stream for a escaped string )
+: parse\"   ( "ccc<quote>" -- c-addr u = Parse the input stream for a escaped string )
   source >in @ /string tuck
   pad >r
   0 r@ c!                    \ Length destination = 0
@@ -172,27 +172,27 @@ create est-table
       1 /string
     THEN
   REPEAT
-  dup IF 1+ THEN            \ Skip "
+  nip
+  dup IF 1- THEN            \ Skip "
   - >in +!                  \ Store processed chars
-  drop
   r> count                  \ Parsed string
-;
+  ;
 [THEN]
 
 
 [UNDEFINED] s\" [IF]
-: s\"   ( "..." - c-addr u = Create a string with escaped characters )
+: s\"   ( "ccc<quote>" -- c-addr u = Create a string with escaped characters )
   parse\" state @ IF
     postpone sliteral
   ELSE
-    dup allocate throw swap 2>r 2r@ cmove 2r>
+    dup chars allocate throw swap 2>r 2r@ cmove 2r>
   THEN
 ; immediate
 [THEN]
 
 
 [UNDEFINED] ,\" [IF]
-: ,\"   ( "..." - = Store a string with escaped characters in the dictionary )
+: ,\"   ( "ccc<quote>" -- = Store a string with escaped characters in the dictionary )
   parse\"
   here 
   over char+ allot

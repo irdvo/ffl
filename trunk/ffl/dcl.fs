@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-01 18:14:16 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -44,31 +44,32 @@ include ffl/dcn.fs
 
 ( List structure )
 
-struct: dcl%       ( - n = Get the required space for the dcl data structure )
-  dnl% field: dcl>dnl        \ Extend the base list with ..
-       cell:  dcl>compare    \ .. a compare token
-;struct
+begin-structure dcl%       ( -- n = Get the required space for a dcl variable )
+  dnl% 
+  +field  dcl>dnl       \ Extend the base list with ..
+  field:  dcl>compare   \ .. a compare token
+end-structure
 
 
 ( List creation, initialisation and destruction )
 
-: dcl-init     ( w:dcl - = Initialise the dcl-list )
+: dcl-init     ( dcl -- = Initialise the dcl list )
   dup dnl-init
   ['] <=> swap dcl>compare !  \ for sorting
 ;
 
 
-: dcl-create   ( C: "name" - R: - w:dcl = Create a named dcl-list in the dictionary )
+: dcl-create   ( "<spaces>name" -- ; -- dcl = Create a named dcl list in the dictionary )
   create   here   dcl% allot   dcl-init
 ;
 
 
-: dcl-new      ( - w:dcl = Create a new dcl-list on the heap )
+: dcl-new      ( -- dcl = Create a new dcl list on the heap )
   dcl% allocate  throw  dup dcl-init
 ;
 
 
-: dcl-delete-all ( w:dcl - = Delete and free all nodes in the list )
+: dcl-delete-all ( dcl -- = Delete and free all nodes in the list )
   BEGIN
     dup dnl-pop dup nil<>    \ Pop last node
   WHILE
@@ -78,7 +79,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 ;
 
 
-: dcl-free     ( w:dcl - = Free the list from the heap, including the nodes )
+: dcl-free     ( dcl -- = Free the list from the heap, including the nodes )
   dup dcl-delete-all
   
   free  throw
@@ -87,65 +88,65 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 ( Member words )
 
-: dcl-empty?     ( w:dcl - f = Check for empty list )
+: dcl-empty?     ( dcl -- flag = Check for empty list )
   dnl-empty?
 ;
 
 
-: dcl-length@    ( w:dcl - u = Get the number of nodes in the list )
+: dcl-length@    ( dcl -- u = Get the number of nodes in the list )
   dnl-length@
 ;
 
 
-: dcl-compare!   ( xt w:dcl - = Set the compare execution token for sorting the list )
+: dcl-compare!   ( xt dcl -- = Set the compare execution token for sorting the list )
   dcl>compare !
 ;
 
 
-: dcl-compare@   ( w:dcl - xt = Get the compare execution token for sorting the list )
+: dcl-compare@   ( dcl -- xt = Get the compare execution token for sorting the list )
   dcl>compare @
 ;
 
 
 ( List words )
 
-: dcl-append     ( w:data w:dcl - = Append the cell data in the list )
+: dcl-append     ( x dcl -- = Append the cell data x in the list )
   >r dcn-new r> dnl-append
 ;
 
 
-: dcl-prepend    ( w:data w:dcl - = Prepend the cell data in the list )
+: dcl-prepend    ( x dcl -- = Prepend the cell data x in the list )
   >r dcn-new r> dnl-prepend
 ;
 
 
 ( Index words )
 
-: dcl-index?   ( n:index w:dcl - f = Check if index is valid for the list )
+: dcl-index?   ( n dcl -- flag = Check if the index n is valid for the list )
   dnl-index?
 ;
 
 
-: dcl-set      ( w:data n:index w:dcl - = Set the cell data in the indexth node in the list )
+: dcl-set      ( x n dcl -- = Set the cell data x in the nth node in the list )
   dnl-get                    \ Find the node
   dup nil= exp-invalid-state AND throw
   dcn-cell!                  \ Store the cell
 ;
 
 
-: dcl-get      ( n:index w:dcl - w:data = Get the cell data from the indexth node from the list )
+: dcl-get      ( n dcl -- x = Get the cell data x from the nth node from the list )
   dnl-get                    \ Find the node
   dup nil= exp-invalid-state AND throw
   dcn-cell@                  \ Return the data
 ;
 
 
-: dcl-insert   ( w n:index w:dcl - = Insert cell data at the indexth node in the list )
+: dcl-insert   ( x n dcl -- = Insert cell data x at the nth node in the list )
   2>r dcn-new 2r> dnl-insert
 ;
 
 
-: dcl-delete   ( n:index w:dcl - w = Delete the indexth node from the list )
+: dcl-delete   ( n dcl -- x = Delete the nth node from the list, return the cell data x )
   dnl-delete                 \ Delete the node from the list
   dup  nil= exp-invalid-state AND throw
   dup  dcn-cell@             \ Fetch the data
@@ -155,7 +156,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 ( Special words )
 
-: dcl-count    ( w:data w:dcl - u = Count the occurences of cell data in the list )
+: dcl-count    ( x dcl -- u = Count the number of occurences of the cell data x in the list )
   0 >r                       \ count = 0
   dnl-first@                 \ walk = first
   BEGIN
@@ -172,7 +173,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 ;
 
 
-: dcl-execute      ( ... xt w:dcl - ... = Execute xt for every cell data in list )
+: dcl-execute      ( i*x xt dcl -- j*x = Execute xt for every cell data in list )
   dnl-first@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -187,14 +188,14 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 ;
 
 
-: dcl-reverse  ( w:dcl - = Reverse or mirror the list )
+: dcl-reverse  ( dcl -- = Reverse or mirror the list )
   dnl-reverse
 ;
 
 
 ( Private words )
 
-: dcl-search   ( w:data w:dcl - n:index w:dcn = Search for the first element with the data )
+: dcl-search   ( x dcl -- n dcn = Search for the first element with the cell data x, return offset and node )
   0 -rot                     \ index = 0
   dnl-first@                 \ walk = first
   BEGIN
@@ -213,7 +214,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 ( Search words )
 
-: dcl-find     ( w:data w:dcl - n:index = Find the first index for the cell data in the list, -1 for not found )
+: dcl-find     ( x dcl -- n = Find the first index for the cell data x in the list, -1 for not found )
   dcl-search
   
   nil= IF                    \ if walk = nil then
@@ -222,12 +223,12 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 ;
 
 
-: dcl-has?     ( w:data w:dcl - f = Check if the cell data is present in the list )
+: dcl-has?     ( x dcl -- flag = Check if the cell data x is present in the list )
   dcl-search nip nil<>
 ;
 
 
-: dcl-remove   ( w:data w:dcl - f = Remove the first occurence of the cell data from the list )
+: dcl-remove   ( x dcl -- flag = Remove the first occurence of the cell data x from the list, return success )
   tuck dcl-search nip        \ Search the cell data
   dup nil<> IF               \ If dcn <> nil then
     dup rot dnl-remove       \  Remove from list
@@ -242,7 +243,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 ( Sort words )
 
-: dcl-insert-sorted   ( w:data w:dcl - = Insert the cell data sorted in the list )
+: dcl-insert-sorted   ( x dcl -- = Insert the cell data x sorted in the list )
   dup dcl-compare@ >r        \ save the sort execution token
   
   tuck
@@ -272,7 +273,7 @@ struct: dcl%       ( - n = Get the required space for the dcl data structure )
 
 ( Inspection )
 
-: dcl-dump     ( w:dcl - = Dump the list )
+: dcl-dump     ( dcl -- = Dump the list )
   dup dnl-dump
   ." dcl:" cr
   ."  compare:" dup dcl>compare ? cr

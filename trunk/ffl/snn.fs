@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-19 18:52:45 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( snn = Single Linked Node )
-( The snn module implements the node in the snl-list.)
+( snn = Single Linked List Base Node )
+( The snn module implements a node in a single linked list [snl].            )
 
 
 1 constant snn.version
@@ -42,43 +42,43 @@ include ffl/stc.fs
 
 ( Node structure )
 
-struct: snn%       ( - n = Get the required space for a snn structure )
-  cell: snn>next
-;struct 
+begin-structure snn%       ( - n = Get the required space for a snn node )
+  field: snn>next
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: snn-init     ( w:snn - = Initialise the single list node )
+: snn-init     ( snn -- = Initialise the node )
   snn>next nil!
 ;
 
 
-: snn-new      (  - w:snn = Create a new single list node on the heap )
+: snn-new      (  -- snn = Create a new node on the heap )
   snn% allocate  throw  dup snn-init
 ;
 
 
-: snn-free     ( w:snn - = Free the single list node from the heap )
+: snn-free     ( snn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Member words )
 
-: snn-next@    ( w:snn - w:next = Get the next node )
+: snn-next@    ( snn1 -- snn2 = Get the next node snn2 from the node snn1 )
   snn>next @
 ;
 
 
-: snn-next!    ( w:next w:snn - = Set the next node )
+: snn-next!    ( snn1 snn2 -- = Set for the node snn1 the next node to snn2 )
   snn>next !
 ;
 
 
 ( Inspection )
 
-: snn-dump     ( w:snn - = Dump the single list node )
+: snn-dump     ( snn -- = Dump the single list node )
   ." snn:" dup . cr
   ."  next :"     snn>next  ?  cr
 ;

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-27 19:54:10 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -44,53 +44,53 @@ include ffl/snn.fs
 
 ( Iterator structure )
 
-struct: sni%       ( - n = Get the required space for a sni data structure )
-  cell: sni>snl
-  cell: sni>walk
-;struct 
+begin-structure sni%       ( -- n = Get the required space for a sni variable )
+  field: sni>snl
+  field: sni>walk
+end-structure 
 
 
 ( Iterator creation, initialisation and destruction )
 
-: sni-init     ( w:snl w:sni - = Initialise the iterator with a snl list )
+: sni-init     ( snl sni -- = Initialise the iterator with a snl list )
   tuck sni>snl     !
        sni>walk  nil!
 ;
 
 
-: sni-create   ( C: w:snl "name" - R: - w = Create a named iterator in the dictionary )
+: sni-create   ( snl "<spaces>name" -- ; -- sni = Create a named iterator in the dictionary on the snl list )
   create 
     here  sni% allot  sni-init
 ;
 
 
-: sni-new      ( w:snl - w:sni = Create an iterator on the heap )
+: sni-new      ( w:snl -- sni = Create an iterator on the snl list on the heap )
   sni% allocate  throw  tuck sni-init
 ;
 
 
-: sni-free     ( w:sni - = Free iterator from heap )
+: sni-free     ( sni -- = Free the iterator from the heap )
   free throw
 ;
 
 
 ( Member words )
 
-: sni-get      ( w:sni - w:snn | nil = Get the current node )
+: sni-get      ( sni -- snn | nil = Get the current node )
   sni>walk @
 ;
 
 
 ( Iterator words )
 
-: sni-first    ( w:sni - w:snn | nil  = Move the iterator to the first node )
+: sni-first    ( sni -- snn | nil  = Move the iterator to the first node, return this node )
   dup sni>snl @             
   snl-first@
   dup rot sni>walk !         \ walk = snl.first
 ;
 
 
-: sni-next     ( w:sni - w:snn | nil = Move the iterator to the next node )
+: sni-next     ( sni -- snn | nil = Move the iterator to the next node, return this node )
   sni>walk 
   dup @
   dup nil<> IF               \ if walk <> nil then
@@ -102,7 +102,7 @@ struct: sni%       ( - n = Get the required space for a sni data structure )
 ;
 
 
-: sni-first?   ( w:sni - f = Check if the iterator is on the first node )
+: sni-first?   ( sni -- flag = Check if the iterator is on the first node )
   dup sni>snl @
   snl-first@
   dup nil= IF
@@ -114,7 +114,7 @@ struct: sni%       ( - n = Get the required space for a sni data structure )
 ;
 
 
-: sni-last?    ( w:sni - f = Check if the iterator is on the last node )
+: sni-last?    ( sni -- flag = Check if the iterator is on the last node )
   dup sni>snl @
   snl-last@
   dup nil= IF
@@ -128,7 +128,7 @@ struct: sni%       ( - n = Get the required space for a sni data structure )
 
 ( Inspection )
 
-: sni-dump     ( w:sni - = Dump the iterator )
+: sni-dump     ( sni -- = Dump the iterator )
   ." sni:" dup . cr
   ."  snl :" dup sni>snl  ?  cr
   ."  walk:"     sni>walk  ?  cr

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 07:41:31 $ $Revision: 1.8 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -41,42 +41,42 @@ include ffl/hnn.fs
 
 ( Hash table node structure )
 
-struct: hcn%       ( - n = Get the required space for a hash table node structure )
+begin-structure hcn%    ( - n = Get the required space for a hcn node )
   hnn%
-  field: hcn>hnn        \ the hcn node extends the hnn node
-  cell: hcn>cell        \ the cell data
-;struct 
+  +field hcn>hnn        \ the hcn node extends the hnn node
+  field: hcn>cell       \ the cell data
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: hcn-init     ( w c-addr u u:hash w:hcn - = Initialise the node with cell data, key and hash )
+: hcn-init     ( x c-addr u u2 hcn -- = Initialise the node with the hash u2, the key c-addr u and cell data x )
   >r
   r@ hnn-init  
   r> hcn>cell !
 ;
 
 
-: hcn-new      ( w c-addr u u:hash - w:hcn = Create a hash table node on the heap )
+: hcn-new      ( x c-addr u u2 -- hcn = Create a new node on the heap with the hash u2, the key c-addr u and cell data x )
   hcn% allocate  throw  dup >r hcn-init r>
 ;
 
 
-: hcn-free     ( w:hcn - = Free the node from the heap )
+: hcn-free     ( hcn -- = Free the node from the heap )
   hnn-free
 ;
 
 
 ( Private words )
 
-: hcn-cell@   ( w:hnn - w:cell = Get the cell value )
+: hcn-cell@   ( hcn -- x = Get the cell value from the node )
   hcn>cell @
 ;
 
 
 ( Inspection )
 
-: hcn-dump     ( w:hcn - = Dump the node )
+: hcn-dump     ( hcn -- = Dump the node )
   dup hnn-dump
   ."  cell :" hcn>cell ? cr
 ;

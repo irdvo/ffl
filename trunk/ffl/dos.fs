@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-22 19:15:26 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,11 +36,11 @@ include ffl/stt.fs
 
 
 ( dos = Datetime output stream )
-( The dos module implements words for formatting date and time in a string.  )
-( It is built upon the tos structure. If the tos structure contains a        )
-( message catalog, it is used for localisation of times, dates and names.    )
-( The format word uses most of the same conversion characters as the         )
-( strftime c-function:                                                       )
+( The dos module implements a date and time formatter. It is built upon the  )
+( tos structure, so all words write to the tos stream. If the tos structure  ) 
+( contains a message catalog, it is used for localisation of times, dates    )
+( and names. The format word uses most of the same conversion characters as  )
+( the strftime c-function:                                                   )
 ( <pre>                                                                      )
 ( %a - the abbreviated weekday name using the streams catalog for locale     )
 ( %A - the full weekday name using the streams catalog for locale            )
@@ -81,7 +81,7 @@ include ffl/stt.fs
 
 ( Private string tables )
 
-begin-stringtable dos.weekday-names   ( n:weekday - c-addr u = Get the weekday name )
+begin-stringtable dos.weekday-names   ( n -- c-addr u = Translate weekday to weekday name )
 ," Sunday"
 ," Monday"
 ," Tuesday"
@@ -91,7 +91,7 @@ begin-stringtable dos.weekday-names   ( n:weekday - c-addr u = Get the weekday n
 ," Saturday"
 end-stringtable
 
-begin-stringtable dos.month-names   ( n:month - c-addr u = Get the month name )
+begin-stringtable dos.month-names   ( n -- c-addr u = Translate month to month name )
 ," Januari"
 ," Februari"
 ," March"
@@ -109,7 +109,7 @@ end-stringtable
 
 ( Private words )
 
-: dos+24to12   ( n - n = Convert hours from 24 clock to 12 clock )
+: dos+24to12   ( n -- n = Convert hours from 24 hour clock to 12 hour clock )
   ?dup 0= IF
     12
   ELSE
@@ -120,21 +120,21 @@ end-stringtable
 ;
 
 
-: dos-write-2spaced   ( w:tos n - = Write a number in two digits, with space padding )
+: dos-write-2spaced   ( tos n -- = Write a number in two digits, with space padding )
   over tos-write-number
   bl 2 
   rot  tos-align-right
 ;
 
 
-: dos-write-2zeroed   ( w:tos n - = Write a number in two digits, with zero padding )
+: dos-write-2zeroed   ( tos n -- = Write a number in two digits, with zero padding )
   over tos-write-number
   [char] 0 2 
   rot  tos-align-right
 ;
 
 
-: dos-translate   ( w:tos c-addr u w:tos - c-addr u = Translate a string with the optional message catalog )
+: dos-translate   ( c-addr1 u1 tos -- c-addr2 u2 = Translate a string with the optional message catalog )
   tos-msc@ dup nil<> IF
     msc-translate
   ELSE
@@ -143,7 +143,7 @@ end-stringtable
 ;
 
 
-: dos-write-ampm-str   ( w:dtm w:tos c-addr - = Write an AM/PM string)
+: dos-write-ampm-str   ( dtm tos c-addr -- = Write an AM/PM string)
   rot dtm-hour@ 11 > IF           \ If hour > 11 Then
     char+ char+                   \   Move to pm
   THEN
@@ -156,35 +156,35 @@ defer dos.write-format
 
 ( Date and time writing words )
 
-: dos-write-abbr-weekday-name   ( w:dtm w:tos - = Write the abbreviated weekday name, using the streams catalog for locale )
+: dos-write-abbr-weekday-name   ( dtm tos -- = Write the abbreviated weekday name, using the streams catalog for locale )
   swap dtm-weekday dtm.sunday -
   dos.weekday-names 3 min         \ Abbreviate the name to 3 characters
   rot  tos-write-string
 ;
 
 
-: dos-write-weekday-name   ( w:dtm w:tos - = Write the full weekday name, using the streams catalog for locale )
+: dos-write-weekday-name   ( dtm tos -- = Write the full weekday name, using the streams catalog for locale )
   swap dtm-weekday dtm.sunday -
   dos.weekday-names
   rot  tos-write-string
 ;
 
 
-: dos-write-abbr-month-name   ( w:dtm w:tos - = Write the abbreviated month name, using the streams catalog for locale )
+: dos-write-abbr-month-name   ( dtm tos -- = Write the abbreviated month name, using the streams catalog for locale )
   swap dtm-month@ dtm.january -
   dos.month-names 3 min           \ Abbreviate the name to 3 characters
   rot  tos-write-string
 ;
 
 
-: dos-write-month-name   ( w:dtm w:tos - = Write the full month name, using the streams catalog for locale )
+: dos-write-month-name   ( dtm tos -- = Write the full month name, using the streams catalog for locale )
   swap dtm-month@ dtm.january -
   dos.month-names
   rot  tos-write-string
 ;
 
 
-: dos-write-date-time   ( w:dtm w:tos - = Write the preferred time and date using the streams catalog for the locale, else yyyy/mm/dd hh:mm:ss)
+: dos-write-date-time   ( dtm tos -- = Write the preferred time and date using the streams catalog for the locale, else yyyy/mm/dd hh:mm:ss)
   >r
   s" %Y/%m/%d %H:%M:%S"
   r@ dos-translate
@@ -192,89 +192,89 @@ defer dos.write-format
 ;
 
 
-: dos-write-century   ( w:dtm w:tos - = Write the century number )
+: dos-write-century   ( dtm tos -- = Write the century number )
   swap dtm-year@ 100 /
   swap tos-write-number
 ;
 
 
-: dos-write-monthday   ( w:dtm w:tos - = Write the day of the month: 01..31)
+: dos-write-monthday   ( dtm tos -- = Write the day of the month: 01..31)
   swap dtm-day@ 
   dos-write-2zeroed
 ;
 
 
-: dos-write-american-date   ( w:dtm w:tos - = Write the date in mm/dd/yy format )
+: dos-write-american-date   ( dtm tos -- = Write the date in mm/dd/yy format )
   s" %m/%d/%y" rot dos.write-format
 ;
 
 
-: dos-write-spaced-monthday   ( w:dtm w:tos - = Write the day of the month,  1..31, space padded)
+: dos-write-spaced-monthday   ( dtm tos -- = Write the day of the month,  1..31, space padded)
   swap dtm-day@ 
   dos-write-2spaced
 ;
 
 
-: dos-write-iso8601-date   ( w:dtm w:tos - = Write the date in ISO 8601 format: yyyy-mm-dd )
+: dos-write-iso8601-date   ( dtm tos -- = Write the date in ISO 8601 format: yyyy-mm-dd )
   s" %Y-%m-%d" rot dos.write-format
 ;
 
 
-: dos-write-24hour   ( w:dtm w:tos - = Write the hour using a 24-hour clock: 00..23 )
+: dos-write-24hour   ( dtm tos -- = Write the hour using a 24-hour clock: 00..23 )
   swap dtm-hour@ 
   dos-write-2zeroed
 ;
 
 
-: dos-write-12hour   ( w:dtm w:tos - = Write the hour using a 12-hour clock: 01..12 )
+: dos-write-12hour   ( dtm tos -- = Write the hour using a 12-hour clock: 01..12 )
   swap dtm-hour@ dos+24to12 
   dos-write-2zeroed
 ;
 
 
-: dos-write-yearday   ( w:dtm w:tos - = Write the day of the year: 001..366 )
+: dos-write-yearday   ( dtm tos -- = Write the day of the year: 001..366 )
   swap dtm-yearday
   over tos-write-number
   >r [char] 0 3 r> tos-align-right
 ;
 
 
-: dos-write-spaced-24hour   ( w:dtm w:tos - = Write the hour using a 24-hour clock:  0..23, space padded )
+: dos-write-spaced-24hour   ( dtm tos -- = Write the hour using a 24-hour clock:  0..23, space padded )
   swap dtm-hour@ dos-write-2spaced
 ;
 
 
-: dos-write-spaced-12hour   ( w:dtm w:tos - = Write the hour using a 12-hour clock:  1..12, space padded )
+: dos-write-spaced-12hour   ( dtm tos -- = Write the hour using a 12-hour clock:  1..12, space padded )
   swap dtm-hour@ dos+24to12 
   dos-write-2spaced
 ;
 
 
-: dos-write-month   ( w:dtm w:tos - = Write the month: 01..12)
+: dos-write-month   ( dtm tos -- = Write the month: 01..12)
   swap dtm-month@
   dos-write-2zeroed
 ;
 
 
-: dos-write-minute   ( w:dtm w:tos - = Write the minute: 00..59)
+: dos-write-minute   ( dtm tos -- = Write the minute: 00..59)
   swap dtm-minute@
   dos-write-2zeroed
 ;
 
 
-: dos-write-ampm   ( w:dtm w:tos - = Write the am or pm notation, using the streams catalog for locale )
+: dos-write-ampm   ( dtm tos -- = Write the am or pm notation, using the streams catalog for locale )
   s" ampm" drop
   dos-write-ampm-str
 ;
 
 
-: dos-write-upper-ampm   ( w:dtm w:tos - = Write the AM or PM notation, using the streams catalog for locale )
+: dos-write-upper-ampm   ( dtm tos -- = Write the AM or PM notation, using the streams catalog for locale )
   s" AMPM" drop
   dos-write-ampm-str
 ;
 
 
-: dos-write-ampm-time   ( w:dtum w:tos - = Write the time in ampm notation: hh:mm:ss ?m, using the streams catalog for locale)
+: dos-write-ampm-time   ( dtm tos -- = Write the time in ampm notation: hh:mm:ss ?m, using the streams catalog for locale)
   >r
   s" %I:%M:%S %p" 
   r@ dos-translate
@@ -282,41 +282,41 @@ defer dos.write-format
 ;
 
 
-: dos-write-hhmm-time   ( w:dtm w:tos - = Write the time: hh:mm)
+: dos-write-hhmm-time   ( dtm tos -- = Write the time: hh:mm)
   s" %H:%M" rot dos.write-format
 ;
 
 
-: dos-write-seconds-since-epoch  ( w:dtm w:tos - = Write the number of seconds since 1970-01-01 00:00:00)
+: dos-write-seconds-since-epoch  ( dtm tos -- = Write the number of seconds since 1970-01-01 00:00:00)
   1970 rot dtm-calc-seconds-since-epoch
        rot tos-write-double
 ;
 
 
-: dos-write-seconds   ( w:dtm w:tos - = Write the number of seconds: 00..61)
+: dos-write-seconds   ( dtm tos -- = Write the number of seconds: 00..61)
   swap dtm-second@
   dos-write-2zeroed
 ;
 
 
-: dos-write-hhmmss-time   ( w:dtm w:tos - = Write the time: hh:mm:ss)
+: dos-write-hhmmss-time   ( dtm tos -- = Write the time: hh:mm:ss)
   s" %H:%M:%S" rot dos.write-format
 ;
 
 
-: dos-write-weekday   ( w:dtm w:tos - = Write the weekday: 0..6, 0 = sunday )
+: dos-write-weekday   ( dtm tos -- = Write the weekday: 0..6, 0 = sunday )
   swap dtm-weekday
   swap tos-write-number
 ;
 
 
-: dos-write-week-number   ( w:dtm w:tos - = Write the week number: 01..53 )
+: dos-write-week-number   ( dtm tos -- = Write the week number: 01..53 )
   swap dtm-iso-weeknumber 
   drop dos-write-2zeroed
 ;
 
 
-: dos-write-date   ( w:dtm w:tos - = Write the preferred date using the streams catalog for the locale, else yyyy/mm/dd )
+: dos-write-date   ( dtm tos -- = Write the preferred date using the streams catalog for the locale, else yyyy/mm/dd )
   >r
   s" %Y/%m/%d"
   r@ dos-translate
@@ -324,7 +324,7 @@ defer dos.write-format
 ;
 
 
-: dos-write-time   ( w:dtm w:tos - = Write the preferred time using the stream catalog for the locale, else hh:mm:ss )
+: dos-write-time   ( dtm tos -- = Write the preferred time using the stream catalog for the locale, else hh:mm:ss )
   >r
   s" %H:%M:%S"
   r@ dos-translate
@@ -332,13 +332,13 @@ defer dos.write-format
 ;
 
 
-: dos-write-2year    ( w:dtm w:tos - = Write the year without the century: 00..99)
+: dos-write-2year    ( dtm tos -- = Write the year without the century: 00..99)
   swap dtm-year@ 100 mod
   dos-write-2zeroed
 ;
 
 
-: dos-write-year   ( w:dtm w:tos - = Write the year including the century )
+: dos-write-year   ( dtm tos -- = Write the year including the century )
   swap dtm-year@
   swap tos-write-number
 ;
@@ -409,7 +409,7 @@ create dos.jump
   
 ( Date and time formatting word )
 
-: dos-write-format   ( w:dtm c-addr u w:tos - = Write date and time info with a format string in the stream )
+: dos-write-format   ( dtm c-addr u tos -- = Write date and time info with the format string c-addr u in the stream tos )
   false 2swap
   bounds ?DO
     IF                            \ If previous char was '%' Then

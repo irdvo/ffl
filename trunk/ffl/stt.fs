@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -40,11 +40,11 @@ include ffl/config.fs
 
 ( Stringtable syntax words )
 
-: begin-stringtable   ( C: "name" - a:start a:strings R: n - c-addr u = Start a named stringtable definition )
+: begin-stringtable   ( "<spaces>name" -- stringtable-sys ; n -- c-addr u = Start a named stringtable definition; return the nth string )
   create
     here
     cell allot
-    here
+    here                \ stringtable-sys: a-addr (start) a-addr (strings)
   does>
     @ 
     swap cells + 
@@ -53,7 +53,7 @@ include ffl/config.fs
 
 
 [UNDEFINED] place [IF]
-: place   ( c-addr1 u1 c-addr2 - = Place string1 at address c-addr2 as counted string )
+: place   ( c-addr1 u1 c-addr2 -- = Place the string c-addr1 u1 at address c-addr2 as counted string )
   2dup c!
   char+ swap cmove
 ;
@@ -62,7 +62,7 @@ include ffl/config.fs
 
 
 [UNDEFINED] ," [IF]
-: ,"   ( ccc" - = Parse ccc delimited by double quote and place the string as counted string in the dictionary )
+: ,"   ( "ccc<quote>" -- = Parse ccc delimited by double quote and place the string as counted string in the dictionary )
   [char] " parse
   here 
   over char+ allot
@@ -71,7 +71,7 @@ include ffl/config.fs
 [THEN]
 
 
-: end-stringtable   ( a:start a:strings - = End the stringtable definition )
+: end-stringtable   ( stringtable-sys -- = End the stringtable definition )
   here rot !                      \ Set the offset
   here swap
   BEGIN

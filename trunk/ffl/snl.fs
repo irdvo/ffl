@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-02-27 06:06:15 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/snn.fs
 ( snl = Single Linked Node List )
 ( The snl module implements a single linked list that can handle variable size )
 ( nodes. It is the base module for more specialised modules, for example the   )
-( scl [single linked cell list] module. )
+( single linked cell list [scl] module. )
   
 
 1 constant snl.version
@@ -45,69 +45,69 @@ include ffl/snn.fs
 
 ( List structure )
 
-struct: snl%       ( - n = Get the required space for the snl data structure )
-  cell: snl>first
-  cell: snl>last
-  cell: snl>length
-;struct
+begin-structure snl%       ( -- n = Get the required space for a snl variable )
+  field: snl>first
+  field: snl>last
+  field: snl>length
+end-structure
 
 
 ( List creation, initialisation and destruction )
 
-: snl-init     ( w:snl - = Initialise the snl-list )
+: snl-init     ( snl -- = Initialise the snl list )
   dup snl>first   nil!
   dup snl>last    nil!
       snl>length    0!
 ;
 
 
-: snl-create   ( C: "name" - R: - w:snl = Create a named snl-list in the dictionary )
+: snl-create   ( "<spaces>name" -- ; -- snl = Create a named snl list in the dictionary )
   create   here   snl% allot   snl-init
 ;
 
 
-: snl-new      ( - w:snl = Create a new snl-list on the heap )
+: snl-new      ( -- snl = Create a new snl list on the heap )
   snl% allocate  throw  dup snl-init
 ;
 
 
-: snl-free     ( w:snl - = Free the list from the heap )
+: snl-free     ( snl -- = Free the list from the heap )
   free  throw
 ;
 
 
 ( Member words )
 
-: snl-length@  ( w:snl - u = Get the number of nodes in the list )
+: snl-length@  ( snl -- u = Get the number of nodes in the list )
   snl>length @
 ;
 
 
-: snl-empty?   ( w:snl - f = Check for empty list )
+: snl-empty?   ( snl -- flag = Check for an empty list )
   snl-length@ 0=  
 ;
 
 
-: snl-first@   ( w:snl - w:snn | nil  = Get the first node )
+: snl-first@   ( snl -- snn | nil  = Get the first node from the list )
   snl>first @
 ;
 
 
-: snl-last@    ( w:snl - w:snn | nil = Get the last node  )
+: snl-last@    ( snl -- snn | nil = Get the last node from the list )
   snl>last @
 ;
 
 
 ( Private words )
 
-: snl+offset   ( n:index n:length - n:offset = Determine offset from index, incl. validation )
+: snl+offset   ( n1 n2 -- n3 = Determine the offset n3 from the index n1 and length n2, incl. validation )
   tuck index2offset                    \ convert to offset
   dup rot 0 within                     \ check outside 0..length-1
   exp-index-out-of-range AND throw     \ raise exception
 ;
 
 
-: snl-node  ( n:offset w:snl - w:prv | nil  w:snn | nil = Get the nth node in the list )
+: snl-node  ( n snl -- snn1 | nil  snn2 | nil = Get the nth node in the list, return this node snn2 and its leading node snn1 )
   nil -rot                   \ prv  = nil
   snl-first@                 \ cur  = first
   swap                       \ S: prv cur off
@@ -125,7 +125,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 ( List words )
 
-: snl-append   ( w:snn w:snl - = Append a node in the list )
+: snl-append   ( snn snl -- = Append the node snn to the list )
   dup  snl>length 1+!        \ snl.length++
   over swap
   dup snl-first@ nil= IF     \ If snl.first = nil Then
@@ -139,7 +139,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-prepend  ( w:snn w:snl - = Prepend a node in the list )
+: snl-prepend  ( snn snl -- = Prepend the node snn in the list )
   dup  snl>length 1+!        \ snl.length++
   over swap
   dup snl-last@ nil= IF      \ If snl.last = nil Then
@@ -150,7 +150,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-insert-after  ( w:new w:ref w:snl - = Insert a new node after the reference node in the list )
+: snl-insert-after  ( snn1 snn2 snl -- = Insert the node snn1 after the reference node snn2 in the list )
   dup snl>length 1+!
   >r
   over swap snn>next @!      \ ref.next = new
@@ -164,7 +164,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-remove-first   ( w:snl - w:snn | nil = Remove the first node from the list )
+: snl-remove-first   ( snl -- snn | nil = Remove the first node from the list, return the removed node )
   dup snl-first@
   dup nil<> IF               \ If first <> nil Then
     2dup snn-next@
@@ -179,7 +179,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-remove-after   ( w:prv w:snl - w:snn | nil = Remove the node after the reference node from the list )
+: snl-remove-after   ( snn1 snl -- snn2 | nil = Remove the node after the reference node snn1 from the list, return the removed node )
   swap
   dup nil= exp-invalid-parameters AND throw
   
@@ -202,20 +202,20 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 ( Index words )
 
-: snl-index?   ( n:index w:snl - f = Check if an index is valid in the list )
+: snl-index?   ( n snl -- flag = Check if the index n is valid in the list )
   snl-length@
   tuck index2offset
   swap 0 swap within
 ;
 
 
-: snl-get      ( n:index w:snl - w:snn = Get the indexth node from the list )
+: snl-get      ( n snl -- snn = Get the nth node from the list )
   tuck snl-length@ snl+offset     \ S: snl offset
   swap snl-node nip               \ S: snn | nil
 ;
 
 
-: snl-insert   ( w:snn n:index w:snl - = Insert a node before the indexth node in the list )
+: snl-insert   ( snn n snl -- = Insert a node before the nth node in the list )
   tuck snl-length@ 1+ snl+offset  \ S: snn snl offset
   ?dup 0= IF
     snl-prepend
@@ -231,7 +231,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-delete   ( n:index w:snl - w:snn = Delete the indexth node from the list )
+: snl-delete   ( n snl -- snn = Delete the nth node from the list, return the deleted node )
   tuck snl-length@ snl+offset     \ S: snl offset
   ?dup 0= IF                      \ If offset = 0 Then
     snl-remove-first              \   First node
@@ -244,36 +244,36 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 ( LIFO words )
 
-: snl-push     ( w:snn w:snl - = Push the node at the top of the stack [= start of the list] )
+: snl-push     ( snn snl -- = Push the node snn at the top of the stack [= start of the list] )
   snl-prepend
 ;
 
 
-: snl-pop      ( w:snl - w:snn | nil = Pop the node at the top of the stack [= start of the list] )
+: snl-pop      ( snl -- snn | nil = Pop the node at the top of the stack [= start of the list], return the popped node )
   snl-remove-first
 ;
 
 
-: snl-tos      ( w:snl - w:snn | nil = Get the node at the top of the stack [= start of the list] )
+: snl-tos      ( snl -- snn | nil = Get the node at the top of the stack [= start of the list], return this node )
   snl-first@
 ;
 
 
 ( FIFO words )
 
-: snl-enqueue  ( w:snn w:snl - = Enqueue the node at the start of the queue [=end of the list] )
+: snl-enqueue  ( snn snl -- = Enqueue the node snn at the start of the queue [=end of the list] )
   snl-append
 ;
 
 
-: snl-dequeue  ( w:snl - w:snn | nil = Dequeue the node at the end of the queue [= start of the list] )
+: snl-dequeue  ( snl -- snn | nil = Dequeue the node at the end of the queue [= start of the list], return this node )
   snl-remove-first
 ;
 
 
 ( Special words )
 
-: snl-execute      ( ... xt w:snl - ... = Execute xt for every node in list )
+: snl-execute      ( i*x xt snl -- j*x = Execute xt for every node in list )
   snl-first@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -287,7 +287,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 ;
 
 
-: snl-reverse  ( w:snl - = Reverse or mirror the list )
+: snl-reverse  ( snl -- = Reverse or mirror the list )
   nil over
   snl-first@                 \ walk = first
   
@@ -310,7 +310,7 @@ struct: snl%       ( - n = Get the required space for the snl data structure )
 
 ( Inspection )
 
-: snl-dump     ( w:snl - = Dump the list )
+: snl-dump     ( snl -- = Dump the list )
   ." snl:" dup . cr
   ."  first :" dup snl>first ?  cr
   ."  last  :" dup snl>last  ?  cr

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-10 07:47:29 $ $Revision: 1.7 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -40,110 +40,110 @@ include ffl/config.fs
 
 ( ASCII constants )
 
-0   constant chr.nul         ( - c = the null character )
-1   constant chr.soh         ( - c = the soh character )
-2   constant chr.stx         ( - c = the stx character )
-3   constant chr.etx         ( - c = the etx character )
-4   constant chr.eot         ( - c = the eot character )
-5   constant chr.enq         ( - c = the enq character )
-6   constant chr.ack         ( - c = the ack character )
-7   constant chr.bel         ( - c = the bel character )
-8   constant chr.bs          ( - c = the backspace character )
-9   constant chr.ht          ( - c = the horz. tab character )
-10  constant chr.lf          ( - c = the line feed character )
-11  constant chr.vt          ( - c = the vert. tab character )
-12  constant chr.ff          ( - c = the formfeed character )
-13  constant chr.cr          ( - c = the carriage return character )
-14  constant chr.sm          ( - c = the sm character )
-15  constant chr.si          ( - c = the si character )
-16  constant chr.dle         ( - c = the dle character )
-17  constant chr.dc1         ( - c = the dc1 character )
-18  constant chr.dc2         ( - c = the dc2 character )
-19  constant chr.dc3         ( - c = the dc3 character )
-20  constant chr.dc4         ( - c = the dc4 character )
-21  constant chr.nak         ( - c = the nak character )
-22  constant chr.syn         ( - c = the syn character )
-23  constant chr.etb         ( - c = the etc character )
-24  constant chr.can         ( - c = the cancel character )
-25  constant chr.em          ( - c = the em character )
-26  constant chr.sub         ( - c = the sub character )
-27  constant chr.esc         ( - c = the escape character )
-28  constant chr.fs          ( - c = the fs character )
-29  constant chr.gs          ( - c = the gs character )
-30  constant chr.rs          ( - c = the rs character )
-31  constant chr.us          ( - c = the us character )
-32  constant chr.sp          ( - c = the space character )
-127 constant chr.del         ( - c = the delete character )
+0   constant chr.nul         ( -- char = the null character )
+1   constant chr.soh         ( -- char = the soh character )
+2   constant chr.stx         ( -- char = the stx character )
+3   constant chr.etx         ( -- char = the etx character )
+4   constant chr.eot         ( -- char = the eot character )
+5   constant chr.enq         ( -- char = the enq character )
+6   constant chr.ack         ( -- char = the ack character )
+7   constant chr.bel         ( -- char = the bel character )
+8   constant chr.bs          ( -- char = the backspace character )
+9   constant chr.ht          ( -- char = the horz. tab character )
+10  constant chr.lf          ( -- char = the line feed character )
+11  constant chr.vt          ( -- char = the vert. tab character )
+12  constant chr.ff          ( -- char = the formfeed character )
+13  constant chr.cr          ( -- char = the carriage return character )
+14  constant chr.sm          ( -- char = the sm character )
+15  constant chr.si          ( -- char = the si character )
+16  constant chr.dle         ( -- char = the dle character )
+17  constant chr.dc1         ( -- char = the dc1 character )
+18  constant chr.dc2         ( -- char = the dc2 character )
+19  constant chr.dc3         ( -- char = the dc3 character )
+20  constant chr.dc4         ( -- char = the dc4 character )
+21  constant chr.nak         ( -- char = the nak character )
+22  constant chr.syn         ( -- char = the syn character )
+23  constant chr.etb         ( -- char = the etc character )
+24  constant chr.can         ( -- char = the cancel character )
+25  constant chr.em          ( -- char = the em character )
+26  constant chr.sub         ( -- char = the sub character )
+27  constant chr.esc         ( -- char = the escape character )
+28  constant chr.fs          ( -- char = the fs character )
+29  constant chr.gs          ( -- char = the gs character )
+30  constant chr.rs          ( -- char = the rs character )
+31  constant chr.us          ( -- char = the us character )
+32  constant chr.sp          ( -- char = the space character )
+127 constant chr.del         ( -- char = the delete character )
 
 
 ( Character class checking words )
 
-: chr-range?   ( c c:min c:max - f = Check if character is in an including range )
+: chr-range?   ( char1 char2 char3 -- flag = Check if char1 is in the range [char2..char3] )
   1+ within                  \ !or!   -rot over <= -rot >= AND   !or!   >r over <= swap r> <= AND
 ;
 
   
-: chr-lower?   ( c - f = Check for a lowercase alphabetic character )
+: chr-lower?   ( char -- flag = Check for a lowercase alphabetic character )
   [char] a [char] z chr-range?
 ;
 
 
-: chr-upper?   ( c - f = Check for an uppercase alphabetic character )
+: chr-upper?   ( char -- flag = Check for an uppercase alphabetic character )
   [char] A [char] Z chr-range?
 ;
 
 
-: chr-alpha?   ( c - f = Check for an alphabetic character )
+: chr-alpha?   ( char -- flag = Check for an alphabetic character )
   dup chr-upper? swap chr-lower? OR
 ;
 
 
-: chr-digit?   ( c - f = Check for a decimal digit )
+: chr-digit?   ( char -- flag = Check for a decimal digit character )
   [char] 0 [char] 9 chr-range?
 ;
 
 
-: chr-alnum?   ( c - f = Check for an alphanumeric character )
+: chr-alnum?   ( char -- flag = Check for an alphanumeric character )
   dup chr-digit? swap chr-alpha? OR
 ;
 
 
-: chr-ascii?   ( c - f = Check for an ascii character )
+: chr-ascii?   ( char -- flag = Check for an ascii character )
   chr.nul chr.del chr-range?
 ;
 
 
-: chr-blank?   ( c - f = Check for a blank character, space or tab )
+: chr-blank?   ( char -- flag = Check for a blank character, space or tab )
   dup chr.sp = swap chr.ht = OR
 ;
 
 
-: chr-cntrl?   ( c - f = Check for a control character, 0 till 31 )
+: chr-cntrl?   ( char -- flag = Check for a control character, 0 till 31 )
   chr.nul chr.us chr-range?
 ;
 
 
-: chr-graph?   ( c - f = Check for a printable character except space )
+: chr-graph?   ( char -- flag = Check for a printable character except space )
   [char] ! [char] ~ chr-range?
 ;
 
 
-: chr-print?   ( c - f = Check for a printable character including space )
+: chr-print?   ( char -- flag = Check for a printable character including space )
   bl [char] ~ chr-range?
 ;
 
 
-: chr-punct?   ( c - f = Check for a printable character, but not a space or alphanumeric character )
+: chr-punct?   ( char -- flag = Check for a printable character, but not a space or alphanumeric character )
   dup chr-graph? swap chr-alnum? 0= AND
 ;
 
 
-: chr-space?   ( c - f = Check for a white-space: space, lf, vt, ff, cr )
+: chr-space?   ( char -- flag = Check for a white-space: space, lf, vt, ff, cr )
   dup chr.sp = swap chr.ht chr.cr chr-range? OR
 ;
 
 
-: chr-hexdigit? ( c - f = Check for a hexadecimal character )
+: chr-hexdigit? ( char -- flag = Check for a hexadecimal character )
   dup chr-digit? swap 
   dup [char] a [char] f chr-range? swap
   [char] A [char] F chr-range?
@@ -151,12 +151,12 @@ include ffl/config.fs
 ;
 
 
-: chr-octdigit? ( c - f = Check for an octal character )
+: chr-octdigit? ( char -- flag = Check for an octal character )
   [char] 0 [char] 7 chr-range?
 ;
 
 
-: chr-string?  ( c-addr u c - f = Check if the characters is in the string )
+: chr-string?  ( c-addr u char -- flag = Check if the character is in the string )
   -rot bounds ?DO
     dup I c@ = IF
       drop true
@@ -170,21 +170,21 @@ include ffl/config.fs
 
 ( Character conversion words )
 
-: chr-upper    ( c - c = Convert character to uppercase )
+: chr-upper    ( char1 -- char2 = Convert char1 to uppercase )
   dup chr-lower? IF
     [ char a char A - ] literal -
   THEN
 ;
 
 
-: chr-lower    ( c - c = Convert character to lowercase )
+: chr-lower    ( char1 -- char2 = Convert char1 to lowercase )
   dup chr-upper? IF
     [ char a char A - ] literal +
   THEN
 ;
 
 
-: chr-base     ( c - false | u true = Convert a character within the current base )
+: chr-base     ( char -- false | u true = Convert the character to a digit according the current base )
   dup chr-alnum? IF
     dup chr-alpha? IF
       chr-upper

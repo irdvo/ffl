@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -41,18 +41,18 @@ include ffl/stc.fs
 
 ( Hash table node structure )
 
-struct: hnn%       ( - n = Get the required space for a hash table node structure )
-  cell: hnn>hash        \ the hash code
-  cell: hnn>key         \ the pointer to the key
-  cell: hnn>klen        \ the key length
-  cell: hnn>next        \ the next node
-  cell: hnn>prev        \ the previous node    
-;struct 
+begin-structure hnn%    ( -- n = Get the required space for a hnn node )
+  field: hnn>hash       \ the hash code
+  field: hnn>key        \ the pointer to the key
+  field: hnn>klen       \ the key length
+  field: hnn>next       \ the next node
+  field: hnn>prev       \ the previous node    
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: hnn-init     ( c-addr u u:hash w:hnn - = Initialise the base node with a key and hash )
+: hnn-init     ( c-addr u u2 hnn -- = Initialise the node with the key c-addr u and hash u2 )
   >r
   \ over 0= exp-invalid-parameters AND throw
   
@@ -73,12 +73,12 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 ;
 
 
-: hnn-new      ( c-addr u u:hash - w:hnn = Create a hash table node on the heap )
+: hnn-new      ( c-addr u u2 -- hnn = Create a new node on the heap with the key c-addr u and hash u2 )
   hnn% allocate  throw  dup >r hnn-init r>
 ;
 
 
-: hnn-free     ( w:hnn - = Free the node from the heap )
+: hnn-free     ( hnn -- = Free the node from the heap )
   dup hnn>key @ free throw
   free throw
 ;
@@ -86,7 +86,7 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 
 ( Member words )
 
-: hnn-key@     ( w:hnn - c-addr u = Get the key )
+: hnn-key@     ( hnn -- c-addr u = Get the key from the node )
   dup  hnn>key  @
   swap hnn>klen @
 ;
@@ -94,24 +94,24 @@ struct: hnn%       ( - n = Get the required space for a hash table node structur
 
 ( Private words )
 
-: hnn-next@    ( w:hnn - w:next = Get the next node )
+: hnn-next@    ( hnn1 -- hnn2 = Get the next node hnn2 from the node hnn1 )
   hnn>next @
 ;
 
 
-: hnn-prev@    ( w:hnn - w:prev = Get the previous node )
+: hnn-prev@    ( hnn1 -- hnn2 = Get the previous node hnn2 from the node hnn1 )
   hnn>prev @
 ;
 
 
-: hnn-hash@   ( w:hnn - u:hash = Get the hash value )
+: hnn-hash@   ( hnn -- u = Get the hash value from the node )
   hnn>hash @
 ;
 
 
 ( Inspection )
 
-: hnn-dump     ( w:hnn - = Dump the node )
+: hnn-dump     ( hnn -- = Dump the node )
   ." hnn:" dup . cr
   ."  hash :" dup  hnn>hash  ?   cr
   ."  key  :" dup  hnn-key@  ?dup IF type ELSE drop THEN cr

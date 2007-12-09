@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-31 06:50:17 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/stc.fs
 
 
 ( dnn = Double Linked List Node )
-( The dnn module implements the node in the dnl-list.)
+( The dnn module implements a node in a dnl list.                            )
 
 
 1 constant dnn.version
@@ -42,55 +42,55 @@ include ffl/stc.fs
 
 ( Node structure )
 
-struct: dnn%       ( - n = Get the required space for a dnn structure )
-  cell: dnn>next
-  cell: dnn>prev
-;struct 
+begin-structure dnn%   ( -- n = Get the required space for a dnn structure )
+  field: dnn>next
+  field: dnn>prev
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: dnn-init     ( w:dnn - = Initialise the node )
+: dnn-init     ( dnn -- = Initialise the node )
   dup  dnn>next  nil!
        dnn>prev  nil!
 ;
 
 
-: dnn-new      ( - w:dnn = Create a new node on the heap )
+: dnn-new      ( -- dnn = Create a new node on the heap )
   dnn% allocate  throw  dup dnn-init
 ;
 
 
-: dnn-free     ( w:dnn - = Free the node from the heap )
+: dnn-free     ( dnn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: dnn-next@    ( w:dnn - w:next = Get the next node )
+: dnn-next@    ( dnn1 -- dnn2 = Get the next node dnn2 from node dnn1)
   dnn>next @
 ;
 
 
-: dnn-next!    ( w:next w:dnn - = Set the next node )
+: dnn-next!    ( dnn1 dnn2 -- = Set for node dnn2 the next node to dnn1 )
   dnn>next !
 ;
 
 
-: dnn-prev@    ( w:dnn - w:prev = Get the previous node )
+: dnn-prev@    ( dnn1 -- dnn2 = Get from node dnn1 the previous node )
   dnn>prev @
 ;
 
 
-: dnn-prev!    ( w:prev w:dnn - = Set the previous node )
+: dnn-prev!    ( dnn1 dnn2 -- = Set for node dnn2 the previous node to dnn1 )
   dnn>prev !
 ;
 
 
 ( Inspection )
 
-: dnn-dump     ( w:dnn - = Dump the node )
+: dnn-dump     ( dnn -- = Dump the node )
   ." dnn:" dup . cr
   ."  next :" dup dnn>next  ?  cr
   ."  prev :"     dnn>prev  ?  cr

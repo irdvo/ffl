@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-11 07:56:07 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -42,53 +42,53 @@ include ffl/nnt.fs
 
 ( Iterator structure )
 
-struct: nni%       ( - n = Get the required space for a nni data structure )
-  cell: nni>nnt
-  cell: nni>walk
-;struct 
+begin-structure nni%       ( -- n = Get the required space for a nni variable )
+  field: nni>nnt
+  field: nni>walk
+end-structure
 
 
 ( Iterator creation, initialisation and destruction )
 
-: nni-init     ( w:nnt w:nni - = Initialise the iterator with a n-tree )
+: nni-init     ( nnt nni -- = Initialise the iterator with the n-tree nnt )
   tuck nni>nnt     !
        nni>walk  nil!
 ;
 
 
-: nni-create   ( C: w:nnt "name" - R: - w = Create a named iterator in the dictionary )
+: nni-create   ( nnt "<spaces>name" -- ; -- nni = Create a named iterator in the dictionary on the n-tree nnt )
   create 
     here  nni% allot  nni-init
 ;
 
 
-: nni-new      ( w:nnt - w:nni = Create an iterator on the heap )
+: nni-new      ( nnt -- nni = Create an iterator on the heap on the n-tree nnt )
   nni% allocate  throw  tuck nni-init
 ;
 
 
-: nni-free     ( w:nni - = Free iterator from heap )
+: nni-free     ( nni -- = Free the iterator from the heap )
   free throw
 ;
 
 
 ( Member words )
 
-: nni-get      ( w:nni - w:nnn | nil = Get the current node )
+: nni-get      ( nni -- nnn | nil = Get the current node )
   nni>walk @
 ;
 
 
 ( Private words )
 
-: nni+throw     ( w:nnn - w:nnn = Raise exception if nnn is nil )
+: nni+throw     ( nnn -- nnn = Raise exception if nnn is nil )
   dup nil= exp-invalid-state AND throw
 ;
 
 
 ( Tree iterator words )
 
-: nni-root?    ( w:nni - f = Check if the current node is the root node )
+: nni-root?    ( nni -- flag = Check if the current node is the root node )
   dup 
   nni>nnt @ nnt-root@
   swap
@@ -97,7 +97,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-root     ( w:nni - w:nnn | nil = Move the iterator to the root of the tree )
+: nni-root     ( nni -- nnn | nil = Move the iterator to the root of the tree, return this node )
   dup
   nni>nnt @ nnt-root@
   dup rot
@@ -105,7 +105,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-parent   ( w:nni - w:nnn | nil = Move the iterator to the parent of the current node )
+: nni-parent   ( nni -- nnn | nil = Move the iterator to the parent of the current node, return this node )
   nni>walk
   dup @
   
@@ -116,7 +116,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-children   ( w:nni - n = Return the number of children of the current node )
+: nni-children   ( nni -- n = Return the number of children of the current node )
   nni-get
   
   nni+throw 
@@ -125,7 +125,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-children?  ( w:nni - f = Check if the current node has children )
+: nni-children?  ( nni -- flag = Check if the current node has children )
   nni-get
   
   nni+throw
@@ -134,7 +134,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-child    ( w:nni - w:nnn | nil = Move the iterator to the first child of the current node )
+: nni-child    ( nni -- nnn | nil = Move the iterator to the first child of the current node, return this node )
   nni>walk dup @
   
   nni+throw
@@ -144,7 +144,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-prepend-child  ( w:nnn w:nni - = Prepend a child to the children of the current node, iterator is moved to the new child )
+: nni-prepend-child  ( nnn nni -- = Prepend a child to the children of the current node, iterator is moved to the new child )
   2dup nni>nnt @ nnt>root
   dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nni nnn root^
     !                                \   root       = nnn
@@ -166,7 +166,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-append-child  ( w:nnn w:nni - = Append a child to the children of the current node, iterator is moved to the new child )
+: nni-append-child  ( nnn nni -- = Append a child to the children of the current node, iterator is moved to the new child )
   2dup nni>nnt @ nnt>root
   dup @ nil= IF                      \ If nnt.root = nil Then  S: nnn nni nnn root^
     !                                \   root       = nnn
@@ -190,7 +190,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 
 ( Sibling iterator words )
 
-: nni-first    ( w:nni - w:nnn = Move the iterator to the first sibling )
+: nni-first    ( nni -- nnn = Move the iterator to the first sibling, return this node )
   nni>walk
   dup @
   
@@ -205,7 +205,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-next     ( w:nni - w:nnn | nil = Move the iterator to the next sibling )
+: nni-next     ( nni -- nnn | nil = Move the iterator to the next sibling, return this node )
   nni>walk 
   dup @
   
@@ -216,7 +216,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-prev     ( w:nni - w:nnn | nil = Move the iterator to the previous sibling )
+: nni-prev     ( nni -- nnn | nil = Move the iterator to the previous sibling )
   nni>walk 
   dup @
   
@@ -227,7 +227,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-last     ( w:nni - w:nnn = Move the iterator to the last sibling )
+: nni-last     ( nni -- nnn = Move the iterator to the last sibling, return this node )
   nni>walk
   dup @
   
@@ -242,7 +242,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-first?   ( w:nni - f = Check if the iterator is on the first sibling )
+: nni-first?   ( nni -- flag = Check if the iterator is on the first sibling )
   nni-get dup
   
   nni+throw
@@ -256,7 +256,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-last?    ( w:nni - f = Check if the iterator is on the last sibling )
+: nni-last?    ( nni -- flag = Check if the iterator is on the last sibling )
   nni-get dup
   
   nni+throw
@@ -270,7 +270,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-insert-before  ( w:nnn w:nni - = Insert a sibling before the current sibling in the tree)
+: nni-insert-before  ( nnn nni -- = Insert a sibling before the current sibling in the tree )
   tuck
   nni-get 2dup
   
@@ -288,7 +288,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-insert-after  ( w:nnn w:nni - = Insert a sibling after the current sibling in the tree)
+: nni-insert-after  ( nnn nni -- = Insert a sibling after the current sibling in the tree )
   tuck
   nni-get 2dup
   
@@ -306,7 +306,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
 ;
 
 
-: nni-remove        ( w:nni - w:nnn = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node )
+: nni-remove        ( nni -- nnn = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node, return the removed node )
   dup nni-get
   \ Checks
   nni+throw                              \ Error if iterator is not on a node
@@ -345,7 +345,7 @@ struct: nni%       ( - n = Get the required space for a nni data structure )
   
 ( Inspection )
 
-: nni-dump     ( w:nni - = Dump the iterator )
+: nni-dump     ( nni -- = Dump the iterator )
   ." nni:" dup . cr
   ."  tree:" dup nni>nnt  ?  cr
   ."  walk:"     nni>walk  ?  cr

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-08 06:28:29 $ $Revision: 1.8 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/chr.fs
 
 
 ( chs = Character set module )
-( The chs module implements words for using character sets. It supports the )
-( POSIX classes used in regular expressions. )
+( The chs module implements a character set. It supports the POSIX classes   )
+( used in regular expressions.                                               )
   
 
 2 constant chs.version
@@ -44,58 +44,58 @@ include ffl/chr.fs
 
 ( Private constant )
 
-128 #bits/char / constant chs.size  ( - n = Size of the characters set in chars: 128 / bits in chars )
+128 #bits/char / constant chs.size  ( -- n = Size of the characters set in chars: 128 / bits in chars )
   
   
 ( Character Set Structure )
 
-struct: chs%       ( - n = Get the required space for the chs data structure )
- chs.size
-  chars: chs>set
-;struct
+begin-structure chs%       ( -- n = Get the required space for a chs variable )
+  chs.size
+  cfields: chs>set
+end-structure
 
 
 ( Set creation, initialisation and destruction )
 
-: chs-init         ( w:chs - = Initialise the character set )
+: chs-init         ( chs -- = Initialise the set )
   chs>set  chs.size chars  erase
 ;
 
 
-: chs-create       ( "name" - = Create a named character set in the dictionary )
+: chs-create       ( "<spaces>name" -- ; -- chs = Create a named character set in the dictionary )
   create   here   chs% allot   chs-init
 ;
 
 
-: chs-new          ( - w:chs = Create a new character set on the heap )
+: chs-new          ( -- chs = Create a new character set on the heap )
   chs% allocate  throw  dup chs-init
 ;
 
 
-: chs-free         ( w:chs - = Free the character set from the heap )
+: chs-free         ( chs -- = Free the set from the heap )
   free throw 
 ;
 
 ( Sets words )
 
-: chs^move         ( w:chs2 w:chs1 - = Move chs2 in chs1 )
+: chs^move         ( chs2 chs1 -- = Move chs2 in chs1 )
   chs>set swap chs>set swap chs.size cmove
 ;
 
 
 ( Private words )
 
-: chs+validate-char  ( c - = Check and throw exception if character out of range )
+: chs+validate-char  ( char -- = Check and throw exception if character is out of range )
   127 u> exp-invalid-parameters AND throw
 ;
 
 
-: chs+validate-chars ( c c - = Check and thow exception if characters out of range )
+: chs+validate-chars ( char1 char2 -- = Check and throw exception if one of the characters out of range )
   127 u> swap 127 u> OR exp-invalid-parameters AND throw
 ;
 
 
-: chs-address      ( c w:chs - u:mask w:addr = Determine mask and array address for character )
+: chs-address      ( char chs -- u a-addr = Determine mask u and array address for the character )
   >r
   #bits/char /mod           \ Mask and offset
   swap 1 swap lshift
@@ -103,14 +103,14 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-set-ch       ( c w:chs - = Set the character in the set )
+: chs-set-ch       ( char chs -- = Set the character in the set )
   chs-address
   tuck c@ OR
   swap c!
 ;
 
 
-: chs-reset-ch     ( c w:chs - = Reset the character in the set )
+: chs-reset-ch     ( char chs -- = Reset the character in the set )
   chs-address
   swap invert 
   over c@ AND 
@@ -118,13 +118,13 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-ch?          ( c w:chs - f = Check if the character is in the set )
+: chs-ch?          ( char chs -- flag = Check if the character is in the set )
   chs-address
   c@ AND 0<>
 ;
 
 
-: chs-emit-char    ( c - = Emit the character from the set )
+: chs-emit-char    ( char -- = Emit the character from the set )
   dup chr-print? IF
     emit
   ELSE
@@ -135,17 +135,17 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Set words )
 
-: chs-set          ( w:chs - = Set all characters in the set )
+: chs-set          ( chs -- = Set all characters in the set )
   chs>set chs.size -1 fill
 ;
 
 
-: chs-reset        ( w:chs - = Reset all characters in the set )
+: chs-reset        ( chs -- = Reset all characters in the set )
   chs>set chs.size chars erase
 ;
 
 
-: chs-invert       ( w:chs - = Invert all characters in the set )
+: chs-invert       ( chs -- = Invert all characters in the set )
   chs>set
   chs.size 0 DO
     dup  c@ invert
@@ -158,13 +158,13 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Char words )
 
-: chs-set-char     ( c w:chs - = Set the character in the set )
+: chs-set-char     ( char chs -- = Set the character in the set )
   over chs+validate-char
   chs-set-ch
 ;
 
 
-: chs-reset-char   ( c w:chs - = Reset the character in the set )
+: chs-reset-char   ( char chs -- = Reset the character in the set )
   over chs+validate-char
   chs-reset-ch
 ;
@@ -172,7 +172,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Character range words )
 
-: chs-set-chars    ( c:max c:min w:chs - = Set a range of characters in the set )
+: chs-set-chars    ( char1 char2 chs -- = Set the character range [char1..char2] in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
@@ -182,7 +182,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-chars  ( c:max c:min w:chs - = Reset a range of characters in the set )
+: chs-reset-chars  ( char1 char2 chs -- = Reset the character range [char1..char2] in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
@@ -194,7 +194,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( String words )
 
-: chs-set-string  ( c-addr u w:chs - = Set the characters in the string in the set )
+: chs-set-string  ( c-addr u chs -- = Set the characters in the string in the set )
   -rot
   bounds ?DO
     I c@ over chs-set-char
@@ -203,7 +203,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-string  ( c-addr u w:chs - = Reset the characters in the string in the set )
+: chs-reset-string  ( c-addr u chs -- = Reset the characters in the string in the set )
   -rot
   bounds ?DO
     I c@ over chs-reset-char
@@ -214,61 +214,61 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( POSIX classes )
 
-: chs-set-upper    ( w:chs - = Set the upper class in the set )
+: chs-set-upper    ( chs -- = Set the upper class in the set )
   >r [char] Z [char] A r> chs-set-chars
 ;
 
 
-: chs-reset-upper  ( w:chs - = Reset the upper class in the set )
+: chs-reset-upper  ( chs -- = Reset the upper class in the set )
   >r [char] Z [char] A r> chs-reset-chars  
 ;
 
 
-: chs-set-lower    ( w:chs - = Set the lower class in the set )
+: chs-set-lower    ( chs -- = Set the lower  class in the set )
   >r [char] z [char] a r> chs-set-chars
 ;
 
 
-: chs-reset-lower  ( w:chs - = Reset the lower class in the set )
+: chs-reset-lower  ( chs -- = Reset the lower class in the set )
   >r [char] z [char] a r> chs-reset-chars
 ;
 
 
-: chs-set-alpha    ( w:chs - = Set the alpha class in the set )
+: chs-set-alpha    ( chs -- = Set the alpha class in the set )
   dup chs-set-upper chs-set-lower
 ;
 
 
-: chs-reset-alpha  ( w:chs - = Reset the alpha class in the set )
+: chs-reset-alpha  ( chs -- = Reset the alpha class in the set )
   dup chs-reset-upper chs-reset-lower
 ;
 
 
-: chs-set-digit    ( w:chs - = Set the digit class in the set )
+: chs-set-digit    ( chs -- = Set the digit class in the set )
   >r [char] 9 [char] 0 r> chs-set-chars
 ;
 
 
-: chs-reset-digit  ( w:chs - = Reset the digit class in the set )
+: chs-reset-digit  ( chs -- = Reset the digit class in the set )
   >r [char] 9 [char] 0 r> chs-reset-chars
 ;
 
 
-: chs-set-alnum    ( w:chs - = Set the alnum class in the set )
+: chs-set-alnum    ( chs -- = Set the alnum class in the set )
   dup chs-set-upper 
   dup chs-set-lower 
       chs-set-digit
 ;
 
 
-: chs-reset-alnum  ( w:chs - = Reset the alnum class in the set )
+: chs-reset-alnum  ( chs -- = Reset the alnum class in the set )
   dup chs-reset-upper 
   dup chs-reset-lower 
       chs-reset-digit
 ;
 
 
-: chs-set-xdigit   ( w:chs - = Set the xdigit class in the set )
+: chs-set-xdigit   ( chs -- = Set the xdigit class in the set )
   >r
   r@ chs-set-digit
   [char] F [char] A r@ chs-set-chars
@@ -276,7 +276,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-xdigit  ( w:chs - = Reset the xdigit class in the set )
+: chs-reset-xdigit  ( chs -- = Reset the xdigit class in the set )
   >r
   r@ chs-reset-digit
   [char] F [char] A r@ chs-reset-chars
@@ -284,7 +284,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-set-punct    ( w:chs - = Set the punct class in the set )
+: chs-set-punct    ( chs -- = Set the punct class in the set )
   >r
   [char] / [char] ! r@ chs-set-chars
   [char] @ [char] : r@ chs-set-chars
@@ -293,7 +293,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-punct  ( w:chs - = Reset the punct class in the set )
+: chs-reset-punct  ( chs -- = Reset the punct class in the set )
   >r
   [char] / [char] ! r@ chs-reset-chars
   [char] @ [char] : r@ chs-reset-chars
@@ -302,19 +302,19 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-set-blank    ( w:chs - = Set the blank class in the set )
+: chs-set-blank    ( chs -- = Set the blank class in the set )
   chr.sp over chs-set-char
   chr.ht swap chs-set-char  
 ;
 
 
-: chs-reset-blank  ( w:chs - = Reset the blank class in the set )
+: chs-reset-blank  ( chs -- = Reset the blank class in the set )
   chr.sp over chs-reset-char
   chr.ht swap chs-reset-char  
 ;
 
 
-: chs-set-space    ( w:chs - = Set the space class in the set )
+: chs-set-space    ( chs -- = Set the space class in the set )
   dup chs-set-blank
   chr.cr over chs-set-char
   chr.lf over chs-set-char
@@ -323,7 +323,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-reset-space  ( w:chs - = Reset the space class in the set )
+: chs-reset-space  ( chs -- = Reset the space class in the set )
   dup chs-reset-blank
   chr.cr over chs-reset-char
   chr.lf over chs-reset-char
@@ -332,47 +332,47 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 ;
 
 
-: chs-set-cntrl    ( w:chs - = Set the cntrl class in the set )
+: chs-set-cntrl    ( chs -- = Set the cntrl class in the set )
   >r chr.us chr.nul r@ chs-set-chars
   chr.del r> chs-set-char
 ;
 
 
-: chs-reset-cntrl  ( w:chs - = Reset the cntrl class in the set )
+: chs-reset-cntrl  ( chs -- = Reset the cntrl class in the set )
   >r chr.us chr.nul r@ chs-reset-chars
   chr.del r> chs-reset-char
 ;
 
 
-: chs-set-graph    ( w:chs - = Set the graph class in the set )
+: chs-set-graph    ( chs -- = Set the graph class in the set )
   dup chs-set-alnum chs-set-punct
 ;
 
 
-: chs-reset-graph  ( w:chs - = Reset the graph class in the set )
+: chs-reset-graph  ( chs -- = Reset the graph class in the set )
   dup chs-reset-alnum chs-reset-punct
 ;
 
 
-: chs-set-print    ( w:chs - = Set the print class in the set )
+: chs-set-print    ( chs -- = Set the print class in the set )
   dup chs-set-graph 
   chr.sp swap chs-set-char
 ;
 
 
-: chs-reset-print  ( w:chs - = Reset the print class in the set )
+: chs-reset-print  ( chs -- = Reset the print class in the set )
   dup chs-reset-graph
   chr.sp swap chs-reset-char
 ;
 
 
-: chs-set-word     ( w:chs - = Set the word class in the set )
+: chs-set-word     ( chs -- = Set the word class in the set )
   dup chs-set-alnum
   [char] _ swap chs-set-char
 ;
 
 
-: chs-reset-word   ( w:chs - = Reset the word class in the set )
+: chs-reset-word   ( chs -- = Reset the word class in the set )
   dup chs-reset-alnum
   [char] _ swap chs-reset-char
 ;
@@ -380,7 +380,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Char check word )
 
-: chs-char?        ( c w:chs - f = Check if character is in the set )
+: chs-char?        ( char chs -- flag = Check if the character is in the set )
   over chs+validate-char
   chs-ch?
 ;
@@ -388,7 +388,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Special words )
 
-: chs-execute      ( .. xt w:chs - .. = Execute xt for every character in the set )
+: chs-execute      ( i*x xt chs -- j*x = Execute xt for every character in the set )
   128 0 DO
     I over chs-ch? IF        \ If character in the set
       I 
@@ -404,7 +404,7 @@ struct: chs%       ( - n = Get the required space for the chs data structure )
 
 ( Inspection )
 
-: chs-dump         ( w:chs - = Dump the chs state )
+: chs-dump         ( chs -- = Dump the chs state )
   ." chs:" dup . cr
   ."   set:" ['] chs-emit-char swap chs-execute
 ;

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -44,53 +44,53 @@ include ffl/dnn.fs
 
 ( Iterator structure )
 
-struct: dni%       ( - n = Get the required space for a dni data structure )
-  cell: dni>dnl
-  cell: dni>walk
-;struct 
+begin-structure dni%       ( -- n = Get the required space for a dni variable )
+  field: dni>dnl
+  field: dni>walk
+end-structure
 
 
 ( Iterator creation, initialisation and destruction )
 
-: dni-init     ( w:dnl w:dni - = Initialise the iterator with a dnl list )
+: dni-init     ( dnl dni -- = Initialise the iterator with a dnl list )
   tuck dni>dnl     !
        dni>walk  nil!
 ;
 
 
-: dni-create   ( C: w:dnl "name" - R: - w = Create a named iterator in the dictionary )
+: dni-create   ( dnl "<spaces>name" -- ; -- dni = Create a named iterator in the dictionary with a dnl list )
   create 
     here  dni% allot  dni-init
 ;
 
 
-: dni-new      ( w:dnl - w:dni = Create an iterator on the heap )
+: dni-new      ( w:dnl -- w:dni = Create an iterator on the heap )
   dni% allocate  throw  tuck dni-init
 ;
 
 
-: dni-free     ( w:dni - = Free iterator from heap )
+: dni-free     ( w:dni -- = Free the iterator from the heap )
   free throw
 ;
 
 
 ( Member words )
 
-: dni-get      ( w:dni - w:dnn | nil = Get the current node )
+: dni-get      ( dni -- dnn | nil = Get the current node )
   dni>walk @
 ;
 
 
 ( Iterator words )
 
-: dni-first    ( w:dni - w:dnn | nil  = Move the iterator to the first node )
+: dni-first    ( dni -- dnn | nil  = Move the iterator to the first node, return this node )
   dup dni>dnl @             
   dnl-first@
   dup rot dni>walk !         \ walk = dnl.first
 ;
 
 
-: dni-next     ( w:dni - w:dnn | nil = Move the iterator to the next node )
+: dni-next     ( dni -- dnn | nil = Move the iterator to the next node, return this node )
   dni>walk 
   dup @
   dup nil<> IF               \ if walk <> nil then
@@ -102,7 +102,7 @@ struct: dni%       ( - n = Get the required space for a dni data structure )
 ;
 
 
-: dni-prev     ( w:dni - w:dnn | nil = Move the iterator to the previous node )
+: dni-prev     ( dni -- dnn | nil = Move the iterator to the previous node, return this node )
   dni>walk 
   dup @
   dup nil<> IF               \ if walk <> nil then
@@ -114,14 +114,14 @@ struct: dni%       ( - n = Get the required space for a dni data structure )
 ;
 
 
-: dni-last     ( w:dni - w:dnn | nil  = Move the iterator to the last node )
+: dni-last     ( dni -- dnn | nil  = Move the iterator to the last node, return this node )
   dup dni>dnl @             
   dnl-last@
   dup rot dni>walk !         \ walk = dnl.last
 ;
 
 
-: dni-first?   ( w:dni - f = Check if the iterator is on the first node )
+: dni-first?   ( dni -- flag = Check if the iterator is on the first node )
   dup dni>dnl @
   dnl-first@
   dup nil= IF
@@ -133,7 +133,7 @@ struct: dni%       ( - n = Get the required space for a dni data structure )
 ;
 
 
-: dni-last?    ( w:dni - f = Check if the iterator is on the last node )
+: dni-last?    ( dni -- flag = Check if the iterator is on the last node )
   dup dni>dnl @
   dnl-last@
   dup nil= IF
@@ -147,7 +147,7 @@ struct: dni%       ( - n = Get the required space for a dni data structure )
 
 ( Inspection )
 
-: dni-dump     ( w:dni - = Dump the iterator )
+: dni-dump     ( dni -- = Dump the iterator variable )
   ." dni:" dup . cr
   ."  dnl :" dup dni>dnl  ?  cr
   ."  walk:"     dni>walk  ?  cr

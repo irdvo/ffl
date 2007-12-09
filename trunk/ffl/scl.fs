@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.13 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -44,31 +44,32 @@ include ffl/scn.fs
 
 ( List structure )
 
-struct: scl%       ( - n = Get the required space for the scl data structure )
-  snl% field: scl>snl        \ Extend the base list with ..
-       cell:  scl>compare    \ .. a compare token
-;struct
+begin-structure scl%       ( -- n = Get the required space for a scl variable )
+  snl% 
+  +field  scl>snl            \ Extend the base list with ..
+  field:  scl>compare        \ .. a compare token
+end-structure
 
 
 ( List creation, initialisation and destruction )
 
-: scl-init     ( w:scl - = Initialise the scl-list )
+: scl-init     ( scl -- = Initialise the scl list )
   dup snl-init
   ['] <=> swap scl>compare ! 
 ;
 
 
-: scl-create   ( C: "name" - R: - w:scl = Create a named scl-list in the dictionary )
+: scl-create   ( "<spaces>name" -- ; -- scl = Create a named scl list in the dictionary )
   create   here   scl% allot   scl-init
 ;
 
 
-: scl-new      ( - w:scl = Create a new scl-list on the heap )
+: scl-new      ( -- scl = Create a new scl list on the heap )
   scl% allocate  throw  dup scl-init
 ;
 
 
-: scl-delete-all ( w:scl - = Delete all nodes in the list )
+: scl-delete-all ( scl -- = Delete all nodes in the list )
   BEGIN
     dup snl-remove-first dup nil<>    \ while remove first node <> nil do
   WHILE
@@ -78,7 +79,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-free     ( w:scl - = Free the list from the heap )
+: scl-free     ( scl -- = Free the list from the heap )
   dup scl-delete-all
   
   free  throw
@@ -88,22 +89,22 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( Member words )
 
-: scl-empty?   ( w:scl - f = Check for empty list )
+: scl-empty?   ( scl -- flag = Check for an empty list )
   snl-empty?
 ;
 
 
-: scl-length@  ( w:scl - u = Get the number of nodes in the list )
+: scl-length@  ( scl -- u = Get the number of nodes in the list )
   snl-length@
 ;
 
 
-: scl-compare!     ( xt w:scl - = Set the compare execution token for the sorting the list )
+: scl-compare!     ( xt scl -- = Set the compare execution token for sorting the list )
   scl>compare !
 ;
 
 
-: scl-compare@     ( w:scl - xt = Get the compare execution token for the sorting the list )
+: scl-compare@     ( scl -- xt = Get the compare execution token for sorting the list )
   scl>compare @
 ;
 
@@ -111,43 +112,43 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( List words )
 
-: scl-append   ( w w:scl - = Append the cell in the list )
+: scl-append   ( x scl -- = Append the cell data x in the list )
   >r scn-new r> snl-append
 ;
 
 
-: scl-prepend  ( w w:scl - = Prepend the cell in the list )
+: scl-prepend  ( x scl -- = Prepend the cell data x in the list )
   >r scn-new r> snl-prepend
 ;
 
 
 ( Index words )
 
-: scl-index?   ( n:index w:dcl - f = Check if index is valid for the list )
+: scl-index?   ( n scl -- flag = Check if the index n is valid for the list )
   snl-index?
 ;
 
 
-: scl-set      ( w n:index w:scl - = Set the cell data in the indexth node in the list )
+: scl-set      ( x n scl -- = Set the cell data x in the nth node in the list )
   snl-get                    \ Find the node
   dup nil= exp-invalid-state AND throw
   scn-cell!                  \ Store the cell
 ;
 
 
-: scl-get      ( n:index w:scl - w = Get the cell data from the indexth node from the list )
+: scl-get      ( n scl -- x = Get the cell data x from the nth node in the list )
   snl-get                    \ Find the node
   dup nil= exp-invalid-state AND throw
   scn-cell@                  \ Return the data
 ;
 
 
-: scl-insert   ( w n:index w:scl - = Insert cell data at the indexth node in the list )
+: scl-insert   ( x n scl -- = Insert cell data x at the nth node in the list )
   2>r scn-new 2r> snl-insert
 ;
 
 
-: scl-delete   ( n:index w:scl - w = Delete the indexth node from the list )
+: scl-delete   ( n scl -- x = Delete the nth node from the list, return the cell data from the deleted node )
   snl-delete                 \ Delete the node from the list
   dup  nil= exp-invalid-state AND throw
   dup  scn-cell@             \ Fetch the data
@@ -157,14 +158,14 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( Special words )
 
-: scl-count    ( w w:scl - u = Count the occurences of cell data in the list )
+: scl-count    ( x scl -- u = Count the number of occurences of the cell data x in the list )
   0 >r                       \ count = 0
   snl-first@                 \ walk = first
   BEGIN
     dup nil<> 
   WHILE                      \ while walk <> nil do
     2dup
-    scn-cell@ = IF           \  if walk->cell = w then
+    scn-cell@ = IF           \  if walk->cell = x then
       r> 1+ >r               \   count++
     THEN
     snn-next@                \  walk = walk->next
@@ -174,7 +175,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-execute      ( ... xt w:scl - ... = Execute xt for every cell data in list )
+: scl-execute      ( i*x xt scl -- j*x = Execute xt for every cell data in list )
   snl-first@                 \ walk = first
   BEGIN
     dup nil<>                \ while walk<>nil do
@@ -189,14 +190,14 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-reverse  ( w:scl - = Reverse or mirror the list )
+: scl-reverse  ( scl -- = Reverse or mirror the list )
   snl-reverse
 ;
 
 
 ( Private words )
 
-: scl-search   ( w:data w:scl - n:index w:prev w:scn = Search for the first element with the data )
+: scl-search   ( x scl -- n scn1 scn2 = Search for the first node with the data x, return the leading node scn1 and the node itself scn2 )
   swap >r                    \ save data
   0   swap                   \ index = 0
   nil swap                   \ prev  = nil
@@ -218,7 +219,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( Search words )
 
-: scl-find     ( w:data w:scl - n:index = Find the first index for cell data in the list, -1 for not found )
+: scl-find     ( x scl -- n = Find the first index for cell data x in the list, -1 for not found )
   scl-search nip
   nil= IF                    \ If walk = nil Then
     drop -1                  \   Return -1
@@ -226,12 +227,12 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 ;
 
 
-: scl-has?     ( w:data w:scl - f = Check if the cell data is present in the list )
+: scl-has?     ( x scl -- flag = Check if the cell data x is present in the list )
   scl-search nip nip nil<>
 ;
 
 
-: scl-remove   ( w:data w:scl - f = Remove the first occurence of the cell data from the list )
+: scl-remove   ( x scl -- flag = Remove the first occurrence of the cell data x from the list, return success )
   tuck scl-search              \ Search the cell data
   nil<> IF                     \ If data found then
     nip
@@ -252,7 +253,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( Sort words )
 
-: scl-insert-sorted   ( w:data w:scl - = Insert the cell data sorted in the list )
+: scl-insert-sorted   ( x scl -- = Insert the cell data x sorted in the list )
   dup scl-compare@ >r        \ Save the sort execution token
   
   tuck
@@ -284,7 +285,7 @@ struct: scl%       ( - n = Get the required space for the scl data structure )
 
 ( Inspection )
 
-: scl-dump     ( w:scl - = Dump the list )
+: scl-dump     ( scl -- = Dump the list )
   dup snl-dump
   ." scl:" cr
   ."  compare:" dup scl>compare ? cr

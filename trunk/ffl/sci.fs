@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.5 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -43,35 +43,35 @@ include ffl/sni.fs
 
 ( Iterator structure )
 
-sni% constant sci%  ( - n = Get the required space for a sci data structure )
+sni% constant sci%  ( -- n = Get the required space for a sci variable )
 
 
 ( Iterator creation, initialisation and destruction )
 
-: sci-init     ( w:scl w:sci - = Initialise the iterator with a scl list )
+: sci-init     ( scl sci -- = Initialise the iterator with a scl list )
   sni-init
 ;
 
 
-: sci-create   ( C: w:scl "name" - R: - w = Create a named iterator in the dictionary )
+: sci-create   ( scl "<spaces>name" -- ; -- sci = Create a named iterator in the dictionary on the scl list )
   create 
     here  sci% allot  sci-init
 ;
 
 
-: sci-new      ( w:scl - w:sci = Create an iterator on the heap )
+: sci-new      ( scl -- sci = Create an iterator on the heap on the scl list)
   sci% allocate  throw  tuck sci-init
 ;
 
 
-: sci-free     ( w:sci - = Free iterator from heap )
+: sci-free     ( sci -- = Free the iterator from the heap )
   sni-free
 ;
 
 
 ( Private words )
 
-: sni+get      ( w:scn - w true | false = Get the cell data from the current record )
+: sni+get      ( scn -- x true | false = Get the cell data x from the scn node )
   dup nil<> IF               \ if current <> nil then
     scn-cell@ true           \   fetch cell
   ELSE
@@ -82,12 +82,12 @@ sni% constant sci%  ( - n = Get the required space for a sci data structure )
 
 ( Member words )
 
-: sci-get      ( w:sci - w true | false = Get the cell data from the current record )
+: sci-get      ( sci -- x true | false = Get the cell data x from the current node )
   sni-get sni+get
 ;
 
 
-: sci-set      ( w w:sci - = Set the cell data for the current record )
+: sci-set      ( x sci -- = Set the cell data x for the current node )
   sni-get
   dup nil<> IF
     scn-cell!
@@ -99,17 +99,17 @@ sni% constant sci%  ( - n = Get the required space for a sci data structure )
 
 ( Iterator words )
 
-: sci-first    ( w:sci - w true | false = Move the iterator to the first record )
+: sci-first    ( sci -- x true | false = Move the iterator to the first node, return the cell data x from this node )
   sni-first sni+get
 ;
 
 
-: sci-next     ( w:sci - w true | false = Move the iterator to the next record )
+: sci-next     ( sci -- x true | false = Move the iterator to the next node, return the cell data x from this node )
   sni-next sni+get
 ;
 
 
-: sci-move     ( w w:sci - f = Move the iterator to the next record with the cell data )
+: sci-move     ( x sci -- flag = Move the iterator to the next node with the cell data x )
   swap
   BEGIN
     over sci-next IF
@@ -123,17 +123,17 @@ sni% constant sci%  ( - n = Get the required space for a sci data structure )
 ;
 
 
-: sci-first?   ( w:sci - f = Check if the iterator is on the first record )
+: sci-first?   ( sci -- flag = Check if the iterator is on the first node )
   sni-first?
 ;
 
 
-: sci-last?    ( w:sci - f = Check if the iterator is on the last record )
+: sci-last?    ( sci -- flag = Check if the iterator is on the last node )
   sni-last?
 ;
 
 
-: sci-insert-after ( w:data w:sci - = Insert the cell data after the current record )
+: sci-insert-after ( x sci -- = Insert the cell data x after the current node )
   dup sni>snl @
   swap sni-get
   dup nil<> IF
@@ -147,7 +147,7 @@ sni% constant sci%  ( - n = Get the required space for a sci data structure )
 
 ( Inspection )
 
-: sci-dump     ( w:sci - = Dump the iterator )
+: sci-dump     ( sci -- = Dump the iterator )
   sni-dump
 ;
 

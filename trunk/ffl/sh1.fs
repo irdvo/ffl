@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.11 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/stc.fs
 
 
 ( sh1 = SHA-1 module )
-( The sh1 module implements words for using the SHA-1 algorithm. )
+( The sh1 module implements the SHA-1 algorithm.                             )
 
 
 1 constant sh1.version
@@ -62,23 +62,23 @@ decimal
 
 ( SHA-1 structure )
 
-struct: sh1%       ( - n = Get the required space for the sha1 data structure )
-  cell:  sh1>h0
-  cell:  sh1>h1
-  cell:  sh1>h2
-  cell:  sh1>h3
-  cell:  sh1>h4
- sh1.w%
-  cells: sh1>w
- sh1.b%
-  chars: sh1>b               \ input buffer with data
-  cell:  sh1>length          \ total length of processed data
-;struct
+begin-structure sh1%       ( -- n = Get the required space for a sha1 variable )
+  field:   sh1>h0
+  field:   sh1>h1
+  field:   sh1>h2
+  field:   sh1>h3
+  field:   sh1>h4
+  sh1.w%
+  fields:  sh1>w
+  sh1.b%
+  cfields: sh1>b             \ input buffer with data
+  field:   sh1>length        \ total length of processed data
+end-structure
 
 
-( SHA-1 structure creation, initialisation and destruction )
+( SHA-1 variable creation, initialisation and destruction )
 
-: sh1-init         ( w:sh1 - = Initialise the sh1 structure )
+: sh1-init         ( sh1 -- = Initialise the sh1 )
   [ hex ]
   67452301 over sh1>h0 !
   EFCDAB89 over sh1>h1 !
@@ -91,17 +91,17 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-create       ( C: "name" -  R: - w:sh1 = Create a named sha-1 structure in the dictionary )
+: sh1-create       ( "<spaces>name" --  ; -- sh1 = Create a named sha-1 variable in the dictionary )
   create  here sh1% allot  sh1-init
 ;
 
 
-: sh1-new          ( - w:sh1 = Create a new sha-1 structure on the heap )
+: sh1-new          ( -- sh1 = Create a new sha-1 variable on the heap )
   sh1% allocate  throw   dup sh1-init
 ;
 
 
-: sh1-free         ( w:sh1 - = Free the sha-1 structure from the heap )
+: sh1-free         ( sh1 -- = Free the sha-1 variable from the heap )
   free throw
 ;
 
@@ -110,10 +110,10 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 [UNDEFINED] sha! [IF]
   bigendian? [IF]
-: sha!             ( w addr - = Store word on address, SHA1 order )
+: sha!             ( x addr -- = Store cell on address, SHA1 order )
   postpone !
 ; immediate
-: sha@             ( addr - w = Fetch word on address, SHA1 order )
+: sha@             ( addr -- x = Fetch cell on address, SHA1 order )
   postpone @
 ; immediate
   [ELSE]
@@ -133,14 +133,14 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 [THEN]
   
 
-: sh1-w-bounds     ( u:end u:start w:sh1 - u:addr-end u:addr-start = Bounds work buffer from start to end )
+: sh1-w-bounds     ( u1 u2 sh1 -- a-addr1 a-addr2 = Bounds work buffer a-addr2..a-addr1 from offsets u2..u1 )
   sh1>w >r
   swap cells r@ + 
   swap cells r> +
 ;
 
 
-: sh1+rotate       ( e d c b a f k w - d c b a t = Rotate the sha-1 state )
+: sh1+rotate       ( e d c b a f k w -- d c b a t = Rotate the sha-1 state )
   + +                        \ t = f + k + w
   over 5 lroll +             \ t += a lroll 5
   >r swap 30 lroll swap      \ b lroll 30
@@ -148,10 +148,10 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-cmove        ( c-addr u w:sh1 - n:len f:full = Move characters from the string to the input buffer, update the length )
+: sh1-cmove        ( c-addr u sh1 -- n flag = Move characters from the string to the input buffer, update the length, return length and full indication )
   2dup sh1>length @ sh1.b% mod    \ index = sh1>length mod buf-size
   tuck + sh1.b% >= >r >r          \ full  = (index + str-len >= buf-size )
-  swap sh1.b% r@ - min            \ copy-len = min(buf-size - index, str-len)
+  swap sh1.b% r@ - min            \ copy-len = min(buf-size -- index, str-len)
   2dup swap sh1>length +!              \ sh1>length += copy-len
   r> swap >r
   chars swap sh1>b + r@ cmove          \ copy(str->buf,copy-len)
@@ -159,7 +159,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-transform    ( w:sh1 - = Transform 64 bytes of data )
+: sh1-transform    ( sh1 -- = Transform 64 bytes of data )
   >r
   
   r@ sh1>b
@@ -225,7 +225,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1+pad      ( w:index w:buffer - = Pad the buffer )
+: sh1+pad      ( n c-addr -- = Pad the buffer c-addr starting from n )
   over chars +
   128 over c!                       \ Add 80h to buffer
   char+ 
@@ -235,7 +235,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 
 [UNDEFINED] sha+#s [IF]
-: sha+#s       ( u - Put a single SHA result in the hold area )
+: sha+#s       ( u -- Put a single SHA result in the hold area )
   0 # # # # # # # # 2drop
 ;
 [THEN]
@@ -243,12 +243,12 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 ( SHA-1 words )
 
-: sh1-reset        ( w:sh1 - = Reset the SHA-1 state )
+: sh1-reset        ( sh1 -- = Reset the SHA-1 state )
   sh1-init
 ;
 
 
-: sh1-update       ( c-addr u w:sh1 - = Update the SHA-1 with more data )
+: sh1-update       ( c-addr u sh1 -- = Update the SHA-1 with more data c-addr u )
   >r
   BEGIN
     2dup r@ sh1-cmove
@@ -260,7 +260,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1-finish       ( w:sh1 - u1 u2 u3 u4 u5 = Finish the SHA-1 calculation )
+: sh1-finish       ( sh1 -- u1 u2 u3 u4 u5 = Finish the SHA-1 calculation, return the sha values )
   >r
   
   r@ sh1>length @ sh1.b% mod                \ index = sh1>length mod buf-size
@@ -290,7 +290,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 ;
 
 
-: sh1+to-string    ( u1 u2 u3 u4 u5 - c-addr u = Convert SHA-1 result to string, using the pictured output area )
+: sh1+to-string    ( u1 u2 u3 u4 u5 -- c-addr u = Convert SHA-1 result to the string c-addr u, using the pictured output area )
   base @ >r hex
   <#  sha+#s sha+#s sha+#s sha+#s sha+#s 0. #>
   r> base !
@@ -299,7 +299,7 @@ struct: sh1%       ( - n = Get the required space for the sha1 data structure )
 
 ( Inspection )
 
-: sh1-dump         ( w:sh1 - = Dump the sh1 state )
+: sh1-dump         ( sh1 -- = Dump the sh1 variable )
   >r
   ." sh1:" r@ . cr
   ."  result :" r@ sh1>h0 @ r@ sh1>h1 @ r@ sh1>h2 @ r@ sh1>h3 @ r@ sh1>h4 @ sh1+to-string type cr

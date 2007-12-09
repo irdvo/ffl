@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-24 18:43:21 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -31,10 +31,12 @@ include ffl/config.fs
 [UNDEFINED] xis.version [IF]
 
 include ffl/tis.fs
+include ffl/msc.fs
+include ffl/est.fs
+
 
 ( xis = XML/HTML reader )
-( The xis module implements words for non-validating parsing of XML sources. )
-( Due to the this nature of the reader it can also parse HTML.               )
+( The xis module implements a non-validating XML/HTML parser.                )
 ( Some notes: the default entity references, &lt; &gt; &amp; and &quot;, are )
 ( automatically translated, but all others are simply returned in the text.  )
 ( <pre>                                                                      )
@@ -45,67 +47,97 @@ include ffl/tis.fs
 1 constant xis.version
 
 
-( xisl reader constants )
+( private variable )
 
--1 constant xis.error                   ( - n = Error         -                                 )
- 0 constant xis.done                    ( - n = Done reading  -                                 )
- 1 constant xis.comment                 ( - n = Comment       - c-addr u                        )
- 2 constant xis.text                    ( - n = Normal text   - c-addr u                        )
- 3 constant xis.start-tag               ( - n = Start tag     - c-addr u c-addr u .. n c-addr u )
- 4 constant xis.end-tag                 ( - n = End tag       - c-addr u                        )
- 5 constant xis.markup                  ( - n = Markup        - c-addr u .. n c-addr u          )
- 6 constant xis.processing-instruction  ( - n = Proc. instr.  - c-addr u .. n c-addr u          )
- 7 constant xis.dtd                     ( - n = DTD           - c-addr u c-addr u               )
+msc-create xis.entities  ( the default entity reference catalog )
+
+s" lt"   s" <"   xis.entities msc-add
+s" gt"   s" >"   xis.entities msc-add
+s" amp"  s" &"   xis.entities msc-add
+s" quot" s\" \"" xis.entities msc-add
+s" apos" s" '"   xis.entities msc-add
+
+
+( xis reader constants )
+
+-1 constant xis.error          ( -- n = Error          --                                                        )
+ 0 constant xis.done           ( -- n = Done reading   --                                                        )
+ 1 constant xis.start-xml      ( -- n = Start Document -- c-addr:standalone u c-addr:encoding u c-addr:version u )
+ 1 constant xis.comment        ( -- n = Comment        -- c-addr u                                               )
+ 2 constant xis.text           ( -- n = Normal text    -- c-addr u                                               )
+ 3 constant xis.start-tag      ( -- n = Start tag      -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
+ 4 constant xis.end-tag        ( -- n = End tag        -- c-addr u                                               )
+ 5 constant xis.empty-element  ( -- n = Empty element  -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
+ 6 constant xis.cdata          ( -- n = CDATA section  -- c-addr u                                               )
+ 6 constant xis.proc-instr     ( -- n = Proc. instr.   -- c-addr:value u c-addr:attribute u .. n c-addr:target u )
+ 7 constant xis.internal-dtd   ( -- n = Internal DTD   -- c-addr:markup u c-addr:name u                          )
+ 8 constant xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:name u        )
+ 9 constant xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:name u                          )
  
-( xisl reader and writer structure )
+ 
+( xml reader structure )
 
-struct: xis%   ( - n = Get the required space for the xisl reader data structure )
+begin-structure xis%   ( -- n = Get the required space for a xis reader variable )
   tis%
-  field: xis>tis        \ the xis reader (extends the text input stream)
-;struct
+  +field  xis>tis       \ the xis reader (extends the text input stream)
+  field:  xis>msc       \ translation of entity references
+end-structure
 
 
 
-( XML parser variable creation, initialisation and destruction )
+( xml reader variable creation, initialisation and destruction )
 
-: xis-init   ( w:xis - = Initialise the xml parser structure )
+: xis-init   ( xis -- = Initialise the xml reader variable )
   
-  dup  xis>tis     tis-init
-  dup  xis>writer  nil!
-       xis>data    nil!
+               dup  xis>tis  tis-init
+  xis.entities swap xis>msc  !
 ;
 
 
-: xis-create   ( C: "name" -  R: - w:xis = Create a named xml parser variable in the dictionary )
+: xis-create   ( "<spaces>name" -- ; -- xis = Create a named xml reader variable in the dictionary )
   create  here xis% allot  xis-init
 ;
 
 
-: xis-new   ( - w:xis = Create a new xml parser variable on the heap )
+: xis-new   ( -- xis = Create a new xml reader variable on the heap )
   xis% allocate  throw   dup xis-init
 ;
 
 
-: xis-free   ( w:xis - = Free the xis variable from the heap )
+: xis-free   ( xis -- = Free the xis reader variable from the heap )
   str-free
 ;
 
 
 ( xml reader init words )
 
-: xis-set-reader  ( w:data xt w:xis - = Init the xml reader for reading using the reader callback )
+: xis-set-reader  ( x xt xis -- = Init the xml reader for reading using the reader callback xt with its data x )
   xis>tis tis-set-reader
 ;
 
 
-: xis-set-string  ( c-addr u w:xis - = Init the xml reader for for reading from string )
+: xis-set-string  ( c-addr u xis -- = Init the xml reader for for reading from the string c-addr u )
   xis>tis tis-set
+;
+
+
+( Entity reference catalog words )
+
+: xis-msc@   ( xis -- msc = Get the current entity reference catalog )
+  xis>msc @
+;
+
+
+: xis-msc!   ( msc xis -- = Set the entity reference catalog for the reader )
+  over nil= exp-invalid-parameters AND throw
+  
+  xis>msc !
 ;
 
 
 ( Private reader words )
 
-: xis-read-reference   ( w:tis - n = Read and translate the reference )
+: xis-read-reference   ( tis -- ... = Read and translate the reference )
   >r
   s" lt;" r@ tis-imatch-string IF
     \ ToDo
@@ -126,31 +158,27 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
 ;
 
 
-: xis-read-markup ( .. )
+: xis-read-tag-attribute ( tis -- c-addr u c-addr u = Read a tag attribute )
 ;
 
 
-: xis-read-markup-parameter ( .. )
+: xis-read-start-tag ( tis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
 ;
 
 
-: xis-read-tag-attribute ( w:tis - c-addr u c-addr u = Read a tag attribute )
+: xis-read-end-tag ( tis -- c-addr u xis.end-tag = Read an end tag )
 ;
 
 
-: xis-read-start-tag ( w:tis - c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
+: xis-read-proc-instr ( tis --  .. = Read a processing instruction )
 ;
 
 
-: xis-read-end-tag ( w:tis - c-addr u xis.end-tag = Read an end tag )
+: xis-read-markup   ( tis -- .. = Read markup text )
 ;
 
 
-: xis-read-processing-instruction ( w:tis -  .. = Read a processing instruction )
-;
-
-
-: xis-read-tag   ( w:tis - .. = Read a tag )
+: xis-read-tag   ( tis -- .. = Read a tag )
   >r
   r@ tis-fetch-char IF
     dup chr-alpha? IF
@@ -175,7 +203,7 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
           r@ xis-read-markup
         ELSE
           [char] ? = IF
-            r@ xis-read-processing-instruction
+            r@ xis-read-proc-instr
           ELSE
             \ What to do ?
           THEN
@@ -189,14 +217,14 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
 ;
 
 
-: xis-read-text   ( w:tis - c-addr u f | 0 f = Read the text, process the entity references )
+: xis-read-text   ( tis -- c-addr u flag | 0 flag = Read the text, process the entity references )
   >r
-  s" <&" r@ tis-scan-chars IF               \ Scan for <&
+  s" <&" r@ tis-scan-chars IF               \ Scan for < or &
     [char] < = IF
       -1 r@ tis-pntr+! drop
       true
     ELSE
-      r@ tis-do-entity +
+      r@ xis-read-reference +
       false
     THEN
   ELSE
@@ -209,7 +237,7 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
 
 ( xml reader word )
 
-: xis-read ( w:xis - ... xis.xxx = Read the next xml token with data from the source [see xml reader constants] )
+: xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source [see xml reader constants] )
   xis>tis >r
   
   r@ tis-reduce                             \ Keep the stream compact
@@ -245,7 +273,7 @@ struct: xis%   ( - n = Get the required space for the xisl reader data structure
 
 ( Inspection )
 
-: xis-dump ( w:xis - = Dump the xml reader variable )
+: xis-dump ( xis -- = Dump the xml reader variable )
 ;
 
 [THEN]

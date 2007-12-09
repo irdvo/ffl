@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.24 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.25 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/chr.fs
 
 
 ( str = Dynamic text string )
-( The str module implements words for a dynamic text string. )
+( The str module implements a dynamic text string. )
 
 
 3 constant str.version
@@ -43,27 +43,27 @@ include ffl/chr.fs
 
 ( String structure )
 
-struct: str%       ( - n = Get the required space for the str data structure )
-  cell: str>data
-  cell: str>length
-  cell: str>size    
-  cell: str>extra
-;struct
+begin-structure str%       ( -- n = Get the required space for a str variable )
+  field: str>data
+  field: str>length
+  field: str>size    
+  field: str>extra
+end-structure
 
 
 ( Private database )
 
-8 value str.extra   ( - w = the initial extra space )
+8 value str.extra   ( -- +n = the initial extra space )
 
 
 ( Private words )
 
-: str-offset?      ( n w:str - f = Check if an offset is valid in the string )
+: str-offset?      ( n str -- flag = Check if the offset n is valid in the string )
   0 swap str>length @ within
 ;
 
 
-: str-offset       ( n w:str - n = Determine offset from index, incl. validation )
+: str-offset       ( n1 str -- n2 = Determine the offset n2 from the index n1, incl. validation )
   tuck str>length @ index2offset
   
   dup rot str-offset?
@@ -75,7 +75,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( String creation, initialisation and destruction )
 
-: str-init         ( w:str - = Initialise the empty string )
+: str-init         ( str -- = Initialise to an empty string )
   dup str>data  nil!
   dup str>length  0!
   dup str>size    0!
@@ -83,17 +83,17 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-create       ( C: "name" - R: - w:str = Create a named string in the dictionary )
+: str-create       ( "<spaces>name" -- ; -- str = Create a named empty string in the dictionary )
   create   here   str% allot   str-init
 ;
 
 
-: str-new          ( - w:str = Create a new string on the heap )
+: str-new          ( -- str = Create a new empty string on the heap )
   str% allocate  throw  dup str-init
 ;
 
 
-: str-free         ( w:str - = Free the string from the heap )
+: str-free         ( str -- = Free the string from the heap )
   dup str>data @ ?free throw  \ Free string data
   
   free throw                  \ Free struct
@@ -102,33 +102,33 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Member words )
 
-: str-empty?       ( w:str - f = Check for an empty string )
+: str-empty?       ( str -- flag = Check for an empty string )
   str>length @ 0=  
 ;
 
 
-: str-length@      ( w:str - u = Get the length of the string )
+: str-length@      ( str -- u = Get the length of the string )
   str>length @
 ;
 
 
-: str-length!      ( u w:str - = Set the length of the string )
+: str-length!      ( u str -- = Set the length of the string )
   tuck str>size @ min
   swap str>length !
 ;
 
 
-: str-index?       ( n w:str - f = Check if an index is valid in the string )
+: str-index?       ( n str -- flag = Check if the index n is valid in the string )
   tuck str-length@  index2offset  swap str-offset?
 ;
 
 
-: str-data@        ( w:str - c-addr = Get the start of the string )
+: str-data@        ( str -- c-addr = Get the start of the string )
   str>data @
 ;
 
 
-: str-size!        ( u w:str - = Insure the size of the string )
+: str-size!        ( u str -- = Insure the size u of the string )
   dup str-data@ nil= IF      \ if data = nil then
     tuck str>extra @ +       \   size = requested + extra
     2dup swap str>size !
@@ -149,28 +149,28 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-extra@       ( w:str - u = Get the extra space allocated during resizing of the string )
+: str-extra@       ( str -- u = Get the extra space allocated during resizing of the string )
   str>extra @
 ;
 
-: str-extra!       ( u w:str - = Set the extra space allocated during resizing of the string )
+: str-extra!       ( u str -- = Set the extra space allocated during resizing of the string )
   str>extra !
 ;
 
 
-: str+extra@       ( - u = Get the initial extra space allocated during resizing of the string )
+: str+extra@       ( -- u = Get the initial extra space allocated during resizing of the string )
   str.extra
 ;
 
 
-: str+extra!       ( u - = Set the initial extra space allocated during resizing of the string )
+: str+extra!       ( u -- = Set the initial extra space allocated during resizing of the string )
   to str.extra
 ;
 
 
 ( Private words )
 
-: str-length+!     ( u w:str - u = Increase the length, return the previous length )
+: str-length+!     ( u1 str -- u2 = Increase the length with u1, return the previous length )
   tuck str-length@ +         \ len' = str>length + u
   swap
   2dup str-size!             \ check space
@@ -178,7 +178,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-insert-space ( u n w:str - u w:data = Insert u chars at indexth position )
+: str-insert-space ( u1 n str -- u2 c-addr = Insert u1 chars at nth position )
   tuck str-offset                \ Index -> offset
   >r 2dup str-length+! r>        \ Increase the length
   tuck -                         \ Calculate move length
@@ -195,19 +195,19 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Set words )
 
-: str-clear        ( w:str - = Clear the string )
+: str-clear        ( str -- = Clear the string )
   str>length 0!
 ;
 
 
-: str-set          ( c-addr u w:str - = Set a string in the string )
+: str-set          ( c-addr u str -- = Set the string c-addr u in the string )
   2dup str-size!             \ check the space
   2dup str>length !          \ set the length
   str-data@ swap chars cmove \ move the string
 ;
 
 
-: str-append-string    ( c-addr u w:str - = Append a string to the string )
+: str-append-string    ( c-addr u str -- = Append the string c-addr u to the string )
   2dup str-length+!          \ increase the length
   
   chars swap str-data@ +     \ move the string at the end
@@ -215,7 +215,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-prepend-string   ( c-addr u w:str - = Prepend a string to the string )
+: str-prepend-string   ( c-addr u str -- = Prepend the string c-addr u to the string )
   2dup str-length+!           \ increase the length
   
   >r 2dup str-data@
@@ -225,7 +225,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-append-chars   ( c u w:str - = Append a number of characters )
+: str-append-chars   ( char u str -- = Append u chars in the string )
   2dup str-length+!          \ increase the length
   
   chars swap str-data@ +     \ fill the characters at the end
@@ -233,7 +233,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-prepend-chars  ( c u w:str - = Prepend a number of characters )
+: str-prepend-chars  ( char u str -- = Prepend u chars in the string )
   2dup str-length+!            \ increase the length
   
   >r 2dup str-data@
@@ -243,14 +243,14 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-insert-string  ( c-addr u n:start w:str - = Insert a string in the string )
+: str-insert-string  ( c-addr u n str -- = Insert the string c-addr in the string at index n )
   str-insert-space           \ Insert space in the string
   
   swap cmove                 \ Move the string
 ;
 
 
-: str-insert-chars ( c u n:start w:str - = Insert a number of characters )
+: str-insert-chars ( char u n str -- = Insert u chars in the string at index n )
   str-insert-space           \ Insert space in the string
   
   -rot swap fill             \ fill it with the characters
@@ -259,7 +259,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Get words )
 
-: str-get-substring   ( u n:start w:str - c-addr u = Get a substring from start,  u chars long )
+: str-get-substring   ( u n str -- c-addr u = Get a substring starting from index n,  u characters long )
   dup >r str-offset          \ Index -> offset
   2dup + r@ str-length@ >    \ If not enough data then exception
     exp-no-data AND throw
@@ -268,20 +268,20 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-get          ( w:str - c-addr u = Get the string )
+: str-get          ( str -- c-addr u = Get the string in the string )
   dup  str-data@
   swap str-length@
 ;
 
 
-: str-bounds       ( w:str - c-addr+u c-addr = Get the bounds of the string )
+: str-bounds       ( str -- c-addr+u c-addr = Get the bounds of the string )
   str-get bounds
 ;  
 
 
 ( Delete word )
 
-: str-delete       ( u n w:str - = Delete a substring from nth index and length u from the string )
+: str-delete       ( u n str -- = Delete a substring starting at index n with length u from the string )
   dup >r
   str-offset                      \ Index -> offset
   2dup + r@ str-length@ <= IF     \ If offset + length <= length then 
@@ -304,7 +304,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Zero terminated string words )
 
-: str-set-zstring  ( c-addr w:str - = Set a zero terminated string in the string )
+: str-set-zstring  ( c-addr str -- = Set a zero terminated string in the string )
   over 0 swap                \ length = 0
   BEGIN
     dup c@ chr.nul <>        \ while [str] <> 0 do
@@ -317,7 +317,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-get-zstring  ( w:str - c-addr = Get the string as zero terminated string )
+: str-get-zstring  ( str -- c-addr = Get the string as zero terminated string )
   dup str-length@ chars
   swap str-data@
   tuck + chr.nul swap c!     \ store nul at end of string
@@ -326,20 +326,20 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Strings word )
 
-: str^move         ( w:str2 w:str1 - Move str2 in str1 )
+: str^move         ( str2 str1 -- Move str2 in str1 )
   >r str-get r> str-set
 ;
 
 
 ( Character words )
 
-: str-append-char    ( c w:str - = Append a character at the end of the string )
+: str-append-char    ( char str -- = Append a character at the end of the string )
   1 over str-length+!
     chars swap str-data@ + c! \ store char at end of string
 ;
 
 
-: str-prepend-char ( c w:str - = Prepend a character at the start of the string )
+: str-prepend-char ( char str -- = Prepend a character at the start of the string )
   >r 1 0 r>
   
   str-insert-space
@@ -347,12 +347,12 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-push-char    ( c w:str - = Push a character at the end of the string )
+: str-push-char    ( char str -- = Push a character at the end of the string )
   str-append-char
 ;
 
 
-: str-pop-char     ( w:str - c = Pop a character from the end of the string )
+: str-pop-char     ( str -- char = Pop a character from the end of the string )
   dup str>length dup @ dup 0> IF
     1- tuck swap !
     chars swap str-data@ + c@
@@ -362,36 +362,36 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-enqueue-char ( c w:str - = Place a character at the start of the string )
+: str-enqueue-char ( char str -- = Place a character at the start of the string )
   str-prepend-char  
 ;
 
 
-: str-dequeue-char ( c w:str - = Get the character at the end of the string )
+: str-dequeue-char ( char str -- = Get the character at the end of the string )
   str-pop-char
 ;
 
 
-: str-set-char     ( c n w:str - = Set the character on the nth position in the string )
+: str-set-char     ( char n str -- = Set the character on the nth position in the string )
   tuck str-offset 
   chars swap str-data@ + c!
 ;
 
 
-: str-get-char     ( n w:str - c = Get the character from the nth position in the string )
+: str-get-char     ( n str -- char = Get the character from the nth position in the string )
   tuck str-offset
   chars swap str-data@ + c@
 ;
 
 
-: str-insert-char  ( c n w:str - = Insert the character on the nth position in the string )
+: str-insert-char  ( char n str -- = Insert the character on the nth position in the string )
   2>r 1 2r> 
   str-insert-space
   nip c!
 ;
 
 
-: str-delete-char  ( n w:str - = Delete the character on the nth position in the string )
+: str-delete-char  ( n str -- = Delete the character on the nth position in the string )
   2>r 1 2r>
   str-delete
 ;
@@ -399,7 +399,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Special words )
 
-: str-count        ( c-addr u w:str - u = Count the number of occurences of a string in the string )
+: str-count        ( c-addr u str -- u = Count the number of occurences of the string c-addr u in the string )
   >r 0 -rot 
   r> str-get
   rot
@@ -418,7 +418,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-execute      ( ... xt w:str - ... = Execute the xt token for every character in the string )
+: str-execute      ( i*x xt str -- j*x = Execute the xt token for every character in the string )
   str-bounds ?DO             \ Do for string
     I c@
     swap dup >r              \  Clear the stack
@@ -431,7 +431,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Special manipulation words )
 
-: str-capatilize   ( w:str - = Capatilize the first word in the string )
+: str-capatilize   ( str -- = Capatilize the first word in the string )
   str-bounds ?DO             \ Do for the string
     I c@
     chr-alpha? IF            \   If alpha character then
@@ -443,7 +443,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
   
-: str-cap-words    ( w:str - = Capatilize all words in the string )
+: str-cap-words    ( str -- = Capatilize all words in the string )
   false swap str-bounds ?DO  \ Do for the string
     I c@ 
     chr-alpha? tuck IF       \   If alpha character then
@@ -459,7 +459,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-center       ( u w:str - = Center the string in u width )
+: str-center       ( u str -- = Center the string in width u )
   dup >r str-length@ - dup 0> IF
     dup 2/ swap over -
     chr.sp swap r@ str-append-chars  
@@ -471,7 +471,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-align-left   ( u w:str - = Align left the string in u width )
+: str-align-left   ( u str -- = Align left the string in width u )
   tuck str-length@ - dup 0> IF
     chr.sp -rot swap str-append-chars
   ELSE
@@ -480,7 +480,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-align-right  ( u w:str - = Align right the string in u width )
+: str-align-right  ( u str -- = Align right the string in width u )
   tuck str-length@ - dup 0> IF
     chr.sp -rot swap str-prepend-chars
   ELSE
@@ -489,7 +489,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-strip-leading  ( w:str - = Strip leading spaces in the string )
+: str-strip-leading  ( str -- = Strip leading spaces in the string )
   0 over str-bounds ?DO
     I c@ chr-blank? IF       \ Count the number of leading spaces
       1+
@@ -507,7 +507,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str+strip-leading   ( c-addr u - c-addr u = Strip leading spaces in the string )
+: str+strip-leading   ( c-addr1 u1 -- c-addr2 u2 = Strip leading spaces in the string c-addr1 u1 )
   BEGIN
     dup 0> IF
       over c@ chr-space?
@@ -520,7 +520,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-strip-trailing  ( w:str - = Strip trailing spaces in the string )
+: str-strip-trailing  ( str -- = Strip trailing spaces in the string )
   0 over str-bounds swap
   BEGIN
     1 chars -
@@ -539,13 +539,13 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-strip        ( w:str - = Strip leading and trailing spaces in the string )
+: str-strip        ( str -- = Strip leading and trailing spaces in the string )
   dup str-strip-leading
       str-strip-trailing
 ;
 
 
-: str-lower        ( w:str - = Convert the string to lower case )
+: str-lower        ( str -- = Convert the string to lower case )
   str-bounds ?DO
     I c@ chr-lower I c!
     1 chars
@@ -553,7 +553,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-upper        ( w:str - = Convert the string to upper case )
+: str-upper        ( str -- = Convert the string to upper case )
   str-bounds ?DO
     I c@ chr-upper I c!
     1 chars
@@ -561,7 +561,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
 
-: str-expand-tabs  ( u w:str - = Expand the tabs to u spaces in the string )
+: str-expand-tabs  ( u str -- = Expand the tabs to u spaces in the string )
   >r 0                                 \ Offset = 0
   BEGIN
     dup r@ str-length@ <               \ While offset < length do
@@ -589,31 +589,31 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Comparison words )
 
-: str-icompare     ( c-addr u w:str - n = Compare case-insensitive a string with the string )
+: str-icompare     ( c-addr u str -- n = Compare case-insensitive the string c-addr u with the string, return the result [-1,0,1] )
   str-get icompare
 ;
 
 
-: str-ccompare     ( c-addr u w:str - n = Compare case-sensitive a string with the string )
+: str-ccompare     ( c-addr u str -- n = Compare case-sensitive the string c-addr u with the string, return the result [-1,0,1] )
   str-get compare
 ;
 
 
-: str^icompare     ( w:str w:str - n = Compare case-insensitive two strings )
+: str^icompare     ( str1 str2 -- n = Compare case-insensitive the strings str1 and str, return the result [-1,0,1] )
   >r str-get r> str-icompare
 ;
 
 
-: str^ccompare     ( w:str w:str - n = Compare case-sensitive two strings )
+: str^ccompare     ( str1 str2 -- n = Compare case-sensitive the string str1 and str2, return the result [-1,0,1] )
   >r str-get r> str-ccompare
 ;
 
 
 ( Search and replace words )
 
-: str-find         ( c-addr u n w:str - n = Find the first occurence of a string from nth position in the string )
+: str-find         ( c-addr u n1 str -- n2 = Find the first occurence of the string c-addr u starting from index n1 in the string, return -1 if not found )
   dup >r str-offset                    \ Index -> offset
-  over r@ str-length@ swap -          
+  over r@ str-length@ swap -
   over - 1+                            \ Determine the remaing length
   over r> str-data@ swap chars +       \ Determine the start of data with the offset
   -rot dup 0<= IF                      \ Check for sufficient remaining length
@@ -633,7 +633,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 ;
 
   
-: str-replace      ( c-addr u c-addr u w:str - = Replace the occurences of the second string with the first string in the string )
+: str-replace      ( c-addr1 u1 c-addr2 u2 str -- = Replace all occurences of the string c-addr2 u2 with the string c-addr1 u1 in the string )
   >r 0
   BEGIN
     dup r@ str-length@ < dup IF   \ If index is lower than the length
@@ -657,7 +657,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Split words )
 
-: str+columns   ( c-addr u n:width - c-addr u ... n = Split the string in substrings, width wide, skipping leading spaces [recursive] )
+: str+columns   ( c-addr u n -- c-addrn un ... c-addr1 u1 n = Split the string c-addr u in n substrings, u width wide, skipping leading spaces [recursive] )
   >r
   str+strip-leading
   r>
@@ -706,7 +706,7 @@ struct: str%       ( - n = Get the required space for the str data structure )
 
 ( Inspection )
 
-: str-dump         ( w:str - = Dump the string )
+: str-dump         ( str -- = Dump the string )
   ." str:" dup . cr
   ."  data  :" dup str>data ? cr
   ."  length:" dup str>length ? cr

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 11:02:10 $ $Revision: 1.2 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -58,7 +58,7 @@ s" vaalserberg" height-table hct-get [IF]
 
 \ Word for printing the mountain height
 
-: height-emit ( w c-addr u - = height key )
+: height-emit ( n c-addr u -- = height key )
   type ."  -> " . cr
 ;
 

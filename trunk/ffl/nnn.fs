@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/dnl.fs
 
 
 ( nnn = n-Tree base node )
-( The nnn module implements the base node in a n-tree.)
+( The nnn module implements a base node in a n-tree [nnt].                   )
 
 
 1 constant nnn.version
@@ -42,47 +42,49 @@ include ffl/dnl.fs
 
 ( Node structure )
 
-struct: nnn%       ( - n = Get the required space for a nnn structure )
-  dnn% field: nnn>dnn         ( nnn - dnn = the siblings )
-       cell:  nnn>parent      ( nnn - dnn = the parent )
-  dnl% field: nnn>children    ( nnn - dnl = the children )
-;struct 
+begin-structure nnn%      ( -- n = Get the required space for a nnn node )
+  dnn% 
+  +field  nnn>dnn         \ the siblings )
+  field:  nnn>parent      \ nnn -- nnn = the parent )
+  dnl% 
+  +field  nnn>children    \ nnn -- dnl = the children )
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: nnn-init     ( w:nnn - = Initialise the node )
+: nnn-init     ( nnn -- = Initialise the node )
   dup  nnn>dnn      dnn-init
   dup  nnn>parent   nil!
        nnn>children dnl-init
 ;
 
 
-: nnn-new      ( - w:nnn = Create a new node on the heap )
+: nnn-new      ( -- nnn = Create a new node on the heap )
   nnn% allocate  throw  dup nnn-init
 ;
 
 
-: nnn-free     ( w:nnn - = Free the node from the heap )
+: nnn-free     ( nnn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: nnn-parent@    ( w:nnn - w:parent = Get the parent node )
+: nnn-parent@    ( nnn1 -- nnn2 = Get from node nnn1 the parent node )
   nnn>parent @
 ;
 
 
-: nnn-parent!   ( w:parent w:nnn - = Set the parent node )
+: nnn-parent!   ( nnn1 nnn2 -- = Set for node nnn2 the parent to nnn1 )
   nnn>parent !
 ;
 
 
 ( Private words )
 
-: nnn-next      ( w:nnn - w:nnn | nil = Move to the next node in the tree)
+: nnn-next      ( nnn1 -- nnn2 | nil = Find the next node for node nnn1 )
   dup nnn>children dnl-first@    \ If the node has children Then
   dup nil<> IF
     nip                          \   Next = first child
@@ -112,7 +114,7 @@ struct: nnn%       ( - n = Get the required space for a nnn structure )
 ;
 
 
-: nnn-prev      ( w:nnn - w:nnn | nil = Move to the previous node in the tree)
+: nnn-prev      ( nnn1 -- nnn2 | nil = Find the previous node for node nnn1 )
   dup nnn>children dnl-last@     \ If the node has children Then
   dup nil<> IF
     nip                          \   Next = last child
@@ -144,7 +146,7 @@ struct: nnn%       ( - n = Get the required space for a nnn structure )
 
 ( Inspection )
 
-: nnn-dump     ( w:nnn - = Dump the node )
+: nnn-dump     ( nnn -- = Dump the node )
   dup nnn>dnn      dnn-dump
   dup nnn>children dnl-dump
   ." nnn:"  cr

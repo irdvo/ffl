@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-09 07:09:44 $ $Revision: 1.7 $
+\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/stc.fs
 
 
 ( sh2 = SHA-256 module )
-( The sh2 module implements words for using the SHA-256 algorithm. )
+( The sh2 module implements the SHA-256 algorithm.                           )
 
 
 1 constant sh2.version
@@ -67,34 +67,34 @@ decimal
 
 ( SHA-256 structure )
 
-struct: sh2%   ( - n = Get the required space for the sha2 data structure )
-  cell:  sh2>h0
-  cell:  sh2>h1
-  cell:  sh2>h2
-  cell:  sh2>h3
-  cell:  sh2>h4
-  cell:  sh2>h5
-  cell:  sh2>h6
-  cell:  sh2>h7
-  cell:  sh2>a               \ 
-  cell:  sh2>b
-  cell:  sh2>c
-  cell:  sh2>d
-  cell:  sh2>e
-  cell:  sh2>f
-  cell:  sh2>g
-  cell:  sh2>h
- sh2.work%
-  cells: sh2>work            \ work buffer
- sh2.input%
-  chars: sh2>input           \ input buffer with data
-  cell:  sh2>length          \ total length of processed data
-;struct
+begin-structure sh2%   ( -- n = Get the required space for a sha2 variable )
+  field:   sh2>h0
+  field:   sh2>h1
+  field:   sh2>h2
+  field:   sh2>h3
+  field:   sh2>h4
+  field:   sh2>h5
+  field:   sh2>h6
+  field:   sh2>h7
+  field:   sh2>a
+  field:   sh2>b
+  field:   sh2>c
+  field:   sh2>d
+  field:   sh2>e
+  field:   sh2>f
+  field:   sh2>g
+  field:   sh2>h
+  sh2.work%
+  fields:  sh2>work          \ work buffer
+  sh2.input%
+  cfields: sh2>input         \ input buffer with data
+  field:   sh2>length        \ total length of processed data
+end-structure
 
 
-( SHA-256 structure creation, initialisation and cleanup )
+( SHA-256 variable creation, initialisation and cleanup )
 
-: sh2-init   ( w:sh2 - = Initialise the sh2 structure )
+: sh2-init   ( sh2 -- = Initialise the sh2 variable )
   [ hex ]
   6A09E667 over sh2>h0 !
   BB67AE85 over sh2>h1 !
@@ -110,17 +110,17 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2-create   ( C: "name" -  R: - w:sh2 = Create a named SHA-256 structure in the dictionary )
+: sh2-create   ( "<spaces>name" -- ; -- sh2 = Create a named SHA-256 variable in the dictionary )
   create  here sh2% allot  sh2-init
 ;
 
 
-: sh2-new   ( - w:sh2 = Create a new SHA-256 structure on the heap )
+: sh2-new   ( -- sh2 = Create a new SHA-256 variable on the heap )
   sh2% allocate  throw   dup sh2-init
 ;
 
 
-: sh2-free   ( w:sh2 - = Free the SHA-256 structure from the heap )
+: sh2-free   ( sh2 -- = Free the SHA-256 variable from the heap )
   free throw
 ;
 
@@ -129,10 +129,10 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 
 [UNDEFINED] sha! [IF]
   bigendian? [IF]
-: sha!             ( w addr - = Store word on address, SHA order )
+: sha!             ( x addr -- = Store cell on address, SHA order )
   postpone !
 ; immediate
-: sha@             ( addr - w = Fetch word on address, SHA order )
+: sha@             ( addr -- x = Fetch cell on address, SHA order )
   postpone @
 ; immediate
   [ELSE]
@@ -152,7 +152,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 [THEN]
 
 
-: sh2-cmove   ( c-addr u w:sh2 - n:len f:full = Move characters from the string to the input buffer, update the length )
+: sh2-cmove   ( c-addr u sh2 -- n flag = Move characters from the string to the input buffer, update the length, return length and full indication )
   2dup sh2>length @ sh2.input% mod     \ index = sh2>length mod buf-size
   tuck + sh2.input% >= >r >r           \ full  = (index + str-len >= buf-size )
   swap sh2.input% r@ - min             \ copy-len = min(buf-size - index, str-len)
@@ -163,7 +163,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2-transform   ( w:sh2 - = Transform 64 bytes of data )
+: sh2-transform   ( sh2 -- = Transform 64 bytes of data )
   >r
   
   r@ sh2>work
@@ -242,7 +242,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2+pad   ( w:index w:buffer - = Pad the buffer )
+: sh2+pad   ( n c-addr -- = Pad the buffer c-addr, starting from index n )
   over chars +
   128 over c!                       \ Add 80h to buffer
   char+ 
@@ -252,7 +252,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 
 
 [UNDEFINED] sha+#s [IF]
-: sha+#s   ( u - Put a single SHA result in the hold area )
+: sha+#s   ( u -- Put a single SHA result in the hold area )
   0 # # # # # # # # 2drop
 ;
 [THEN]
@@ -260,12 +260,12 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 
 ( SHA-256 words )
 
-: sh2-reset   ( w:sh2 - = Reset the SHA-256 state )
+: sh2-reset   ( sh2 -- = Reset the SHA-256 state )
   sh2-init
 ;
 
 
-: sh2-update   ( c-addr u w:sh2 - = Update the SHA-256 with more data )
+: sh2-update   ( c-addr u sh2 -- = Update the SHA-256 with more data c-addr u )
   >r
   BEGIN
     2dup r@ sh2-cmove
@@ -277,7 +277,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2-finish   ( w:sh2 - u1 u2 u3 u4 u5 u6 u7 u8 = Finish the SHA-256 calculation )
+: sh2-finish   ( sh2 -- u1 u2 u3 u4 u5 u6 u7 u8 = Finish the SHA-256 calculation, return the result )
   >r
   
   r@ sh2>length @ sh2.input% mod            \ index = sh2>length mod buf-size
@@ -310,7 +310,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 ;
 
 
-: sh2+to-string   ( u1 u2 u3 u4 u5 u6 u7 u8 - c-addr u = Convert SHA-256 result to string, using the pictured output area )
+: sh2+to-string   ( u1 u2 u3 u4 u5 u6 u7 u8 -- c-addr u = Convert SHA-256 result to the string c-addr u, using the pictured output area )
   base @ >r hex
   <#  sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s sha+#s 0. #>
   r> base !
@@ -319,7 +319,7 @@ struct: sh2%   ( - n = Get the required space for the sha2 data structure )
 
 ( Inspection )
 
-: sh2-dump   ( w:sh2 - = Dump the sh2 state )
+: sh2-dump   ( sh2 -- = Dump the sh2 variable )
   >r
   ." sh2:" r@ . cr
   ."  result :" r@ sh2>h0 @ r@ sh2>h1 @ r@ sh2>h2 @ r@ sh2>h3 @ r@ sh2>h4 @ r@ sh2>h5 @ r@ sh2>h6 @ r@ sh2>h7 @ sh2+to-string type cr

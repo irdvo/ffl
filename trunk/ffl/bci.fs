@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-05 18:32:48 $ $Revision: 1.4 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ include ffl/bcn.fs
 
 
 ( bci = Binary cell tree iterator )
-( The bci module implements an iterator on the binary tree: bct )
+( The bci module implements an iterator on the binary tree [bct]. )
 
 
 1 constant bci.version
@@ -44,39 +44,39 @@ include ffl/bcn.fs
 
 ( Iterator Structure )
 
-struct: bci%       ( - n = Get the required space for a bci data structure )
-  cell: bci>tree        \ Refernce to the binary tree
-  cell: bci>walk        \ Current node in the tree
-;struct 
+begin-structure bci%       ( -- n = Get the required space for a bci variable )
+  field: bci>tree       \ Refernce to the binary tree
+  field: bci>walk       \ Current node in the tree
+end-structure
 
 
 ( Iterator creation, initialisation and destruction )
 
-: bci-init     ( w:bct w:bci - = Initialise the iterator with a binary tree )
+: bci-init     ( bct bci -- = Initialise the iterator with a binary tree )
   tuck bci>tree    !
        bci>walk nil!
 ;
 
 
-: bci-create   ( C: w:bct "name" - R: - w:bci = Create a named iterator in the dictionary )
+: bci-create   ( bct "<spaces>name" -- ; -- bci = Create a named iterator in the dictionary with a binary tree )
   create 
     here  bci% allot  bci-init
 ;
 
 
-: bci-new      ( w:bct - w:bci = Create an iterator on the heap )
+: bci-new      ( bct -- bci = Create an iterator on the heap with a binary tree )
   bci% allocate  throw  tuck bci-init
 ;
 
 
-: bci-free     ( w:bci - = Free the iterator from the heap )
+: bci-free     ( bci -- = Free the iterator from the heap )
   free throw
 ;
 
 
 ( Iterator words )
 
-: bci-get      ( w:bci - false | w true = Get the cell data from the current node )
+: bci-get      ( bci -- false | x true = Get the cell data x from the current node )
   bci>walk @
   dup nil<> IF
     bcn>cell @ true
@@ -86,7 +86,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-key      ( w:bci - false | w true = Get the key from the current node )
+: bci-key      ( bci -- false | x true = Get the key x from the current node )
   bci>walk @
   dup nil<> IF
     bcn>key @ true
@@ -95,7 +95,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
   THEN    
 ;
 
-: bci-set      ( w w:bci - = Set the cell data for the current node )
+: bci-set      ( x bci -- = Set the cell data x for the current node )
   bci>walk @
   dup nil<> IF
     bcn>cell !
@@ -105,7 +105,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-first    ( w:bci - w true | false = Move the iterator to the first node )
+: bci-first    ( bci -- x true | false = Move the iterator to the first node, return the cell data x )
   >r
   r@ bci>tree @ bct>root @
   bct-smallest-node
@@ -115,7 +115,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-next     ( w:bci - w true | false = Move the iterator to the next node )
+: bci-next     ( bci -- x true | false = Move the iterator to the next node, return the cell data x )
   >r
   r@ bci>walk @              \ check if current node has a next node
   dup nil<> IF
@@ -129,7 +129,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-move     ( w w:bci - f = Move the iterator to the next node with the cell data )
+: bci-move     ( x w:bci -- flag = Move the iterator to the next node with the cell data x )
   swap
   BEGIN
     over bci-next IF
@@ -143,7 +143,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-prev     ( w:bci - w true | false = Move the iterator to the previous node )
+: bci-prev     ( bci -- x true | false = Move the iterator to the previous node, return the cell data x )
   >r
   r@ bci>walk @              \ check if current node has a next node
   dup nil<> IF
@@ -157,7 +157,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-last     ( w:bci - w true | false = Move the iterator to the last node )
+: bci-last     ( bci -- x true | false = Move the iterator to the last node, return the cell data x )
   >r
   r@ bci>tree @ bct>root @
   bct-greatest-node
@@ -167,7 +167,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-first?   ( w:bci - f = Check if the iterator is on the first node )
+: bci-first?   ( bci -- flag = Check if the iterator is on the first node )
   >r
   r@ bci>walk @
   dup nil<> IF
@@ -181,7 +181,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 ;
 
 
-: bci-last?    ( w:bci - f = Check if the iterator is on the last node )
+: bci-last?    ( bci -- flag = Check if the iterator is on the last node )
   >r
   r@ bci>walk @
   dup nil<> IF
@@ -197,7 +197,7 @@ struct: bci%       ( - n = Get the required space for a bci data structure )
 
 ( Inspection )
 
-: bci-dump     ( w:bci - = Dump the iterator )
+: bci-dump     ( bci -- = Dump the iterator variable )
   ." bci:" dup . cr
   ."  tree :" dup bci>tree ?  cr
   ."  walk :"     bci>walk ?  cr

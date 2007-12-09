@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-13 06:03:05 $ $Revision: 1.1 $
+\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/nnn.fs
 
 
 ( ncn = n-Tree cell node )
-( The ncn module implements a node in a n-tree that stores a cell value.)
+( The ncn module implements a node in a n-tree [nct] that stores a cell value.)
 
 
 1 constant ncn.version
@@ -42,45 +42,46 @@ include ffl/nnn.fs
 
 ( Node structure )
 
-struct: ncn%       ( - n = Get the required space for a ncn structure )
-  nnn% field: ncn>nnn         \ Extend the nnn structure with ..
-       cell:  ncn>cell        \ .. a cell
-;struct 
+begin-structure ncn%       ( -- n = Get the required space for a ncn node )
+  nnn% 
+  +field ncn>nnn        \ Extend the nnn structure with ..
+  field: ncn>cell       \ .. a cell
+end-structure
 
 
 ( Node creation, initialisation and destruction )
 
-: ncn-init     ( w:data w:ncn - = Initialise the node )
+: ncn-init     ( x ncn -- = Initialise the node with data x)
   dup  nnn-init
        ncn>cell !
 ;
 
 
-: ncn-new      ( w:data - w:ncn = Create a new node on the heap )
+: ncn-new      ( x -- ncn = Create a new node on the heap with data x)
   ncn% allocate  throw  tuck ncn-init
 ;
 
 
-: ncn-free     ( w:ncn - = Free the node from the heap )
+: ncn-free     ( ncn -- = Free the node from the heap )
   free throw
 ;
 
 
 ( Members words )
 
-: ncn-cell@    ( w:ncn - w:dta = Get the cell data from the node )
+: ncn-cell@    ( ncn -- x = Get the cell data from the node )
   ncn>cell @
 ;
 
 
-: ncn-cell!    ( w:data w:ncn - = Set the cell data in the node )
+: ncn-cell!    ( x ncn -- = Set the cell data x in the node )
   ncn>cell !
 ;
 
 
 ( Inspection )
 
-: ncn-dump     ( w:ncn - = Dump the node )
+: ncn-dump     ( ncn -- = Dump the node )
   dup nnn-dump
   ." cell :" ncn>cell ? cr
 ;

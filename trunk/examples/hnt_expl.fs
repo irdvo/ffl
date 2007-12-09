@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-11 19:09:45 $ $Revision: 1.3 $
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -32,11 +32,11 @@ include ffl/hni.fs
 
 \ Extend the base node with a float for storing the value of the constant
 
-struct: sc%
+begin-structure sc%
   hnn%
-  field: sc>ht                      \ Node extends the base node
-  float: sc>value                   \ Value of constant
-;struct
+  +field  sc>ht                      \ Node extends the base node
+  ffield: sc>value                   \ Value of constant
+end-structure
 
 
 \ Create the hash table in the dictionary with an initial size of 10
@@ -46,7 +46,7 @@ struct: sc%
 
 \ Word for adding the value
 
-: sc-add ( r c-addr u - = value key )
+: sc-add ( r c-addr u -- = value key )
   2dup sc-table hnt-search                     \ Search if the key is already present in the hash table
   dup nil<> IF                                 \ If the key is already present Then
     nip nip nip                                \   Remove the key and hash value from stack
@@ -70,7 +70,7 @@ struct: sc%
 
 \ Word for printing the scientific constant
 
-: sc-emit ( w:sc% - )
+: sc-emit ( sc% -- )
   dup hnn-key@ type ."  -> " sc>value f@ f. cr
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.6 $
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -44,34 +44,34 @@ include ffl/hcn.fs
 
 ( Iterator structure )
 
-hni% constant hci%  ( - n = Get the required space for a hash cell table iterator data structure )
+hni% constant hci%  ( -- n = Get the required space for a hash cell table iterator )
 
 
 ( Iterator creation, initialisation and destruction words )
 
-: hci-init     ( w:hct w:hci - = Initialise the iterator with a hash table )
+: hci-init     ( hct hci -- = Initialise the iterator with a hash table )
   hni-init
 ;
 
 
-: hci-create   ( C: w:hct "name" - R: - w = Create a named iterator in the dictionary )
+: hci-create   ( hct "<spaces>name" -- ; -- hci = Create a named iterator in the dictionary on the hash table hct )
   hni-create
 ;
 
 
-: hci-new      ( w:hct - w:hci = Create an iterator on the heap )
+: hci-new      ( hct -- hci = Create an iterator on the heap on the hash table hct )
   hni-new
 ;
 
 
-: hci-free     ( w:hci - = Free iterator from heap )
+: hci-free     ( hci -- = Free the iterator from heap )
   hni-free
 ;
 
 
 ( Private words )
 
-: hci+get      ( w:hcn - false | w true = Get the cell data from the node )
+: hci+get      ( hcn -- false | x true = Get the cell data x from the node )
   dup nil<> IF
     hcn-cell@
     true
@@ -84,17 +84,17 @@ hni% constant hci%  ( - n = Get the required space for a hash cell table iterato
 
 ( Member words )
 
-: hci-get      ( w:hci - false | w true = Get the cell data from the current record )
+: hci-get      ( hci -- false | x true = Get the cell data x from the current record )
   hni-get hci+get
 ;
 
 
-: hci-key      ( w:hci - c-addr u = Get the key from the current record )
+: hci-key      ( hci -- c-addr u = Get the key from the current record )
   hni-key
 ;
 
 
-: hci-set      ( w w:hci - = Set the cell data for the current record )
+: hci-set      ( x hci -- = Set the cell data x in the current record )
   hni-get dup nil<> IF
     hcn>cell !
   ELSE
@@ -105,17 +105,17 @@ hni% constant hci%  ( - n = Get the required space for a hash cell table iterato
 
 ( Iterator words )
 
-: hci-first    ( w:hci - w true | false = Move the iterator to the first record )
+: hci-first    ( hci -- x true | false = Move the iterator to the first record, return the cell data of this record )
   hni-first hci+get
 ;
 
 
-: hci-next     ( w:hci - w true | false = Move the iterator to the next record )
+: hci-next     ( hci -- x true | false = Move the iterator to the next record, return the cell data from this record )
   hni-next hci+get
 ;
 
 
-: hci-move     ( w w:hci - f = Move the iterator to the next record with the cell data )
+: hci-move     ( x hci -- flag = Move the iterator to the next record with the cell data x, return success )
   swap
   BEGIN
     over hci-next IF
@@ -129,19 +129,19 @@ hni% constant hci%  ( - n = Get the required space for a hash cell table iterato
 ;
 
 
-: hci-first?   ( w:hci - f = Check if the iterator is on the first record )
+: hci-first?   ( hci -- flag = Check if the iterator is on the first record )
   hni-first?
 ;
 
 
-: hci-last?    ( w:hci - f = Check if the iterator is on the last record )
+: hci-last?    ( hci -- flag = Check if the iterator is on the last record )
   hni-last?
 ;
 
 
 ( Inspection )
 
-: hci-dump     ( w:hci - = Dump the iterator )
+: hci-dump     ( hci -- = Dump the iterator )
   hni-dump
 ;
 
