@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.3 $
+\  $Date: 2007-12-12 19:36:38 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -30,6 +30,7 @@ include ffl/config.fs
 
 [UNDEFINED] xis.version [IF]
 
+include ffl/enm.fs
 include ffl/tis.fs
 include ffl/msc.fs
 include ffl/est.fs
@@ -37,8 +38,9 @@ include ffl/est.fs
 
 ( xis = XML/HTML reader )
 ( The xis module implements a non-validating XML/HTML parser.                )
-( Some notes: the default entity references, &lt; &gt; &amp; and &quot;, are )
-( automatically translated, but all others are simply returned in the text.  )
+( Some notes: the default entity references, &lt; &gt; &amp;, &quot; and '   )
+( are automatically translated, but all others are simply returned in the    )
+( text.                                                                      )
 ( <pre>                                                                      )
 (   Stack usage reader word: xis-reader ( w:data - false | c-addr u true     )
 ( </pre>                                                                     )
@@ -60,27 +62,31 @@ s" apos" s" '"   xis.entities msc-add
 
 ( xis reader constants )
 
--1 constant xis.error          ( -- n = Error          --                                                        )
- 0 constant xis.done           ( -- n = Done reading   --                                                        )
- 1 constant xis.start-xml      ( -- n = Start Document -- c-addr:standalone u c-addr:encoding u c-addr:version u )
- 1 constant xis.comment        ( -- n = Comment        -- c-addr u                                               )
- 2 constant xis.text           ( -- n = Normal text    -- c-addr u                                               )
- 3 constant xis.start-tag      ( -- n = Start tag      -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
- 4 constant xis.end-tag        ( -- n = End tag        -- c-addr u                                               )
- 5 constant xis.empty-element  ( -- n = Empty element  -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
- 6 constant xis.cdata          ( -- n = CDATA section  -- c-addr u                                               )
- 6 constant xis.proc-instr     ( -- n = Proc. instr.   -- c-addr:value u c-addr:attribute u .. n c-addr:target u )
- 7 constant xis.internal-dtd   ( -- n = Internal DTD   -- c-addr:markup u c-addr:name u                          )
- 8 constant xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:name u        )
- 9 constant xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:name u                          )
- 
- 
+begin-enumeration
+  -1
+  >enum: xis.error          ( -- n = Error          --                                                        )
+  enum:  xis.done           ( -- n = Done reading   --                                                        )
+  enum:  xis.start-xml      ( -- n = Start Document -- c-addr:standalone u c-addr:encoding u c-addr:version u )
+  enum:  xis.comment        ( -- n = Comment        -- c-addr u                                               )
+  enum:  xis.text           ( -- n = Normal text    -- c-addr u                                               )
+  enum:  xis.start-tag      ( -- n = Start tag      -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
+  enum:  xis.end-tag        ( -- n = End tag        -- c-addr u                                               )
+  enum:  xis.empty-element  ( -- n = Empty element  -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
+  enum:  xis.cdata          ( -- n = CDATA section  -- c-addr u                                               )
+  enum:  xis.proc-instr     ( -- n = Proc. instr.   -- c-addr:value u c-addr:attribute u .. n c-addr:target u )
+  enum:  xis.internal-dtd   ( -- n = Internal DTD   -- c-addr:markup u c-addr:name u                          )
+  enum:  xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:name u        )
+  enum:  xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:name u                          )
+end-enumeration
+
+
 ( xml reader structure )
 
 begin-structure xis%   ( -- n = Get the required space for a xis reader variable )
   tis%
   +field  xis>tis       \ the xis reader (extends the text input stream)
   field:  xis>msc       \ translation of entity references
+  field:  xis>strip     \ strip leading and trailing spaces in normal text ?
 end-structure
 
 
@@ -89,8 +95,9 @@ end-structure
 
 : xis-init   ( xis -- = Initialise the xml reader variable )
   
-               dup  xis>tis  tis-init
-  xis.entities swap xis>msc  !
+               dup  xis>tis   tis-init
+  xis.entities over xis>msc   !
+                    xis>strip off             
 ;
 
 
@@ -121,7 +128,7 @@ end-structure
 ;
 
 
-( Entity reference catalog words )
+( Member words )
 
 : xis-msc@   ( xis -- msc = Get the current entity reference catalog )
   xis>msc @
@@ -135,9 +142,20 @@ end-structure
 ;
 
 
+: xis-strip@   ( xis -- flag = Return flag indicating the stripping of leading and trailing spaces in normal text )
+  xis>strip @
+;
+
+
+: xis-strip!   ( flag xis -- = Set the flag indicating the stripping of leaading and trailing spaces in normal text )
+  xis>strip !
+;
+
+
 ( Private reader words )
 
-: xis-read-reference   ( tis -- ... = Read and translate the reference )
+: xis-read-reference   ( xis -- ... = Read and translate the reference )
+  \ ToDo
   >r
   s" lt;" r@ tis-imatch-string IF
     \ ToDo
@@ -154,70 +172,74 @@ end-structure
 ;
 
 
-: xis-read-comment ( .. )
-;
-
-
-: xis-read-tag-attribute ( tis -- c-addr u c-addr u = Read a tag attribute )
-;
-
-
-: xis-read-start-tag ( tis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
-;
-
-
-: xis-read-end-tag ( tis -- c-addr u xis.end-tag = Read an end tag )
-;
-
-
-: xis-read-proc-instr ( tis --  .. = Read a processing instruction )
-;
-
-
-: xis-read-markup   ( tis -- .. = Read markup text )
-;
-
-
-: xis-read-tag   ( tis -- .. = Read a tag )
+: xis-read-comment ( xis -- c-addr u n = Read comment, return xis.comment )
   >r
-  r@ tis-fetch-char IF
-    dup chr-alpha? IF
-      drop 
-      r@ xis-read-start-tag
+  s" -->" r@ tis-scan-string IF        \ Search end of comment
+    xis.comment
+  ELSE
+    [char] > r@ tis-scan-char IF       \ Not found, try on >
+      xis.comment
     ELSE
-      dup [char] / = IF
-        drop 
-        r@ tis-next-char
-        r@ tis-fetch-char IF
-          chr-alpha? IF
-            r@ xis-read-end-tag
-          ELSE
-            \ What to do ?
-          THEN
-        ELSE
-          xis.done
-        THEN    
+      r@ tis-read-all ?dup IF          \ All is comment
+        xis.comment
       ELSE
-        dup [char] ! = IF
-          drop 
-          r@ xis-read-markup
-        ELSE
-          [char] ? = IF
-            r@ xis-read-proc-instr
-          ELSE
-            \ What to do ?
-          THEN
-        THEN
+        xis.done
       THEN
     THEN
-  ELSE
-    xis.done
   THEN
   rdrop
 ;
 
 
-: xis-read-text   ( tis -- c-addr u flag | 0 flag = Read the text, process the entity references )
+: xis-read-attribute ( xis -- c-addr u c-addr u = Read a tag attribute )
+;
+
+
+: xis-read-name   ( xis -- c-addr u = Read a tag name )
+;
+
+
+: xis-read-start-tag ( xis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
+;
+
+
+: xis-read-end-tag ( xis -- c-addr u xis.end-tag = Read an end tag )
+;
+
+
+: xis-read-proc-instr ( xis --  .. = Read a processing instruction )
+;
+
+
+: xis-read-cdata   ( xis -- c-addr u n = Read CDATA section, return xis.cdata )
+  >r
+  s" ]]>" r@ tis-scan-string IF        \ Search end of CDATA section
+    xis.cdata
+  ELSE
+    [char] > r@ tis-scan-char IF       \ Not found, try on >
+      xis.cdata
+    ELSE
+      r@ tis-read-all ?dup IF          \ All is CDATA section
+        xis.cdata
+      ELSE
+        xis.done
+      THEN
+    THEN
+  THEN
+  rdrop
+;
+
+
+: xis-read-entity   ( xis -- i*x n = Read the entity definition )
+;
+
+
+: xis-read-doctype   ( xis -- i*x n = Read the document type definition )
+;
+
+
+: xis-read-text   ( xis -- c-addr u flag | 0 flag = Read the text, process the entity references )
+  \ ToDo
   >r
   s" <&" r@ tis-scan-chars IF               \ Scan for < or &
     [char] < = IF
@@ -235,38 +257,89 @@ end-structure
 ;
 
 
-( xml reader word )
+: xis-read-texts   ( xis -- c-addr u n = Read normal xml text, return xis.text )
+  \ ToDo
+  >r
+  r@ xis-read-text 0= IF                \ Read text
+    BEGIN
+      r@ xis-read-text                  \ If not done, continu reading text
+      >r 
+      ?dup IF
+        nip +
+      THEN
+      r>
+    UNTIL
+  THEN
+      
+  ?dup IF                               \ If text read Then
+    xis.text                            \   Text processed
+  ELSE                                  \ Else
+    drop                                \   Done
+    xis.done
+  THEN
+  rdrop
+;
 
-: xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source [see xml reader constants] )
-  xis>tis >r
-  
-  r@ tis-reduce                             \ Keep the stream compact
+: xis-read-token   ( xis -- i*x n = Read the next xml token )
+  >r
   
   r@ tis-eof? IF
     xis.done                                \ Done if no more data
   ELSE
     [char] < r@ tis-cmatch-char IF
-      r@ xis-read-tag                       \ Read tag if first character is '<'
-    ELSE
-      r@ xis-read-text 0= IF                \ Read text
-        BEGIN
-          r@ xis-read-text                  \ If not done, continu reading text
-          >r 
-          ?dup IF
-            nip +
+      [char] / r@ tis-cmatch-char IF        \ Parse end tag for </
+        r@ xis-read-end-tag
+      ELSE 
+        [char] ? r@ tis-cmatch-char IF
+          r@ xis-read-proc-instr            \ Parse processing instruction for /?
+        ELSE
+          [char] ! r@ tis-cmatch-char IF
+            s" --" r@ tis-cmatch-string IF
+              r@ xis-read-comment           \ Parse comment
+            ELSE
+              s" [CDATA[" r@ tis-cmatch-string IF
+                r@ xis-read-cdata           \ Parse CDATA section
+              ELSE
+                s" ENTITY" r@ tis-cmatch-string IF
+                  r@ xis-read-entity        \ Parse entity definition
+                ELSE
+                  s" DOCTYPE" r@ tis-cmatch-string IF
+                    r@ xis-read-doctype     \ Parse doctype
+                  ELSE
+                    xis.error
+                  THEN
+                THEN
+              THEN
+            THEN
+          ELSE
+            r@ xis-read-start-tag           \ Parse start tag
           THEN
-          r>
-        UNTIL
+        THEN
       THEN
-      
-      ?dup IF                               \ If text read Then
-        xis.text                            \   Text processed
-      ELSE                                  \ Else
-        drop                                \   Done
-        xis.done
-      THEN
+    ELSE
+      r@ xis-read-texts
     THEN
   THEN
+  rdrop
+;
+
+
+( xml reader word )
+
+: xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source [see xml reader constants] )
+  >r
+  r@ tis-reduce                   \ Keep the stream compact
+  BEGIN
+    r@ xis-read-token
+    
+    dup xis.text = IF             \ Keep looking after empty text
+      over 0=
+    ELSE
+      false
+    THEN
+  WHILE
+    drop 2drop
+  REPEAT
   rdrop
 ;
 

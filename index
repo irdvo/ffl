@@ -48,10 +48,11 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
-1 stc - Struct definition
 1 tst - Unit tests
+6 stc - ANS structures
 6 stt - Stringtable defintion
 6 est - String with escaped characters
+6 enm - Enumerations
 ----- - ------------------------------------------------
       - Interface
 ----- - ------------------------------------------------
@@ -101,7 +102,6 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
-6 stc - ANS structures
 7 log - Logger module
   hlp - Manual/help/info module
 ----- - ------------------------------------------------
@@ -142,7 +142,7 @@ A     - Font ??
 ToDo
 ----
 [ ] cpx: cotan ?
-[ ] stc: union,enum
+[ ] stc: union
 [ ] frc: lcm
 [x] cfg: newline
 [x] cfg: sys.* -> *
