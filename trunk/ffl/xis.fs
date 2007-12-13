@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-12 19:36:38 $ $Revision: 1.4 $
+\  $Date: 2007-12-13 20:09:03 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -34,6 +34,7 @@ include ffl/enm.fs
 include ffl/tis.fs
 include ffl/msc.fs
 include ffl/est.fs
+include ffl/chs.fs
 
 
 ( xis = XML/HTML reader )
@@ -49,7 +50,7 @@ include ffl/est.fs
 1 constant xis.version
 
 
-( private variable )
+( private constants )
 
 msc-create xis.entities  ( the default entity reference catalog )
 
@@ -58,6 +59,26 @@ s" gt"   s" >"   xis.entities msc-add
 s" amp"  s" &"   xis.entities msc-add
 s" quot" s\" \"" xis.entities msc-add
 s" apos" s" '"   xis.entities msc-add
+
+
+chs-create xis.start-name-set   ( the character set for the first letter of a name )
+
+       xis.start-name-set chs-set-alpha
+s" _:" xis.start-name-set chs-set-string
+
+
+chs-create xis.next-name-set   ( the character set for the following letters of a name )
+
+         xis.next-name-set chs-set-alnum
+s" .-_:" xis.next-name-set chs-set-string
+
+
+chs-create xis.space   ( the character set for xml space )
+
+chr.sp xis.space chs-set-char
+chr.ht xis.space chs-set-char
+chr.cr xis.space chs-set-char
+chr.lf xis.space chs-set-char
 
 
 ( xis reader constants )
@@ -172,6 +193,67 @@ end-structure
 ;
 
 
+: xis-skip-spaces   ( xis -- = Skip xml spaces in the stream ) 
+  BEGIN
+    xis.space over tis-match-set
+  WHILE
+    drop
+  REPEAT
+  drop
+;
+
+
+: xis-read-attributes ( xis -- c-addr u c-addr u n true | false = Read tag attributes )
+  \ Lus: read attribute
+  \ Error: remove from stack
+;
+
+
+: xis-read-name   ( xis -- c-addr u | 0 = Read a xml name )
+  >r
+  r@ tis-pntr@
+  xis.start-name-set r@ tis-match-set IF
+    drop
+    BEGIN
+      xis.next-name-set r@ tis-match-set
+    WHILE
+      drop
+    REPEAT
+    r@ tis-substring
+  ELSE
+    drop 0
+  THEN
+  rdrop
+;
+
+
+: xis-read-start-tag ( xis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
+  dup xis-read-name ?dup IF
+    2>r
+    xis-read-attributes IF
+      2r>
+      \ ToDo: match / and/or >
+      xis.start-tag
+    ELSE
+      2r> 2drop
+      xis.error
+    THEN
+  ELSE
+    drop xis.error
+  THEN
+;
+
+
+: xis-read-end-tag ( xis -- c-addr u xis.end-tag = Read an end tag )
+  xis-read-name ?dup IF
+    \ ToDo: match >
+    xis.end-tag
+  ELSE
+    xis.error
+  THEN
+;
+
+
 : xis-read-comment ( xis -- c-addr u n = Read comment, return xis.comment )
   >r
   s" -->" r@ tis-scan-string IF        \ Search end of comment
@@ -191,23 +273,21 @@ end-structure
 ;
 
 
-: xis-read-attribute ( xis -- c-addr u c-addr u = Read a tag attribute )
-;
-
-
-: xis-read-name   ( xis -- c-addr u = Read a tag name )
-;
-
-
-: xis-read-start-tag ( xis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
-;
-
-
-: xis-read-end-tag ( xis -- c-addr u xis.end-tag = Read an end tag )
-;
-
-
 : xis-read-proc-instr ( xis --  .. = Read a processing instruction )
+  dup xis-read-name ?dup IF
+    2>r
+    xis-read-attributes IF
+      2r>
+      \ ToDo: match ? and >
+      \ Check name for xml
+      xis.start-tag
+    ELSE
+      2r> 2drop
+      xis.error
+    THEN
+  ELSE
+    drop xis.error
+  THEN
 ;
 
 

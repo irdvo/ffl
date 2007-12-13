@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-12 19:36:38 $ $Revision: 1.1 $
+\  $Date: 2007-12-13 20:09:03 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,9 +33,11 @@ include ffl/tst.fs
 
 t{ xis-create xis1 }t
 
-t{ s" <!--Comment--><![CDATA[Hallo]]>" xis1 xis-set-string }t 
+t{ s" <!--Comment--><![CDATA[Hallo]]><bold extra='hallo'>" xis1 xis-set-string }t 
 
 t{ xis1 xis-read xis.comment ?s type }t
 t{ xis1 xis-read xis.cdata   ?s type }t
+
+t{ xis1 xis-read }t
 
 \ ==============================================================================
