@@ -1,4 +1,6 @@
 0.6.0
+* tis: new word tis-match-set
+* tis: new word tis-scan-set
 * chs: chs-char? return false in place of an exception if outside range
 * enm: new module: Enumeration (2007-12-12)
 * Stack notation changed to ANSish (2007-12-06)

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-02-02 18:45:43 $ $Revision: 1.6 $
+\  $Date: 2007-12-13 18:52:05 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -67,6 +67,13 @@ t{ s" O"    t1 tis-imatch-string ?true }t
 t{ s" pq"   t1 tis-imatch-string ?true }t
 t{ s" rSt"  t1 tis-imatch-string ?true }t
 
+t{ chs-create chs3 }t
+
+t{ chs3 chs-set-lower }t 
+
+t{ chs3 t1 tis-match-set ?true char u ?s }t
+
+
 \ Scan
 
 t{ t1 tis-reset }t
@@ -82,6 +89,17 @@ t{ s" ab" t1 tis-scan-string ?false }t
 t{ s" stu" t1 tis-scan-string ?true s" mnopqr" compare ?0 }t
 t{ s" x"  t1 tis-scan-string ?true s" vw" compare ?0 }t
 t{ s" abc" t1 tis-scan-string ?false }t
+
+t{ t1 tis-reset }t
+
+t{ chs3 chs-reset }t
+
+t{ char g chs3 chs-set-char }t
+t{ char k chs3 chs-set-char }t
+t{ char B chs3 chs-set-char }t
+
+t{ chs3 t1 tis-scan-set ?true char g ?s s" abcdef" compare ?0 }t
+
 
 \ Seek
 

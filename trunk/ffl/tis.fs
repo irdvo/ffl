@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.17 $
+\  $Date: 2007-12-13 18:52:05 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ include ffl/config.fs
 
 
 include ffl/str.fs
+include ffl/chs.fs
 
 
 ( tis = Text input stream )
@@ -316,6 +317,22 @@ end-structure
     THEN
   ELSE
     2drop false
+  THEN
+  rdrop
+;
+
+
+: tis-match-set   ( chs tis - false | char true = Match one of the characters in the set  )
+  >r
+  r@ tis-fetch-char IF
+    dup rot chs-char? IF
+      r@ tis-next-char
+      true
+    ELSE
+      drop false
+    THEN
+  ELSE
+    drop false
   THEN
   rdrop
 ;
@@ -626,6 +643,42 @@ end-structure
     true
   ELSE
     2drop
+    r@ tis>pntr !                      \ Restore current pointer
+    false
+  THEN
+  rdrop
+;
+
+
+: tis-scan-set   ( chs tis - false | c-addr n2 char true = Read characters till one of the characters in the set chs )
+  >r
+  r@ tis-pntr@ swap                    \ Save the current pointer
+  
+  BEGIN
+    r@ tis-fetch-char IF               \ Fetch the current character
+      over chs-char? IF
+        true false                     \   If current character in string of chars then found & ready
+      ELSE
+        true                           \   Else continue searching
+      THEN
+    ELSE
+      2drop
+      false false                      \ If no more characters then not found & ready
+    THEN
+  WHILE
+    r@ tis-next-char
+  REPEAT
+  
+  nip                                  \ Drop string of chars
+  IF
+    r@ tis-substring                   \ Leading string
+    
+    r@ tis-fetch-char drop             \ Fetch the scanned character
+    
+    r@ tis-next-char                   \ Skip scan character
+    
+    true
+  ELSE
     r@ tis>pntr !                      \ Restore current pointer
     false
   THEN
