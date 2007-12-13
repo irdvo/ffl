@@ -1,4 +1,5 @@
 0.6.0
+* chs: chs-char? return false in place of an exception if outside range
 * enm: new module: Enumeration (2007-12-12)
 * Stack notation changed to ANSish (2007-12-06)
 ! stc: structures are changed to ANS structures (2007-12-04)

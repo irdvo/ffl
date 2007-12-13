@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.9 $
+\  $Date: 2007-12-13 18:23:15 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -381,8 +381,11 @@ end-structure
 ( Char check word )
 
 : chs-char?        ( char chs -- flag = Check if the character is in the set )
-  over chs+validate-char
-  chs-ch?
+  over 127 u> IF
+    false
+  ELSE
+    chs-ch?
+  THEN
 ;
 
 
