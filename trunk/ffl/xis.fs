@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-13 20:09:03 $ $Revision: 1.5 $
+\  $Date: 2007-12-15 06:36:48 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -175,9 +175,16 @@ end-structure
 
 ( Private reader words )
 
-: xis-read-reference   ( xis -- ... = Read and translate the reference )
+: xis-read-reference   ( xis -- n = Read and translate the reference )
   \ ToDo
   >r
+  [char] ; r@ tis-scan-char IF
+    tuck r@ xis-msc@ msc-translate
+    
+  ELSE
+    1                             \ Only & is processed
+  THEN
+  
   s" lt;" r@ tis-imatch-string IF
     \ ToDo
     ." <"
@@ -259,14 +266,10 @@ end-structure
   s" -->" r@ tis-scan-string IF        \ Search end of comment
     xis.comment
   ELSE
-    [char] > r@ tis-scan-char IF       \ Not found, try on >
+    r@ tis-read-all ?dup IF            \ All is comment
       xis.comment
     ELSE
-      r@ tis-read-all ?dup IF          \ All is comment
-        xis.comment
-      ELSE
-        xis.done
-      THEN
+      xis.done
     THEN
   THEN
   rdrop
@@ -296,14 +299,10 @@ end-structure
   s" ]]>" r@ tis-scan-string IF        \ Search end of CDATA section
     xis.cdata
   ELSE
-    [char] > r@ tis-scan-char IF       \ Not found, try on >
+    r@ tis-read-all ?dup IF            \ All is CDATA section
       xis.cdata
     ELSE
-      r@ tis-read-all ?dup IF          \ All is CDATA section
-        xis.cdata
-      ELSE
-        xis.done
-      THEN
+      xis.done
     THEN
   THEN
   rdrop
@@ -318,8 +317,7 @@ end-structure
 ;
 
 
-: xis-read-text   ( xis -- c-addr u flag | 0 flag = Read the text, process the entity references )
-  \ ToDo
+: xis-read-text   ( xis -- c-addr u flag = Read the text, process the entity references )
   >r
   s" <&" r@ tis-scan-chars IF               \ Scan for < or &
     [char] < = IF
@@ -338,20 +336,22 @@ end-structure
 
 
 : xis-read-texts   ( xis -- c-addr u n = Read normal xml text, return xis.text )
-  \ ToDo
   >r
   r@ xis-read-text 0= IF                \ Read text
     BEGIN
       r@ xis-read-text                  \ If not done, continu reading text
       >r 
       ?dup IF
-        nip +
+        nip +                           \ Concat the texts
       THEN
       r>
     UNTIL
   THEN
-      
+  
   ?dup IF                               \ If text read Then
+    r@ xis-strip@ IF
+      \ ToDo str+strip
+    THEN
     xis.text                            \   Text processed
   ELSE                                  \ Else
     drop                                \   Done
