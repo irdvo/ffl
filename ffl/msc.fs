@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
+\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -126,6 +126,17 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
     swap msc>msg>length @
   ELSE                            \ Else 
     drop                          \   Use the old message
+  THEN
+;
+
+
+: msc-translate?   ( c-addr1 u2 msc -- c-addr2 u2 true | false = Translate the message c-addr1 u1 with the catalog, return success )
+  hnt-get dup nil<> IF           \ Search for the message, if found
+    dup  msc>msg>text   @        \  Fetch the translation
+    swap msc>msg>length @
+    true
+  ELSE
+    drop false
   THEN
 ;
 

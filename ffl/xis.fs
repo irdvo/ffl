@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-15 06:36:48 $ $Revision: 1.6 $
+\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -175,28 +175,23 @@ end-structure
 
 ( Private reader words )
 
-: xis-read-reference   ( xis -- n = Read and translate the reference )
-  \ ToDo
+: xis-read-reference   ( xis -- = Read and translate the reference )
   >r
-  [char] ; r@ tis-scan-char IF
-    tuck r@ xis-msc@ msc-translate
-    
-  ELSE
-    1                             \ Only & is processed
+  [char] ; r@ tis-scan-char IF              \ Look for the end of the reference
+    dup 1+ 1+                               \ Calculate length of reference
+    -rot                                    \ And save it
+    r@ xis-msc@ msc-translate? IF           \ Try to translate the reference
+      tuck                                  \ Save translated length
+      2over drop r@ tis-pntr@ swap -        \ Calculate the insert index
+      r@ str-insert-string                  \ Insert the translated reference in the stream
+      2dup over r@ tis-pntr@ swap - +       \ Calculate the delete index
+      r@ str-delete                         \ Delete the old reference
+      swap - r@ tis-pntr+! drop             \ Update the stream pointer
+    ELSE
+      drop
+    THEN
   THEN
-  
-  s" lt;" r@ tis-imatch-string IF
-    \ ToDo
-    ." <"
-  ELSE  s" gt;" r@ tis-imatch-string IF
-    \ ToDo
-    ." >"
-  ELSE s" amp;" r@ tis-imatch-string IF
-    \ ToDo
-    ." &"
-  THEN THEN THEN
   rdrop
-  0
 ;
 
 
@@ -317,44 +312,37 @@ end-structure
 ;
 
 
-: xis-read-text   ( xis -- c-addr u flag = Read the text, process the entity references )
+: xis-read-text   ( xis -- c-addr u n | n = Read normal xml text, return xis.text or xis.done )
   >r
-  s" <&" r@ tis-scan-chars IF               \ Scan for < or &
-    [char] < = IF
-      -1 r@ tis-pntr+! drop
-      true
+  r@ tis-pntr@
+  BEGIN
+    s" <&" r@ tis-scan-chars IF             \ Scan text till < or &
+      nip nip
+      [char] & = IF
+        true
+      ELSE
+        -1 r@ tis-pntr+! drop               \ Set < unprocessed
+        false
+      THEN
     ELSE
-      r@ xis-read-reference +
+      r@ tis-read-all IF                    \ No < or & found, all remaining text is normal text
+        drop
+      THEN
       false
     THEN
-  ELSE
-    r@ tis-read-all
-    true
-  THEN
-  rdrop
-;
-
-
-: xis-read-texts   ( xis -- c-addr u n = Read normal xml text, return xis.text )
-  >r
-  r@ xis-read-text 0= IF                \ Read text
-    BEGIN
-      r@ xis-read-text                  \ If not done, continu reading text
-      >r 
-      ?dup IF
-        nip +                           \ Concat the texts
-      THEN
-      r>
-    UNTIL
-  THEN
+  WHILE
+    r@ xis-read-reference                   \ Repeat for entity reference
+  REPEAT
   
-  ?dup IF                               \ If text read Then
-    r@ xis-strip@ IF
+  r@ tis-substring                          \ Get the full text string
+  
+  ?dup IF                                   \ If text read Then
+    r@ xis-strip@ IF                        \   Strip it if requested
       \ ToDo str+strip
     THEN
-    xis.text                            \   Text processed
-  ELSE                                  \ Else
-    drop                                \   Done
+    xis.text                                \   Text processed
+  ELSE                                      \ Else
+    drop                                    \   Done
     xis.done
   THEN
   rdrop
@@ -397,7 +385,7 @@ end-structure
         THEN
       THEN
     ELSE
-      r@ xis-read-texts
+      r@ xis-read-text
     THEN
   THEN
   rdrop
