@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.3 $
+\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -43,6 +43,12 @@ t{ s" tree" s" boom" msc1 msc-add }t
 t{ s" no"   msc1 msc-translate s" nee"  compare ?0 }t
 t{ s" tree" msc1 msc-translate s" boom" compare ?0 }t
 t{ s" bike" msc1 msc-translate s" bike" compare ?0 }t
+
+\ Translate?
+
+t{ s" no"   msc1 msc-translate? ?true  s" nee"  compare ?0 }t
+t{ s" tree" msc1 msc-translate? ?true  s" boom" compare ?0 }t
+t{ s" bike" msc1 msc-translate? ?false }t
 
 
 \ Update translations 
