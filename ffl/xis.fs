@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.7 $
+\  $Date: 2007-12-16 19:37:18 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -54,31 +54,31 @@ include ffl/chs.fs
 
 msc-create xis.entities  ( the default entity reference catalog )
 
-s" lt"   s" <"   xis.entities msc-add
-s" gt"   s" >"   xis.entities msc-add
-s" amp"  s" &"   xis.entities msc-add
-s" quot" s\" \"" xis.entities msc-add
-s" apos" s" '"   xis.entities msc-add
+  s" lt"   s" <"   xis.entities msc-add
+  s" gt"   s" >"   xis.entities msc-add
+  s" amp"  s" &"   xis.entities msc-add
+  s" quot" s\" \"" xis.entities msc-add
+  s" apos" s" '"   xis.entities msc-add
 
 
 chs-create xis.start-name-set   ( the character set for the first letter of a name )
 
-       xis.start-name-set chs-set-alpha
-s" _:" xis.start-name-set chs-set-string
+         xis.start-name-set chs-set-alpha
+  s" _:" xis.start-name-set chs-set-string
 
 
 chs-create xis.next-name-set   ( the character set for the following letters of a name )
 
-         xis.next-name-set chs-set-alnum
-s" .-_:" xis.next-name-set chs-set-string
+           xis.next-name-set chs-set-alnum
+  s" .-_:" xis.next-name-set chs-set-string
 
 
 chs-create xis.space   ( the character set for xml space )
 
-chr.sp xis.space chs-set-char
-chr.ht xis.space chs-set-char
-chr.cr xis.space chs-set-char
-chr.lf xis.space chs-set-char
+  chr.sp xis.space chs-set-char
+  chr.ht xis.space chs-set-char
+  chr.cr xis.space chs-set-char
+  chr.lf xis.space chs-set-char
 
 
 ( xis reader constants )
@@ -205,7 +205,17 @@ end-structure
 ;
 
 
-: xis-read-attributes ( xis -- c-addr u c-addr u n true | false = Read tag attributes )
+: xis+error-tag   ( c-addrn un c-addrn un .. n c-addr1 u1 -- = Clear the stack after an error in a tag )
+  2drop
+  0 ?DO
+    2drop
+    2drop
+  LOOP
+;
+
+
+: xis-read-attributes ( c-addr1 u1 xis -- c-addrn un c-addrn un .. n c-addr1 u1 true | false = Read tag attributes )
+  drop true
   \ Lus: read attribute
   \ Error: remove from stack
 ;
@@ -229,13 +239,21 @@ end-structure
 ;
 
 
-: xis-read-start-tag ( xis -- c-addr u c-addr u .. n c-addr u xis.start-tag = Read a start tag )
-  dup xis-read-name ?dup IF
-    2>r
-    xis-read-attributes IF
-      2r>
-      \ ToDo: match / and/or >
-      xis.start-tag
+: xis-read-start-tag ( xis -- c-addrn un c-addrn un .. n c-addr u xis.start-tag = Read a start tag )
+  >r
+  r@ xis-read-name ?dup IF
+    r@ xis-read-attributes IF
+      r@ xis-skip-spaces
+      s" />" r@ tis-cmatch-string IF
+        xis.empty-element
+      ELSE
+        [char] > r@ tis-cmatch-char IF
+          xis.start-tag
+        ELSE
+          xis+error-tag
+          xis.error
+        THEN
+      THEN
     ELSE
       2r> 2drop
       xis.error
@@ -243,16 +261,23 @@ end-structure
   ELSE
     drop xis.error
   THEN
+  rdrop
 ;
 
 
 : xis-read-end-tag ( xis -- c-addr u xis.end-tag = Read an end tag )
-  xis-read-name ?dup IF
-    \ ToDo: match >
-    xis.end-tag
+  >r
+  r@ xis-read-name ?dup IF
+    r@ xis-skip-spaces
+    [char] > r@ tis-cmatch-char IF    
+      xis.end-tag
+    ELSE
+      xis.error
+    THEN
   ELSE
     xis.error
   THEN
+  rdrop
 ;
 
 
@@ -271,14 +296,21 @@ end-structure
 ;
 
 
-: xis-read-proc-instr ( xis --  .. = Read a processing instruction )
-  dup xis-read-name ?dup IF
-    2>r
+: xis-read-proc-instr ( xis -- c-addrn un c-addrn un .. n c-addr u = Read a processing instruction )
+  >r
+  r@ xis-read-name ?dup IF
     xis-read-attributes IF
-      2r>
-      \ ToDo: match ? and >
-      \ Check name for xml
-      xis.start-tag
+      r@ xis-skip-spaces
+      s" ?>" r@ tis-cmatch-string IF
+        2dup s" xml" icompare 0= IF
+          xis.start-xml
+        ELSE
+          xis.proc-instr
+        THEN
+      ELSE
+        xis+error-tag
+        xis.error
+      THEN
     ELSE
       2r> 2drop
       xis.error
