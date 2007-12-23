@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-13 18:52:05 $ $Revision: 1.18 $
+\  $Date: 2007-12-23 07:57:26 $ $Revision: 1.19 $
 \
 \ ==============================================================================
 
@@ -276,7 +276,7 @@ end-structure
 ;
 
 
-: tis-cmatch-chars ( c-addr n tis -- false | char true = Match one of the characters in the string case-sensitive )
+: tis-cmatch-chars ( c-addr u tis -- false | char true = Match one of the characters in the string case-sensitive )
   >r
   r@ tis-fetch-char IF
     dup >r chr-string? r> over IF
@@ -292,7 +292,7 @@ end-structure
 ;
 
 
-: tis-cmatch-string  ( c-addr n tis -- flag = Match case-sensitive a string )
+: tis-cmatch-string  ( c-addr u tis -- flag = Match case-sensitive a string )
   >r
   dup r@ tis-fetch-chars ?dup IF
     dup >r compare 0= r> over IF
@@ -307,7 +307,7 @@ end-structure
 ;
 
 
-: tis-imatch-string  ( c-addr n tis -- flag = Match case-insensitive a string )
+: tis-imatch-string  ( c-addr u tis -- flag = Match case-insensitive a string )
   >r
   dup r@ tis-fetch-chars ?dup IF
     dup >r icompare 0= r> over IF
@@ -351,7 +351,7 @@ end-structure
 ;
 
 
-: tis-read-all   ( tis -- 0 | c-addr n = Read all remaining characters from the stream )
+: tis-read-all   ( tis -- 0 | c-addr u = Read all remaining characters from the stream )
   >r
   BEGIN
     r@ tis-read-more 0=                \ Read all data from the reader
@@ -371,7 +371,7 @@ end-structure
 ;
 
 
-: tis-read-string  ( n tis -- 0 | c-addr n = Read n characters from the stream )
+: tis-read-string  ( n tis -- 0 | c-addr u = Read n characters from the stream )
   >r
   r@ tis-fetch-chars
   dup 0> IF
@@ -381,7 +381,7 @@ end-structure
 ;
 
 
-: tis-read-line    ( tis -- 0 | c-addr n = Read characters till cr and/or lf )
+: tis-read-line    ( tis -- 0 | c-addr u = Read characters till cr and/or lf )
   >r
   1 r@ tis-fetch-chars dup 0> IF
     drop 0
@@ -650,7 +650,7 @@ end-structure
 ;
 
 
-: tis-scan-set   ( chs tis - false | c-addr n2 char true = Read characters till one of the characters in the set chs )
+: tis-scan-set   ( chs tis - false | c-addr u char true = Read characters till one of the characters in the set chs )
   >r
   r@ tis-pntr@ swap                    \ Save the current pointer
   
@@ -662,14 +662,13 @@ end-structure
         true                           \   Else continue searching
       THEN
     ELSE
-      2drop
       false false                      \ If no more characters then not found & ready
     THEN
   WHILE
     r@ tis-next-char
   REPEAT
   
-  nip                                  \ Drop string of chars
+  nip                                  \ Drop set
   IF
     r@ tis-substring                   \ Leading string
     
