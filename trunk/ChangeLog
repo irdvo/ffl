@@ -1,4 +1,5 @@
 0.6.0
+* tst: new word ?str for module testing strings (2007-12-24)
 * tis: new word tis-match-set
 * tis: new word tis-scan-set
 * chs: chs-char? return false in place of an exception if outside range

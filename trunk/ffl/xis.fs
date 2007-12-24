@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-23 07:57:26 $ $Revision: 1.9 $
+\  $Date: 2007-12-24 08:06:28 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -209,10 +209,10 @@ end-structure
       -rot                                    \ And save it
       r@ xis-msc@ msc-translate? IF           \ Try to translate the reference
         tuck                                  \ Save translated length
-        2over drop r@ tis-pntr@ swap -        \ Calculate the insert index
+        2over drop r@ tis-pntr@ over -        \ Calculate the delete and insert index
+        tuck                                  \ Save index for insert
+        r@ str-delete                         \ Delete the old reference (note: old>=translated)
         r@ str-insert-string                  \ Insert the translated reference in the stream
-        2dup over r@ tis-pntr@ swap - +       \ Calculate the delete index
-        r@ str-delete                         \ Delete the old reference
         swap - r@ tis-pntr+! drop             \ Update the stream pointer
       ELSE
         drop
@@ -307,7 +307,6 @@ end-structure
 : xis-read-attributes ( c-addr1 u1 xis -- c-addrn un c-addrn un .. n c-addr1 u1 = Read tag attributes )
   0
   >r >r
-
   BEGIN
     r@ xis-skip-spaces
     r@ xis-read-name ?dup
@@ -343,7 +342,7 @@ end-structure
       [char] > r@ tis-cmatch-char IF
         xis.start-tag
       ELSE
-~~        xis+error-tag
+        xis+error-tag
         xis.error
       THEN
     THEN

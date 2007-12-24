@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.10 $
+\  $Date: 2007-12-24 08:06:28 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -271,6 +271,17 @@ variable tst-timer
 ;
 [THEN]
 
+
+: ?str         ( c-addr1 u1 c-addr2 u2 -- = Check for a string on the stack )
+  tst-depth4? IF
+    2over 2over compare IF
+      tst-report-mismatch
+      tst-report-checking type space tst-report-found type cr
+    ELSE
+      2drop 2drop
+    THEN
+  THEN
+;
 
 ( Test results words )
 
