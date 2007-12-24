@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-13 18:52:05 $ $Revision: 1.7 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ t{ t1 tis-read-char ?true char b ?s }t
 
 t{ t1 tis-pntr@ 2 ?s }t
 
-t{ 3 t1 tis-read-string s" cde" compare ?0 }t
+t{ 3 t1 tis-read-string s" cde" ?str }t
 t{ t1 tis-pntr@ 5 ?s }t
 
 \ Match
@@ -78,16 +78,16 @@ t{ chs3 t1 tis-match-set ?true char u ?s }t
 
 t{ t1 tis-reset }t
 t{ char 0 t1 tis-scan-char ?false }t
-t{ char c t1 tis-scan-char ?true s" ab" compare ?0 }t
-t{ char f t1 tis-scan-char ?true s" de" compare ?0 }t
+t{ char c t1 tis-scan-char ?true s" ab" ?str }t
+t{ char f t1 tis-scan-char ?true s" de" ?str }t
 
 t{ s" ab" t1 tis-scan-chars ?false }t
-t{ s" ik" t1 tis-scan-chars ?true char i ?s s" gh" compare ?0 }t
-t{ s" lL" t1 tis-scan-chars ?true char l ?s s" jk" compare ?0 }t
+t{ s" ik" t1 tis-scan-chars ?true char i ?s s" gh" ?str }t
+t{ s" lL" t1 tis-scan-chars ?true char l ?s s" jk" ?str }t
 
 t{ s" ab" t1 tis-scan-string ?false }t
-t{ s" stu" t1 tis-scan-string ?true s" mnopqr" compare ?0 }t
-t{ s" x"  t1 tis-scan-string ?true s" vw" compare ?0 }t
+t{ s" stu" t1 tis-scan-string ?true s" mnopqr" ?str }t
+t{ s" x"  t1 tis-scan-string ?true s" vw" ?str }t
 t{ s" abc" t1 tis-scan-string ?false }t
 
 t{ t1 tis-reset }t
@@ -98,7 +98,7 @@ t{ char g chs3 chs-set-char }t
 t{ char k chs3 chs-set-char }t
 t{ char B chs3 chs-set-char }t
 
-t{ chs3 t1 tis-scan-set ?true char g ?s s" abcdef" compare ?0 }t
+t{ chs3 t1 tis-scan-set ?true char g ?s s" abcdef" ?str }t
 
 
 \ Seek
@@ -107,7 +107,7 @@ t{ 20 t1 tis-pntr! ?true }t
 t{ t1 tis-read-char ?true char u ?s }t
 
 t{ 3  t1 tis-pntr+! ?true }t
-t{ 4  t1 tis-read-string s" yz" compare ?0 }t
+t{ 4  t1 tis-read-string s" yz" ?str }t
 t{ t1 tis-eof? ?true }t
 
 t{ 3  t1 tis-read-string ?0 }t
@@ -127,10 +127,10 @@ t{ chr.cr t1 str-push-char }t
 t{ s" ef" t1 str-append-string }t
 t{ chr.lf t1 str-push-char }t
 
-t{ 2 t1 tis-read-string s" ab" compare ?0 }t
+t{ 2 t1 tis-read-string s" ab" ?str }t
 t{ t1 tis-skip-spaces 3 ?s }t
-t{ t1 tis-read-line s" cd" compare ?0 }t
-t{ t1 tis-read-line s" ef" compare ?0 }t
+t{ t1 tis-read-line s" cd" ?str }t
+t{ t1 tis-read-line s" ef" ?str }t
 t{ t1 tis-read-line ?0 }t
 
 

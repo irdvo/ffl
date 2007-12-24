@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-14 20:39:40 $ $Revision: 1.9 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -119,7 +119,7 @@ t{ 6 -6 s1 str-get-substring s2 str-set  }t
 t{ s" el??lo" s2 str-ccompare ?0      }t
 
 
-t{ s1 str-get s" Hel??lo" compare ?0 }t
+t{ s1 str-get s" Hel??lo" ?str       }t
 
 t{ 3 0 s1 str-delete                 }t
 t{ s" ??lo" s1 str-ccompare ?0       }t
@@ -238,24 +238,24 @@ t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
 
 \ split
 t{ s" this is a test of the column splitter" 10 str+columns 4 ?s
-   s" this is a"  compare ?0
-   s" test of"    compare ?0 
-   s" the column" compare ?0
-   s" splitter"   compare ?0 }t
+   s" this is a"  ?str
+   s" test of"    ?str 
+   s" the column" ?str
+   s" splitter"   ?str }t
    
 t{ s" 1234567890" 10 str+columns 1 ?s
-   s" 1234567890" compare ?0 }t
+   s" 1234567890" ?str }t
    
 t{ s" 1234567890    " 10 str+columns 1 ?s
-   s" 1234567890" compare ?0 }t
+   s" 1234567890" ?str }t
    
 t{ s"     1234567890" 10 str+columns 1 ?s
-   s" 1234567890" compare ?0 }t
+   s" 1234567890" ?str }t
 
 t{ s" thisisatestofthecolumnsplitter" 10 str+columns 3 ?s
-   s" thisisates" compare ?0
-   s" tofthecolu" compare ?0 
-   s" mnsplitter" compare ?0 }t
+   s" thisisates" ?str
+   s" tofthecolu" ?str 
+   s" mnsplitter" ?str }t
    
 t{ s2 str-free }t
 

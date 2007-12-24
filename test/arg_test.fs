@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-10-09 17:31:08 $ $Revision: 1.4 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -90,10 +90,10 @@ t{ char f
 
 t{ arg1 arg-parse 4 ?s                                   }t
 t{ arg1 arg-parse 5 ?s                                   }t
-t{ arg1 arg-parse 6 ?s s" TEST" compare ?0               }t
+t{ arg1 arg-parse 6 ?s s" TEST" ?str                     }t
 t{ arg1 arg-parse 7 ?s                                   }t
-t{ arg1 arg-parse 8 ?s s" FILE" compare ?0               }t
-t{ arg1 arg-parse arg.non-option ?s s" input" compare ?0 }t
+t{ arg1 arg-parse 8 ?s s" FILE" ?str                     }t
+t{ arg1 arg-parse arg.non-option ?s s" input" ?str       }t
 t{ arg1 arg-parse arg.done ?s                            }t
 
 [THEN]

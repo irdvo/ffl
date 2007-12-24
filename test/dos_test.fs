@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-22 19:15:26 $ $Revision: 1.2 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -46,159 +46,159 @@ t{ 0  8  5  0 21 dtm.june     2007 dtm7 dtm-set }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-abbr-weekday-name }t
-t{ tos4 str-get s" Wed" compare ?0 }t
+t{ tos4 str-get s" Wed" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm5 tos4 dos-write-weekday-name }t
-t{ tos4 str-get s" Sunday" compare ?0 }t
+t{ tos4 str-get s" Sunday" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-abbr-month-name }t
-t{ tos4 str-get s" Nov" compare ?0 }t
+t{ tos4 str-get s" Nov" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm6 tos4 dos-write-month-name }t
-t{ tos4 str-get s" December" compare ?0 }t
+t{ tos4 str-get s" December" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-date-time }t
-t{ tos4 str-get s" 2007/11/21 18:15:45" compare ?0 }t
+t{ tos4 str-get s" 2007/11/21 18:15:45" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-century }t
-t{ tos4 str-get s" 20" compare ?0 }t
+t{ tos4 str-get s" 20" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-monthday }t
-t{ tos4 str-get s" 21" compare ?0 }t
+t{ tos4 str-get s" 21" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-american-date }t
-t{ tos4 str-get s" 06/21/07" compare ?0 }t
+t{ tos4 str-get s" 06/21/07" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-spaced-monthday }t
-t{ tos4 str-get s" 21" compare ?0 }t
+t{ tos4 str-get s" 21" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-iso8601-date }t
-t{ tos4 str-get s" 2007-06-21" compare ?0 }t
+t{ tos4 str-get s" 2007-06-21" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-24hour }t
 t{ dtm5 tos4 dos-write-24hour }t
 t{ dtm6 tos4 dos-write-24hour }t
 t{ dtm7 tos4 dos-write-24hour }t
-t{ tos4 str-get s" 18120600" compare ?0 }t
+t{ tos4 str-get s" 18120600" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-12hour }t
 t{ dtm5 tos4 dos-write-12hour }t
 t{ dtm6 tos4 dos-write-12hour }t
 t{ dtm7 tos4 dos-write-12hour }t
-t{ tos4 str-get s" 06120612" compare ?0 }t
+t{ tos4 str-get s" 06120612" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-yearday }t
 t{ dtm5 tos4 dos-write-yearday }t
 t{ dtm6 tos4 dos-write-yearday }t
 t{ dtm7 tos4 dos-write-yearday }t
-t{ tos4 str-get s" 325301365172" compare ?0 }t
+t{ tos4 str-get s" 325301365172" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-spaced-24hour }t
 t{ dtm5 tos4 dos-write-spaced-24hour }t
 t{ dtm6 tos4 dos-write-spaced-24hour }t
 t{ dtm7 tos4 dos-write-spaced-24hour }t
-t{ tos4 str-get s" 1812 6 0" compare ?0 }t
+t{ tos4 str-get s" 1812 6 0" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-spaced-12hour }t
 t{ dtm5 tos4 dos-write-spaced-12hour }t
 t{ dtm6 tos4 dos-write-spaced-12hour }t
 t{ dtm7 tos4 dos-write-spaced-12hour }t
-t{ tos4 str-get s"  612 612" compare ?0 }t
+t{ tos4 str-get s"  612 612" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-month }t
 t{ dtm5 tos4 dos-write-month }t
 t{ dtm6 tos4 dos-write-month }t
 t{ dtm7 tos4 dos-write-month }t
-t{ tos4 str-get s" 11101206" compare ?0 }t
+t{ tos4 str-get s" 11101206" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-month }t
 t{ dtm5 tos4 dos-write-month }t
 t{ dtm6 tos4 dos-write-month }t
 t{ dtm7 tos4 dos-write-month }t
-t{ tos4 str-get s" 11101206" compare ?0 }t
+t{ tos4 str-get s" 11101206" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-minute }t
-t{ tos4 str-get s" 05" compare ?0 }t
+t{ tos4 str-get s" 05" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-ampm }t
 t{ dtm5 tos4 dos-write-ampm }t
 t{ dtm6 tos4 dos-write-ampm }t
 t{ dtm7 tos4 dos-write-ampm }t
-t{ tos4 str-get s" pmpmamam" compare ?0 }t
+t{ tos4 str-get s" pmpmamam" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-upper-ampm }t
 t{ dtm5 tos4 dos-write-upper-ampm }t
 t{ dtm6 tos4 dos-write-upper-ampm }t
 t{ dtm7 tos4 dos-write-upper-ampm }t
-t{ tos4 str-get s" PMPMAMAM" compare ?0 }t
+t{ tos4 str-get s" PMPMAMAM" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-ampm-time }t
-t{ tos4 str-get s" 12:05:08 AM" compare ?0 }t
+t{ tos4 str-get s" 12:05:08 AM" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-hhmm-time }t
-t{ tos4 str-get s" 00:05" compare ?0 }t
+t{ tos4 str-get s" 00:05" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-seconds-since-epoch }t
-t{ tos4 str-get s" 1182384308" compare ?0 ) }t
+t{ tos4 str-get s" 1182384308" ?str ) }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-seconds }t
-t{ tos4 str-get s" 08" compare ?0 ) }t
+t{ tos4 str-get s" 08" ?str ) }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-hhmmss-time }t
-t{ tos4 str-get s" 00:05:08" compare ?0 }t
+t{ tos4 str-get s" 00:05:08" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-weekday }t
-t{ tos4 str-get s" 3" compare ?0 }t
+t{ tos4 str-get s" 3" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm4 tos4 dos-write-week-number }t
-t{ tos4 str-get s" 47" compare ?0 }t
+t{ tos4 str-get s" 47" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-date }t
-t{ tos4 str-get s" 2007/06/21" compare ?0 }t
+t{ tos4 str-get s" 2007/06/21" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm6 tos4 dos-write-time }t
-t{ tos4 str-get s" 06:15:45" compare ?0 }t
+t{ tos4 str-get s" 06:15:45" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm6 tos4 dos-write-2year }t
-t{ tos4 str-get s" 07" compare ?0 }t
+t{ tos4 str-get s" 07" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm6 tos4 dos-write-year }t
-t{ tos4 str-get s" 2007" compare ?0 }t
+t{ tos4 str-get s" 2007" ?str }t
 
 \ Format words
 
 t{ tos4 tos-rewrite }t
 t{ dtm6 s" %a%A%b%B%c%C%d%D%e%F%h%H%I%j%k%l%m%M%p%P%r%R%S%T%V%w%x%X%y%Y%%" tos4 dos-write-format }t
-t{ tos4 str-get s" MonMondayDecDecember2007/12/31 06:15:45203112/31/07312007-12-31Dec0606365 6 61215AMam06:15:45 AM06:154506:15:450112007/12/3106:15:45072007%" compare ?0 }t
+t{ tos4 str-get s" MonMondayDecDecember2007/12/31 06:15:45203112/31/07312007-12-31Dec0606365 6 61215AMam06:15:45 AM06:154506:15:450112007/12/3106:15:45072007%" ?str }t
 
 \ ==============================================================================

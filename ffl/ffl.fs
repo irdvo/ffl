@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.41 $
+\  $Date: 2007-12-24 19:32:11 $ $Revision: 1.42 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include ffl/chr.fs
 include ffl/chs.fs
 include ffl/cpx.fs
 include ffl/crc.fs
+include ffl/dci.fs
 include ffl/dcl.fs
 include ffl/dcn.fs
 include ffl/dnl.fs
@@ -43,12 +44,16 @@ include ffl/dnn.fs
 include ffl/dos.fs
 include ffl/dtm.fs
 include ffl/dti.fs
+include ffl/enm.fs
 include ffl/est.fs
 include ffl/frc.fs
 include ffl/gmo.fs
+include ffl/hci.fs
 include ffl/hcn.fs
 include ffl/hct.fs
-include ffl/hci.fs
+include ffl/hni.fs
+include ffl/hnn.fs
+include ffl/hnt.fs
 include ffl/md5.fs
 include ffl/msc.fs
 include ffl/nci.fs
@@ -59,24 +64,25 @@ include ffl/nfs.fs
 include ffl/nni.fs
 include ffl/nnn.fs
 include ffl/nnt.fs
-include ffl/tst.fs
 include ffl/rgx.fs
 include ffl/rng.fs
 include ffl/scn.fs
 include ffl/scl.fs
 include ffl/sci.fs
+include ffl/sh1.fs
+include ffl/sh2.fs
 include ffl/sni.fs
 include ffl/snl.fs
 include ffl/snn.fs
-include ffl/sh1.fs
-include ffl/sh2.fs
+include ffl/stc.fs
 include ffl/str.fs
 include ffl/stt.fs
 include ffl/tis.fs
 include ffl/tmr.fs
 include ffl/tos.fs
 include ffl/trm.fs
-\ include ffl/xis.fs
+include ffl/tst.fs
+include ffl/xis.fs
 include ffl/xos.fs
 
 \ ==============================================================================

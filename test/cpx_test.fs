@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-25 17:22:40 $ $Revision: 1.6 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -95,9 +95,9 @@ t{ 1.41421356E+0 -2.3561944E+0 cpx+from-polar -1E+0 ?r -1E+0 ?r }t
   
 3 set-precision
 
-t{ -1.8E+0 -2.7E+0 cpx+to-string cpxs1 compare ?0 }t
-t{ -1.8E+0  2.7E+0 cpx+to-string cpxs2 compare ?0 }t
-t{  1.0E+0 -2.7E+0 cpx+to-string cpxs3 compare ?0 }t
+t{ -1.8E+0 -2.7E+0 cpx+to-string cpxs1 ?str }t
+t{ -1.8E+0  2.7E+0 cpx+to-string cpxs2 ?str }t
+t{  1.0E+0 -2.7E+0 cpx+to-string cpxs3 ?str }t
 
 
 \ Structure

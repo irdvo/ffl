@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 08:06:28 $ $Revision: 1.10 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -109,7 +109,7 @@ chs-create xis.end-non-quoted-value   ( the ending character set for a non-quote
 
 begin-enumeration
   -1
-  >enum: xis.error          ( -- n = Error          --                                                        )
+  >enum: xis.error          ( -- n = Error          --  ToDo: better comment                                  )
   enum:  xis.done           ( -- n = Done reading   --                                                        )
   enum:  xis.start-xml      ( -- n = Start Document -- c-addr:standalone u c-addr:encoding u c-addr:version u )
   enum:  xis.comment        ( -- n = Comment        -- c-addr u                                               )
@@ -120,8 +120,8 @@ begin-enumeration
   enum:  xis.cdata          ( -- n = CDATA section  -- c-addr u                                               )
   enum:  xis.proc-instr     ( -- n = Proc. instr.   -- c-addr:value u c-addr:attribute u .. n c-addr:target u )
   enum:  xis.internal-dtd   ( -- n = Internal DTD   -- c-addr:markup u c-addr:name u                          )
-  enum:  xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:name u        )
-  enum:  xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:name u                          )
+  enum:  xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:markup u c-addr:name u )
+  enum:  xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:markup u c-addr:name u          )
 end-enumeration
 
 
@@ -199,21 +199,37 @@ end-structure
 
 ( Private reader words )
 
-: xis-read-reference   ( xis -- = Read and translate the reference )
+: xis-read-reference   ( xis -- = Read and translate an entity reference )
   >r
-  [char] # r@ tis-cmatch-char IF
-    \ ToDo: numerical reference
-  ELSE
-    [char] ; r@ tis-scan-char IF              \ Look for the end of the reference
-      dup 1+ 1+                               \ Calculate length of reference
-      -rot                                    \ And save it
-      r@ xis-msc@ msc-translate? IF           \ Try to translate the reference
-        tuck                                  \ Save translated length
-        2over drop r@ tis-pntr@ over -        \ Calculate the delete and insert index
-        tuck                                  \ Save index for insert
-        r@ str-delete                         \ Delete the old reference (note: old>=translated)
-        r@ str-insert-string                  \ Insert the translated reference in the stream
-        swap - r@ tis-pntr+! drop             \ Update the stream pointer
+  [char] # r@ tis-cmatch-char IF              \ Numerical reference
+    base @ decimal
+    r@ tis-pntr@
+    r@ tis-read-number IF
+      [char] ; r@ tis-cmatch-char IF
+        swap 1- 1-                            \   Calculate delete and insert index
+        r@ tis-pntr@ over -                   \   Calculate delete length
+        2dup
+        swap r@ str-delete                    \   Delete the reference
+        -rot r@ str-insert-char               \   Insert the numerical reference
+        negate 1+ r@ tis-pntr+! drop          \   Update the stream pointer
+      ELSE
+        2drop                                 \   No closing ;
+      THEN
+    ELSE
+      drop                                    \   Not a number
+    THEN
+    base !  
+  ELSE                                        \ Name reference
+    [char] ; r@ tis-scan-char IF              \   Look for the end of the reference
+      dup 1+ 1+                               \   Calculate length of reference
+      -rot                                    \   And save it
+      r@ xis-msc@ msc-translate? IF           \   Try to translate the reference
+        tuck                                  \   Save translated length
+        2over drop r@ tis-pntr@ over -        \   Calculate the delete and insert index
+        tuck                                  \   Save index for insert
+        r@ str-delete                         \   Delete the old reference (note: old>=translated)
+        r@ str-insert-string                  \   Insert the translated reference in the stream
+        swap - r@ tis-pntr+! drop             \   Update the stream pointer
       ELSE
         drop
       THEN
@@ -420,13 +436,76 @@ end-structure
 ;
 
 
-: xis-read-entity   ( xis -- i*x n = Read the entity definition )
-  \ ToDo
+: xis-read-literal   ( xis -- c-addr u | nil 0 = Read literal )
+  >r
+  [char] " r@ tis-cmatch-char IF
+    [char] " r@ tis-scan-char 0= IF
+      nil 0
+    THEN
+  ELSE
+    [char] ' r@ tis-cmatch-char IF
+      [char] ' r@ tis-scan-char 0= IF
+        nil 0
+      THEN
+    ELSE
+      nil 0
+    THEN
+  THEN
+  rdrop
+;
+
+: xis+error-dtd      ( i*x n -- = Cleanup stack if DTD is not correct )
+  >r
+  2drop 2drop                               \ Drop name and markup
+  r@ xis.internal-dtd <> IF
+    2drop                                   \ Drop system id
+    r@ xis.public-dtd = IF
+      2drop                                 \ Drop public id
+    THEN
+  THEN
+  rdrop    
 ;
 
 
 : xis-read-doctype   ( xis -- i*x n = Read the document type definition )
-  \ ToDo
+  >r
+  r@ xis-skip-spaces
+  r@ xis-read-name ?dup IF
+    r@ xis-skip-spaces
+    
+    s" SYSTEM" r@ tis-cmatch-string IF      \ Check external id
+      r@ xis-read-literal 2swap
+      xis.system-dtd
+    ELSE
+      s" PUBLIC" r@ tis-cmatch-string IF
+        r@ xis-read-literal 2swap
+        r@ xis-skip-spaces
+        r@ xis-read-literal 2swap
+        xis.public-dtd
+      ELSE
+        xis.internal-dtd
+      THEN
+    THEN
+    
+    r@ xis-skip-spaces
+    [char] [ r@ tis-cmatch-char IF
+      [char] ] r@ tis-scan-char 0= IF
+        nil 0
+      THEN
+    ELSE
+      nil 0
+    THEN
+    rot >r 2swap r>                         \ move markup after name and xml token        
+
+    r@ xis-skip-spaces
+    [char] > r@ tis-cmatch-char 0= IF       \ Check for ending >, else error
+      xis+error-dtd
+      xis.error
+    THEN
+  ELSE
+    xis.error
+  THEN
+  rdrop
 ;
 
 
@@ -437,7 +516,7 @@ end-structure
   
   ?dup IF                                   \ If text read Then
     r@ xis-strip@ IF                        \   Strip it if requested
-      \ ToDo str+strip
+      str+strip
     THEN
     xis.text                                \   Text processed
   ELSE                                      \ Else
@@ -467,14 +546,10 @@ end-structure
               s" [CDATA[" r@ tis-cmatch-string IF
                 r@ xis-read-cdata           \ Parse CDATA section
               ELSE
-                s" ENTITY" r@ tis-cmatch-string IF
-                  r@ xis-read-entity        \ Parse entity definition
+                s" DOCTYPE" r@ tis-cmatch-string IF
+                  r@ xis-read-doctype       \ Parse doctype
                 ELSE
-                  s" DOCTYPE" r@ tis-cmatch-string IF
-                    r@ xis-read-doctype     \ Parse doctype
-                  ELSE
-                    xis.error
-                  THEN
+                  xis.error
                 THEN
               THEN
             THEN
@@ -510,12 +585,6 @@ end-structure
   rdrop
 ;
 
-
-( Inspection )
-
-: xis-dump ( xis -- = Dump the xml reader variable )
-  \ ToDo
-;
 
 [THEN]
 

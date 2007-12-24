@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-28 17:45:39 $ $Revision: 1.2 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -73,10 +73,10 @@ t{ 2 6 1 2 frc+compare -1 ?s }t
 : frcs3 s" 3"    ;
 : frcs4 s" 12/5" ;
     
-t{ -6 21 frc+to-string frcs1 compare ?0 }t  
-t{  0 3  frc+to-string frcs2 compare ?0 }t
-t{  3 1  frc+to-string frcs3 compare ?0 }t
-t{ 12 5  frc+to-string frcs4 compare ?0 }t
+t{ -6 21 frc+to-string frcs1 ?str }t  
+t{  0 3  frc+to-string frcs2 ?str }t
+t{  3 1  frc+to-string frcs3 ?str }t
+t{ 12 5  frc+to-string frcs4 ?str }t
 
 [DEFINED] frc+to-float [IF]
 t{  1 3 frc+to-float  0.33333e0 ?r }t

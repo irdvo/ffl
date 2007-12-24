@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 15:30:53 $ $Revision: 1.4 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -58,7 +58,7 @@ decimal
 
 sh1-test  \ a million times "a", see test vectors
 
-t{ sh12 sh1-finish sh1+to-string s" 34AA973CD4C4DAA4F61EEB2BDBAD27316534016F" compare ?0 }t
+t{ sh12 sh1-finish sh1+to-string s" 34AA973CD4C4DAA4F61EEB2BDBAD27316534016F" ?str }t
 
 t{ sh12 sh1-free }t
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.25 $
+\  $Date: 2007-12-24 19:32:11 $ $Revision: 1.26 $
 \
 \ ==============================================================================
 
@@ -539,9 +539,20 @@ end-structure
 ;
 
 
+: str+strip-trailing  ( c-addr u1 -- c-addr u2 = Strip trailing spaces in the string c-addr u1 )
+  -trailing
+;
+  
+  
 : str-strip        ( str -- = Strip leading and trailing spaces in the string )
   dup str-strip-leading
       str-strip-trailing
+;
+
+
+: str+strip        ( c-addr1 u1 -- c-addr2 u2 = Strip leading and trailing spaces from string c-addr1 u1 )
+  str+strip-leading
+  str+strip-trailing
 ;
 
 

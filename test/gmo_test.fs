@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:23 $ $Revision: 1.3 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -45,8 +45,8 @@ t{ msc2 hnt-length@ 38 ?s }t
 
 \ msc2 msc-dump
 
-t{ s" Sunday" msc2 msc-translate s" zondag" compare ?0 }t
-t{ s" Mar"    msc2 msc-translate s" maa"    compare ?0 }t
+t{ s" Sunday" msc2 msc-translate s" zondag" ?str }t
+t{ s" Mar"    msc2 msc-translate s" maa"    ?str }t
 
 t{ msc2 msc-free }t
 

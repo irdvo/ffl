@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.8 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -132,7 +132,7 @@ t{ hct1 hci-new value hci1 }t
 
 t{ hci1 hci-first ?true 2 ?s }t
 t{ hci1 hci-get   ?true 2 ?s }t
-t{ hci1 hci-key   s" two" compare ?0 }t
+t{ hci1 hci-key   s" two" ?str }t
 
   t{ hci1 hci-first? ?true  }t
   t{ hci1 hci-last?  ?false }t

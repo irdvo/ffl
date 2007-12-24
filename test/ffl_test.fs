@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.33 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.34 $
 \
 \ ==============================================================================
 
@@ -63,6 +63,7 @@ include stt_test.fs
 include tis_test.fs
 include tmr_test.fs
 include tos_test.fs
+include xis_test.fs
 include xos_test.fs
 
 .( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests took ) . .( ms.) cr
