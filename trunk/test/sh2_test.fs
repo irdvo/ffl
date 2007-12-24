@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-07 15:31:13 $ $Revision: 1.1 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -70,7 +70,7 @@ t{ sh22 sh2-reset }t
 
 sh2-test                 \ million times "a", see test vectors 1-8
 
-t{ sh22 sh2-finish sh2+to-string s" CDC76E5C9914FB9281A1C7E284D73E67F1809A48A497200E046D39CCC7112CD0" compare ?0 }t
+t{ sh22 sh2-finish sh2+to-string s" CDC76E5C9914FB9281A1C7E284D73E67F1809A48A497200E046D39CCC7112CD0" ?str }t
 
 t{ sh22 sh2-free }t
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.4 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -40,14 +40,14 @@ t{ s" tree" s" boom" msc1 msc-add }t
 
 \ Translate
 
-t{ s" no"   msc1 msc-translate s" nee"  compare ?0 }t
-t{ s" tree" msc1 msc-translate s" boom" compare ?0 }t
-t{ s" bike" msc1 msc-translate s" bike" compare ?0 }t
+t{ s" no"   msc1 msc-translate s" nee"  ?str }t
+t{ s" tree" msc1 msc-translate s" boom" ?str }t
+t{ s" bike" msc1 msc-translate s" bike" ?str }t
 
 \ Translate?
 
-t{ s" no"   msc1 msc-translate? ?true  s" nee"  compare ?0 }t
-t{ s" tree" msc1 msc-translate? ?true  s" boom" compare ?0 }t
+t{ s" no"   msc1 msc-translate? ?true  s" nee"  ?str }t
+t{ s" tree" msc1 msc-translate? ?true  s" boom" ?str }t
 t{ s" bike" msc1 msc-translate? ?false }t
 
 
@@ -55,11 +55,11 @@ t{ s" bike" msc1 msc-translate? ?false }t
 
 t{ s" no"   s" neen"  msc1 msc-add }t
 
-t{ s" no"   msc1 msc-translate s" neen"  compare ?0 }t
+t{ s" no"   msc1 msc-translate s" neen"  ?str }t
 
 t{ s" no"   s" nee"  msc1 msc-add }t
 
-t{ s" no"   msc1 msc-translate s" nee"   compare ?0 }t
+t{ s" no"   msc1 msc-translate s" nee"   ?str }t
 
 
 \ Remove translations
@@ -68,7 +68,7 @@ t{ s" yes"  msc1 msc-remove ?true  }t
 t{ s" tree" msc1 msc-remove ?true  }t
 t{ s" bike" msc1 msc-remove ?false }t
 
-t{ s" tree" msc1 msc-translate s" tree" compare ?0 }t
+t{ s" tree" msc1 msc-translate s" tree" ?str }t
 
 \ Free message catalog
 

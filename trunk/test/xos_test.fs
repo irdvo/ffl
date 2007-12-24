@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 18:53:28 $ $Revision: 1.3 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -51,7 +51,7 @@ t{ s" mail"                         tos5 xos-write-end-tag }t
 
 t{ tos5 str-get
    s\" <?xml version=\"1.0\" encoding=\"ISO-8559-1\" standalone=\"yes\"?><!--this is comment--><?pi mode=\"on\"?><mail code=\"&lt;&apos;&gt;\"><to>Bill &amp; Sara</to><from>$#70;orth</from><contents><![CDATA[: 2dup dup dup ;]]></contents><others/></mail>"
-   compare ?0 }t
+   ?str }t
 
 
 \ test DTDs
@@ -60,21 +60,21 @@ t{ tos5 tos-rewrite }t
 
 t{ s" order.dtd" s" order" tos5 xos-write-system-dtd }t
 
-t{ tos5 str-get s\" <!DOCTYPE order SYSTEM \"order.dtd\">" compare ?0 }t
+t{ tos5 str-get s\" <!DOCTYPE order SYSTEM \"order.dtd\">" ?str }t
 
 
 t{ tos5 tos-rewrite }t
 
 t{ s" <!ELEMENT mail (to+,from,contents,others+)>" s" mail" tos5 xos-write-internal-dtd }t
 
-t{ tos5 str-get s" <!DOCTYPE mail [<!ELEMENT mail (to+,from,contents,others+)>]>" compare ?0 }t
+t{ tos5 str-get s" <!DOCTYPE mail [<!ELEMENT mail (to+,from,contents,others+)>]>" ?str }t
 
 
 t{ tos5 tos-rewrite }t
 
 t{ s" something" s" -//W3C//DTD HTML 4.0 Transitional//EN" s" HTML" tos5 xos-write-public-dtd }t
 
-t{ tos5 str-get s\" <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"something\">" compare ?0 }t
+t{ tos5 str-get s\" <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"something\">" ?str }t
 
 
  

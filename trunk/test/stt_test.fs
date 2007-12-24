@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.1 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ begin-stringtable stt1
 ," Library"
 end-stringtable
 
-t{ 0 stt1 s" Forth"      compare ?0 }t
-t{ 1 stt1 s" Foundation" compare ?0 }t
-t{ 2 stt1 s" Library"    compare ?0 }t
+t{ 0 stt1 s" Forth"      ?str }t
+t{ 1 stt1 s" Foundation" ?str }t
+t{ 2 stt1 s" Library"    ?str }t
 
 \ ==============================================================================

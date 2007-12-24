@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-08-10 18:57:44 $ $Revision: 1.2 $
+\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,7 @@ t{ m1 md5-reset }t
 
 t{ s" 01234567890123456789012345678901234567890123456789012345678901234567890" m1 md5-update }t
 
-t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 }t
+t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" ?str }t
 
 t{ m1 md5-reset }t
 
@@ -52,7 +52,7 @@ t{ s" 90123456789012345678901234567" m1 md5-update }t
 
 t{ s" 8901234567890" m1 md5-update }t
 
-t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" compare ?0 }t
+t{ m1 md5-finish md5+to-string s" 8CA2DC1109EC719046F23D92EFE819F7" ?str }t
 
 t{ md5-new value m2 }t
 
