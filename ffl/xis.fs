@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.11 $
+\  $Date: 2007-12-25 17:46:30 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -38,13 +38,34 @@ include ffl/chs.fs
 
 ( xis = XML/HTML reader )
 ( The xis module implements a non-validating XML/HTML parser.                )
-( Some notes: the default entity references, &lt; &gt; &amp;, &quot; and '   )
-( are automatically translated, but all others are simply returned in the    )
-( text.                                                                      )
+( The default entity references, &lt; &gt; &amp;, &quot; and ' are           )
+( translated, but all others are simply returned in the text. By using the   )
+( xis-msc! word a message catalog can be set, that will overrule the default )
+( translations of entity references. The xis-set-reader word expect an       )
+( execution token with the following stack behaviour:                        )
 ( <pre>                                                                      )
-(   Stack usage reader word: xis-reader ( w:data - false | c-addr u true     )
+(    x -- false | c-addr u true                                              )
 ( </pre>                                                                     )
-
+( Data x is the same as the first parameter during calling of the word       )
+( xis-set-reader. For reading from files this is normally the file           )
+( descriptor. The word returns, if succesfull, the read data in c-addr u.    )
+( The xis-read word returns the parsed xml token with the following varying  )
+( stack parameters:                                                          )
+( <pre>                                                                      )
+( xis.error          --                                                      )
+( xis.done           --                                                      )
+( xis.start-xml      -- c-addrn un c-addr un .. n           = Return n attributes with their value                     )
+( xis.comment        -- c-addr u                            = Return the comment                                       )
+( xis.text           -- c-addr u                            = Return the normal text                                   )
+( xis.start-tag      -- c-addrn un c-addrn un .. n c-addr u = Return the tag name and n attributes with their value    )
+( xis.end-tag        -- c-addr u                            = Return the tag name                                      )
+( xis.empty-element  -- c-addrn un c-addrn un .. n c-addr u = Return the tag name and n attributes with their value    )
+( xis.cdata          -- c-addr u                            = Return the CDATA section text                            )
+( xis.proc-instr     -- c-addrn un c-addrn un .. n c-addr u = Return the target name and n attributes with their value )
+( xis.internal-dtd   -- c-addr1 u1 c-addr2 u2               = Return the DTD name c-addr2 u2 and markup c-addr1 u1     )
+( xis.public-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 = Return the DTD name, the markup, the system-id and public-id )
+( xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u4    = Return the DTD name, the markup and the system-id        )
+( </pre>                                                                     )
 
 1 constant xis.version
 
@@ -63,13 +84,16 @@ msc-create xis.entities  ( the default entity reference catalog )
 chs-create xis.start-name   ( the character set for the first letter of a name )
 
          xis.start-name chs-set-alpha
-  s" _:" xis.start-name chs-set-string  \ ToDo: during compilation -> string gone
+  char _ xis.start-name chs-set-char
+  char : xis.start-name chs-set-char
 
 
 chs-create xis.next-name   ( the character set for the following letters of a name )
 
-           xis.next-name chs-set-alnum
-  s" .-_:" xis.next-name chs-set-string
+  xis.start-name xis.next-name chs^move
+                 xis.next-name chs-set-digit
+          char . xis.next-name chs-set-char
+          char - xis.next-name chs-set-char
 
 
 chs-create xis.space   ( the character set for xml space )
@@ -109,19 +133,20 @@ chs-create xis.end-non-quoted-value   ( the ending character set for a non-quote
 
 begin-enumeration
   -1
-  >enum: xis.error          ( -- n = Error          --  ToDo: better comment                                  )
-  enum:  xis.done           ( -- n = Done reading   --                                                        )
-  enum:  xis.start-xml      ( -- n = Start Document -- c-addr:standalone u c-addr:encoding u c-addr:version u )
-  enum:  xis.comment        ( -- n = Comment        -- c-addr u                                               )
-  enum:  xis.text           ( -- n = Normal text    -- c-addr u                                               )
-  enum:  xis.start-tag      ( -- n = Start tag      -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
-  enum:  xis.end-tag        ( -- n = End tag        -- c-addr u                                               )
-  enum:  xis.empty-element  ( -- n = Empty element  -- c-addr:value u c-addr:attribute u .. n c-addr:tag u    )
-  enum:  xis.cdata          ( -- n = CDATA section  -- c-addr u                                               )
-  enum:  xis.proc-instr     ( -- n = Proc. instr.   -- c-addr:value u c-addr:attribute u .. n c-addr:target u )
-  enum:  xis.internal-dtd   ( -- n = Internal DTD   -- c-addr:markup u c-addr:name u                          )
-  enum:  xis.public-dtd     ( -- n = Public DTD     -- c-addr:system u c-addr:publicid u c-addr:markup u c-addr:name u )
-  enum:  xis.system-dtd     ( -- n = System DTD     -- c-addr:system u c-addr:markup u c-addr:name u          )
+  >enum: xis.error          ( -- n = Error          )
+  enum:  xis.done           ( -- n = Done reading   )
+  enum:  xis.start-xml      ( -- n = Start Document )
+  
+  enum:  xis.comment        ( -- n = Comment        )
+  enum:  xis.text           ( -- n = Normal text    )
+  enum:  xis.start-tag      ( -- n = Start tag      )
+  enum:  xis.end-tag        ( -- n = End tag        )
+  enum:  xis.empty-element  ( -- n = Empty element  )
+  enum:  xis.cdata          ( -- n = CDATA section  )
+  enum:  xis.proc-instr     ( -- n = Proc. instr.   )
+  enum:  xis.internal-dtd   ( -- n = Internal DTD   )
+  enum:  xis.public-dtd     ( -- n = Public DTD     )
+  enum:  xis.system-dtd     ( -- n = System DTD     )
 end-enumeration
 
 
@@ -164,12 +189,12 @@ end-structure
 ( xml reader init words )
 
 : xis-set-reader  ( x xt xis -- = Init the xml reader for reading using the reader callback xt with its data x )
-  xis>tis tis-set-reader
+  tis-set-reader
 ;
 
 
 : xis-set-string  ( c-addr u xis -- = Init the xml reader for for reading from the string c-addr u )
-  xis>tis tis-set
+  tis-set
 ;
 
 
@@ -403,10 +428,11 @@ end-structure
 : xis-read-proc-instr ( xis -- c-addrn un c-addrn un .. n c-addr u = Read a processing instruction )
   >r
   r@ xis-read-name ?dup IF
-    xis-read-attributes
+    r@ xis-read-attributes
     r@ xis-skip-spaces
     s" ?>" r@ tis-cmatch-string IF
       2dup s" xml" icompare 0= IF
+        2drop
         xis.start-xml
       ELSE
         xis.proc-instr
@@ -418,6 +444,7 @@ end-structure
   ELSE
     drop xis.error
   THEN
+  rdrop
 ;
 
 
@@ -438,6 +465,7 @@ end-structure
 
 : xis-read-literal   ( xis -- c-addr u | nil 0 = Read literal )
   >r
+  r@ xis-skip-spaces
   [char] " r@ tis-cmatch-char IF
     [char] " r@ tis-scan-char 0= IF
       nil 0
@@ -479,7 +507,6 @@ end-structure
     ELSE
       s" PUBLIC" r@ tis-cmatch-string IF
         r@ xis-read-literal 2swap
-        r@ xis-skip-spaces
         r@ xis-read-literal 2swap
         xis.public-dtd
       ELSE
@@ -584,7 +611,6 @@ end-structure
   REPEAT
   rdrop
 ;
-
 
 [THEN]
 
