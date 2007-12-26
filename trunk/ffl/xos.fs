@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.5 $
+\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -88,33 +88,41 @@ include ffl/tos.fs
 ;
 
 
+: xos-write-literal   ( c-addr u tos - = Write an optional system or public id literal )
+  >r
+  ?dup IF               
+    bl           r@ tos-write-char
+    [char] "     r@ tos-write-char
+                 r@ tos-write-string 
+    [char] "     r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  rdrop
+;
+
+
+: xos-write-markup   ( c-addr u tos - = Write an optional markup )
+  >r
+  ?dup IF
+    bl           r@ tos-write-char
+    [char] [     r@ tos-write-char
+                 r@ tos-write-string
+    [char] ]     r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  rdrop
+;
+
+
 ( xml writer words )
 
-: xos-write-start-xml   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- = Write the start of a xml document with the version c-addr3 u3, the encoding c-addr2 u2 and standalone c-addr1 u1 )
+: xos-write-start-xml   ( c-addr1 u1 ... c-addr2n u2n n tos -- = Write the start of a xml document with n attributes and values )
   >r
-  s" <?xml version=" r@ tos-write-string
-  [char] " r@ tos-write-char
-           r@ tos-write-string
-  [char] " r@ tos-write-char
-  
-  ?dup IF                         \ Optional encoding
-    s"  encoding=" r@ tos-write-string
-    [char] " r@ tos-write-char
-    r@ tos-write-string
-    [char] " r@ tos-write-char
-  ELSE
-    drop
-  THEN
-  
-  ?dup IF                         \ Optional standalone
-    s"  standalone=" r@ tos-write-string
-    [char] " r@ tos-write-char
-    r@ tos-write-string
-    [char] " r@ tos-write-char
-  ELSE
-    drop
-  THEN
-  s" ?>" r> tos-write-string
+  s" <?"  r@ tos-write-string
+  s" xml" r@ xos-write-name-attr
+  s" ?>"  r> tos-write-string
 ;
 
 
@@ -157,8 +165,8 @@ include ffl/tos.fs
 : xos-write-comment ( c-addr u tos -- = Write a xml comment )
   >r
   s" <!--" r@ tos-write-string
-          r@ tos-write-string
-  s" -->" r> tos-write-string
+           r@ tos-write-string
+  s" -->"  r> tos-write-string
 ;
 
 
@@ -182,40 +190,33 @@ include ffl/tos.fs
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string
-  s"  ["         r@ tos-write-string
-                 r@ tos-write-string   \ Write markup
-  s" ]>"         r> tos-write-string
+                 r@ xos-write-markup
+  [char] >       r> tos-write-char
 ;
 
 
-: xos-write-system-dtd   ( c-addr1 u1 c-addr2 u2 tos -- = Write a system document type definition with name c-addr2 u2 and system c-addr1 u1 )
+: xos-write-system-dtd   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- = Write a system document type definition with name c-addr3 u3, markup c-addr2 u2 and system c-addr1 u1 )
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string
-  s"  SYSTEM "   r@ tos-write-string
-  [char] "       r@ tos-write-char
-                 r@ tos-write-string   \ Write system
-  [char] "       r@ tos-write-char
+  s"  SYSTEM"    r@ tos-write-string
+  2swap  
+                 r@ xos-write-literal   \ Write system id
+                 r@ xos-write-markup
   [char] >       r> tos-write-char               
 ;
 
 
-: xos-write-public-dtd   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- = Write a public document type definition with name c-addr3 u3, public-id c-addr2 u2 and system c-addr1 u1 )
+: xos-write-public-dtd   ( c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 tos -- = Write a public document type definition with name c-addr4 u4, markup c-addr3 u3, public-id c-addr2 u2 and system c-addr1 u1 )
   >r
   s" <!DOCTYPE " r@ tos-write-string
                  r@ tos-write-string
-  s"  PUBLIC "   r@ tos-write-string
-  [char] "       r@ tos-write-char
-                 r@ tos-write-string   \ Write public id
-  [char] "       r@ tos-write-char
-  ?dup IF               
-    bl           r@ tos-write-char
-    [char] "     r@ tos-write-char
-                 r@ tos-write-string   \ Write system
-    [char] "     r@ tos-write-char
-  ELSE
-    drop
-  THEN
+  s"  PUBLIC"    r@ tos-write-string
+  2swap
+                 r@ xos-write-literal    \ Write public id
+  2swap
+                 r@ xos-write-literal    \ Write system id
+                 r@ xos-write-markup
   [char] >       r> tos-write-char               
 ;
 
