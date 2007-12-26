@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:11 $ $Revision: 1.26 $
+\  $Date: 2007-12-26 06:31:56 $ $Revision: 1.27 $
 \
 \ ==============================================================================
 
@@ -507,7 +507,7 @@ end-structure
 ;
 
 
-: str+strip-leading   ( c-addr1 u1 -- c-addr2 u2 = Strip leading spaces in the string c-addr1 u1 )
+: str+strip-leading   ( c-addr1 u1 -- c-addr2 u2 = Strip leading whitespaces in the string c-addr1 u1 )
   BEGIN
     dup 0> IF
       over c@ chr-space?
@@ -539,8 +539,17 @@ end-structure
 ;
 
 
-: str+strip-trailing  ( c-addr u1 -- c-addr u2 = Strip trailing spaces in the string c-addr u1 )
-  -trailing
+: str+strip-trailing  ( c-addr u1 -- c-addr u2 = Strip trailing whitespaces in the string c-addr u1 )
+  BEGIN
+    dup IF
+      2dup 1- chars +
+      c@ chr-space?
+    ELSE
+      false
+    THEN
+  WHILE
+    1-
+  REPEAT
 ;
   
   
