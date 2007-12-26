@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-02 07:54:12 $ $Revision: 1.1 $
+\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/xos.fs
 
 tos-create xos1
 
-nil 0 s" ISO-8859-1" s" 1.0" xos1 xos-write-start-xml
+s" ISO-8859-1" s" encoding" s" 1.0" s" version" 2 xos1 xos-write-start-xml
 
 s"  menu of the day " xos1 xos-write-comment
 
@@ -63,7 +63,7 @@ xos1 str-get type cr                 \ Type the xml info
 
 xos1 tos-rewrite                     \ Clean the output stream
 
-nil 0 s" -//W3C//DTD HTML 4.0 Transitional//EN" s" HTML" xos1 xos-write-public-dtd
+nil 0 s" -//W3C//DTD HTML 4.0 Transitional//EN" nil 0 s" HTML" xos1 xos-write-public-dtd
 
 0 s" HTML"         xos1 xos-write-start-tag
 0 s" HEAD"         xos1 xos-write-start-tag

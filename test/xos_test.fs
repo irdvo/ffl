@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.4 $
+\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -33,7 +33,8 @@ include ffl/tst.fs
 
 t{ tos-create tos5 }t
 
-t{ s" yes" s" ISO-8559-1" s" 1.0"   tos5 xos-write-start-xml }t
+t{ s" yes" s" standalone" s" ISO-8559-1" s" encoding" s" 1.0" s" version" 3  tos5 xos-write-start-xml }t
+
 t{ s" this is comment"              tos5 xos-write-comment }t
 t{ s" on" s" mode" 1 s" pi"         tos5 xos-write-proc-instr }t
 t{ s" <'>" s" code" 1 s" mail"      tos5 xos-write-start-tag }t
@@ -58,7 +59,7 @@ t{ tos5 str-get
 
 t{ tos5 tos-rewrite }t
 
-t{ s" order.dtd" s" order" tos5 xos-write-system-dtd }t
+t{ s" order.dtd" nil 0 s" order" tos5 xos-write-system-dtd }t
 
 t{ tos5 str-get s\" <!DOCTYPE order SYSTEM \"order.dtd\">" ?str }t
 
@@ -72,7 +73,7 @@ t{ tos5 str-get s" <!DOCTYPE mail [<!ELEMENT mail (to+,from,contents,others+)>]>
 
 t{ tos5 tos-rewrite }t
 
-t{ s" something" s" -//W3C//DTD HTML 4.0 Transitional//EN" s" HTML" tos5 xos-write-public-dtd }t
+t{ s" something" s" -//W3C//DTD HTML 4.0 Transitional//EN" nil 0 s" HTML" tos5 xos-write-public-dtd }t
 
 t{ tos5 str-get s\" <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"something\">" ?str }t
 
