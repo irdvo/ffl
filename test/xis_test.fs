@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-25 17:46:30 $ $Revision: 1.8 $
+\  $Date: 2007-12-26 06:46:06 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -222,6 +222,20 @@ t{ s" <bold>   </bold>" xis1 xis-set-string }t
 
 t{ xis1 xis-read xis.start-tag ?s s" bold" ?str ?0 }t
 t{ xis1 xis-read xis.end-tag   ?s s" bold" ?str    }t
+
+\ Entity reference catalog
+
+msc-create xis.msc
+
+ s" copy" s" (c)" xis.msc msc-add   \ Only one item in the catalog
+
+t{ xis.msc xis1 xis-msc! }t
+
+t{ s" FFL &copy; &lt;&#33;&gt;" xis1 xis-set-string }t
+
+t{ xis1 xis-read xis.text ?s s" FFL (c) &lt;!&gt;" ?str }t
+
+
 
 \ Reading from a file
 
