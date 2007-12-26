@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-25 17:46:30 $ $Revision: 1.12 $
+\  $Date: 2007-12-26 06:31:56 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -39,9 +39,9 @@ include ffl/chs.fs
 ( xis = XML/HTML reader )
 ( The xis module implements a non-validating XML/HTML parser.                )
 ( The default entity references, &lt; &gt; &amp;, &quot; and ' are           )
-( translated, but all others are simply returned in the text. By using the   )
+( translated, all others are simply returned in the text. By using the       )
 ( xis-msc! word a message catalog can be set, that will overrule the default )
-( translations of entity references. The xis-set-reader word expect an       )
+( translations of entity references. The xis-set-reader word expects an      )
 ( execution token with the following stack behaviour:                        )
 ( <pre>                                                                      )
 (    x -- false | c-addr u true                                              )
@@ -188,12 +188,12 @@ end-structure
 
 ( xml reader init words )
 
-: xis-set-reader  ( x xt xis -- = Init the xml reader for reading using the reader callback xt with its data x )
+: xis-set-reader  ( x xt xis -- = Init the xml parser for reading using the reader callback xt with its data x )
   tis-set-reader
 ;
 
 
-: xis-set-string  ( c-addr u xis -- = Init the xml reader for for reading from the string c-addr u )
+: xis-set-string  ( c-addr u xis -- = Init the xml parser for for reading from the string c-addr u )
   tis-set
 ;
 
@@ -212,12 +212,12 @@ end-structure
 ;
 
 
-: xis-strip@   ( xis -- flag = Return flag indicating the stripping of leading and trailing spaces in normal text )
+: xis-strip@   ( xis -- flag = Return flag indicating the stripping of leading and trailing whitespace in normal text )
   xis>strip @
 ;
 
 
-: xis-strip!   ( flag xis -- = Set the flag indicating the stripping of leaading and trailing spaces in normal text )
+: xis-strip!   ( flag xis -- = Set the flag indicating the stripping of leaading and trailing whitespace in normal text )
   xis>strip !
 ;
 
