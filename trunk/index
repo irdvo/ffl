@@ -66,6 +66,7 @@ Index of used prefices
 6 gmo - Gettexts mo-file import
 6 xis - XML/HTML reader module
 6 xos - XML/HTML writer module
+6 rdg - Random distribution generator
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -128,7 +129,6 @@ A     - Font ??
 ----- - ------------------------------------------------
 7 dis - DateTime input stream
 7 gps - nmea handling, distance calculation
-6 rdg - Random distribution generator
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------
