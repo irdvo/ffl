@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.4 $
+\  $Date: 2007-12-27 06:19:48 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/stt.fs
 
 ( dos = Datetime output stream )
 ( The dos module implements a date and time formatter. It is built upon the  )
-( tos structure, so all words write to the tos stream. If the tos structure  ) 
+( tos structure, so all words write to the tos stream. If the tos structure  )
 ( contains a message catalog, it is used for localisation of times, dates    )
 ( and names. The format word uses most of the same conversion characters as  )
 ( the strftime c-function:                                                   )
