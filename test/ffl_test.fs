@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.34 $
+\  $Date: 2007-12-30 08:16:08 $ $Revision: 1.35 $
 \
 \ ==============================================================================
 
@@ -52,6 +52,7 @@ include md5_test.fs
 include msc_test.fs
 include nct_test.fs
 include nnt_test.fs
+include rdg_test.fs
 include rgx_test.fs
 include rng_test.fs
 include scl_test.fs
