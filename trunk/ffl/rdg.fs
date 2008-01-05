@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-30 08:16:08 $ $Revision: 1.2 $
+\  $Date: 2008-01-05 19:31:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -100,46 +100,6 @@ end-structure
   drop
 ;
 
-( Private gamma words )
-
-: rdg-gamma-large   ( r1 rdg -- r2 = Generate a random number with a gamma distribution with alpha r1 [alpha>1] )
-  f>r
-  fr@ 2E+0 f* 1E+0 f- fsqrt            \ s = sqrt(r1 * 2 - 1)
-  BEGIN
-    BEGIN
-      PI dup rdg-gen-[0,1> f* ftan     \ y = tan(PI * rng)
-      fover fover f* fr@ f+ 1E+0 f-    \ x = s * y + r1 - 1
-      fdup f0= fdup 0E+0 f< OR
-    WHILE                              \ repeat while x <= 0
-      fdrop fdrop
-    REPEAT
-    
-    fdup fr@ 1E+0 f- f/ fln            \ t = ln(x / (r1 - 1))
-    fr@ 1E+0 f- f*                     \ t = t * (r1 - 1)
-    f>r f>r fover fover f* fr> fswap fr> f- fexp   \ t = exp(t - (s * y))
-    frot fdup f* 1E+0 f+               \ t = t + (y * y + 1)
-    dup rdg-gen-[0,1> f<               \ repeat while rng < t
-  WHILE
-    fdrop
-  REPEAT
-  drop
-  fr> fdrop
-;
-
-
-: rdg-gamma-int   ( r1 rdg -- r2 = Generate a random number with a gamma distribution with alpha r1 [alpha>0] and alpha is non-fractional )
-  fdup 12E+0 f< IF           \ ToDo: Environmental dependency ?
-    1E+0 fswap               \ p = 1
-    f>d d>s 0 DO             \ Do alpha times
-      dup rdg-gen-<0,1> f*   \   p = p * rng
-    LOOP
-    drop
-    fln fnegate              \ p = -ln p
-  ELSE
-    rdg-gamma-large
-  THEN
-;
-
 
 ( Random generator words )
 
@@ -153,7 +113,7 @@ end-structure
 \ Ratio method (Kinderman-Monahan); see Knuth v2, 3rd ed, p130.
 \ K+M, ACM Trans Math Software 3 (1977) 257-260.
 \ With Leva's modifications to the original K+M method; see:
-\ J. L. Leva, ACM Trans Math Software 18 (1992) 449-453 and 454-455. */
+\ J. L. Leva, ACM Trans Math Software 18 (1992) 449-453 and 454-455.
 
 : rdg-normal   ( r1 r2 rdg -- r3 = Generate a random number with a normal or gaussian distribution with mu or mean r1 and sigma or standard deviation r2 )
   BEGIN
@@ -166,16 +126,15 @@ end-structure
     fover 0.19600E+0 f*
     fswap f- f* 
     fswap fdup f* f+                        \ Q = x * x + y * (0.19600 * y - 0.25472 * x);
-
     fdup 0.27597E+0 f< IF                   \ Done if Q < 0.27597
       fdrop false
     ELSE
-      0.27846E+0 f< IF                      \ Done if Q > 0.27846
+      0.27846E+0 f> IF                      \ Continu if Q > 0.27846
+        true
+      ELSE
         fover fdup fdup f* fswap fln f* -4E+0 f*   \ -4 * u^2 * ln(u)
         fover fdup f*                               \ v^2
-        fswap f<                            \ Done if v^2 < -4 * u^2 * ln(u) 
-      ELSE
-        true
+        fswap f>                            \ Continu if v^2 > -4 * u^2 * ln(u) 
       THEN
     THEN
    WHILE
@@ -248,57 +207,82 @@ end-structure
   THEN
 ;
 
-0 [IF]
-double
-gsl_ran_gamma (const gsl_rng * r, const double a, const double b)
-{
-  /* assume a > 0 */
 
-  if (a < 1)
-    {
-      double u = gsl_rng_uniform_pos (r);
-      return gsl_ran_gamma (r, 1.0 + a, b) * pow (u, 1.0 / a);
-    }
-
-  {
-    double x, v, u;
-    double d = a - 1.0 / 3.0;
-    double c = (1.0 / 3.0) / sqrt (d);
-
-    while (1)
-      {
-        do
-          {
-            x = gsl_ran_gaussian_ziggurat (r, 1.0);
-            v = 1.0 + c * x;
-          }
-        while (v <= 0);
-
-        v = v * v * v;
-        u = gsl_rng_uniform_pos (r);
-
-        if (u < 1 - 0.0331 * x * x * x * x) 
-          break;
-
-        if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
-          break;
-      }
-    
-    return b * d * v;
-  }
-}
-[THEN]
+\ Based on Knuth
 
 : rdg-beta   ( r1 r2 rdg -- r3 = Generate a random number with a beta distribution with alpha r1 [alpha>0] and beta r2 [beta>0], alpha*beta = mean, alpha*beta^2 = variance )
-\ ToDo
+  fswap 1E+0 dup rdg-gamma        \ x1 = gamma(r1, 1.0)
+  fswap 1E+0     rdg-gamma        \ x2 = gamma(r2, 1.0)
+  fover f+ f/                     \ x1 / (x1 + x2)
 ;
 
 
-: rdg-binomial ( .. )
+\ Based on Knuth
+
+: rdg-binomial ( u1 r rdg - u2 = Generate a random number with a binomial distribution with probability r and trails u )
+  >r
+  0                               \ k = 0 n = u1 p = r
+  BEGIN
+    over 10 u>                    \ while u1 > 10
+  WHILE
+    swap dup
+    2/ 1+                         \ a = 1 + (n / 2)
+    swap
+    1+ over -                     \ b = 1 + n - a;
+    2dup swap
+    0 d>f 0 d>f r@ rdg-beta       \ X = rdg-beta(a, b)
+
+    fover fover f< IF             \ If p < X
+      drop
+      1- swap                     \   n = a-1
+      f/                          \   p = p / X
+    ELSE                          \ Else
+      1- -rot                     \   n = b - 1
+      +                           \   k = k + a
+      fswap fover f-
+      1E+0 frot f- f/             \   p = (p - X) / (1 - X)
+    THEN
+  REPEAT
+
+  swap r> -rot                    \ S: rdg k n      F: p
+  0 ?DO                           \ Loop over n 
+    over rdg-gen-[0,1>
+    fover f< IF                   \  If (rng < p) Then k++
+      1+
+    THEN
+  LOOP
+  nip
+  fdrop
 ;
 
 
-: rdg-poisson ( .. )
+: rdg-poisson ( r rdg -- u = Generate a random number with a poisson distribution with mean r )
+  >r
+  0                               \ k = 0 mu = r
+  BEGIN
+    fdup 10E+0 f>
+  WHILE                           \ while mu > 0
+    fdup 7E+0 f* 8E+0 f/
+    f>d drop                      \   m = (unsigned) mu * 7/8
+    dup 0 d>f 1E+0 r@ rdg-gamma   \   X = gamma(m)
+    fover fover f< IF             \   If mu < X 
+      f/ 1- r> rdg-binomial +     \     k+binomial(mu/X,m-1)
+      EXIT
+    ELSE                          \   Else
+      + f-                        \     k = k + m  mu = mu - X
+    THEN
+  REPEAT
+  
+  fnegate fexp                   \  emu = exp(-mu)
+  1E+0                           \  prod = 1.0  
+  BEGIN                          \  BEGIN
+    1+                           \    k++
+    r@ rdg-gen-[0,1> f*          \    prod *= rng
+    fover fover fswap f> 0=      \  UNTIL prod <= emu
+  UNTIL
+  fdrop fdrop
+  rdrop
+  1-                             \ k--
 ;
 
 
