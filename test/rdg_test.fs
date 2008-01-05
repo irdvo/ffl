@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-30 08:16:08 $ $Revision: 1.1 $
+\  $Date: 2008-01-05 19:31:17 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -85,6 +85,42 @@ t{  0.5E+0 0.5E+0 rdg1 rdg-gamma 1.87629944E+0 ?r }t
 t{  0.5E+0 0.5E+0 rdg1 rdg-gamma 0.31658686E+0 ?r }t
 t{  0.5E+0 0.5E+0 rdg1 rdg-gamma 0.04855770E+0 ?r }t
 t{  0.5E+0 0.5E+0 rdg1 rdg-gamma 0.07316919E+0 ?r }t
+
+\ checked with gsl-1.10: gsl_ran_beta (modified)
+t{ 0.1E+0   0.1E+0 rdg1 rdg-beta 0.99993960E+0 ?r }t
+t{ 0.2E+0   1.1E+0 rdg1 rdg-beta 0.32639035E+0 ?r }t
+t{ 0.3E+0   3.1E+0 rdg1 rdg-beta 0.00575353E+0 ?r }t
+t{ 0.4E+0   7.1E+0 rdg1 rdg-beta 0.10315773E+0 ?r }t
+t{ 0.5E+0  15.9E+0 rdg1 rdg-beta 0.01867630E+0 ?r }t
+t{ 0.6E+0  31.9E+0 rdg1 rdg-beta 0.00562753E+0 ?r }t
+t{ 0.7E+0  63.9E+0 rdg1 rdg-beta 0.00268437E+0 ?r }t
+t{ 0.8E+0 127.9E+0 rdg1 rdg-beta 0.00573342E+0 ?r }t
+t{ 0.9E+0 255.9E+0 rdg1 rdg-beta 0.00201518E+0 ?r }t
+t{ 1.0E+0 511.9E+0 rdg1 rdg-beta 0.00109881E+0 ?r }t
+
+\ checked with gsl-1.10: gsl_ran_binomial_knuth (modified)
+t{ 0.9E+0   5 rdg1 rdg-binomial   4 ?u }t
+t{ 0.8E+0  15 rdg1 rdg-binomial  11 ?u }t
+t{ 0.7E+0  25 rdg1 rdg-binomial  21 ?u }t
+t{ 0.6E+0  35 rdg1 rdg-binomial  21 ?u }t
+t{ 0.5E+0  45 rdg1 rdg-binomial  20 ?u }t
+t{ 0.4E+0  55 rdg1 rdg-binomial  24 ?u }t
+t{ 0.3E+0  65 rdg1 rdg-binomial  16 ?u }t
+t{ 0.2E+0  75 rdg1 rdg-binomial  13 ?u }t
+t{ 0.1E+0  85 rdg1 rdg-binomial  15 ?u }t
+t{ 0.0E+0  95 rdg1 rdg-binomial   0 ?u }t
+
+\ checked with gsl-1.10: gsl_ran_poisson (modified)
+t{  0.5E+0 rdg1 rdg-poisson   0 ?u }t
+t{  2.5E+0 rdg1 rdg-poisson   5 ?u }t
+t{  4.5E+0 rdg1 rdg-poisson   3 ?u }t
+t{  6.5E+0 rdg1 rdg-poisson   5 ?u }t
+t{  8.5E+0 rdg1 rdg-poisson   8 ?u }t
+t{ 10.5E+0 rdg1 rdg-poisson  13 ?u }t
+t{ 12.5E+0 rdg1 rdg-poisson  10 ?u }t
+t{ 14.5E+0 rdg1 rdg-poisson  10 ?u }t
+t{ 16.5E+0 rdg1 rdg-poisson  16 ?u }t
+t{ 18.5E+0 rdg1 rdg-poisson  17 ?u }t
 
 [THEN]
 
