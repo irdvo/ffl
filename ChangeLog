@@ -1,4 +1,5 @@
 0.6.0
+* dom: new module: Document Object Model (2008-01-06)
 * rdg: new module: Distributed Random Generator (2007-12-27)
 * tst: new word ?str for module testing strings (2007-12-24)
 * tis: new word tis-match-set
