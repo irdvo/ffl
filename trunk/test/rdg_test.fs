@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-05 19:31:17 $ $Revision: 1.2 $
+\  $Date: 2008-01-06 06:37:25 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -121,6 +121,30 @@ t{ 12.5E+0 rdg1 rdg-poisson  10 ?u }t
 t{ 14.5E+0 rdg1 rdg-poisson  10 ?u }t
 t{ 16.5E+0 rdg1 rdg-poisson  16 ?u }t
 t{ 18.5E+0 rdg1 rdg-poisson  17 ?u }t
+
+\ checked with gsl-1.10: gsl_ran_pareto
+t{  0.5E+0 0.5E+0 rdg1 rdg-pareto  3.19627113E+0 ?r }t
+t{  0.5E+0 1.5E+0 rdg1 rdg-pareto  0.67574893E+0 ?r }t
+t{  1.5E+0 2.5E+0 rdg1 rdg-pareto  2.23881531E+0 ?r }t
+t{  0.5E+0 3.5E+0 rdg1 rdg-pareto  0.85719001E+0 ?r }t
+t{  2.5E+0 4.5E+0 rdg1 rdg-pareto  2.50672614E+0 ?r }t
+t{  0.5E+0 5.5E+0 rdg1 rdg-pareto  0.52442780E+0 ?r }t
+t{  3.5E+0 6.5E+0 rdg1 rdg-pareto  5.79460199E+0 ?r }t
+t{  0.5E+0 7.5E+0 rdg1 rdg-pareto  0.50829023E+0 ?r }t
+t{  0.5E+0 8.5E+0 rdg1 rdg-pareto  0.50722690E+0 ?r }t
+t{  4.5E+0 9.5E+0 rdg1 rdg-pareto  4.51976424E+0 ?r }t
+
+\ checked with gsl-1.10: gsl_ran_weibull
+t{  0.5E+0 0.5E+0 rdg1 rdg-weibull  0.00411372E+0 ?r }t
+t{  0.5E+0 1.5E+0 rdg1 rdg-weibull  1.26279804E+0 ?r }t
+t{  1.5E+0 2.5E+0 rdg1 rdg-weibull  0.83024858E+0 ?r }t
+t{  0.5E+0 3.5E+0 rdg1 rdg-weibull  0.41924933E+0 ?r }t
+t{  2.5E+0 4.5E+0 rdg1 rdg-weibull  3.01282633E+0 ?r }t
+t{  0.5E+0 5.5E+0 rdg1 rdg-weibull  0.39286396E+0 ?r }t
+t{  3.5E+0 6.5E+0 rdg1 rdg-weibull  3.66115208E+0 ?r }t
+t{  0.5E+0 7.5E+0 rdg1 rdg-weibull  0.50733162E+0 ?r }t
+t{  0.5E+0 8.5E+0 rdg1 rdg-weibull  0.50523448E+0 ?r }t
+t{  4.5E+0 9.5E+0 rdg1 rdg-weibull  4.85256504E+0 ?r }t
 
 [THEN]
 
