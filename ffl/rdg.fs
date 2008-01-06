@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-05 19:31:17 $ $Revision: 1.3 $
+\  $Date: 2008-01-06 06:37:25 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -145,26 +145,17 @@ end-structure
 ;
 
 
-: rdg-exponential   ( r1 rdg -- r2 = Generate a random number with an exponential distribution with mu or mean r1 )
+: rdg-exponential   ( r1 rdg -- r2 = Generate a random number with an exponential distribution with mu or mean r1 [>0] )
   rdg-gen-<0,1>              \ look for positive random number
   fln fnegate f*             \ -ln rng * r1
 ;
 
-1 [IF]
-: .f
-  [char] < emit fdepth 0 .r [char] > emit space 
-  fdepth dup 0 ?DO
-    dup I - 1- fpick f.
-  LOOP
-  drop cr
-;
-[THEN]
   
 \ Based on Marsaglia and Tsang, "A Simple Method for
 \ generating gamma variables", ACM Transactions on Mathematical
 \ Software, Vol 26, No 3 (2000), p363-372.
 
-: rdg-gamma   ( r1 r2 rdg -- r3 = Generate a random number with a gamma distribution with alpha r1 [alpha>0] and beta r2 [beta>0], alpha*beta = mean, alpha*beta^2 = variance )
+: rdg-gamma   ( r1 r2 rdg -- r3 = Generate a random number with a gamma distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
   fover 1E+0 f< IF
     fover 1E+0 f+ fswap dup recurse         \ rdg-gamma(1+r1, r2) * ..
     1E+0 frot f/ rdg-gen-<0,1> fswap f** f* \ .. rng^(1 / r1)
@@ -210,7 +201,7 @@ end-structure
 
 \ Based on Knuth
 
-: rdg-beta   ( r1 r2 rdg -- r3 = Generate a random number with a beta distribution with alpha r1 [alpha>0] and beta r2 [beta>0], alpha*beta = mean, alpha*beta^2 = variance )
+: rdg-beta   ( r1 r2 rdg -- r3 = Generate a random number with a beta distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
   fswap 1E+0 dup rdg-gamma        \ x1 = gamma(r1, 1.0)
   fswap 1E+0     rdg-gamma        \ x2 = gamma(r2, 1.0)
   fover f+ f/                     \ x1 / (x1 + x2)
@@ -219,7 +210,7 @@ end-structure
 
 \ Based on Knuth
 
-: rdg-binomial ( u1 r rdg - u2 = Generate a random number with a binomial distribution with probability r and trails u )
+: rdg-binomial ( u1 r rdg - u2 = Generate a random number with a binomial distribution with probability r [0,1] and trails u [>=0])
   >r
   0                               \ k = 0 n = u1 p = r
   BEGIN
@@ -256,7 +247,7 @@ end-structure
 ;
 
 
-: rdg-poisson ( r rdg -- u = Generate a random number with a poisson distribution with mean r )
+: rdg-poisson ( r rdg -- u = Generate a random number with a poisson distribution with mean r [>=0] )
   >r
   0                               \ k = 0 mu = r
   BEGIN
@@ -286,13 +277,18 @@ end-structure
 ;
 
 
-: rdg-pareto   ( r1 rdg -- r2 = Generate a random number with a pareto distribution with alpha r1 the shape parameter )
-  \ ToDo
+: rdg-pareto   ( r1 r2 rdg -- r3 = Generate a random number with a pareto distribution with alpha r1 [>0] the scale parameter and r2 [>0] the shape parameter )
+  rdg-gen-<0,1>                  \ x = rng
+  fswap -1E+0 fswap f/ f**       \ z = x ^ (-1/beta)
+  f*                             \ r1 * z
 ;
 
 
-: rdg-weibull   ( r1 r2 rdg -- r3 = Generate a random number with a Weibull distribution with alpha r1 the scale parameter and beta r2 the shape parameter )
-  \ Todo
+: rdg-weibull   ( r1 r2 rdg -- r3 = Generate a random number with a Weibull distribution with alpha r1 [>0] the scale parameter and beta r2 [>0] the shape parameter )
+  rdg-gen-<0,1>                  \ x = rng
+  fln fnegate                    \ -ln(x)
+  fswap 1E+0 fswap f/ f**        \ z = -ln(x) ^ (1/beta)
+  f*                             \ r1 * z
 ;
 
 [ELSE]
