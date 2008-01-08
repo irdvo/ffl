@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.2 $
+\  $Date: 2008-01-08 20:05:54 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -69,6 +69,8 @@ end-enumeration
 
 
 begin-structure dom%node%   ( -- n = Get the required space for a dom node )
+  nnn%
+  +field  dom>nnn             \ the xml node extends the tree node
   field:  dom>node>type       \ the type of the node
   str%
   +field  dom>node>name       \ the name of the node
@@ -79,7 +81,7 @@ end-structure
 
 ( Private DOM node creation, initialisation and destruction )
 
-: dom-node-set    ( i*x dom-node -- = Update the DOM node with value c-addr1 u1 and name c-addr2 u2 )
+: dom-node-set    ( i*x dom-node -- = Update the DOM node )
   \ ToDo
   >r
   r@ dom>node>type @ CASE
@@ -97,7 +99,8 @@ end-structure
 
 : dom-node-init   ( c-addr1 u1 c-addr2 u2 +n dom-node -- = Initialise the DOM node with value c-addr1 u1, name c-addr2 u2 and type n2 )
   >r
-  r@ dom>node>type !         \ node.type  = type
+  r@ dom>nnn        nnn-init
+  r@ dom>node>type  !        \ node.type  = type
   r@ dom>node>name  str-init \ node.name  = empty
   r@ dom>node>value str-init \ node.value = emtpy
   r> dom-node-set
@@ -148,53 +151,94 @@ end-structure
 ;
 
 
+( Private iterator words )
+
+: dom-node-get    ( dom-node | nil - i*x n true | false = Get the xml info from the node )
+  dup nil<> IF
+    dup dom>node>type @ >r 
+    r@ CASE
+      dom.element   OF     dom>node>name  str-get ENDOF
+      dom.attribute OF dup dom>node>value str-get rot dom>node>name str-get ENDOF
+      dom.text      OF     dom>node>value str-get ENDOF
+      dom.cdata     OF     dom>node>value str-get ENDOF
+      dom.pi        OF dup dom>node>value str-get rot dom>node>name str-get ENDOF
+      dom.comment   OF     dom>node>value str-get ENDOF
+      dom.document  OF     dom>node>value str-get ENDOF
+      nip
+    ENDCASE
+    r>
+    true
+  ELSE
+    drop
+    false
+  THEN
+;
+
+
 ( Iterating the DOM tree )
 
-: dom-document   ( dom -- flag = Move the iterator to the document [=root] node )
+: dom-get   ( dom -- i*x n true | false = Get the xml info of the current node )
+  dom>iter nni-get dom-node-get
+;
+
+
+: dom-document   ( dom -- c-addr u n true | false = Move the iterator to the document [=root] node, return the document info )
+  dom>iter nni-root dom-node-get
 ;
 
 
 : dom-document?   ( dom -- flag = Check if the current node is the document [=root] node )
+  dom>iter nni-root?
 ;
 
 
-: dom-parent   ( dom -- i*x n true | false = Move the iterator to the parent node )
+: dom-parent   ( dom -- i*x n true | false = Move the iterator to the parent node, return the xml info of this node )
+  dom>iter nni-parent dom-node-get
 ;
 
 
 : dom-children   ( dom -- n = Return the number of children for the current node )
+  dom>iter nni-children
 ;
 
 
 : dom-children?   ( dom -- n = Check if the current node has children )
+  dom>iter nni-children?
 ;
 
 
-: dom-child   ( dom -- i*x n true | false = Move the iterator to the first child node )
+: dom-child   ( dom -- i*x n true | false = Move the iterator to the first child node, return the xml info of this node )
+  dom>iter nni-child dom-node-get
 ;
 
 
-: dom-first   ( dom -- i*x n true | false = Move the iterator to the first sibling node )
+: dom-first   ( dom -- i*x n true | false = Move the iterator to the first sibling node, return the xml info of this node )
+  dom>iter nni-first dom-node-get
 ;
 
 
-: dom-first?   ( dom -- i*x n true | false = Check if the current node is the first sibling node )
+: dom-first?   ( dom -- flag = Check if the current node is the first sibling node )
+  dom>iter nni-first?
 ;
 
 
-: dom-next   ( dom -- i*x n true | false = Move the iterator to the next sibling node )
+: dom-next   ( dom -- i*x n true | false = Move the iterator to the next sibling node, return the xml info of this node )
+  dom>iter nni-next dom-node-get
 ;
 
 
-: dom-prev   ( dom -- i*x n true | false = Move the iterator to the previous sibling node )
+: dom-prev   ( dom -- i*x n true | false = Move the iterator to the previous sibling node, return the xml info of this node )
+  dom>iter nni-prev dom-node-get
 ;
 
 
-: dom-last   ( dom -- i*x n true | false = Move the iterator to the last sibling node )
+: dom-last   ( dom -- i*x n true | false = Move the iterator to the last sibling node, return the xml info of this node )
+  dom>iter nni-last dom-node-get
 ;
 
 
-: dom-last?   ( dom -- i*x n true | false = Check if the current node is the last sibling node )
+: dom-last?   ( dom -- flag = Check if the current node is the last sibling node )
+  dom>iter nni-last?
 ;
 
 
@@ -213,7 +257,10 @@ end-structure
 \ document  A                            A   A
 \ A = append-node I = insert-before/after
 
-: dom-set   ( i*x -- = Update the current node )
+: dom-set   ( i*x dom -- = Update the current node )
+  dom>iter nni-get
+  nni+throw
+  dom-node-set
 ;
 
 
