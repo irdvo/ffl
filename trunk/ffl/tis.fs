@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-23 07:57:26 $ $Revision: 1.19 $
+\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.20 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,7 @@ include ffl/chs.fs
 ( then the leading text is returned and the stream pointer is moved after   )
 ( the scanned data; skip = move the stream pointer after the skipped data.  )
 ( <pre>                                                                     )
-(   Stack usage reader word: tis-reader ( w:data - false | c-addr u true    )
+(   Stack usage reader word: tis-reader ( w:data - c-addr u | 0             )
 ( </pre>                                                                    )
 
 
@@ -142,15 +142,15 @@ end-structure
   >r
   false
   r@ tis>reader @ nil<> IF
-    r@ tis>data @  r@ tis>reader @  execute IF
+    r@ tis>data @  r@ tis>reader @  execute ?dup IF
       r@ str-append-string
       0=
     THEN
   THEN
   rdrop
 ;
-      
-      
+
+
 ( String words )
 
 : tis-reset        ( tis -- = Reset the input stream for reading from string)

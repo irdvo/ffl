@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 06:31:56 $ $Revision: 1.13 $
+\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -44,7 +44,7 @@ include ffl/chs.fs
 ( translations of entity references. The xis-set-reader word expects an      )
 ( execution token with the following stack behaviour:                        )
 ( <pre>                                                                      )
-(    x -- false | c-addr u true                                              )
+(    x -- c-addr u | 0                                                       )
 ( </pre>                                                                     )
 ( Data x is the same as the first parameter during calling of the word       )
 ( xis-set-reader. For reading from files this is normally the file           )

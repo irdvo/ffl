@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 06:31:56 $ $Revision: 1.1 $
+\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -36,13 +36,10 @@ xis-new value xis1
 
 \ Setup the reader callback word for reading from file
 
-: file-reader ( fileid -- false | c-addr u true )
+: file-reader ( fileid -- c-addr u | 0 )
   pad 64 rot read-file throw
-  ?dup IF
+  dup IF
     pad swap
-    true
-  ELSE
-    false
   THEN
 ;
 

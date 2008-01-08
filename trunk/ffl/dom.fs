@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-06 20:11:10 $ $Revision: 1.1 $
+\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -79,7 +79,8 @@ end-structure
 
 ( Private DOM node creation, initialisation and destruction )
 
-: dom-node-set    ( c-addr1 u1 c-addr2 u2 dom-node -- = Update the DOM node with value c-addr1 u1 and name c-addr2 u2 )
+: dom-node-set    ( i*x dom-node -- = Update the DOM node with value c-addr1 u1 and name c-addr2 u2 )
+  \ ToDo
   >r
   r@ dom>node>type @ CASE
     dom.element   OF r@ dom>node>name str-set ENDOF
@@ -146,6 +147,117 @@ end-structure
   free throw 
 ;
 
+
+( Iterating the DOM tree )
+
+: dom-document   ( dom -- flag = Move the iterator to the document [=root] node )
+;
+
+
+: dom-document?   ( dom -- flag = Check if the current node is the document [=root] node )
+;
+
+
+: dom-parent   ( dom -- i*x n true | false = Move the iterator to the parent node )
+;
+
+
+: dom-children   ( dom -- n = Return the number of children for the current node )
+;
+
+
+: dom-children?   ( dom -- n = Check if the current node has children )
+;
+
+
+: dom-child   ( dom -- i*x n true | false = Move the iterator to the first child node )
+;
+
+
+: dom-first   ( dom -- i*x n true | false = Move the iterator to the first sibling node )
+;
+
+
+: dom-first?   ( dom -- i*x n true | false = Check if the current node is the first sibling node )
+;
+
+
+: dom-next   ( dom -- i*x n true | false = Move the iterator to the next sibling node )
+;
+
+
+: dom-prev   ( dom -- i*x n true | false = Move the iterator to the previous sibling node )
+;
+
+
+: dom-last   ( dom -- i*x n true | false = Move the iterator to the last sibling node )
+;
+
+
+: dom-last?   ( dom -- i*x n true | false = Check if the current node is the last sibling node )
+;
+
+
+( Modifying the DOM tree )
+
+\ Current   New
+\           element attribute text cdata pi  comment document
+\ element   AI      A         AI   AI    AI  AI      
+\ attribute         I  
+\ text      I                 I    I     I   I 
+\ cdata     I                 I    I     I   I 
+\ pi-0      I                            I   I 
+\ pi-n      I                 I    I     I   I 
+\ comment-0 I                            I   I 
+\ comment-n I                 I    I     I   I 
+\ document  A                            A   A
+\ A = append-node I = insert-before/after
+
+: dom-set   ( i*x -- = Update the current node )
+;
+
+
+: dom-append-node   ( i*x n -- = Append a node to the current node, exception if not allowed, iterator is moved to the new node )
+;
+
+
+: dom-insert-node-before   ( i*x n -- = Insert a node before the current node, exception if not allowed, iterator is moved to the new node )
+;
+
+
+: dom-insert-node-after   ( i*x n -- = Insert a node after the current node, exception if not allowed, iterator is moved to the new node )
+;
+
+
+: dom-remove        ( dom -- i*x n = Remove the current sibling node without children from the tree, iterator is moved to the next, previous or parent node, return the removed node )
+;
+
+
+( Reading the DOM tree )
+
+: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u )
+;
+
+
+: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x )
+;
+
+
+( Writing the DOM tree )
+
+: dom-write-string   ( c-addr u dom -- u true | false = Write xml to the string c-addr u )
+;
+
+
+: dom-write-writer   ( x xt dom -- flag = Write xml to the writer xt with its state x )
+;
+
+
+( Inspection )
+
+: dom-dump   ( dom - = Dump the DOM tree )
+;
+  
 [THEN]
 
 \ ==============================================================================

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.2 $
+\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -81,13 +81,10 @@ tis-new value tis2
 
 \ Setup the reader callback word
 
-: tis-reader ( fileid -- false | c-addr u true )
+: tis-reader ( fileid -- c-addr u | 0 )
   pad 64 rot read-file throw
-  ?dup IF
+  dup IF
     pad swap
-    true
-  ELSE
-    false
   THEN
 ;
 
