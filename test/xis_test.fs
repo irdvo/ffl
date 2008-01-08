@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 06:46:06 $ $Revision: 1.9 $
+\  $Date: 2008-01-08 19:20:17 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -241,11 +241,10 @@ t{ xis1 xis-read xis.text ?s s" FFL (c) &lt;!&gt;" ?str }t
 
 t{ xis-new value xis2 }t
 
-: xis-test-reader   ( file-id -- false | c-addr u true )
+: xis-test-reader   ( file-id -- c-addr u | 0 )
   pad 64 rot read-file throw
   dup IF
     pad swap 
-    true
   THEN
 ;
 
