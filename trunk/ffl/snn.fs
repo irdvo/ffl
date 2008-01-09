@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               snn - the single linked node in the ffl
+\             snn - the generic single linked node in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( snn = Single Linked List Base Node )
-( The snn module implements a node in a single linked list [snl].            )
+( snn = Generic Single Linked List Node )
+( The snn module implements a node in a generic single linked list [snl].    )
 
 
 1 constant snn.version

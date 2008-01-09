@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\         dni - the double linked node list iterator in the ffl
+\         dni - the generic double linked list iterator in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/dnl.fs
 include ffl/dnn.fs
 
 
-( dni = Double Linked Node List Iterator )
-( The dni module implements an iterator on the double linked node list [dnl]. )
+( dni = Generic Double Linked List Iterator )
+( The dni module implements an iterator on the generic double linked list [dnl]. )
 
 
 1 constant dni.version

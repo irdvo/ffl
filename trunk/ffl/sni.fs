@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\         sni - the single linked node list iterator in the ffl
+\         sni - the generic single linked list iterator in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/snl.fs
 include ffl/snn.fs
 
 
-( sni = Single Linked Node List Iterator )
-( The sni module implements an iterator on the single linked node list [snl]. )
+( sni = Generic Single Linked List Iterator )
+( The sni module implements an iterator on the generic single linked list [snl]. )
 
 
 1 constant sni.version

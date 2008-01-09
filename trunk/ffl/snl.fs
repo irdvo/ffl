@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\            snl - the single linked node list in the ffl
+\           snl - the generic single linked list in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.3 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -34,11 +34,11 @@ include ffl/stc.fs
 include ffl/snn.fs
 
 
-( snl = Single Linked Node List )
-( The snl module implements a single linked list that can handle variable size )
+( snl = Generic Single Linked List )
+( The snl module implements a single linked list that can store variable size  )
 ( nodes. It is the base module for more specialised modules, for example the   )
 ( single linked cell list [scl] module. )
-  
+
 
 1 constant snl.version
 

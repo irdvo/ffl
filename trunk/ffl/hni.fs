@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\             hni - the hash table base iterator in the ffl
+\           hni - the generic hash table base iterator in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -35,8 +35,8 @@ include ffl/hnt.fs
 include ffl/hnn.fs
 
 
-( hni = Hash Cell Table Iterator )
-( The hni module implements an iterator on the base hash table [hnt]. )
+( hni = Generic Hash Table Iterator )
+( The hni module implements an iterator on the generic hash table [hnt]. )
 
 
 1 constant hni.version
