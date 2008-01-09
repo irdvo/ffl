@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               nni - the base n-Tree iterator in the ffl
+\             nni - the generic n-Tree iterator in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/config.fs
 include ffl/nnt.fs
 
 
-( nni = n-Tree base Iterator )
-( The nni module implements an iterator on the base n-Tree [nnt]. )
+( nni = Generic n-Tree Iterator )
+( The nni module implements an iterator on the generic n-Tree [nnt]. )
 
 
 1 constant nni.version

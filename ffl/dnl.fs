@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\            dnl - the double linked node list in the ffl
+\            dnl - the generic double linked list in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.8 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/stc.fs
 include ffl/dnn.fs
 
 
-( dnl = Double Linked Node List )
+( dnl = Generic Double Linked List )
 ( The dnl module implements a double linked list that can handle variable size )
 ( nodes. It is the base module for more specialised modules, for example the   )
 ( double linked cell list [dcl] module. )

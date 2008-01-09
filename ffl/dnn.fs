@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\              dnn - the double linked list node in the ffl
+\           dnn - the generic double linked list node in the ffl
 \
 \               Copyright (C) 2006  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,7 +33,7 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( dnn = Double Linked List Node )
+( dnn = Generic Double Linked List Node )
 ( The dnn module implements a node in a dnl list.                            )
 
 

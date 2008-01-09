@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                nnn - the n-Tree base node in the ffl
+\              nnn - the generic n-Tree node in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.2 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/config.fs
 include ffl/dnl.fs
 
 
-( nnn = n-Tree base node )
-( The nnn module implements a base node in a n-tree [nnt].                   )
+( nnn = Generic n-Tree Node )
+( The nnn module implements a generic node in a n-tree [nnt].                )
 
 
 1 constant nnn.version

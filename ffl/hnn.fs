@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\              hnn - the hash table base node in the ffl
+\             hnn - the generic hash table node in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.5 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -32,8 +32,8 @@ include ffl/config.fs
 
 include ffl/stc.fs
 
-( hnn = Hash Table base node )
-( The hnn module implements a base node in a hash table.)
+( hnn = Generic Hash Table Node )
+( The hnn module implements a generic node in the hash table [hnt].)
 
 
 1 constant hnn.version

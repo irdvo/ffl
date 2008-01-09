@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               nnt - the n-Tree base module in the ffl
+\             nnt - the generic n-Tree module in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -33,9 +33,9 @@ include ffl/config.fs
 include ffl/nnn.fs
 
 
-( nnt = n-Tree base module )
-( The nnt module implements a n-Tree that can handle variable size nodes. It  )
-( is the base module for more specialised trees, for example the cel  n-tree  )
+( nnt = Generic n-Tree )
+( The nnt module implements a n-Tree that can store variable size nodes. It   )
+( is the base module for more specialised trees, for example the cel n-tree   )
 ( [nct]. Due to the structure of a n-tree the words for changing the tree,    )
 ( adding and removing children, are part of the iterator [nni].               )
 

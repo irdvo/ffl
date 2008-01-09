@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\                hnt - the base hash table in the ffl
+\               hnt - the generic hash table in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.5 $
+\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -34,10 +34,10 @@ include ffl/stc.fs
 include ffl/hnn.fs
 
 
-( hnt = Base Hash Table )
-( The hnt module implements a base hash table that can handle variable size  )
-( nodes. It is the base module for more specialised hash tables, for example )
-( the cell hash table [hct].                                                 )
+( hnt = Generic Hash Table )
+( The hnt module implements a generic hash table that can store variable     )
+( size nodes. It is the base module for more specialised hash tables, for    )
+( example the cell hash table [hct].                                         )
   
 
 1 constant hnt.version
