@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 20:05:54 $ $Revision: 1.3 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -39,34 +39,47 @@ include ffl/xis.fs
 include ffl/xos.fs
 
 
-( dom = XML Document model )
+( dom = XML Document Object Model )
 ( The dom module implements a simplified XML Document Object Model. The   )
 ( module reads a XML source into a tree of nodes. The tree can then be    )
 ( iterated and modified. After modification the tree can be written to a  )
 ( XML destination. As with every DOM the tree can take a lot of memory    )
-( for large XML documents.                                                )
+( for large XML documents. DTD are not stored in the tree. Depending on   )
+( the node type the following stack state is expected c.q. returned by    )
+( the iterator:                                                           )
+( <pre>                                                                   )
+( dom.element        -- c-addr u              = Tag name                                            )
+( dom.attribute      -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
+( dom.text           -- c-addr u              = Normal xml text                                     )
+( dom.cdata          -- c-addr u              = CDATA section text                                  )
+( dom.pi             -- c-addr1 u1 c-addr2 u2 = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
+( dom.comment        -- c-addr n              = Comment                                             )
+( dom.document       -- c-addr u              = Document attributes                                 )
+( </pre>                                                                  )
 
 1 constant dom.version
 
 
-( Private DOM node structure )
+( XML node types )
 
-begin-enumeration        \ Description    Name      Value
-  enum: dom.not-used           \ Not used       <emtpy>   <empty>
-  enum: dom.element            \ Tag            name      <empty>
-  enum: dom.attribute          \ Attribute      name      value
-  enum: dom.text               \ Text           #text     text
-  enum: dom.cdata              \ CDATA          #cdata    text
-  enum: dom.entity-ref         \ Not used       <empty>   <empty>
-  enum: dom.entity             \ Not used       <empty>   <empty>
-  enum: dom.pi                 \ Proc. Instr.   name      value
-  enum: dom.comment            \ Comment        #comment  text
-  enum: dom.document           \ Start document #document value
-  enum: dom.doc-type           \ Not used       <empty>   <empty>
-  enum: dom.doc-fragment       \ Not used       <empty>   <empty>
-  enum: dom.notation           \ Not used       <empty>   <empty>
+begin-enumeration
+  enum: dom.not-used           ( -- n  = Not used       )
+  enum: dom.element            ( -- n  = Tag            )
+  enum: dom.attribute          ( -- n  = Attribute      )
+  enum: dom.text               ( -- n  = Text           )
+  enum: dom.cdata              ( -- n  = CDATA          )
+  enum: dom.entity-ref         ( -- n  = Not used       )
+  enum: dom.entity             ( -- n  = Not used       )
+  enum: dom.pi                 ( -- n  = Proc. Instr.   )
+  enum: dom.comment            ( -- n  = Comment        )
+  enum: dom.document           ( -- n  = Start document )
+  enum: dom.doc-type           ( -- n  = Not used       )
+  enum: dom.doc-fragment       ( -- n  = Not used       )
+  enum: dom.notation           ( -- n  = Not used       )
 end-enumeration
 
+
+( Private DOM node structure )
 
 begin-structure dom%node%   ( -- n = Get the required space for a dom node )
   nnn%
@@ -82,17 +95,14 @@ end-structure
 ( Private DOM node creation, initialisation and destruction )
 
 : dom-node-set    ( i*x dom-node -- = Update the DOM node )
-  \ ToDo
   >r
-  r@ dom>node>type @ CASE
-    dom.element   OF r@ dom>node>name str-set ENDOF
-    dom.attribute OF r@ dom>node>name str-set r@ dom>node>value str-set ENDOF
-    dom.text      OF s" #text" r@ dom>node>name str-set  r@ dom>node>value str-set ENDOF
-    dom.cdata     OF s" #cdata" r@ dom>node>name str-set  r@ dom>node>value str-set ENDOF
-    dom.pi        OF r@ dom>node>name str-set  r@ dom>node>value str-set ENDOF
-    dom.comment   OF s" #comment" r@ dom>node>name str-set  r@ dom>node>value str-set ENDOF
-    dom.document  OF s" #document" r@ dom>node>name str-set  r@ dom>node>value str-set ENDOF
-  ENDCASE
+  r@ dom>node>type @ dom.element <> IF
+    r@ dom>node>value str-set
+  THEN
+  r@ dom>node>type @
+  dup dom.element = over dom.attribute = OR swap dom.pi = OR IF
+    r@ dom>node>name str-set
+  THEN
   rdrop
 ;
 
@@ -154,24 +164,20 @@ end-structure
 ( Private iterator words )
 
 : dom-node-get    ( dom-node | nil - i*x n true | false = Get the xml info from the node )
-  dup nil<> IF
-    dup dom>node>type @ >r 
-    r@ CASE
-      dom.element   OF     dom>node>name  str-get ENDOF
-      dom.attribute OF dup dom>node>value str-get rot dom>node>name str-get ENDOF
-      dom.text      OF     dom>node>value str-get ENDOF
-      dom.cdata     OF     dom>node>value str-get ENDOF
-      dom.pi        OF dup dom>node>value str-get rot dom>node>name str-get ENDOF
-      dom.comment   OF     dom>node>value str-get ENDOF
-      dom.document  OF     dom>node>value str-get ENDOF
-      nip
-    ENDCASE
-    r>
+  >r
+  r@ nil<> IF
+    r@ dom>node>type @
+    dup dom.element = over dom.attribute = OR swap dom.pi = OR IF
+      r@ dom>node>name str-get
+    THEN
+    r@ dom>node>type @ dom.element <> IF
+      r@ dom>node>value str-get
+    THEN
     true
   ELSE
-    drop
     false
   THEN
+  rdrop
 ;
 
 
@@ -190,7 +196,6 @@ end-structure
 : dom-document?   ( dom -- flag = Check if the current node is the document [=root] node )
   dom>iter nni-root?
 ;
-
 
 : dom-parent   ( dom -- i*x n true | false = Move the iterator to the parent node, return the xml info of this node )
   dom>iter nni-parent dom-node-get
@@ -250,11 +255,9 @@ end-structure
 \ attribute         I  
 \ text      I                 I    I     I   I 
 \ cdata     I                 I    I     I   I 
-\ pi-0      I                            I   I 
-\ pi-n      I                 I    I     I   I 
-\ comment-0 I                            I   I 
-\ comment-n I                 I    I     I   I 
-\ document  A                            A   A
+\ pi        I       A                    I   I 
+\ comment   I                            I   I 
+\ document  A       A                    A   A
 \ A = append-node I = insert-before/after
 
 : dom-set   ( i*x dom -- = Update the current node )
@@ -280,13 +283,68 @@ end-structure
 ;
 
 
-( Reading the DOM tree )
+( Private read words )
 
-: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u )
+: dom-append-attributes   ( c-addr2n u2n .. c-addr1 u1 n dom -- = Add all attributes to the element ) 
+  swap 0 ?DO
+    >r
+    dom.attribute r@ dom-append-node
+                  r@ dom-parent
+    r>
+  LOOP
+  drop  
 ;
 
 
-: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x )
+: dom-read   ( xis dom -- flag = Read the xml source into the dom tree, xis is freed )
+  >r
+  BEGIN
+    dup xis-read
+    dup xis.error <> over xis.done <> AND
+  WHILE
+    CASE
+      xis.start-xml     OF dom.document r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
+      xis.comment       OF dom.comment  r@ dom-append-node                          r@ dom-parent ENDOF
+      xis.text          OF dom.text     r@ dom-append-node                          r@ dom-parent ENDOF
+      xis.start-tag     OF dom.element  r@ dom-append-node r@ dom-append-attributes               ENDOF
+      xis.end-tag       OF                                                          r@ dom-parent ENDOF
+      xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
+      xis.cdata         OF dom.cdata    r@ dom-append-node                          r@ dom-parent ENDOF
+      xis.proc-instr    OF dom.pi       r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
+      xis.internal-dtd  OF 2drop 2drop                                                            ENDOF
+      xis.public-dtd    OF 2drop 2drop 2drop 2drop                                                ENDOF
+      xis.system-dtd    OF 2drop 2drop 2drop                                                      ENDOF
+    ENDCASE
+  REPEAT
+  rdrop
+  swap xis-free
+  xis.done =
+;
+
+
+( Reading the DOM tree )
+
+: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u into the dom tree )
+  \ ToDo: test for empty tree
+  >r
+  xis-new
+  >r
+  true r@ xis-strip!              \ setup the xml parser
+       r@ xis-set-string
+  r> r>
+  dom-read
+;
+
+
+: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x into the dom tree )
+  \ ToDo: test for empty tree
+  >r
+  xis-new
+  >r
+  true r@ xis-strip!              \ setup the xml parser
+       r@ xis-set-reader
+  r> r>
+  dom-read
 ;
 
 

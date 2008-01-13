@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.2 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,7 +34,7 @@ include ffl/xos.fs
 
 tos-create xos1
 
-s" ISO-8859-1" s" encoding" s" 1.0" s" version" 2 xos1 xos-write-start-xml
+s" encoding" s" ISO-8859-1" s" version" s" 1.0" 2 xos1 xos-write-start-xml
 
 s"  menu of the day " xos1 xos-write-comment
 
@@ -49,7 +49,7 @@ s"  menu of the day " xos1 xos-write-comment
 0 s" price"        xos1 xos-write-start-tag
   s" $6.95"        xos1 xos-write-text
   s" price"        xos1 xos-write-end-tag
-s" yes" s" cholesterol"
+s" cholesterol" s" yes"
 1 s" health"       xos1 xos-write-empty-element
   s" food"         xos1 xos-write-end-tag
   s" menu"         xos1 xos-write-end-tag
@@ -76,7 +76,7 @@ nil 0 s" -//W3C//DTD HTML 4.0 Transitional//EN" nil 0 s" HTML" xos1 xos-write-pu
   s" H1"           xos1 xos-write-end-tag
   s"  comment "    xos1 xos-write-comment
   
-  s" center" s" align" 
+  s" align" s" center"
 1 s" DIV"          xos1 xos-write-start-tag     \ = <DIV align="center">
 
   s" Test"         xos1 xos-write-text

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.14 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -54,7 +54,7 @@ include ffl/chs.fs
 ( <pre>                                                                      )
 ( xis.error          --                                                      )
 ( xis.done           --                                                      )
-( xis.start-xml      -- c-addrn un c-addr un .. n           = Return n attributes with their value                     )
+( xis.start-xml      -- c-addrn un c-addr un .. n           = Return n attribute names with their value                )
 ( xis.comment        -- c-addr u                            = Return the comment                                       )
 ( xis.text           -- c-addr u                            = Return the normal text                                   )
 ( xis.start-tag      -- c-addrn un c-addrn un .. n c-addr u = Return the tag name and n attributes with their value    )
@@ -360,7 +360,7 @@ end-structure
       ELSE
         nil 0                          \ Attribute without value
       THEN
-      2swap 2rot                       \ Swap the value and name and rotate it after tag
+      2rot                             \ Rotate name and value after tag
       r> r> 1+ >r >r                   \ Increment the attribute counter
       false
     ELSE
@@ -372,7 +372,7 @@ end-structure
 ;
 
 
-: xis-read-start-tag ( xis -- c-addrn un c-addrn un .. n c-addr u xis.start-tag = Read a start tag )
+: xis-read-start-tag ( xis -- c-addrn un c-addrn un .. n c-addr u xis.start-tag = Read a start tag with n attribute names and values )
   >r
   r@ xis-read-name ?dup IF
     r@ xis-read-attributes
@@ -425,7 +425,7 @@ end-structure
 ;
 
 
-: xis-read-proc-instr ( xis -- c-addrn un c-addrn un .. n c-addr u = Read a processing instruction )
+: xis-read-proc-instr ( xis -- c-addrn un c-addrn un .. n c-addr u = Read a processing instruction with n attribute names and values )
   >r
   r@ xis-read-name ?dup IF
     r@ xis-read-attributes

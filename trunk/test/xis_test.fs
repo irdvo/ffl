@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:17 $ $Revision: 1.10 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -51,12 +51,12 @@ t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 t{ s" <tag attr1>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str ?0 ?nil }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s ?0 ?nil s" attr1" ?str }t
 
 t{ s" hello<tag attr1>bye" xis1 xis-set-string }t
 
 t{ xis1 xis-read xis.text          ?s s" hello" ?str }t
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str ?0 ?nil }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s ?0 ?nil s" attr1" ?str }t
 t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 
@@ -64,28 +64,28 @@ t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 t{ s" <tag attr1=value1>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value1" ?str s" attr1" ?str }t
 
 
 t{ s" <tag attr1 = value1>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value1" ?str s" attr1" ?str }t
 
 
 t{ s" <tag attr1=value1 >" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value1" ?str s" attr1" ?str }t
 
 
 t{ s" <tag attr1=&lt;1&amp;2&gt;>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" <1&2>" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" <1&2>" ?str s" attr1" ?str }t
 
 
 t{ s" hello<tag attr1=value1>bye" xis1 xis-set-string }t
 
 t{ xis1 xis-read xis.text          ?s s" hello" ?str }t
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value1" ?str s" attr1" ?str }t
 t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 
@@ -93,49 +93,49 @@ t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 t{ s" <tag attr1='value 1'>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s" <tag attr1 = 'value 1'>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s" <tag attr1='value 1' >" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s" hello<tag attr1='value&#38;1'>bye" xis1 xis-set-string }t
 
 t{ xis1 xis-read xis.text          ?s s" hello" ?str }t
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value&1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value&1" ?str s" attr1" ?str }t
 t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 t{ s" <tag attr1='value&#381'>" xis1 xis-set-string }t  \ mistake, missing ;
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value&#381" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value&#381" ?str s" attr1" ?str }t
 
 t{ s" <tag attr1='value&#a;1'>" xis1 xis-set-string }t  \ mistake, not numerical reference
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value&#a;1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value&#a;1" ?str s" attr1" ?str }t
 
 
 \ Tag with attribute with double-quoted value
 
 t{ s\" <tag attr1=\"value 1\">" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s\" <tag attr1 = \"value 1\">" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s\" <tag attr1=\"value 1\" >" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s" value 1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" value 1" ?str s" attr1" ?str }t
 
 t{ s\" hello<tag attr1=\"value&quot;1\">bye" xis1 xis-set-string }t
 
 t{ xis1 xis-read xis.text          ?s s" hello" ?str }t
-t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s" attr1" ?str s\" value\"1" ?str }t
+t{ xis1 xis-read xis.start-tag     ?s s" tag" ?str 1 ?s s\" value\"1" ?str s" attr1" ?str }t
 t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 
@@ -143,7 +143,7 @@ t{ xis1 xis-read xis.text          ?s s" bye" ?str }t
 
 t{ s\" <airplane brand=\"airtrain\" color=brown&amp;yellow type='three wings'/>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.empty-element ?s s" airplane" ?str 3 ?s s" type" ?str s" three wings" ?str s" color" ?str s" brown&yellow" ?str s" brand" ?str s" airtrain" ?str }t
+t{ xis1 xis-read xis.empty-element ?s s" airplane" ?str 3 ?s s" three wings" ?str s" type" ?str s" brown&yellow" ?str s" color" ?str s" airtrain" ?str s" brand" ?str }t
 
 \ Error tags
 
@@ -172,7 +172,7 @@ t{ xis1 xis-read xis.empty-element ?s s" bold"     ?str ?0 }t
 
 t{ s" <?target attribute='value' ?>" xis1 xis-set-string }t
 
-t{ xis1 xis-read xis.proc-instr ?s s" target" ?str 1 ?s s" attribute" ?str s" value" ?str }t
+t{ xis1 xis-read xis.proc-instr ?s s" target" ?str 1 ?s s" value" ?str s" attribute" ?str }t
 
 
 \ DTD tests
@@ -254,7 +254,7 @@ t{ xis.file ' xis-test-reader xis2 xis-set-reader }t
 
 t{ true xis2 xis-strip!  }t
 
-t{ xis2 xis-read xis.start-xml ?s 2 ?s s" standalone" ?str s" no" ?str s" version" ?str s" 1.0" ?str }t
+t{ xis2 xis-read xis.start-xml ?s 2 ?s s" no" ?str s" standalone" ?str s" 1.0" ?str s" version" ?str }t
 
 t{ xis2 xis-read xis.comment ?s s"  This is a test file for the ffl-library " ?str }t
 

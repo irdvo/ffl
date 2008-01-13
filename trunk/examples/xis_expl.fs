@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\          tis_expl - the text input stream example in the ffl
+\          xis_expl - the text input stream example in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.2 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -64,6 +64,7 @@ true xis1 xis-strip!                              \ Strip leading and trailing s
 
 : print-attributes ( c-addrn un c-addr un .. n  -- Print all attributes )
   0 ?DO                                 \ Do for all attributes
+    2swap
     ."  Attribute: " type               \   Print attribute name
     ."  Value: " ?type                  \   Print attribute value
   LOOP

@@ -67,6 +67,7 @@ Index of used prefices
 6 xis - XML/HTML reader module
 6 xos - XML/HTML writer module
 6 rdg - Random distribution generator
+6 dom - XML-DOM module
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -114,7 +115,6 @@ Index of used prefices
 8 dbm - DBM module
 7 gzf - GZip file module
 7 gzp - GZip module
-6 dom - XML-DOM module
       - css module
       - url module
 ----- - ------------------------------------------------
