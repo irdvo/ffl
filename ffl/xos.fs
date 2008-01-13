@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.6 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ include ffl/tos.fs
 ( the tos module with extra words, so the xos words work on tos variables.   )
 ( The module translates the normal entity references: &lt;, &gt;, &quot;,    )
 ( &amp; and '. All other entity references should be written with the word   )
-( xos-write-raw-textd. Note: balancing of start and end tags is not checked, )
+( xos-write-raw-text. Note: balancing of start and end tags is not checked,  )
 ( so the module can also be used to write html output.                       )
 
 
@@ -62,12 +62,14 @@ include ffl/tos.fs
   drop
 ;
 
-: xos-write-name-attr  ( c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- = Write a xml tag c-addr u with the n attributes c-addr* n* and values c-addr* n*)
+: xos-write-name-attr  ( c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- = Write a xml tag c-addr u with the n attribute names and values )
   >r
   r@ tos-write-string 
   BEGIN
     ?dup
   WHILE                           \ while nr attributes > 0
+    >r 2swap r>                   \  swap name and value
+    
     bl r@ tos-write-char
     
     -rot

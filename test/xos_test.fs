@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 07:16:20 $ $Revision: 1.5 $
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -33,11 +33,11 @@ include ffl/tst.fs
 
 t{ tos-create tos5 }t
 
-t{ s" yes" s" standalone" s" ISO-8559-1" s" encoding" s" 1.0" s" version" 3  tos5 xos-write-start-xml }t
+t{ s" standalone" s" yes" s" encoding" s" ISO-8559-1" s" version" s" 1.0" 3  tos5 xos-write-start-xml }t
 
 t{ s" this is comment"              tos5 xos-write-comment }t
-t{ s" on" s" mode" 1 s" pi"         tos5 xos-write-proc-instr }t
-t{ s" <'>" s" code" 1 s" mail"      tos5 xos-write-start-tag }t
+t{ s" mode" s" on" 1 s" pi"         tos5 xos-write-proc-instr }t
+t{ s" code" s" <'>" 1 s" mail"      tos5 xos-write-start-tag }t
 t{ 0 s" to"                         tos5 xos-write-start-tag }t
 t{ s" Bill & Sara"                  tos5 xos-write-text }t
 t{ s" to"                           tos5 xos-write-end-tag }t
