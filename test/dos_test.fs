@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.3 $
+\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -161,11 +161,11 @@ t{ tos4 str-get s" 00:05" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-seconds-since-epoch }t
-t{ tos4 str-get s" 1182384308" ?str ) }t
+t{ tos4 str-get s" 1182384308" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-seconds }t
-t{ tos4 str-get s" 08" ?str ) }t
+t{ tos4 str-get s" 08" ?str }t
 
 t{ tos4 tos-rewrite }t
 t{ dtm7 tos4 dos-write-hhmmss-time }t

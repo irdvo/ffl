@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-06 06:37:25 $ $Revision: 1.4 $
+\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -292,13 +292,13 @@ end-structure
 ;
 
 [ELSE]
-.( Warning: cpx requires a separate floating point stack ) cr
+.( Warning: rdg requires a separate floating point stack ) cr
 [THEN]
 [ELSE]
-.( Warning: cpx requires floating point words ) cr
+.( Warning: rdg requires floating point words ) cr
 [THEN]
 [ELSE]
-.( Warning: cpx requires floating point words ) cr
+.( Warning: rdg requires floating point words ) cr
 [THEN]
 [THEN]
 

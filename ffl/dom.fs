@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.4 $
+\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -52,9 +52,9 @@ include ffl/xos.fs
 ( dom.attribute      -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
 ( dom.text           -- c-addr u              = Normal xml text                                     )
 ( dom.cdata          -- c-addr u              = CDATA section text                                  )
-( dom.pi             -- c-addr1 u1 c-addr2 u2 = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
+( dom.pi             -- c-addr u              = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
 ( dom.comment        -- c-addr n              = Comment                                             )
-( dom.document       -- c-addr u              = Document attributes                                 )
+( dom.document       --                       = Document attributes                                 )
 ( </pre>                                                                  )
 
 1 constant dom.version
@@ -96,7 +96,8 @@ end-structure
 
 : dom-node-set    ( i*x dom-node -- = Update the DOM node )
   >r
-  r@ dom>node>type @ dom.element <> IF
+  r@ dom>node>type @ 
+  dup dom.element <> swap dom.document <> AND IF
     r@ dom>node>value str-set
   THEN
   r@ dom>node>type @
@@ -122,8 +123,10 @@ end-structure
 ;
 
 
-: dom-node-free   ( dom-node -- = Free the DOM node from the heap )
-  \ ToDo: free strings
+: dom-node-free   ( dom%node -- = Free the DOM node from the heap )
+  \ nnn ?
+  \ dup dom>node>name str-(free)
+  \ dup dom>node>value str-(free)
   free throw
 ;
   
@@ -135,13 +138,17 @@ begin-structure dom%       ( -- n = Get the required space for a dom variable )
   +field  dom>tree            \ the DOM extends a tree
   nni%
   +field  dom>iter            \ the iterator on the tree
+  tos%
+  +field  dom>xos             \ the xml output stream
 end-structure
 
 
 ( DOM creation, initialisation and destruction )
 
 : dom-init         ( dom -- = Initialise the DOM )
-  \ ToDo
+  dup dom>tree nnt-init
+  dup dom>tree over dom>iter nni-init
+      dom>xos  tos-init
 ;
 
 
@@ -156,40 +163,53 @@ end-structure
 
 
 : dom-free         ( dom -- = Free the DOM from the heap )
-  \ ToDo
+  \ nni -> ok
+  ['] dom-node-free over dom>tree nnt-execute  \ free all xml nodes in the tree
+  \ tos-(free)
   free throw 
-;
-
-
-( Private iterator words )
-
-: dom-node-get    ( dom-node | nil - i*x n true | false = Get the xml info from the node )
-  >r
-  r@ nil<> IF
-    r@ dom>node>type @
-    dup dom.element = over dom.attribute = OR swap dom.pi = OR IF
-      r@ dom>node>name str-get
-    THEN
-    r@ dom>node>type @ dom.element <> IF
-      r@ dom>node>value str-get
-    THEN
-    true
-  ELSE
-    false
-  THEN
-  rdrop
 ;
 
 
 ( Iterating the DOM tree )
 
-: dom-get   ( dom -- i*x n true | false = Get the xml info of the current node )
-  dom>iter nni-get dom-node-get
+: dom-get-type   ( dom -- n true | false = Get the xml node type of the current node )
+  dom>iter nni-get 
+  dup nil<> IF
+    dom>node>type @
+    true
+  ELSE
+    drop
+    false
+  THEN
 ;
 
 
-: dom-document   ( dom -- c-addr u n true | false = Move the iterator to the document [=root] node, return the document info )
-  dom>iter nni-root dom-node-get
+: dom-get-name   ( dom -- c-addr u true | false = Get the name from the current node )
+  dom>iter nni-get
+  dup nil<> IF
+    dom>node>name str-get
+    true
+  ELSE
+    drop
+    false
+  THEN
+;
+
+
+: dom-get-value   ( dom -- c-addr u true | false = Get the value from the current node )
+  dom>iter nni-get
+  dup nil<> IF
+    dom>node>value str-get
+    true
+  ELSE
+    drop
+    false
+  THEN
+;
+
+
+: dom-document   ( dom -- true | false = Move the iterator to the document [=root] node )
+  dom>iter nni-root nil<>
 ;
 
 
@@ -197,8 +217,8 @@ end-structure
   dom>iter nni-root?
 ;
 
-: dom-parent   ( dom -- i*x n true | false = Move the iterator to the parent node, return the xml info of this node )
-  dom>iter nni-parent dom-node-get
+: dom-parent   ( dom -- n true | false = Move the iterator to the parent node, return the xml type of this node )
+  dom>iter nni-parent dom-get-type
 ;
 
 
@@ -207,18 +227,18 @@ end-structure
 ;
 
 
-: dom-children?   ( dom -- n = Check if the current node has children )
+: dom-children?   ( dom -- flag = Check if the current node has children )
   dom>iter nni-children?
 ;
 
 
-: dom-child   ( dom -- i*x n true | false = Move the iterator to the first child node, return the xml info of this node )
-  dom>iter nni-child dom-node-get
+: dom-child   ( dom -- n true | false = Move the iterator to the first child node, return the xml type of this node )
+  dom>iter nni-child dom-get-type
 ;
 
 
-: dom-first   ( dom -- i*x n true | false = Move the iterator to the first sibling node, return the xml info of this node )
-  dom>iter nni-first dom-node-get
+: dom-first   ( dom -- n true | false = Move the iterator to the first sibling node, return the xml type of this node )
+  dom>iter nni-first dom-get-type
 ;
 
 
@@ -227,18 +247,18 @@ end-structure
 ;
 
 
-: dom-next   ( dom -- i*x n true | false = Move the iterator to the next sibling node, return the xml info of this node )
-  dom>iter nni-next dom-node-get
+: dom-next   ( dom -- n true | false = Move the iterator to the next sibling node, return the xml type of this node )
+  dom>iter nni-next dom-get-type
 ;
 
 
-: dom-prev   ( dom -- i*x n true | false = Move the iterator to the previous sibling node, return the xml info of this node )
-  dom>iter nni-prev dom-node-get
+: dom-prev   ( dom -- n true | false = Move the iterator to the previous sibling node, return the xml type of this node )
+  dom>iter nni-prev dom-get-type
 ;
 
 
-: dom-last   ( dom -- i*x n true | false = Move the iterator to the last sibling node, return the xml info of this node )
-  dom>iter nni-last dom-node-get
+: dom-last   ( dom -- n true | false = Move the iterator to the last sibling node, return the xml type of this node )
+  dom>iter nni-last dom-get-type
 ;
 
 
@@ -267,19 +287,33 @@ end-structure
 ;
 
 
-: dom-append-node   ( i*x n -- = Append a node to the current node, exception if not allowed, iterator is moved to the new node )
+: dom-append-node   ( i*x n dom -- = Append a node to the current node, exception if not allowed, iterator is moved to the new node )
+  \ ToDo: check valid
+  >r
+  dom-node-new
+  r> dom>iter nni-append-child
+  
 ;
 
 
-: dom-insert-node-before   ( i*x n -- = Insert a node before the current node, exception if not allowed, iterator is moved to the new node )
+: dom-insert-node-before   ( i*x n dom -- = Insert a node before the current node, exception if not allowed, iterator is moved to the new node )
+  \ ToDo: check valid
+  >r
+  dom-node-new
+  r> dom>iter nni-insert-before
 ;
 
 
 : dom-insert-node-after   ( i*x n -- = Insert a node after the current node, exception if not allowed, iterator is moved to the new node )
+  \ ToDo: check valid
+  >r
+  dom-node-new
+  r> dom>iter nni-insert-after
 ;
 
 
-: dom-remove        ( dom -- i*x n = Remove the current sibling node without children from the tree, iterator is moved to the next, previous or parent node, return the removed node )
+: dom-remove        ( dom -- flag = Remove the current sibling node without children from the tree, iterator is moved to the next, previous or parent node, return the removed node )
+  dom>iter nni-remove nil<>
 ;
 
 
@@ -289,10 +323,10 @@ end-structure
   swap 0 ?DO
     >r
     dom.attribute r@ dom-append-node
-                  r@ dom-parent
+    r@ dom-parent 2drop
     r>
   LOOP
-  drop  
+  drop
 ;
 
 
@@ -303,14 +337,14 @@ end-structure
     dup xis.error <> over xis.done <> AND
   WHILE
     CASE
-      xis.start-xml     OF dom.document r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
-      xis.comment       OF dom.comment  r@ dom-append-node                          r@ dom-parent ENDOF
-      xis.text          OF dom.text     r@ dom-append-node                          r@ dom-parent ENDOF
+      xis.start-xml     OF dom.document r@ dom-append-node r@ dom-append-attributes               ENDOF
+      xis.comment       OF dom.comment  r@ dom-append-node                          r@ dom-parent 2drop ENDOF
+      xis.text          OF dom.text     r@ dom-append-node                          r@ dom-parent 2drop ENDOF
       xis.start-tag     OF dom.element  r@ dom-append-node r@ dom-append-attributes               ENDOF
-      xis.end-tag       OF                                                          r@ dom-parent ENDOF
-      xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
-      xis.cdata         OF dom.cdata    r@ dom-append-node                          r@ dom-parent ENDOF
-      xis.proc-instr    OF dom.pi       r@ dom-append-node r@ dom-append-attributes r@ dom-parent ENDOF
+      xis.end-tag       OF 2drop                                                    r@ dom-parent 2drop ENDOF
+      xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes               ENDOF
+      xis.cdata         OF dom.cdata    r@ dom-append-node                          r@ dom-parent 2drop ENDOF
+      xis.proc-instr    OF dom.pi       r@ dom-append-node r@ dom-append-attributes               ENDOF
       xis.internal-dtd  OF 2drop 2drop                                                            ENDOF
       xis.public-dtd    OF 2drop 2drop 2drop 2drop                                                ENDOF
       xis.system-dtd    OF 2drop 2drop 2drop                                                      ENDOF
@@ -322,11 +356,16 @@ end-structure
 ;
 
 
+: dom-throw-full   ( dom -- = Throw an invalid state exception if the tree is full )
+  dom>tree nnt-empty? 0= exp-invalid-state AND throw
+;
+
+
 ( Reading the DOM tree )
 
-: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u into the dom tree )
-  \ ToDo: test for empty tree
+: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u into the dom tree, throw exception if tree is not empty )
   >r
+  r@ dom-throw-full
   xis-new
   >r
   true r@ xis-strip!              \ setup the xml parser
@@ -336,9 +375,9 @@ end-structure
 ;
 
 
-: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x into the dom tree )
-  \ ToDo: test for empty tree
+: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x into the dom tree, throw exception if tree is not empty )
   >r
+  r@ dom-throw-full
   xis-new
   >r
   true r@ xis-strip!              \ setup the xml parser
@@ -348,19 +387,129 @@ end-structure
 ;
 
 
-( Writing the DOM tree )
+( Private writing words )
 
-: dom-write-string   ( c-addr u dom -- u true | false = Write xml to the string c-addr u )
+defer dom.write-nodes
+
+: dom-fetch-attributes  ( dom -- c-addr1 u1 .. c-addr2n u2n n = Fetch the attributes from the xml tree )
+  0                               \ Attribute counter
+  over dom-get-type
+  BEGIN
+    IF
+      dom.attribute =             \ While attributes
+    ELSE
+      false
+    THEN
+  WHILE
+    over dom-get-name  drop 2swap \ Fetch name and value, increment counter
+    over dom-get-value drop 2swap
+    1+
+    over dom-next                 \ Move to the next node
+  REPEAT
+  nip
 ;
 
 
-: dom-write-writer   ( x xt dom -- flag = Write xml to the writer xt with its state x )
+: dom-write-element   ( dom -- = Write the element c-addr u )
+  >r
+  r@ dom-get-name
+  r@ dom-child IF
+    drop
+    r@ -rot 2>r dom-fetch-attributes 2r>   \ Fetch the attributes after saving the element name
+      
+    r@ dom>xos xos-write-start-tag         \ Write the start tag with its attributes
+    r@ dom.write-nodes                     \ Write the child nodes of the element
+    r@ dom-parent
+      dom.element <> exp-invalid-state AND throw  \ Move to the parent (element) and check this
+    r@ dom-get-name r@ xos-write-end-tag   \ Finish with the end tag
+  ELSE
+    0 r@ dom>xos xos-write-empty-element
+  THEN
+  rdrop
+;
+
+
+: dom-write-pi   ( dom -- = Write the proc. instr. c-addr u )
+  >r
+  r@ dom-get-name
+  r@ dom-child IF
+    drop
+    r@ -rot 2>r dom-fetch-attributes 2>r    \ Fetch the attributes after saving the element name
+    r@ dom>xos xos-write-proc-instr
+    r@ dom-parent 
+      dom.pi <> exp-invalid-state AND throw \ Move to the parent (proc. instr.) and check this
+  ELSE
+    0 r@ dom>xos xos-write-empty-element
+  THEN
+  rdrop
+;
+
+
+: dom-write-nodes   ( dom -- = Write the current sibling nodes )
+  >r
+  r@ dom-get-type
+  BEGIN
+  WHILE
+    CASE
+      dom.element   OF r@ dom-write-element                          ENDOF
+      dom.pi        OF r@ dom-write-pi                               ENDOF
+      
+      dom.text      OF r@ dom-get-value r@ dom>xos xos-write-text    ENDOF
+      dom.cdata     OF r@ dom-get-value r@ dom>xos xos-write-cdata   ENDOF
+      dom.comment   OF r@ dom-get-value r@ dom>xos xos-write-comment ENDOF
+    ENDCASE
+    r@ dom-next  
+  REPEAT
+  rdrop
+;
+
+' dom-write-nodes is dom.write-nodes
+
+
+( Writing the DOM tree )
+
+: dom-write-string   ( dom -- c-addr u true | false = Write xml returning the string c-addr u if succesfull )
+  >r
+  r@ dom-document IF
+    r@ dom-child ~~ IF
+      drop
+      r@ dom-fetch-attributes
+      r@ dom>xos xos-write-start-xml
+      r@ dom-write-nodes
+    ELSE
+      0
+      r@ dom>xos xos-write-start-xml
+    THEN
+    r@ dom>xos str-get
+    true
+  ELSE
+    false
+  THEN
+  rdrop
+;
+
+
+( Private inspection word )
+
+: dom-emit-node   ( dom%node -- = Emit the contents of the dom node )
+  dup dom>node>type @
+  CASE
+    dom.document    OF ." Document." cr   ENDOF
+    dom.element     OF ." Element  : " dup dom>node>name  str-get type cr ENDOF
+    dom.attribute   OF ." Attribute: " dup dom>node>name  str-get type [char] = emit dup dom>node>value str-get type cr ENDOF
+    dom.text        OF ." Text     : " dup dom>node>value str-get type cr ENDOF
+    dom.cdata       OF ." CDATA    : " dup dom>node>value str-get type cr ENDOF
+    dom.pi          OF ." PI       : " dup dom>node>value str-get type cr ENDOF
+    dom.comment     OF ." Comment  : " dup dom>node>value str-get type cr ENDOF
+  ENDCASE
+  drop
 ;
 
 
 ( Inspection )
 
 : dom-dump   ( dom - = Dump the DOM tree )
+  dom>tree ['] dom-emit-node swap nnt-execute
 ;
   
 [THEN]
