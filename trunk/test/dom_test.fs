@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\        htm_test - the test words for the htm module in the ffl
+\        xos_test - the test words for the xos module in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,51 +20,34 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-10 07:20:08 $ $Revision: 1.2 $
+\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include ffl/htm.fs
+include ffl/dom.fs
 include ffl/tst.fs
 
 
-.( Testing: htm) cr
+.( Testing: dom) cr
 
-\ Reading from a string
+t{ dom-create dom1 }t
 
-htm-create htm1
 
-t{ s" hello&amp;daag" htm1 htm-set-string }t
-
-t{ htm1 htm-read . type cr }t
-t{ htm1 htm-read . cr }t
-t{ htm1 htm-read . cr }t
-
-0 [IF]
-\ Reading via a reader
-
-htm-new value htm2
-
-: htm-reader ( w:fileid - c-addr u true | false = Read html info )
-  ." reader.." cr
-  pad 80 rot read-file throw
-  ?dup IF
-    pad swap true
-  ELSE
-    false
+: dom-test-reader   ( file-id -- c-addr u | 0 )
+  pad 64 rot read-file throw
+  dup IF
+    pad swap 
+    2dup type cr
   THEN
 ;
 
-s" test.htm" r/o open-file throw value htm-file
+t{ s" test.xml" r/o open-file throw value dom.file }t
 
-t{ htm-file  ' htm-reader htm2 htm-set-reader }t
+t{ dom.file ' dom-test-reader dom1 dom-read-reader ?true }t
 
-t{ htm2 htm-read . }t
+\ dom1 dom-dump
 
-t{ htm-file close-file throw }t
-
-t{ htm2 htm-free }t
-
-[THEN]
+t{ dom1 dom-write-string ?true type }t
+ 
 
 \ ==============================================================================
