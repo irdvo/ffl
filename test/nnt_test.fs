@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-11 07:56:07 $ $Revision: 1.1 $
+\  $Date: 2008-01-31 19:27:37 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/nni.fs
 
 t{ nnt-new value nnt1  }t
 
-t{    nnt1 nnt-length@  ?0    }t
-t{    nnt1 nnt-empty?   ?true }t
+t{ nnt1 nnt-length@  ?0    }t
+t{ nnt1 nnt-empty?   ?true }t
 
 t{ nnn-new value nnn1 }t
 t{ nnn-new value nnn2 }t
