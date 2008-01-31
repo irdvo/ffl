@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\             nni - the generic n-Tree iterator in the ffl
+\               nni - the base n-Tree iterator in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
+\  $Date: 2008-01-31 19:24:41 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -33,8 +33,8 @@ include ffl/config.fs
 include ffl/nnt.fs
 
 
-( nni = Generic n-Tree Iterator )
-( The nni module implements an iterator on the generic n-Tree [nnt]. )
+( nni = n-Tree base Iterator )
+( The nni module implements an iterator on the base n-Tree [nnt]. )
 
 
 1 constant nni.version
@@ -45,14 +45,16 @@ include ffl/nnt.fs
 begin-structure nni%       ( -- n = Get the required space for a nni variable )
   field: nni>nnt
   field: nni>walk
+  field: nni>parent
 end-structure
 
 
 ( Iterator creation, initialisation and destruction )
 
 : nni-init     ( nnt nni -- = Initialise the iterator with the n-tree nnt )
-  tuck nni>nnt     !
-       nni>walk  nil!
+  tuck nni>nnt       !
+  dup  nni>walk   nil!
+       nni>parent nil!
 ;
 
 
@@ -81,8 +83,19 @@ end-structure
 
 ( Private words )
 
-: nni+throw     ( nnn -- nnn = Raise exception if nnn is nil )
+: nni+nil-throw     ( nnn -- nnn = Raise exception if nnn is nil )
   dup nil= exp-invalid-state AND throw
+;
+
+
+: nni-parent@   ( nnn1 nni --  nnn2 = Get the parent of nnn1 )
+  over nil<> IF
+    drop
+    nnn-parent@
+  ELSE
+    nni>parent @
+    nip
+  THEN
 ;
 
 
@@ -98,20 +111,24 @@ end-structure
 
 
 : nni-root     ( nni -- nnn | nil = Move the iterator to the root of the tree, return this node )
-  dup
-  nni>nnt @ nnt-root@
-  dup rot
-  nni>walk !
+  dup nni>parent nil!
+  dup nni>nnt  @ nnt-root@
+  dup rot nni>walk !
 ;
 
 
 : nni-parent   ( nni -- nnn | nil = Move the iterator to the parent of the current node, return this node )
-  nni>walk
-  dup @
+  dup nni>walk tuck @
   
-  nni+throw
+  over nni-parent@
   
-  nnn-parent@
+  dup nil<> IF               \ If walk <> nil Then
+    tuck nnn-parent@         \   nni.parent = walk.parent
+    swap nni>parent !
+  ELSE                       \ Else
+    swap nni>parent nil!     \   nni.parent = nil
+  THEN
+  
   dup rot !
 ;
 
@@ -119,7 +136,7 @@ end-structure
 : nni-children   ( nni -- n = Return the number of children of the current node )
   nni-get
   
-  nni+throw 
+  nni+nil-throw 
   
   nnn>children dnl-length@
 ;
@@ -128,19 +145,21 @@ end-structure
 : nni-children?  ( nni -- flag = Check if the current node has children )
   nni-get
   
-  nni+throw
+  nni+nil-throw
   
   nnn>children dnl-first@ nil<>
 ;
 
 
 : nni-child    ( nni -- nnn | nil = Move the iterator to the first child of the current node, return this node )
-  nni>walk dup @
+  dup nni>walk tuck @
   
-  nni+throw
+  nni+nil-throw
+  
+  dup rot nni>parent !       \ nni.parent = walk
   
   nnn>children dnl-first@
-  dup rot !
+  dup rot !                  \ nni.walk = walk.children.first
 ;
 
 
@@ -154,7 +173,7 @@ end-structure
     drop
     over nni-get                     \   If nni.walk <> nil Then
       
-    nni+throw
+    nni+nil-throw
     
     tuck                             \     Parent = walk
     nnn>children dnl-prepend         \     Prepend nnn to nni.walk.children
@@ -176,7 +195,7 @@ end-structure
     drop
     over nni-get                     \   If nni.walk <> nil Then
       
-    nni+throw
+    nni+nil-throw
       
     tuck                             \     Parent = walk
     nnn>children dnl-append          \     Append nnn to nni.walk.children
@@ -191,25 +210,21 @@ end-structure
 ( Sibling iterator words )
 
 : nni-first    ( nni -- nnn = Move the iterator to the first sibling, return this node )
-  nni>walk
-  dup @
+  dup nni>walk tuck @        \ S: ^walk nni walk
   
-  nni+throw
-    
-  nnn-parent@             
-    
-  nni+throw
+  swap nni-parent@
   
-  nnn>children dnl-first@          \  walk = walk.parent.children.first
+  nni+nil-throw
+  
+  nnn>children dnl-first@    \ walk = walk.parent.first
   dup rot !
 ;
 
 
 : nni-next     ( nni -- nnn | nil = Move the iterator to the next sibling, return this node )
-  nni>walk 
-  dup @
+  nni>walk dup @
   
-  nni+throw
+  nni+nil-throw
   
   nnn>dnn dnn-next@                \   walk = walk.next
   dup rot !
@@ -217,10 +232,9 @@ end-structure
 
 
 : nni-prev     ( nni -- nnn | nil = Move the iterator to the previous sibling )
-  nni>walk 
-  dup @
+  nni>walk dup @
   
-  nni+throw
+  nni+nil-throw
   
   nnn>dnn dnn-prev@                \   walk = walk.prev
   dup rot !
@@ -228,28 +242,23 @@ end-structure
 
 
 : nni-last     ( nni -- nnn = Move the iterator to the last sibling, return this node )
-  nni>walk
-  dup @
+  dup nni>walk tuck @
   
-  nni+throw
+  swap nni-parent@
   
-  nnn-parent@
+  nni+nil-throw
   
-  nni+throw
-  
-  nnn>children dnl-last@           \  walk = walk.parent.children.last
+  nnn>children dnl-last@     \  walk = walk.children.last
   dup rot !
 ;
 
 
 : nni-first?   ( nni -- flag = Check if the iterator is on the first sibling )
-  nni-get dup
+  dup nni-get tuck
   
-  nni+throw
+  swap nni-parent@
   
-  nnn-parent@
-  
-  nni+throw
+  nni+nil-throw
 
   nnn>children dnl-first@          \  walk =?= walk.parent.children.first
   =
@@ -257,13 +266,11 @@ end-structure
 
 
 : nni-last?    ( nni -- flag = Check if the iterator is on the last sibling )
-  nni-get dup
+  dup nni-get tuck
   
-  nni+throw
+  swap nni-parent@
   
-  nnn-parent@
-  
-  nni+throw
+  nni+nil-throw
   
   nnn>children dnl-last@           \  walk =?= walk.parent.children.last
   =
@@ -274,11 +281,11 @@ end-structure
   tuck
   nni-get 2dup
   
-  nni+throw
+  nni+nil-throw
   
   nnn-parent@              \ S: nni nnn walk nnn parent
     
-  nni+throw
+  nni+nil-throw
   
   tuck
   swap nnn-parent!         \ nnn.parent = walk.parent
@@ -292,11 +299,11 @@ end-structure
   tuck
   nni-get 2dup
   
-  nni+throw
+  nni+nil-throw
   
   nnn-parent@              \ S: nni nnn walk nnn parent
   
-  nni+throw
+  nni+nil-throw
   
   tuck
   swap nnn-parent!         \ nnn.parent = walk.parent
@@ -309,7 +316,7 @@ end-structure
 : nni-remove        ( nni -- nnn = Remove the current sibling without children from the tree, move the iterator to the next, previous or parent node, return the removed node )
   dup nni-get
   \ Checks
-  nni+throw                              \ Error if iterator is not on a node
+  nni+nil-throw                          \ Error if iterator is not on a node
   
   dup nnn>children dnl-first@            \ Error if node has children
   
@@ -347,8 +354,9 @@ end-structure
 
 : nni-dump     ( nni -- = Dump the iterator )
   ." nni:" dup . cr
-  ."  tree:" dup nni>nnt  ?  cr
-  ."  walk:"     nni>walk  ?  cr
+  ."  tree:"   dup nni>nnt    ? cr
+  ."  walk:"   dup nni>walk   ? cr
+  ."  parent:"     nni>parent ? cr
 ;
 
 [THEN]

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.5 $
+\  $Date: 2008-01-31 19:24:41 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -170,10 +170,9 @@ end-structure
 ;
 
 
-( Iterating the DOM tree )
+( Private iterating words )
 
-: dom-get-type   ( dom -- n true | false = Get the xml node type of the current node )
-  dom>iter nni-get 
+: dom-node-type   ( dom%node -- n true | false = Get the xml node type of the node )
   dup nil<> IF
     dom>node>type @
     true
@@ -184,26 +183,42 @@ end-structure
 ;
 
 
-: dom-get-name   ( dom -- c-addr u true | false = Get the name from the current node )
-  dom>iter nni-get
+( Iterating the DOM tree )
+
+: dom-get   ( dom -- n true | false = Get the xml node type of the current node )
+  dom>iter nni-get dom-node-type
+;
+  
+  
+: dom-get-type   ( dom -- n = Get the xml node type of the current node )
+  dom>iter nni-get 
   dup nil<> IF
-    dom>node>name str-get
-    true
+    dom>node>type @
   ELSE
     drop
-    false
+    exp-invalid-state throw
   THEN
 ;
 
 
-: dom-get-value   ( dom -- c-addr u true | false = Get the value from the current node )
+: dom-get-name   ( dom -- c-addr u = Get the name from the current node )
+  dom>iter nni-get
+  dup nil<> IF
+    dom>node>name str-get
+  ELSE
+    drop
+    exp-invalid-state throw
+  THEN
+;
+
+
+: dom-get-value   ( dom -- c-addr u = Get the value from the current node )
   dom>iter nni-get
   dup nil<> IF
     dom>node>value str-get
-    true
   ELSE
     drop
-    false
+    exp-invalid-state throw
   THEN
 ;
 
@@ -218,7 +233,7 @@ end-structure
 ;
 
 : dom-parent   ( dom -- n true | false = Move the iterator to the parent node, return the xml type of this node )
-  dom>iter nni-parent dom-get-type
+  dom>iter nni-parent dom-node-type
 ;
 
 
@@ -233,12 +248,12 @@ end-structure
 
 
 : dom-child   ( dom -- n true | false = Move the iterator to the first child node, return the xml type of this node )
-  dom>iter nni-child dom-get-type
+  dom>iter nni-child dom-node-type
 ;
 
 
 : dom-first   ( dom -- n true | false = Move the iterator to the first sibling node, return the xml type of this node )
-  dom>iter nni-first dom-get-type
+  dom>iter nni-first dom-node-type
 ;
 
 
@@ -248,17 +263,17 @@ end-structure
 
 
 : dom-next   ( dom -- n true | false = Move the iterator to the next sibling node, return the xml type of this node )
-  dom>iter nni-next dom-get-type
+  dom>iter nni-next dom-node-type
 ;
 
 
 : dom-prev   ( dom -- n true | false = Move the iterator to the previous sibling node, return the xml type of this node )
-  dom>iter nni-prev dom-get-type
+  dom>iter nni-prev dom-node-type
 ;
 
 
 : dom-last   ( dom -- n true | false = Move the iterator to the last sibling node, return the xml type of this node )
-  dom>iter nni-last dom-get-type
+  dom>iter nni-last dom-node-type
 ;
 
 
@@ -282,7 +297,7 @@ end-structure
 
 : dom-set   ( i*x dom -- = Update the current node )
   dom>iter nni-get
-  nni+throw
+  nni+nil-throw
   dom-node-set
 ;
 
@@ -393,7 +408,7 @@ defer dom.write-nodes
 
 : dom-fetch-attributes  ( dom -- c-addr1 u1 .. c-addr2n u2n n = Fetch the attributes from the xml tree )
   0                               \ Attribute counter
-  over dom-get-type
+  over dom-get
   BEGIN
     IF
       dom.attribute =             \ While attributes
@@ -401,8 +416,8 @@ defer dom.write-nodes
       false
     THEN
   WHILE
-    over dom-get-name  drop 2swap \ Fetch name and value, increment counter
-    over dom-get-value drop 2swap
+    over dom-get-name  2swap      \ Fetch name and value, increment counter
+    over dom-get-value 2swap
     1+
     over dom-next                 \ Move to the next node
   REPEAT
@@ -413,17 +428,20 @@ defer dom.write-nodes
 : dom-write-element   ( dom -- = Write the element c-addr u )
   >r
   r@ dom-get-name
-  r@ dom-child IF
+  r@ dom-child IF                          \ If Childs
     drop
-    r@ -rot 2>r dom-fetch-attributes 2r>   \ Fetch the attributes after saving the element name
-      
-    r@ dom>xos xos-write-start-tag         \ Write the start tag with its attributes
-    r@ dom.write-nodes                     \ Write the child nodes of the element
-    r@ dom-parent
-      dom.element <> exp-invalid-state AND throw  \ Move to the parent (element) and check this
-    r@ dom-get-name r@ xos-write-end-tag   \ Finish with the end tag
-  ELSE
-    0 r@ dom>xos xos-write-empty-element
+    r@ -rot 2>r dom-fetch-attributes 2r>   \   Fetch the attributes after saving the element name
+    r@ dom>xos xos-write-start-tag         \   Write the start tag with its attributes
+
+    r@ dom.write-nodes                     \   Write the child nodes of the element
+
+    r@ dom-parent 2drop                    \   Move to the parent (element) node
+
+    r@ dom-get-name r@ dom>xos xos-write-end-tag  \ Finish with the end tag
+  ELSE                                     \ Else
+    0 -rot r@ dom>xos xos-write-empty-element  \ Write the empty element  
+    
+    r@ dom-parent 2drop                    \   Move to the parent (element) node
   THEN
   rdrop
 ;
@@ -436,7 +454,8 @@ defer dom.write-nodes
     drop
     r@ -rot 2>r dom-fetch-attributes 2>r    \ Fetch the attributes after saving the element name
     r@ dom>xos xos-write-proc-instr
-    r@ dom-parent 
+
+    r@ dom-parent drop 
       dom.pi <> exp-invalid-state AND throw \ Move to the parent (proc. instr.) and check this
   ELSE
     0 r@ dom>xos xos-write-empty-element
@@ -447,9 +466,10 @@ defer dom.write-nodes
 
 : dom-write-nodes   ( dom -- = Write the current sibling nodes )
   >r
-  r@ dom-get-type
+  r@ dom-get
   BEGIN
   WHILE
+    r@ dom>xos str-get type cr
     CASE
       dom.element   OF r@ dom-write-element                          ENDOF
       dom.pi        OF r@ dom-write-pi                               ENDOF
