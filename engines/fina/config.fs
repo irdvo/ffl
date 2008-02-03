@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2007-06-25 17:22:39 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:18:45 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 \
@@ -147,6 +147,15 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 : nil<>            ( w - f = Check for unequal to nil )
  nil <>
 ;
+
+
+: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
+  state @ IF
+    postpone ?dup
+  ELSE
+    ?dup
+  THEN
+; immediate
 
 
 : ?free            ( addr - wior = Free the address if not nil )
