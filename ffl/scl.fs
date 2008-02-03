@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.14 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -71,11 +71,11 @@ end-structure
 
 : scl-delete-all ( scl -- = Delete all nodes in the list )
   BEGIN
-    dup snl-remove-first dup nil<>    \ while remove first node <> nil do
+    dup snl-remove-first nil<>?       \ while remove first node <> nil do
   WHILE
     scn-free                          \   free node
   REPEAT
-  2drop
+  drop
 ;
 
 
@@ -162,7 +162,7 @@ end-structure
   0 >r                       \ count = 0
   snl-first@                 \ walk = first
   BEGIN
-    dup nil<> 
+    nil<>? 
   WHILE                      \ while walk <> nil do
     2dup
     scn-cell@ = IF           \  if walk->cell = x then
@@ -170,7 +170,7 @@ end-structure
     THEN
     snn-next@                \  walk = walk->next
   REPEAT
-  2drop
+  drop
   r>
 ;
 
@@ -178,7 +178,7 @@ end-structure
 : scl-execute      ( i*x xt scl -- j*x = Execute xt for every cell data in list )
   snl-first@                 \ walk = first
   BEGIN
-    dup nil<>                \ while walk<>nil do
+    nil<>?                   \ while walk<>nil do
   WHILE
     dup >r scn-cell@
     swap 
@@ -186,7 +186,7 @@ end-structure
     r> r>
     snn-next@                \  walk = walk->next
   REPEAT
-  2drop
+  drop
 ;
 
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.13 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -109,11 +109,10 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
   >r 
   2dup r@ hnt-search         \ Search for key
     
-  dup nil<> IF               \ if already present then
+  nil<>? IF                  \ if already present then
     nip nip nip
     hcn>cell !               \  update cell
-  ELSE                       \ else
-    drop                     \  S: w c-addr u u:hash
+  ELSE                       \ else S: w c-addr u u:hash
     hcn-new                  \  new hash table node
   
     r@ hnt-insert            \ insert the node in the table
@@ -124,12 +123,11 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 
 : hct-delete   ( c-addr u hct -- false | x true = Delete the key c-addr u from the table, return the cell data related to the key )
   hnt-delete 
-  dup nil<> IF
+  nil<>? IF
     dup  hcn-cell@                \ Key deleted, then return cell data
     swap hcn-free
     true
   ELSE
-    drop
     false
   THEN
 ;
@@ -137,11 +135,10 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 
 : hct-get      ( c-addr u hct -- false | x true = Get the cell data x related to the key c-addr u from the table )
   hnt-get 
-  dup nil<> IF
+  nil<>? IF
     hcn-cell@
     true
   ELSE
-    drop
     false
   THEN
 ;

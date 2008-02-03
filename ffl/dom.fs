@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-31 19:24:41 $ $Revision: 1.6 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -173,11 +173,10 @@ end-structure
 ( Private iterating words )
 
 : dom-node-type   ( dom%node -- n true | false = Get the xml node type of the node )
-  dup nil<> IF
+  nil<>? IF
     dom>node>type @
     true
   ELSE
-    drop
     false
   THEN
 ;
@@ -192,10 +191,9 @@ end-structure
   
 : dom-get-type   ( dom -- n = Get the xml node type of the current node )
   dom>iter nni-get 
-  dup nil<> IF
+  nil<>? IF
     dom>node>type @
   ELSE
-    drop
     exp-invalid-state throw
   THEN
 ;
@@ -203,10 +201,9 @@ end-structure
 
 : dom-get-name   ( dom -- c-addr u = Get the name from the current node )
   dom>iter nni-get
-  dup nil<> IF
+  nil<>? IF
     dom>node>name str-get
   ELSE
-    drop
     exp-invalid-state throw
   THEN
 ;
@@ -214,10 +211,9 @@ end-structure
 
 : dom-get-value   ( dom -- c-addr u = Get the value from the current node )
   dom>iter nni-get
-  dup nil<> IF
+  nil<>? IF
     dom>node>value str-get
   ELSE
-    drop
     exp-invalid-state throw
   THEN
 ;

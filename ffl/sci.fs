@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.6 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -72,10 +72,10 @@ sni% constant sci%  ( -- n = Get the required space for a sci variable )
 ( Private words )
 
 : sni+get      ( scn -- x true | false = Get the cell data x from the scn node )
-  dup nil<> IF               \ if current <> nil then
+  nil<>? IF                  \ if current <> nil then
     scn-cell@ true           \   fetch cell
   ELSE
-    drop false
+    false
   THEN
 ;
 
@@ -89,7 +89,7 @@ sni% constant sci%  ( -- n = Get the required space for a sci variable )
 
 : sci-set      ( x sci -- = Set the cell data x for the current node )
   sni-get
-  dup nil<> IF
+  nil<>? IF
     scn-cell!
   ELSE
     exp-invalid-state throw
@@ -136,7 +136,7 @@ sni% constant sci%  ( -- n = Get the required space for a sci variable )
 : sci-insert-after ( x sci -- = Insert the cell data x after the current node )
   dup sni>snl @
   swap sni-get
-  dup nil<> IF
+  nil<>? IF
     2>r scn-new 2r>
     swap snl-insert-after
   ELSE

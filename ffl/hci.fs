@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.7 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -72,11 +72,10 @@ hni% constant hci%  ( -- n = Get the required space for a hash cell table iterat
 ( Private words )
 
 : hci+get      ( hcn -- false | x true = Get the cell data x from the node )
-  dup nil<> IF
+  nil<>? IF
     hcn-cell@
     true
   ELSE
-    drop
     false
   THEN
 ;
@@ -95,10 +94,8 @@ hni% constant hci%  ( -- n = Get the required space for a hash cell table iterat
 
 
 : hci-set      ( x hci -- = Set the cell data x in the current record )
-  hni-get dup nil<> IF
+  hni-get nil<>? IF
     hcn>cell !
-  ELSE
-    drop
   THEN    
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.3 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -86,15 +86,13 @@ end-structure
 
 : nnn-next      ( nnn1 -- nnn2 | nil = Find the next node for node nnn1 )
   dup nnn>children dnl-first@    \ If the node has children Then
-  dup nil<> IF
+  nil<>? IF
     nip                          \   Next = first child
   ELSE                           \ Else
-    drop
     dup nnn>dnn dnn-next@        \   If node has siblings Then
-    dup nil<> IF
+    nil<>? IF
       nip                        \     Next = sibling
-    ELSE
-      drop                       \   Else
+    ELSE                         \   Else
       nnn-parent@                \     Find sibling of a parent
       BEGIN
         dup nil<> IF 
@@ -116,15 +114,13 @@ end-structure
 
 : nnn-prev      ( nnn1 -- nnn2 | nil = Find the previous node for node nnn1 )
   dup nnn>children dnl-last@     \ If the node has children Then
-  dup nil<> IF
+  nil<>? IF
     nip                          \   Next = last child
   ELSE                           \ Else
-    drop
     dup nnn>dnn dnn-prev@        \   If node has siblings Then
-    dup nil<> IF
+    nil<>? IF
       nip                        \     Next = sibling
-    ELSE
-      drop                       \   Else
+    ELSE                         \   Else
       nnn-parent@                \     Find sibling of a parent
       BEGIN
         dup nil<> IF 

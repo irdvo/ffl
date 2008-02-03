@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -78,26 +78,26 @@ end-structure
 
 : bci-get      ( bci -- false | x true = Get the cell data x from the current node )
   bci>walk @
-  dup nil<> IF
+  nil<>? IF
     bcn>cell @ true
   ELSE
-    drop false
+    false
   THEN
 ;
 
 
 : bci-key      ( bci -- false | x true = Get the key x from the current node )
   bci>walk @
-  dup nil<> IF
+  nil<>? IF
     bcn>key @ true
   ELSE
-    drop false
+    false
   THEN    
 ;
 
 : bci-set      ( x bci -- = Set the cell data x for the current node )
   bci>walk @
-  dup nil<> IF
+  nil<>? IF
     bcn>cell !
   ELSE
     exp-invalid-state throw
@@ -118,7 +118,7 @@ end-structure
 : bci-next     ( bci -- x true | false = Move the iterator to the next node, return the cell data x )
   >r
   r@ bci>walk @              \ check if current node has a next node
-  dup nil<> IF
+  nil<>? IF
     bct-next-node
     r@ bci>walk !
     r@ bci-get
@@ -146,7 +146,7 @@ end-structure
 : bci-prev     ( bci -- x true | false = Move the iterator to the previous node, return the cell data x )
   >r
   r@ bci>walk @              \ check if current node has a next node
-  dup nil<> IF
+  nil<>? IF
     bct-prev-node
     r@ bci>walk !
     r@ bci-get
@@ -170,7 +170,7 @@ end-structure
 : bci-first?   ( bci -- flag = Check if the iterator is on the first node )
   >r
   r@ bci>walk @
-  dup nil<> IF
+  nil<>? IF
     r@ bci>tree @ bct>root @ 
     bct-smallest-node 
     =
@@ -184,7 +184,7 @@ end-structure
 : bci-last?    ( bci -- flag = Check if the iterator is on the last node )
   >r
   r@ bci>walk @
-  dup nil<> IF
+  nil<>? IF
     r@ bci>tree @ bct>root @ 
     bct-greatest-node 
     =
