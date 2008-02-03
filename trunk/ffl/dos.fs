@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-27 06:19:48 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -135,10 +135,8 @@ end-stringtable
 
 
 : dos-translate   ( c-addr1 u1 tos -- c-addr2 u2 = Translate a string with the optional message catalog )
-  tos-msc@ dup nil<> IF
+  tos-msc@ nil<>? IF
     msc-translate
-  ELSE
-    drop
   THEN
 ;
 
@@ -416,10 +414,9 @@ create dos.jump
       I c@                        \   If char = A..z then 
       dup [char] A [char] z 1+ within IF
         dup [char] A - cells dos.jump + @
-        dup nil<> IF
+        nil<>? IF
           nip >r 2dup r> execute  \     Execute format word if not nil
         ELSE
-          drop
           over tos-write-char     \     Write char if nil
         THEN
       ELSE                        \   Else

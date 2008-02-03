@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -276,14 +276,14 @@ end-structure
 : snl-execute      ( i*x xt snl -- j*x = Execute xt for every node in list )
   snl-first@                 \ walk = first
   BEGIN
-    dup nil<>                \ while walk<>nil do
+    nil<>?                   \ while walk<>nil do
   WHILE
     2>r 
     2r@ swap execute         \  execute xt with node
     2r>
     snn-next@                \  walk = walk->next
   REPEAT
-  2drop
+  drop
 ;
 
 
@@ -292,14 +292,14 @@ end-structure
   snl-first@                 \ walk = first
   
   BEGIN
-    dup nil<>
+    nil<>?
   WHILE                      \ while walk<>nil do
     dup snn-next@
     >r
     tuck snn-next!           \  walk->next = prev
     r>
   REPEAT
-  2drop
+  drop
   
   dup  snl-first@
   over dup snl-last@       

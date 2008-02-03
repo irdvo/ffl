@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -93,10 +93,10 @@ end-structure
 
 
 : bcn-parent!      ( bcn1 bcn2 -- = Set for the node bcn2 the parent to bcn1, if bcn2 is not nil )
-  dup nil<> IF
+  nil<>? IF
     bcn>parent !
   ELSE
-    2drop
+    drop
   THEN
 ;
 

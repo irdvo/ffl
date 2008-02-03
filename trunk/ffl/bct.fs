@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.10 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -294,7 +294,7 @@ end-structure
 : bct-delete       ( x1 bct -- false | x2 true = Delete key x1 from the tree, return the cell data x2 )
   >r
   r@ bct-search-node
-  dup nil<> IF
+  nil<>? IF
     r@ bct>length 1-!             \ Update length if deleted
     >r r@ bcn>cell @ true r>      \ Setup return info
       
@@ -302,7 +302,7 @@ end-structure
     
     r@ bct-delete-node            \ Delete the node
   ELSE
-    drop false
+    false
   THEN
   rdrop
 ;
@@ -310,11 +310,11 @@ end-structure
 
 : bct-get          ( x1 bct -- false | x2 true = Get the data x2 related to key x1 from the tree )
   bct-search-node
-  dup nil<> IF
+  nil<>? IF
     bcn>cell @
     true
   ELSE
-    drop false
+    false
   THEN
 ;
 

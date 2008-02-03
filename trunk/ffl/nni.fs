@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-31 19:24:41 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -327,13 +327,13 @@ end-structure
   \ Next iterator S: nnn nni nnn
   nnn>dnn
   
-  dup dnn-next@ dup nil<> IF             \ If next <> nil Then
+  dup dnn-next@ nil<>? IF                \ If next <> nil Then
     nip                                  \   walk = next
   ELSE
-    drop dup dnn-prev@ dup nil<> IF      \ Else if prev <> nil Then
+    dup dnn-prev@ nil<>? IF              \ Else if prev <> nil Then
       nip                                \   walk = next
     ELSE                                 \ Else
-      2drop over                         \   walk = parent
+      drop over                          \   walk = parent
       nnn-parent@
     THEN
   THEN

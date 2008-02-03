@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.6 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -157,12 +157,12 @@ end-structure
   swap mod abs cells
   +                          \ table element
   r@ r> rot @!               \ insert the new node, fetch the current node
-  dup nil<> IF         
+  nil<>? IF         
     2dup
     swap hnn>next !          \ if previous value, then link the node
          hnn>prev !
   ELSE
-    2drop                    \ done
+    drop                     \ done
   THEN
 ;
 

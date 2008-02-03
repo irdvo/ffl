@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.3 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -230,12 +230,12 @@ end-structure
 
 : dcl-remove   ( x dcl -- flag = Remove the first occurence of the cell data x from the list, return success )
   tuck dcl-search nip        \ Search the cell data
-  dup nil<> IF               \ If dcn <> nil then
+  nil<>? IF                  \ If dcn <> nil then
     dup rot dnl-remove       \  Remove from list
     dcn-free                 \  Free the node
     true
   ELSE                       \ else
-    2drop                    \  not found
+    drop                     \  not found
     false
   THEN
 ;

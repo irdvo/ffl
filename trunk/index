@@ -117,13 +117,16 @@ Index of used prefices
 7 gzp - GZip module
       - css module
       - url module
+a    - crypt: aes
+a    - crypt: dsa
+a    - crypt: ???
 ----- - ------------------------------------------------
       - Graphics
 ----- - ------------------------------------------------
-A gpc - Graphics module
-A     - JPEG
-A     - PNG
-A     - Font ??
+b gpc - Graphics module
+b     - JPEG
+b     - PNG
+b     - Font ??
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -149,6 +152,7 @@ ToDo
 [ ] rgx: ^ en $
 [ ] rgx: []
 [ ] rgx: [[]]
-[ ] cfg: nil<>? ( addr - false | addr true )
+[x] cfg: nil<>? ( addr - false | addr true )
 [ ] col: execute?
 [ ] gmo: endian check
+[ ] ffl: dup nil<> en dup nil= check again

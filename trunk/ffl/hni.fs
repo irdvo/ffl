@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -58,11 +58,9 @@ end-structure
   hni>table @
   hnt-table-bounds ?DO                \ end and start of table for DO; S: index
     I @
-    dup nil<> IF
+    nil<>? IF
       UNLOOP
       EXIT
-    ELSE
-      drop
     THEN
     1+
   cell +LOOP
@@ -105,7 +103,7 @@ end-structure
 
 : hni-key      ( hni -- c-addr u = Get the key from the current record )
   hni>walk @
-  dup nil<> IF
+  nil<>? IF
     hnn-key@
   ELSE
     exp-invalid-state throw
@@ -122,11 +120,9 @@ end-structure
   
   0 r@ hni-search-table      \ search a node in the table
   
-  dup nil<> IF
+  nil<>? IF
     r@ hni>walk  !           \ save hcn and index
     r@ hni>index !
-  ELSE
-    drop
   THEN
   
   r> hni-get
@@ -136,13 +132,11 @@ end-structure
 : hni-next     ( hni -- w:hnn | nil = Move the iterator to the next record, return the node in this record )
   >r
   r@ hni>walk @              \ check if current node has a next node
-  dup nil<> IF
+  nil<>? IF
     hnn-next@
-    dup nil<> IF
+    nil<>? IF
       dup r@ hni>walk !
     ELSE                     \ else search the next node in the table 
-      drop
-      
       r@ hni>index @ 1+  r@ hni-search-table
       
       dup r@ hni>walk !
@@ -163,7 +157,7 @@ end-structure
 
 : hni-first?   ( hni -- flag = Check if the iterator is on the first record )
   dup hni>walk @
-  dup nil<> IF
+  nil<>? IF
     hnn-prev@                     \ if there is a previous record, then not the first
     nil<> IF
       false
@@ -184,7 +178,7 @@ end-structure
 
 : hni-last?    ( hni -- flag = Check if the iterator is on the last record )
   dup hni>walk @
-  dup nil<> IF
+  nil<>? IF
     hnn-next@
     nil<> IF                      \ if there is a next record, then not the last
       false

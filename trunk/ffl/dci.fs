@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.2 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -71,10 +71,10 @@ dni% constant dci%  ( -- n = Get the required space for a dci variable )
 ( Private words )
 
 : dci+get      ( dcn -- x true | false = Get the cell data x from the node )
-  dup nil<> IF
+  nil<>? IF
     dcn-cell@ true
   ELSE
-    drop false
+    false
   THEN
 ;
 
@@ -88,7 +88,7 @@ dni% constant dci%  ( -- n = Get the required space for a dci variable )
 
 : dci-set      ( x dci -- = Set the cell data x for the current record )
   dni-get
-  dup nil<> IF
+  nil<>? IF
     dcn-cell!
   ELSE
     exp-invalid-state throw
@@ -145,7 +145,7 @@ dni% constant dci%  ( -- n = Get the required space for a dci variable )
 : dci-insert-after ( x dci -- = Insert the cell data x after the current record )
   dup dni>dnl @
   swap dni-get
-  dup nil<> IF
+  nil<>? IF
     2>r dcn-new 2r>
     swap dnl-insert-after
   ELSE

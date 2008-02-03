@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.3 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -93,7 +93,7 @@ end-structure
 : sni-next     ( sni -- snn | nil = Move the iterator to the next node, return this node )
   sni>walk 
   dup @
-  dup nil<> IF               \ if walk <> nil then
+  nil<>? IF                  \ if walk <> nil then
     snn-next@                \   walk = walk.next
     dup rot !
   ELSE                       \ else

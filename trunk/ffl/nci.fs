@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.3 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -71,10 +71,10 @@ nni% constant nci% ( -- n = Get the required space for a nci variable )
 ( Private words )
 
 : nni+get      ( ncn -- x true | false = Get the cell data x from the current node )
-  dup nil<> IF
+  nil<>? IF
     ncn-cell@ true
   ELSE
-    drop false
+    false
   THEN
 ;
 

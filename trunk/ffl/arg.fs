@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.9 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -328,7 +328,7 @@ end-structure
   >r
   r@ arg>arg tis-read-char IF               \ Read the option character
     dup r@ arg-find-short                   \ Find it in the list
-    dup nil<> IF                            \ If found Then
+    nil<>? IF                               \ If found Then
       dup arg>opt>switch @ IF               \   If switch Then return id
         nip
         arg>opt>id @
@@ -350,7 +350,6 @@ end-structure
         THEN
       THEN
     ELSE
-      drop
       arg+unk-opt-str arg+do-short-error
     THEN
   ELSE
@@ -404,7 +403,7 @@ end-structure
   ELSE
     [char] = r@ arg>arg tis-scan-char IF
       2dup r@ arg-find-long
-      dup nil<> IF
+      nil<>? IF
         dup arg>opt>switch @ IF
           drop
           ." Unexpected parameter for switch option: --" type cr
@@ -420,13 +419,12 @@ end-structure
           THEN
         THEN
       ELSE
-        drop
         arg+unk-opt-str arg+do-long-error
       THEN
     ELSE
       r@ arg>arg tis-read-all
       2dup r@ arg-find-long
-      dup nil<> IF
+      nil<>? IF
         dup arg>opt>switch @ IF
           nip nip
           arg>opt>id @
@@ -435,7 +433,6 @@ end-structure
           arg+exp-param-str arg+do-long-error
         THEN
       ELSE
-        drop
         arg+unk-opt-str arg+do-long-error
       THEN
     THEN

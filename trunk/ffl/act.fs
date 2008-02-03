@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -397,7 +397,7 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 : act-delete       ( x1 act -- false | x2 true = Delete key x1 from the tree, return the data x2 if found )
   >r
   r@ bct-search-node
-  dup nil<> IF
+  nil<>? IF
     r@ bct>length 1-!             \ Update length if deleted
     >r r@ bcn>cell @ true r>      \ Save return info
       
@@ -407,7 +407,7 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
     
     r@ bct-delete-node            \ Delete the node
   ELSE
-    drop false
+    false
   THEN
   rdrop
 ;

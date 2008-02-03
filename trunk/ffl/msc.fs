@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-16 07:53:11 $ $Revision: 1.5 $
+\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -92,7 +92,7 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
   >r
   2swap
   2dup r@ hnt-search              \ Search for the key in the table
-  dup nil<> IF                    \ If already in hash table Then
+  nil<>? IF                       \ If already in hash table Then
     >r
     drop 2drop                    \   Drop hash and key
     dup r@ msc>msg>length @ > IF  \   If new translation is longer previous Then
@@ -104,7 +104,6 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
     r> msc>msg>text @
     swap cmove                    \   Save the translation text
   ELSE                            \ Else
-    drop
     msc%msg% allocate throw       \   Create new message node
     >r
     r@ hnn-init                   \   Initialise the message node
@@ -120,34 +119,31 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
 
 : msc-translate  ( c-addr1 u1 msc -- c-addr2 u2 = Translate the message c-addr1 u1 with the catalog, return message if not found )
   >r 2dup r>                      \ Save the message
-  hnt-get dup nil<> IF            \ Search for the message, if found
+  hnt-get nil<>? IF               \ Search for the message, if found
     nip nip                       \   Drop old message and 
     dup  msc>msg>text   @         \   .. fetch the translation
     swap msc>msg>length @
-  ELSE                            \ Else 
-    drop                          \   Use the old message
   THEN
 ;
 
 
 : msc-translate?   ( c-addr1 u2 msc -- c-addr2 u2 true | false = Translate the message c-addr1 u1 with the catalog, return success )
-  hnt-get dup nil<> IF           \ Search for the message, if found
+  hnt-get nil<>? IF              \ Search for the message, if found
     dup  msc>msg>text   @        \  Fetch the translation
     swap msc>msg>length @
     true
   ELSE
-    drop false
+    false
   THEN
 ;
 
 
 : msc-remove  ( c-addr u msc -- flag = Remove the message c-addr u from the catalog, return success )
-  hnt-delete dup nil<> IF         \ If node is removed Then
+  hnt-delete nil<>? IF            \ If node is removed Then
     dup msc-msg-free              \   Free text and node
     hnn-free
     true
   ELSE
-    drop
     false
   THEN
 ;
