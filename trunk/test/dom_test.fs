@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.1 $
+\  $Date: 2008-02-17 07:37:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,7 @@ t{ dom-create dom1 }t
   pad 64 rot read-file throw
   dup IF
     pad swap 
-    2dup type cr
+    \ 2dup type cr
   THEN
 ;
 
@@ -45,7 +45,11 @@ t{ s" test.xml" r/o open-file throw value dom.file }t
 
 t{ dom.file ' dom-test-reader dom1 dom-read-reader ?true }t
 
-\ dom1 dom-dump
+\ Iterate the tree
+
+\ Modify the tree
+
+\ Write the tree
 
 t{ dom1 dom-write-string ?true type }t
  

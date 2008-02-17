@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.7 $
+\  $Date: 2008-02-17 07:37:16 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -43,10 +43,12 @@ include ffl/xos.fs
 ( The dom module implements a simplified XML Document Object Model. The   )
 ( module reads a XML source into a tree of nodes. The tree can then be    )
 ( iterated and modified. After modification the tree can be written to a  )
-( XML destination. As with every DOM the tree can take a lot of memory    )
-( for large XML documents. DTD are not stored in the tree. Depending on   )
-( the node type the following stack state is expected c.q. returned by    )
-( the iterator:                                                           )
+( XML destination. As with every DOM implementation the tree will use a   )
+( lot of memory for large XML documents. Keep in mind that modifications  )
+( in the tree are checked, but these checks are not checking all invalid  )
+( states. DTD are not stored in the tree. Depending on he node type the   )
+( following stack state is expected by dom-set, dom-append-node,          )
+( dom-insert-node-before and dom-insert-node-after:                       )
 ( <pre>                                                                   )
 ( dom.element        -- c-addr u              = Tag name                                            )
 ( dom.attribute      -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
@@ -108,7 +110,7 @@ end-structure
 ;
 
 
-: dom-node-init   ( c-addr1 u1 c-addr2 u2 +n dom-node -- = Initialise the DOM node with value c-addr1 u1, name c-addr2 u2 and type n2 )
+: dom-node-init   ( i*x +n dom-node -- = Initialise the DOM node with type n and optional name and value )
   >r
   r@ dom>nnn        nnn-init
   r@ dom>node>type  !        \ node.type  = type
@@ -118,7 +120,7 @@ end-structure
 ;
 
 
-: dom-node-new   ( c-addr1 u1 c-addr2 u2 +n -- dom-node = Create a new DOM node with value c-addr1 u1, name c-addr2 u2 and type n2 )
+: dom-node-new   ( i*x +n -- dom-node = Create a new DOM node with type n and optional name and value )
   dom%node% allocate throw  >r r@ dom-node-init r>
 ;
 
@@ -278,6 +280,69 @@ end-structure
 ;
 
 
+( Private modify check words )
+
+: dom-append-node?  ( n dom -- = Throws invalid state if appending of n to the current node is not allowed )
+  swap
+  dup dom.document = IF
+    drop dom>tree nnt-empty? 0=                  \ append document, only if tree is empty
+  ELSE
+    dup dom.attribute = IF                       \ append attribute only for document, element or proc. instr.
+      drop dom-get-type dup dom.document <> over dom.element <> AND swap dom.pi <> AND
+    ELSE
+      dup dom.element = over dom.text = OR over dom.cdata = OR over dom.comment = OR swap dom.pi = OR IF
+        dom-get-type dup dom.document <> swap dom.element <> AND \ append ... only for document and element
+      ELSE
+        drop true
+      THEN
+    THEN
+  THEN
+  exp-invalid-state AND throw
+;
+
+
+: dom-insert-before?  ( n dom -- = Throws invalid state if inserting n before the current node is not allowed )
+  swap
+  dup dom.attribute = IF
+    drop dom-get-type dom.attribute <>           \ insert attribute only before another attribute
+  ELSE
+    dup dom.element = over dom.text = OR over dom.cdata = OR over dom.comment = OR swap dom.pi = OR IF
+      dom-get-type dup dom.document = swap dom.attribute = OR  \ insert .. only before not an attribute or document
+    ELSE
+      drop true
+    THEN
+  THEN
+  exp-invalid-state AND throw
+;
+
+
+: dom-next-attribute?  ( dom -- flag = Check if the next node is an attribute )
+  dup dom-last? 0= IF             \ If not last node Then
+    dup  dom-next drop            \   Move to the next
+    dom.attribute =               \   Check for attribute
+    swap dom-prev 2drop           \   Move back
+  ELSE
+    drop false
+  THEN
+;
+
+
+: dom-insert-after?  ( n dom -- Throws invalid state if inserting n after the current node is not allowed )
+  swap
+  dup dom.attribute = IF
+    drop dom-get-type dom.attribute <>         \ insert attribute only after another attribute
+  ELSE
+    dup dom.element = over dom.text = OR over dom.cdata = OR over dom.comment = OR swap dom.pi = OR IF
+      dup  dom-next-attribute?
+      swap dom-get-type dom.document = OR      \ insert ... only after not an attribute or a document
+    ELSE
+      drop true
+    THEN
+  THEN
+  exp-invalid-state AND throw
+;
+
+
 ( Modifying the DOM tree )
 
 \ Current   New
@@ -299,7 +364,7 @@ end-structure
 
 
 : dom-append-node   ( i*x n dom -- = Append a node to the current node, exception if not allowed, iterator is moved to the new node )
-  \ ToDo: check valid
+  2dup dom-append-node?
   >r
   dom-node-new
   r> dom>iter nni-append-child
@@ -308,7 +373,7 @@ end-structure
 
 
 : dom-insert-node-before   ( i*x n dom -- = Insert a node before the current node, exception if not allowed, iterator is moved to the new node )
-  \ ToDo: check valid
+  2dup dom-insert-before?
   >r
   dom-node-new
   r> dom>iter nni-insert-before
@@ -316,7 +381,7 @@ end-structure
 
 
 : dom-insert-node-after   ( i*x n -- = Insert a node after the current node, exception if not allowed, iterator is moved to the new node )
-  \ ToDo: check valid
+  2dup dom-insert-after?
   >r
   dom-node-new
   r> dom>iter nni-insert-after
@@ -353,7 +418,7 @@ end-structure
       xis.text          OF dom.text     r@ dom-append-node                          r@ dom-parent 2drop ENDOF
       xis.start-tag     OF dom.element  r@ dom-append-node r@ dom-append-attributes               ENDOF
       xis.end-tag       OF 2drop                                                    r@ dom-parent 2drop ENDOF
-      xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes               ENDOF
+      xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes r@ dom-parent 2drop ENDOF
       xis.cdata         OF dom.cdata    r@ dom-append-node                          r@ dom-parent 2drop ENDOF
       xis.proc-instr    OF dom.pi       r@ dom-append-node r@ dom-append-attributes               ENDOF
       xis.internal-dtd  OF 2drop 2drop                                                            ENDOF
@@ -367,20 +432,13 @@ end-structure
 ;
 
 
-: dom-throw-full   ( dom -- = Throw an invalid state exception if the tree is full )
-  dom>tree nnt-empty? 0= exp-invalid-state AND throw
-;
-
-
 ( Reading the DOM tree )
 
 : dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u into the dom tree, throw exception if tree is not empty )
   >r
-  r@ dom-throw-full
   xis-new
   >r
-  true r@ xis-strip!              \ setup the xml parser
-       r@ xis-set-string
+  r@ xis-set-string
   r> r>
   dom-read
 ;
@@ -388,11 +446,9 @@ end-structure
 
 : dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x into the dom tree, throw exception if tree is not empty )
   >r
-  r@ dom-throw-full
   xis-new
   >r
-  true r@ xis-strip!              \ setup the xml parser
-       r@ xis-set-reader
+  r@ xis-set-reader
   r> r>
   dom-read
 ;
@@ -421,7 +477,7 @@ defer dom.write-nodes
 ;
 
 
-: dom-write-element   ( dom -- = Write the element c-addr u )
+: dom-write-element   ( dom -- = Write the current element )
   >r
   r@ dom-get-name
   r@ dom-child IF                          \ If Childs
@@ -465,7 +521,7 @@ defer dom.write-nodes
   r@ dom-get
   BEGIN
   WHILE
-    r@ dom>xos str-get type cr
+    \ r@ dom>xos str-get type cr
     CASE
       dom.element   OF r@ dom-write-element                          ENDOF
       dom.pi        OF r@ dom-write-pi                               ENDOF
@@ -484,10 +540,10 @@ defer dom.write-nodes
 
 ( Writing the DOM tree )
 
-: dom-write-string   ( dom -- c-addr u true | false = Write xml returning the string c-addr u if succesfull )
+: dom-write-string   ( dom -- c-addr u true | false = Write the tree to xml returning a string c-addr u if succesfull )
   >r
   r@ dom-document IF
-    r@ dom-child ~~ IF
+    r@ dom-child IF
       drop
       r@ dom-fetch-attributes
       r@ dom>xos xos-write-start-xml
