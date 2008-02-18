@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-17 07:37:16 $ $Revision: 1.8 $
+\  $Date: 2008-02-18 06:36:51 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -372,7 +372,7 @@ end-structure
 ;
 
 
-: dom-insert-node-before   ( i*x n dom -- = Insert a node before the current node, exception if not allowed, iterator is moved to the new node )
+: dom-insert-node-before   ( i*x n dom -- = Insert a node before the current node, exception if not allowed )
   2dup dom-insert-before?
   >r
   dom-node-new
@@ -380,7 +380,7 @@ end-structure
 ;
 
 
-: dom-insert-node-after   ( i*x n -- = Insert a node after the current node, exception if not allowed, iterator is moved to the new node )
+: dom-insert-node-after   ( i*x n -- = Insert a node after the current node, exception if not allowed )
   2dup dom-insert-after?
   >r
   dom-node-new
