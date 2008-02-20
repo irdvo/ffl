@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.4 $
+\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -40,19 +40,7 @@ include ffl/ncn.fs
 ( to and from the tree, use the iterator [nci].                               )
 
 
-1 constant nct.version
-
-
-( Private words )
-
-: nct-delete-children ( dnl -- = Delete all nodes [children] in the list )
-  BEGIN
-    dup dnl-pop dup nil<>
-  WHILE
-    ncn-free
-  REPEAT
-  2drop
-;
+2 constant nct.version
 
 
 ( Tree structure )
@@ -67,6 +55,11 @@ nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 ;
 
 
+: nct-(free)   ( nct -- = Free the nodes in the tree )
+  ['] ncn-free swap nnt-(free)
+;
+
+
 : nct-create   ( "<spaces>name" -- ; -- nct = Create a named n-tree in the dictionary )
   create   here   nct% allot   nct-init
 ;
@@ -77,40 +70,10 @@ nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 ;
 
 
-: nct-delete-all  ( nct -- = Delete all the nodes in the tree )
-  dup nnt-root@                    \ walk = nct.root
-  BEGIN
-    dup nil<>                  \ While walk <> nil Doe
-  WHILE
-    dup nnn>children           \   If node has children Then
-    dnl-first@ dup nil<> IF
-      nip                      \     Move walk to first child
-    ELSE                       \   Else
-      drop
-      dup nnn>dnn 
-      dnn-next@ dup nil<> IF   \     If node has sibling Then
-        nip                    \       Move walk to next sibling
-      ELSE                     \     Else
-        drop
-        dup nnn-parent@ dup nil= IF \  If parent = nil Then (root node)
-          swap ncn-free        \         Free root node
-        ELSE                   \       Else
-          nip dup nnn>children \         Free all children of the parent node
-          nct-delete-children
-        THEN
-      THEN
-    THEN
-  REPEAT
-  drop
-  dup nnt>root nil!
-      nnt>length 0!
-;
-
-
 : nct-free     ( nct -- = Free the tree from the heap )
-  dup nct-delete-all
+  dup nct-(free)             \ Free all nodes from the tree
   
-  free  throw
+  free throw                 \ Free the tree
 ;
 
 
@@ -146,6 +109,11 @@ nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 
 
 ( Tree words )
+
+: nct-clear        ( nct -- = Delete all nodes from the tree )
+  nct-(free)
+;
+
 
 : nct-execute      ( i*x xt nct -- j*x = Execute xt for every node in tree )
   nnt-root@                 \ walk = first

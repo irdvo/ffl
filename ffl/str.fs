@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-26 06:31:56 $ $Revision: 1.27 $
+\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.28 $
 \
 \ ==============================================================================
 
@@ -83,6 +83,11 @@ end-structure
 ;
 
 
+: str-(free)       ( str -- = Free the string data from the heap )
+  str>data @ ?free throw
+;
+
+
 : str-create       ( "<spaces>name" -- ; -- str = Create a named empty string in the dictionary )
   create   here   str% allot   str-init
 ;
@@ -94,7 +99,7 @@ end-structure
 
 
 : str-free         ( str -- = Free the string from the heap )
-  dup str>data @ ?free throw  \ Free string data
+  dup str-(free)              \ Free string data
   
   free throw                  \ Free struct
 ;

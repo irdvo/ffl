@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
+\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/nnn.fs
 ( adding and removing children, are part of the iterator [nni].               )
 
 
-1 constant nnt.version
+2 constant nnt.version
 
 
 ( Tree structure )
@@ -59,6 +59,31 @@ end-structure
 ;
 
 
+: nnt-(free)   ( xt nnt -- = Free all nodes in the tree with xt )
+  swap >r
+  dup nnt>root @                \ node = root
+  BEGIN
+    dup nil<>
+  WHILE                         \ while node <> nil Do
+    dup nnn>children dnl-first@ dup nil<> IF
+      nip                       \   if node.children <> nil Then node = first child
+    ELSE
+      drop
+      dup nnn-parent@ dup nil= IF  \ else if node.parent = nil Then
+        swap r@ execute            \   remove (root) node
+      ELSE                         \ else
+        2dup                       \   remove child node
+        nnn>children dnl-remove
+        swap r@ execute
+      THEN
+    THEN
+  REPEAT
+  drop rdrop
+  dup nnt>root   nil!
+      nnt>length   0!
+;
+
+
 : nnt-create   ( "<spaces>name" -- ; -- nnt = Create a named n-tree in the dictionary )
   create   here   nnt% allot   nnt-init
 ;
@@ -70,7 +95,9 @@ end-structure
 
 
 : nnt-free     ( nnt -- = Free the tree from the heap )
-  free  throw
+  ['] nnn-free over nnt-(free)   \ Free all tree nodes
+  
+  free  throw                    \ Free the tree
 ;
 
 

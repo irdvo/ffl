@@ -20,17 +20,18 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-18 06:35:28 $ $Revision: 1.3 $
+\  $Date: 2008-02-20 19:30:06 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
 include ffl/dom.fs
 include ffl/tst.fs
+include ffl/est.fs
 
 
 .( Testing: dom) cr
 
-t{ dom-create dom1 }t
+t{ dom-new value dom1 }t
 
 
 : dom-test-reader   ( file-id -- c-addr u | 0 )
@@ -43,7 +44,7 @@ t{ dom-create dom1 }t
 
 t{ s" test.xml" r/o open-file throw value dom.file }t
 
-t{ dom.file ' dom-test-reader dom1 dom-read-reader ?true }t
+t{ dom.file ' dom-test-reader true dom1 dom-read-reader ?true }t
 
 \ Iterate and modify the tree
 
@@ -55,7 +56,7 @@ t{ dom1 dom-parent ?false }t
 
 t{ dom1 dom-document ?true }t
 
-t{ dom1 dom-children 7 ?s }t
+t{ dom1 dom-children 4 ?s }t
 
 t{ dom1 dom-children? ?true }t
 
@@ -79,8 +80,7 @@ t{ dom1 dom-get-name  s" version" ?str }t
 t{ dom1 dom-get-value s" 1.0"     ?str }t
 
 t{ s" version" s" 1.1" dom1 dom-set }t
-
-t{ dom1 dom-next ?true dom.text ?s }t
+t{ dom1 dom-get-value s" 1.1" ?str }t
 
 t{ dom1 dom-next ?true dom.comment ?s }t
 
@@ -91,28 +91,19 @@ t{ dom1 dom-children? ?false }t
 t{ dom1 dom-get-value s"  This is a test file for the ffl-library " ?str }t
 
 t{ s"  This is a (modified) test file " dom1 dom-set }t
+t{ dom1 dom-get-value s"  This is a (modified) test file " ?str }t
 
-t{ dom1 dom-next ?true dom.text ?s }t
 
 t{ dom1 dom-next ?true dom.element ?s }t
-
-t{ dom1 dom-first?    ?false }t
-t{ dom1 dom-last?     ?false }t
-t{ dom1 dom-children? ?true  }t
-
-t{ dom1 dom-next ?true dom.text ?s }t
 
 t{ dom1 dom-first?    ?false }t
 t{ dom1 dom-last?     ?true  }t
-t{ dom1 dom-children? ?false }t
-
-t{ dom1 dom-prev ?true dom.element ?s }t
+t{ dom1 dom-children? ?true  }t
 
 t{ dom1 dom-get-name s" TEST" ?str }t
 
-t{ dom1 dom-child ?true dom.text ?s }t
 
-t{ dom1 dom-next ?true dom.element ?s }t
+t{ dom1 dom-child ?true dom.element ?s }t
 
 t{ dom1 dom-get-name s" BOOK" ?str }t
 
@@ -126,27 +117,41 @@ t{ s" Introduction to the " dom.text dom1 dom-insert-node-after }t
 t{ dom1 dom-next ?true dom.text ?s }t
 t{ s" forth programming language" dom.text dom1 dom-insert-node-after }t
 
+
 t{ dom1 dom-parent ?true dom.element ?s }t
 t{ dom1 dom-parent ?true dom.element ?s }t  \ back to booklet
 
-t{ dom1 dom-child ?true dom.text ?s }t
-t{ dom1 dom-next  ?true dom.element ?s }t
-t{ dom1 dom-next  ?true dom.text ?s }t
+t{ dom1 dom-get-name s" BOOKLET" ?str }t
+
+t{ dom1 dom-child ?true dom.element ?s }t
+
 t{ dom1 dom-next  ?true dom.element ?s }t
 
-t{ dom1 dom-child ?true dom.text ?s }t
-t{ dom1 dom-next  ?true dom.element ?s }t
-t{ dom1 dom-next  ?true dom.text ?s }t
+t{ dom1 dom-child ?true dom.element ?s }t
 t{ dom1 dom-next  ?true dom.element ?s }t
 
 t{ dom1 dom-get-name s" FIRSTBOOK" ?str }t
 
 t{ dom1 dom-remove ?true }t  \ remove first book
 t{ dom1 dom-last?  ?true }t
-t{ dom1 dom-remove ?true }t  \ remove trailing spaces
+
+t{ dom1 dom-parent ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.element ?s }t
+t{ dom1 dom-next   ?true dom.cdata   ?s }t
+
+t{ dom1 dom-get-value s\" Dutch: \"Forth, een praktische introduktie\"" ?str }t
+t{ s" ToBeDeleted" dom1 dom-set }t
+t{ dom1 dom-get-value s" ToBeDeleted" ?str }t
+t{ dom1 dom-remove ?true }t
 
 \ Write the tree
 
 t{ dom1 dom-write-string ?true type }t
+
+t{ dom1 dom-free }t
 
 \ ==============================================================================
