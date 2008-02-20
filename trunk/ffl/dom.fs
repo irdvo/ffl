@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-18 06:36:51 $ $Revision: 1.9 $
+\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -126,10 +126,10 @@ end-structure
 
 
 : dom-node-free   ( dom%node -- = Free the DOM node from the heap )
-  \ nnn ?
-  \ dup dom>node>name str-(free)
-  \ dup dom>node>value str-(free)
-  free throw
+  dup dom>node>name  str-(free)
+  dup dom>node>value str-(free)
+  
+  nnn-free
 ;
   
 
@@ -154,6 +154,13 @@ end-structure
 ;
 
 
+: dom-(free)       ( dom -- = Free the internal, private variables from the heap )
+  dup dom>xos tos-(free)
+  
+  ['] dom-node-free swap dom>tree nnt-(free)
+;
+
+
 : dom-create       ( "<spaces>name" -- ; -- dom = Create a named DOM in the dictionary )
   create   here   dom% allot   dom-init
 ;
@@ -166,9 +173,9 @@ end-structure
 
 : dom-free         ( dom -- = Free the DOM from the heap )
   \ nni -> ok
-  ['] dom-node-free over dom>tree nnt-execute  \ free all xml nodes in the tree
-  \ tos-(free)
-  free throw 
+  dup dom-(free)             \ Free the internal, private variables from the heap
+
+  nnt-free                   \ Free the tree
 ;
 
 
@@ -434,20 +441,22 @@ end-structure
 
 ( Reading the DOM tree )
 
-: dom-read-string   ( c-addr u dom -- flag = Read xml source from the string c-addr u into the dom tree, throw exception if tree is not empty )
+: dom-read-string   ( c-addr u flag1 dom -- flag2 = Read xml source from the string c-addr u into the dom tree, flag1 indicates whitespace stripping, throw exception if tree is not empty, return success in flag2 )
   >r
   xis-new
   >r
+  r@ xis-strip!
   r@ xis-set-string
   r> r>
   dom-read
 ;
 
 
-: dom-read-reader   ( x xt dom -- flag = Read xml source with the reader xt with its state x into the dom tree, throw exception if tree is not empty )
+: dom-read-reader   ( x xt flag1 dom -- flag2 = Read xml source with the reader xt with its state x into the dom tree, flag1 inidicates whitespace stripping, throw exception if tree is not empty, return success in flag2 )
   >r
   xis-new
   >r
+  r@ xis-strip!
   r@ xis-set-reader
   r> r>
   dom-read
