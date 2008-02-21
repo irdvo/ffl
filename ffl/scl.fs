@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.15 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/scn.fs
 ( The scl module implements a single linked list that can store cell wide data.)
   
 
-3 constant scl.version
+4 constant scl.version
 
 
 ( List structure )
@@ -59,6 +59,11 @@ end-structure
 ;
 
 
+: scl-(free)   ( scl -- = Free the nodes from the heap )
+  ['] scn-free swap snl-(free)
+;
+
+
 : scl-create   ( "<spaces>name" -- ; -- scl = Create a named scl list in the dictionary )
   create   here   scl% allot   scl-init
 ;
@@ -69,18 +74,8 @@ end-structure
 ;
 
 
-: scl-delete-all ( scl -- = Delete all nodes in the list )
-  BEGIN
-    dup snl-remove-first nil<>?       \ while remove first node <> nil do
-  WHILE
-    scn-free                          \   free node
-  REPEAT
-  drop
-;
-
-
 : scl-free     ( scl -- = Free the list from the heap )
-  dup scl-delete-all
+  dup scl-(free)
   
   free  throw
 ;
@@ -111,6 +106,11 @@ end-structure
 
 
 ( List words )
+
+: scl-clear    ( scl -- = Delete all nodes from the list )
+  scl-(free)
+;
+
 
 : scl-append   ( x scl -- = Append the cell data x in the list )
   >r scn-new r> snl-append

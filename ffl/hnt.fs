@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.7 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -89,8 +89,28 @@ end-structure
   over hnt>table !
        hnt>size  !
 ;
-     
 
+
+: hnt-(free)   ( xt hnt -- = Free the nodes from the heap using xt )
+  tuck
+  dup hnt-table@             \ Free the nodes:
+  swap hnt-size@ 0 DO        \ Do for the whole table
+    2dup @
+    BEGIN
+      dup nil<>              \ Iterate the lists in the table
+    WHILE
+      2dup hnn-next@
+      -rot execute           \ Free the node
+    REPEAT
+    2drop
+    cell+
+  LOOP
+  2drop
+  
+  hnt-table@ free throw      \ free the table
+;
+
+  
 : hnt-create   ( u "<spaces>name" -- ; -- hnt = Create a named hash table with an initial size u in the dictionary )
   create   here   hnt% allot   hnt-init
 ;
@@ -102,23 +122,9 @@ end-structure
 
 
 : hnt-free     ( hnt -- = Free the hash table from the heap )
-  dup hnt-table@             \ Free the nodes:
-  over hnt-size@ 0 DO        \ Do for the whole table
-    dup @
-    BEGIN
-      dup nil<>              \ Iterate the lists in the table
-    WHILE
-      dup hnn-next@
-      swap hnn-free          \ Free the node
-    REPEAT
-    drop
-    cell+
-  LOOP
-  drop
+  ['] hnn-free over hnt-(free)
   
-  dup hnt-table@ free throw  \ free the table
-  
-  free throw                 \ free the hash table
+  free throw
 ;
 
 

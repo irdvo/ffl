@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.10 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -206,6 +206,24 @@ end-structure
 ;
 
 
+: arg-(free)   ( arg -- = Free the internal, private variables from the heap )
+  dup arg>arg       tis-(free)
+  
+  dup arg>name    @ str-free
+  dup arg>usage   @ str-free
+  dup arg>version @ str-free
+  dup arg>tail    @ str-free
+  
+  arg>options                     \ Free all argument options
+  BEGIN
+    dup snl-remove-first dup nil<>
+  WHILE
+    arg-opt-free
+  REPEAT
+  2drop  
+;
+
+
 : arg-create ( c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 "<spaces>name" -- ; -- arg = Create a named parser in the dictionary with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 )
   create  here arg% allot  arg-init
 ;
@@ -217,20 +235,9 @@ end-structure
 
 
 : arg-free   ( arg -- = Free the parser from the heap )
-  dup arg>name    @ str-free
-  dup arg>usage   @ str-free
-  dup arg>version @ str-free
-  dup arg>tail    @ str-free
-  
-  dup arg>options                 \ Free all argument options
-  BEGIN
-    dup snl-remove-first dup nil<>
-  WHILE
-    arg-opt-free
-  REPEAT
-  2drop  
+  dup arg-(free)             \ Free the private variables
 
-  tis-free
+  free throw                 \ Free the parser
 ;
 
 

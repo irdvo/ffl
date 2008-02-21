@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -69,6 +69,11 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
 ;
 
 
+: msc-(free)   ( msc -- = Free the catalogs nodes from the heap )
+  ['] msc-msg-free swap hnt-(free)
+;
+
+
 : msc-create   ( "<spaces>name" --  ; -- msc = Create a named message catalog in the dictionary )
   create  here msc% allot  msc-init
 ;
@@ -80,7 +85,7 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
 
 
 : msc-free   ( msc -- = Free the message catalog from the heap )
-  ['] msc-msg-free over hnt-execute    \ Free the texts in the nodes
+  dup msc-(free)
   
   hnt-free                             \ Free the nodes and the tree
 ;

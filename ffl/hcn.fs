@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.9 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ include ffl/hnn.fs
 ( The hcn module implements a node that stores cell wide data in a hash table.)
 
 
-1 constant hcn.version
+2 constant hcn.version
 
 
 ( Hash table node structure )
@@ -57,13 +57,20 @@ end-structure
 ;
 
 
+: hcn-(free)   ( hcn -- = Free the key from the heap )
+  hnn-(free)
+;
+
+
 : hcn-new      ( x c-addr u u2 -- hcn = Create a new node on the heap with the hash u2, the key c-addr u and cell data x )
   hcn% allocate  throw  dup >r hcn-init r>
 ;
 
 
 : hcn-free     ( hcn -- = Free the node from the heap )
-  hnn-free
+  dup hcn-(free)
+  
+  free throw
 ;
 
 

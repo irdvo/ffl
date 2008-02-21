@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.9 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/dnn.fs
 ( double linked cell list [dcl] module. )
   
 
-1 constant dnl.version
+2 constant dnl.version
 
 
 ( List structure )
@@ -52,12 +52,27 @@ begin-structure dnl%       ( -- n = Get the required space for a dnl variable )
 end-structure
 
 
+( Private word )
+
+defer dnl.pop
+
 ( List creation, initialisation and destruction )
 
 : dnl-init     ( dnl -- = Initialise the list )
   dup dnl>first   nil!
   dup dnl>last    nil!
       dnl>length    0!
+;
+
+
+: dnl-(free)   ( xt dnl -- = Free the nodes in the list from the heap using xt )
+  swap
+  BEGIN
+    over dnl.pop nil<>?      \ Pop last node
+  WHILE
+    over execute             \ Free the node
+  REPEAT
+  2drop
 ;
 
 
@@ -72,6 +87,8 @@ end-structure
 
 
 : dnl-free     ( dnl -- = Free the list from the heap )
+  ['] dnn-free over dnl-(free)
+  
   free  throw
 ;
 
@@ -265,6 +282,7 @@ end-structure
     nip
   THEN
 ;
+' dnl-pop is dnl.pop
 
 
 : dnl-tos      ( dnl -- dnn | nil = Get the node dnn from the end of the list )

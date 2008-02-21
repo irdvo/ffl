@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.4 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/dcn.fs
 ( The dcl module implements a double linked list that can store cell wide data.)
   
 
-1 constant dcl.version
+2 constant dcl.version
 
 
 ( List structure )
@@ -59,6 +59,11 @@ end-structure
 ;
 
 
+: dcl-(free)   ( dnl -- = Free the nodes from the heap )
+  ['] dcn-free swap dnl-(free)
+;
+
+
 : dcl-create   ( "<spaces>name" -- ; -- dcl = Create a named dcl list in the dictionary )
   create   here   dcl% allot   dcl-init
 ;
@@ -69,18 +74,8 @@ end-structure
 ;
 
 
-: dcl-delete-all ( dcl -- = Delete and free all nodes in the list )
-  BEGIN
-    dup dnl-pop dup nil<>    \ Pop last node
-  WHILE
-    dcn-free                 \ Free if exist
-  REPEAT
-  2drop
-;
-
-
 : dcl-free     ( dcl -- = Free the list from the heap, including the nodes )
-  dup dcl-delete-all
+  dup dcl-(free)
   
   free  throw
 ;
@@ -109,6 +104,11 @@ end-structure
 
 
 ( List words )
+
+: dcl-clear      ( dnl -- = Delete all nodes from the list )
+  dcl-(free)
+;
+
 
 : dcl-append     ( x dcl -- = Append the cell data x in the list )
   >r dcn-new r> dnl-append

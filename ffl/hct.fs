@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.14 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -54,6 +54,10 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 ;
      
 
+: hct-(free)   ( hct -- = Free the nodes from the hash table )
+  ['] hcn-free swap hnt-(free)
+;
+
 : hct-create   ( u "<spaces>name" -- ; -- hct = Create a named hash table with an initial size u in the dictionary )
   hnt-create
 ;
@@ -65,7 +69,9 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 
 
 : hct-free     ( hct -- = Free the hash table from the heap )
-  hnt-free
+  dup hct-(free)
+  
+  free throw
 ;
 
 

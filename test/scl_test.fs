@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-03-04 08:38:31 $ $Revision: 1.6 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -58,7 +58,7 @@ t{ 3  l1 scl-find    3 ?s }t
 t{ 2  l1 scl-has?   ?true   }t
 t{ -2 l1 scl-has?   ?false   }t
 
-t{    l1 scl-delete-all   }t
+t{    l1 scl-clear          }t
 
 t{    l1 scl-length@   ?0   }t
 t{    l1 scl-empty?   ?true   }t
@@ -151,7 +151,7 @@ t{    i1 sci-next     ?true 7 ?s }t
 t{    i1 sci-next     ?true 1 ?s }t
 t{    i1 sci-next     ?false     }t
 
-t{    l1 scl-delete-all          }t
+t{    l1 scl-clear               }t
 
 
 t{ 1  l1 scl-append              }t
@@ -180,7 +180,7 @@ t{ 6  l1 scl-remove   ?true      }t
 
 t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
 
-t{    l1 scl-delete-all          }t
+t{    l1 scl-clear              }t
 
 : scl-test-compare
   - negate
@@ -205,7 +205,7 @@ t{  sci2 sci-next     ?false     }t
 
 t{  sci2 sci-free                }t
 
-t{  l1 scl-delete-all            }t
+t{  l1 scl-clear                 }t
 
 \ ==============================================================================
 

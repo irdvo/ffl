@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.7 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -73,13 +73,19 @@ end-structure
 ;
 
 
+: hnn-(free)   ( hnn -- = Free the key from the heap )
+  hnn>key @ ?free throw
+;
+
+
 : hnn-new      ( c-addr u u2 -- hnn = Create a new node on the heap with the key c-addr u and hash u2 )
   hnn% allocate  throw  dup >r hnn-init r>
 ;
 
 
 : hnn-free     ( hnn -- = Free the node from the heap )
-  dup hnn>key @ ?free throw
+  dup hnn-(free)
+
   free throw
 ;
 

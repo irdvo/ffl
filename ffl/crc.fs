@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.9 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/stc.fs
 ( The crc module implements a 32-bit cyclic redundancy check calculation. )
 
 
-3 constant crc.version
+4 constant crc.version
 
 
 ( CRC-32 Structure )
@@ -140,18 +140,23 @@ decimal
 ;
 
 
+: crc-(free)   ( crc -- = Free the internal table from the heap )
+  crc>table @ dup
+  crc.table <> IF            \ If not default crc table then
+    free throw               \  free the table
+  ELSE
+    drop
+  THEN
+;
+
+
 : crc-new      ( -- crc = Create a new crc variable on the heap )
   crc% allocate throw  dup crc-init
 ;
 
 
 : crc-free     ( crc -- = Free the crc from the heap )
-  dup crc>table @ dup
-  crc.table <> IF            \ If not default crc table then
-    free throw               \  free the table
-  ELSE
-    drop
-  THEN
+  dup crc-(free) 
   free throw
 ;
 
