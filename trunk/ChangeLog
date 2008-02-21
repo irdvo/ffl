@@ -1,8 +1,11 @@
 0.6.0
+* tos: new word: tos-set-writer,tos-flush (2008-02-21)
+* bct: new word: bct-clear
 * nct: word nct-delete-all renamed to nct-clear
-* nct: new word: nct-(free)
-* nnt: new word: nnt-(free)
-* str: new word: str-(free)
+* dcl: word dcl-delete-all renamed to dcl-clear
+* scl: word scl-delete-all renamed to scl-clear
+* nct,nnt,str,act,bct,arg,bar,car,crc,dcl,dnl,hnn,hnt,hcn,hct,msc,nfe,snl,
+  scl,tis,xis: new word: ...-(free)
 * dom: new module: Document Object Model (2008-01-06)
 * rdg: new module: Distributed Random Generator (2007-12-27)
 * tst: new word ?str for module testing strings (2007-12-24)

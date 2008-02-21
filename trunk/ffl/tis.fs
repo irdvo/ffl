@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.20 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.21 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,7 @@ include ffl/chs.fs
 ( then the leading text is returned and the stream pointer is moved after   )
 ( the scanned data; skip = move the stream pointer after the skipped data.  )
 ( <pre>                                                                     )
-(   Stack usage reader word: tis-reader ( w:data - c-addr u | 0             )
+(   Stack usage reader word: x -- c-addr u | 0 = Return read data c-addr u or 0 for no more )
 ( </pre>                                                                    )
 
 
@@ -97,8 +97,15 @@ end-structure
 ;
 
 
+: tis-(free)       ( tis -- = Free the internal, private variables from the heap )
+  str-(free)
+;
+
+  
 : tis-free         ( tis -- = Free the input stream from the heap )
-  str-free
+  dup tis-(free)
+  
+  free throw
 ;
 
 

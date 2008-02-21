@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.11 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/bcn.fs
 ( cell based. The implementation is non-recursive.                          )
 
 
-1 constant bct.version
+2 constant bct.version
 
 
 ( Binary tree structure )
@@ -62,19 +62,9 @@ end-structure
 ;
 
 
-: bct-create       ( "<spaces>name" -- ; -- bct = Create a named binary tree in the dictionary )
-  create  here bct% allot  bct-init
-;
-
-
-: bct-new          ( -- bct = Create a new binary tree on the heap )
-  bct% allocate  throw   dup bct-init
-;
-
-
-: bct-free         ( bct -- = Free the tree node from the heap )
+: bct-(free)       ( bct -- = Free the nodes from the heap )
   dup bct>root @
-  BEGIN                           \ Free the nodes in the tree
+  BEGIN
     dup nil<>
   WHILE
     dup bcn-left@ nil<> IF
@@ -90,7 +80,24 @@ end-structure
       THEN
     THEN
   REPEAT
-  over bct>root !
+  drop
+  dup bct>root nil!
+      bct>length 0!
+;
+
+
+: bct-create       ( "<spaces>name" -- ; -- bct = Create a named binary tree in the dictionary )
+  create  here bct% allot  bct-init
+;
+
+
+: bct-new          ( -- bct = Create a new binary tree on the heap )
+  bct% allocate  throw   dup bct-init
+;
+
+
+: bct-free         ( bct -- = Free the tree node from the heap )
+  dup bct-(free)                  \ Free the nodes 
   
   free throw                      \ Free the tree
 ;
@@ -283,6 +290,11 @@ end-structure
 
 
 ( Tree words )
+
+: bct-clear        ( bct -- = Delete all nodes in the tree )
+  bct-(free)
+;
+
 
 : bct-insert       ( x1 x2 bct -- = Insert data x2 with key x1 in the tree )
   >r ['] bcn-new -rot r>

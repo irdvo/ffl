@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 17:46:09 $ $Revision: 1.3 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -59,11 +59,11 @@ t{ -2 dcl1 dcl-has?   ?false   }t
 
 t{ 2 dcl1 dcl-find  4 swap dcl1 dcl-set }t   \ find item 2 and change it to 4
 
-t{ 2  dcl1 dcl-has?   ?false   }t
+t{ 2  dcl1 dcl-has?   ?false    }t
 
-t{    dcl1 dcl-delete-all   }t
+t{    dcl1 dcl-clear            }t
 
-t{    dcl1 dcl-length@   ?0   }t
+t{    dcl1 dcl-length@   ?0     }t
 t{    dcl1 dcl-empty?   ?true   }t
 
 
@@ -152,7 +152,7 @@ t{    dci1 dci-next     ?true 1 ?s }t
 t{    dci1 dci-next     ?false     }t
 
 
-t{    dcl1 dcl-delete-all          }t
+t{    dcl1 dcl-clear               }t
 
 t{ 1  dcl1 dcl-append              }t
 t{ 2  dcl1 dcl-append              }t
@@ -192,7 +192,7 @@ t{ 6  dcl1 dcl-remove   ?true      }t
 
 t{ 0 ' + dcl1 dcl-execute  6 ?s   }t \ sum contents list
 
-t{    dcl1 dcl-delete-all          }t
+t{    dcl1 dcl-clear               }t
 
 
 t{      dcl-new to    dcl2         }t

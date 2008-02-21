@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.15 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -155,10 +155,9 @@ end-enumeration
 begin-structure xis%   ( -- n = Get the required space for a xis reader variable )
   tis%
   +field  xis>tis       \ the xis reader (extends the text input stream)
-  field:  xis>msc       \ translation of entity references
+  field:  xis>msc       \ the reference to entity references translation catalog
   field:  xis>strip     \ strip leading and trailing spaces in normal text ?
 end-structure
-
 
 
 ( xml reader variable creation, initialisation and destruction )
@@ -171,6 +170,11 @@ end-structure
 ;
 
 
+: xis-(free)   ( xis -- = Free the internal, private variables from the heap )
+  tis-(free)
+;
+
+    
 : xis-create   ( "<spaces>name" -- ; -- xis = Create a named xml reader variable in the dictionary )
   create  here xis% allot  xis-init
 ;
@@ -182,7 +186,9 @@ end-structure
 
 
 : xis-free   ( xis -- = Free the xis reader variable from the heap )
-  str-free
+  dup xis-(free)
+  
+  free throw
 ;
 
 

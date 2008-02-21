@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.10 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,7 @@ include ffl/stc.fs
 ( The bar module implements a bit array. )
 
 
-1 constant bar.version
+2 constant bar.version
 
 
 ( Bit array structure )
@@ -77,6 +77,11 @@ end-structure
 ;
 
 
+: bar-(free)       ( bar -- = Free the internal data from the heap )
+  bar>bits @ free throw
+;
+
+
 : bar-create       ( +n "<spaces>name" -- ; -- bar = Create a bit array in the dictionary with length n )
   create  here  bar% allot  bar-init
 ;
@@ -88,10 +93,10 @@ end-structure
 
 
 : bar-free         ( bar -- = Free the array from the heap )
-  dup bar>bits @ free throw
+  dup bar-(free)
+  
   free throw
 ;
-
 
 
 ( Private words )

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.14 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -42,6 +42,9 @@ include ffl/msc.fs
 ( words the start of the alignment can be changed. The end of the alignment  )
 ( is always the end of the stream. The message catalog can be used for       )
 ( localisation of strings                                                    )
+( <pre>                                                                      )
+(   Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success )
+( </pre>                                                                     )
 
 
 2 constant tos.version
@@ -51,9 +54,11 @@ include ffl/msc.fs
 
 begin-structure tos%       ( -- n = Get the required space for a tos variable )
   str% 
-  +field tos>text
+  +field  tos>text
   field:  tos>pntr
   field:  tos>msc             \ Reference to a message catalog
+  field:  tos>writer
+  field:  tos>data
 end-structure
 
 
@@ -82,8 +87,9 @@ end-structure
 : tos-init         ( tos -- = Initialise the empty output stream )
   dup str-init               \ Initialise the base string data structure
   dup tos-sync
-      tos>msc nil!
-  
+  dup tos>msc    nil!
+  dup tos>writer nil!
+      tos>data     0!
 ;
 
 
@@ -103,7 +109,9 @@ end-structure
 
 
 : tos-free         ( tos -- = Free the output stream from the heap )
-  str-free
+  dup tos-(free)
+  
+  free throw
 ;
 
 
@@ -137,6 +145,32 @@ end-structure
   swap
   
   tos-pntr?!
+;
+
+
+( Writer words )
+
+: tos-set-writer  ( x xt tos -- = Use the stream for writing using the writer callback xt and its data x )
+  tuck
+  tos>writer !
+  tos>data   !
+;
+
+
+: tos-flush       ( tos -- = Flush the contents of the stream to the writer )
+  >r
+  r@ str-length@ ?dup IF
+    r@ str-data@ swap
+    r@ tos>writer @ nil<>? IF
+      r@ tos>data @ swap execute IF
+        r@ str-clear 
+        r@ tos>pntr 0!
+      THEN
+    ELSE
+      2drop
+    THEN
+  THEN
+  rdrop
 ;
 
 

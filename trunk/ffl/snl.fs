@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.5 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -52,12 +52,27 @@ begin-structure snl%       ( -- n = Get the required space for a snl variable )
 end-structure
 
 
+( Private defer )
+
+defer snl.remove-first
+
 ( List creation, initialisation and destruction )
 
 : snl-init     ( snl -- = Initialise the snl list )
   dup snl>first   nil!
   dup snl>last    nil!
       snl>length    0!
+;
+
+
+: snl-(free)   ( xt scl -- = Free the nodes from the heap using xt )
+  swap
+  BEGIN
+    over snl.remove-first nil<>?      \ while remove first node <> nil do
+  WHILE
+    over execute                      \   Free the node
+  REPEAT
+  2drop
 ;
 
 
@@ -72,6 +87,8 @@ end-structure
 
 
 : snl-free     ( snl -- = Free the list from the heap )
+  ['] snn-free over snl-(free)
+  
   free  throw
 ;
 
@@ -177,6 +194,7 @@ end-structure
     nip
   THEN
 ;
+' snl-remove-first is snl.remove-first
 
 
 : snl-remove-after   ( snn1 snl -- snn2 | nil = Remove the node after the reference node snn1 from the list, return the removed node )

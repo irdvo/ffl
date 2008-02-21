@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.6 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/bct.fs
 ( non-recursive.                                                               )
 
 
-1 constant act.version
+2 constant act.version
 
 
 bct% constant act%      ( -- n = Get the required space for an act variable )
@@ -53,6 +53,11 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
 : act-init         ( act -- = Initialise the act tree )
   bct-init
+;
+
+
+: act-(free)       ( act -- = Free the nodes from the heap )
+  bct-(free)
 ;
 
 
@@ -66,7 +71,7 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 ;
 
 
-: act-free         ( act -- = Free the tree from the heap )
+: act-free         ( act -- = Free the tree from the heap )\
   bct-free
 ;
 

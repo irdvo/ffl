@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-07 17:46:09 $ $Revision: 1.4 $
+\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -214,9 +214,9 @@ t{   dnl2 dnl-length@ 2 ?s }t
 
 t{ dnl2 dnl-free }t
 
-t{ dnn1 dnn-free }t
+\ t{ dnn1 dnn-free }t
 t{ dnn2 dnn-free }t
-t{ dnn3 dnn-free }t
+\ t{ dnn3 dnn-free }t
 t{ dnn4 dnn-free }t
 t{ dnn5 dnn-free }t
 

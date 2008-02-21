@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.9 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -38,7 +38,7 @@ include ffl/stc.fs
 ( The car module implements a dynamic cell array. )
 
 
-1 constant car.version
+2 constant car.version
 
 
 ( Cell Array Structure )
@@ -81,6 +81,11 @@ end-structure
 ;
 
 
+: car-(free)       ( car -- = Free the internal data from the heap )
+  car>cells @ free throw
+;
+
+
 : car-create       ( n "<spaces>name" -- ; -- car = Create a cell array in the dictionary with an initial length n )
   create  here  car% allot  car-init
 ;
@@ -92,10 +97,10 @@ end-structure
 
 
 : car-free         ( car -- = Free the array from the heap )
-  dup car>cells @ free throw
+  dup car-(free)
+   
   free throw
 ;
-
 
 
 ( Private words )

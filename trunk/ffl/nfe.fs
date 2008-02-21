@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:16 $ $Revision: 1.17 $
+\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/chs.fs
 ( The code is based on the Thompson NFA algorithm published by Russ Cox.     )
 
 
-1 constant nfe.version
+2 constant nfe.version
 
 
 ( Expression structure )
@@ -85,16 +85,6 @@ end-structure
 ;
 
 
-: nfe-create   ( "<spaces>name" -- ; -- nfe = Create a named expression in the dictionary )
-  create   here   nfe% allot   nfe-init
-;
-
-
-: nfe-new   ( -- nfe = Create a new expression on the heap )
-  nfe% allocate  throw  dup nfe-init
-;
-
-
 : nfe+free-expression   ( nfe -- = Free all states in the [sub]expression [recursive] )
   dup nil<> IF
     dup nfs-visit@ -1 <> IF            \ If start <> nil and not yet visited Then
@@ -111,12 +101,27 @@ end-structure
 ;
 
 
-: nfe-free   ( nfe -- = Free the expression from the heap )
+: nfe-(free)   ( nfe -- = Free the internal, private variables from the heap )
   dup nfe>expression @ nfe+free-expression
   
   dup nfe>thread1 @ ?free throw
   dup nfe>thread2 @ ?free throw
-  dup nfe>matches @ ?free throw
+      nfe>matches @ ?free throw
+;
+
+
+: nfe-create   ( "<spaces>name" -- ; -- nfe = Create a named expression in the dictionary )
+  create   here   nfe% allot   nfe-init
+;
+
+
+: nfe-new   ( -- nfe = Create a new expression on the heap )
+  nfe% allocate  throw  dup nfe-init
+;
+
+
+: nfe-free   ( nfe -- = Free the expression from the heap )
+  dup nfe-(free) 
   
   free throw
 ;
