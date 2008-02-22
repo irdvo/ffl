@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.10 $
+\  $Date: 2008-02-22 06:38:06 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -44,19 +44,19 @@ include ffl/xos.fs
 ( module reads a XML source into a tree of nodes. The tree can then be    )
 ( iterated and modified. After modification the tree can be written to a  )
 ( XML destination. As with every DOM implementation the tree will use a   )
-( lot of memory for large XML documents. Keep in mind that modifications  )
-( in the tree are checked, but these checks are not checking all invalid  )
-( states. DTD are not stored in the tree. Depending on he node type the   )
-( following stack state is expected by dom-set, dom-append-node,          )
-( dom-insert-node-before and dom-insert-node-after:                       )
+( lot of memory for large XML documents. Keep in mind that tree           )
+( modifications checks are limited. DTDs are not stored in the tree.      )
+( Depending on the node type the following stack state is expected by     )
+( dom-set, dom-append-node, dom-insert-node-before and                    )
+( dom-insert-node-after:                                                  )
 ( <pre>                                                                   )
-( dom.element        -- c-addr u              = Tag name                                            )
-( dom.attribute      -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
-( dom.text           -- c-addr u              = Normal xml text                                     )
-( dom.cdata          -- c-addr u              = CDATA section text                                  )
-( dom.pi             -- c-addr u              = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
-( dom.comment        -- c-addr n              = Comment                                             )
-( dom.document       --                       = Document attributes                                 )
+( dom.element:   -- c-addr u              = Tag name                                            )
+( dom.attribute: -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
+( dom.text:      -- c-addr u              = Normal xml text                                     )
+( dom.cdata:     -- c-addr u              = CDATA section text                                  )
+( dom.pi:        -- c-addr u              = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
+( dom.comment:   -- c-addr n              = Comment                                             )
+( dom.document:  --                       = Document attributes                                 )
 ( </pre>                                                                  )
 
 1 constant dom.version
@@ -65,19 +65,19 @@ include ffl/xos.fs
 ( XML node types )
 
 begin-enumeration
-  enum: dom.not-used           ( -- n  = Not used       )
-  enum: dom.element            ( -- n  = Tag            )
-  enum: dom.attribute          ( -- n  = Attribute      )
-  enum: dom.text               ( -- n  = Text           )
-  enum: dom.cdata              ( -- n  = CDATA          )
-  enum: dom.entity-ref         ( -- n  = Not used       )
-  enum: dom.entity             ( -- n  = Not used       )
-  enum: dom.pi                 ( -- n  = Proc. Instr.   )
-  enum: dom.comment            ( -- n  = Comment        )
-  enum: dom.document           ( -- n  = Start document )
-  enum: dom.doc-type           ( -- n  = Not used       )
-  enum: dom.doc-fragment       ( -- n  = Not used       )
-  enum: dom.notation           ( -- n  = Not used       )
+  enum: dom.not-used           ( -- n  = DOM node: Not used       )
+  enum: dom.element            ( -- n  = DOM node: Tag            )
+  enum: dom.attribute          ( -- n  = DOM node: Attribute      )
+  enum: dom.text               ( -- n  = DOM node: Text           )
+  enum: dom.cdata              ( -- n  = DOM node: CDATA          )
+  enum: dom.entity-ref         ( -- n  = DOM node: Entity reference [not used] )
+  enum: dom.entity             ( -- n  = DOM node: Entitiy [not used]          )
+  enum: dom.pi                 ( -- n  = DOM node: Processor Instruction )
+  enum: dom.comment            ( -- n  = DOM node: Comment        )
+  enum: dom.document           ( -- n  = DOM node: Start document )
+  enum: dom.doc-type           ( -- n  = DOM node: Document type [not used]     )
+  enum: dom.doc-fragment       ( -- n  = DOM node: Document fragment [not used] )
+  enum: dom.notation           ( -- n  = DOM node: Notation [not used]          )
 end-enumeration
 
 
@@ -504,7 +504,7 @@ defer dom.write-nodes
     
     r@ dom-parent 2drop                    \   Move to the parent (element) node
   THEN
-  rdrop
+  r> dom>xos tos-flush
 ;
 
 
@@ -537,36 +537,52 @@ defer dom.write-nodes
       
       dom.text      OF r@ dom-get-value r@ dom>xos xos-write-text    ENDOF
       dom.cdata     OF r@ dom-get-value r@ dom>xos xos-write-cdata   ENDOF
-      dom.comment   OF r@ dom-get-value r@ dom>xos xos-write-comment ENDOF
+      dom.comment   OF r@ dom-get-value r@ dom>xos xos-write-comment r@ dom>xos tos-flush ENDOF
     ENDCASE
     r@ dom-next  
   REPEAT
   rdrop
 ;
-
 ' dom-write-nodes is dom.write-nodes
+
+
+: dom-write   ( dom -- flag = Write the tree )
+  >r
+  r@ dom-document dup IF
+    r@ dom-child IF
+      drop
+      r@ dom-fetch-attributes
+      r@ dom>xos xos-write-start-xml
+      r@ dom>xos tos-flush
+      r@ dom-write-nodes
+    ELSE
+      0
+      r@ dom>xos xos-write-start-xml
+      r@ dom>xos tos-flush
+    THEN
+  THEN  
+  rdrop
+;
 
 
 ( Writing the DOM tree )
 
 : dom-write-string   ( dom -- c-addr u true | false = Write the tree to xml returning a string c-addr u if succesfull )
   >r
-  r@ dom-document IF
-    r@ dom-child IF
-      drop
-      r@ dom-fetch-attributes
-      r@ dom>xos xos-write-start-xml
-      r@ dom-write-nodes
-    ELSE
-      0
-      r@ dom>xos xos-write-start-xml
-    THEN
+  r@ dom-write IF
     r@ dom>xos str-get
     true
   ELSE
     false
   THEN
   rdrop
+;
+
+
+: dom-write-writer   ( x xt dom -- flag = Write the tree to xml using writer xt and its data x, flag indicate success )
+  >r
+  r@ dom>xos tos-set-writer
+  r> dom-write
 ;
 
 

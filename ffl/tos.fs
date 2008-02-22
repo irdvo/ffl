@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.15 $
+\  $Date: 2008-02-22 06:38:06 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -159,15 +159,15 @@ end-structure
 
 : tos-flush       ( tos -- = Flush the contents of the stream to the writer )
   >r
-  r@ str-length@ ?dup IF
-    r@ str-data@ swap
-    r@ tos>writer @ nil<>? IF
-      r@ tos>data @ swap execute IF
-        r@ str-clear 
-        r@ tos>pntr 0!
+  r@ tos>writer @ nil<>? IF       \ If writer present Then
+    r@ tos>data @ swap            \   Get data
+    r@ str-get dup IF             \   Get string, If lenght > 0 Then
+      2swap execute IF            \     Do writer, If processed Then
+        r@ str-clear              \       Clear string
+        r@ tos>pntr 0!            \       Reset stream pointer
       THEN
     ELSE
-      2drop
+      2drop 2drop
     THEN
   THEN
   rdrop
