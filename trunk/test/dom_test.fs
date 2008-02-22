@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-20 19:30:06 $ $Revision: 1.4 $
+\  $Date: 2008-02-22 06:38:07 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -150,8 +150,53 @@ t{ dom1 dom-remove ?true }t
 
 \ Write the tree
 
-t{ dom1 dom-write-string ?true type }t
+variable dom-test-counter  dom-test-counter 0!
+
+: dom-test-writer   ( c-addr u x - flag )
+  drop
+  dom-test-counter @ CASE
+    0 OF s\" <?xml version=\"1.1\" standalone=\"no\"?>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    1 OF s" <!-- This is a (modified) test file -->" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    2 OF s" <TEST><BOOKLET><TITLE>Starting Forth</TITLE>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    3 OF s" <AUTHOR><NAME>Leo Brodie</NAME>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    4 OF s" </AUTHOR>"  compare 0= IF dom-test-counter 1+! THEN ENDOF
+    5 OF s" <PUBLISHER>Prentice-Hall</PUBLISHER>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    6 OF s" <DATE>&quot;1981&quot;</DATE>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    7 OF s" <PAGES>235</PAGES>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    8 OF s" <REVIEW>This book is the best!.</REVIEW>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    9 OF s" <AVAILABLE/>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    10 OF s\" <SUBJECT MAIN=\"Computers\" SUB=\"Programming\">Introduction to the forth programming language</SUBJECT>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    11 OF s" </BOOKLET>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    12 OF s" </TEST>" compare 0= IF dom-test-counter 1+! THEN ENDOF
+    >r 2drop r>
+  ENDCASE
+  true
+;
+
+
+t{ 0 ' dom-test-writer dom1 dom-write-writer ?true }t
+
+t{ dom-test-counter @ 13 ?s }t
 
 t{ dom1 dom-free }t
+
+\ Building a (small) tree from scratch
+
+t{ dom-create dom2 }t
+
+t{ dom.document dom2 dom-append-node }t
+
+t{ s" version" s" 1.0" dom.attribute dom2 dom-append-node }t
+t{ dom2 dom-parent ?true dom.document ?s }t
+
+t{ s" TAG"  dom.element dom2 dom-append-node }t
+t{ s" Test" dom.text    dom2 dom-append-node }t
+
+t{ dom2 dom-parent ?true dom.element ?s }t
+t{ dom2 dom-parent ?true dom.document ?s }t
+
+t{ s"  End " dom.comment dom2 dom-append-node }t
+
+t{ dom2 dom-write-string ?true s\" <?xml version=\"1.0\"?><TAG>Test</TAG><!-- End -->" ?str }t
 
 \ ==============================================================================

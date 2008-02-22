@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.7 $
+\  $Date: 2008-02-22 06:38:06 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -87,7 +87,7 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
 : msc-free   ( msc -- = Free the message catalog from the heap )
   dup msc-(free)
   
-  hnt-free                             \ Free the nodes and the tree
+  free throw
 ;
 
 
