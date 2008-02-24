@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-20 19:30:05 $ $Revision: 1.28 $
+\  $Date: 2008-02-24 07:43:44 $ $Revision: 1.29 $
 \
 \ ==============================================================================
 
@@ -63,7 +63,7 @@ end-structure
 ;
 
 
-: str-offset       ( n1 str -- n2 = Determine the offset n2 from the index n1, incl. validation )
+: str-offset       ( n1 str -- n2 = Determine the offset n2 from the index n1, incl. validation with length )
   tuck str>length @ index2offset
   
   dup rot str-offset?
@@ -71,6 +71,14 @@ end-structure
   0= exp-index-out-of-range AND throw
 ;
 
+
+: str-offset+1     ( n1 str -- n2 = Determine the offset n2 from the index n1, incl. validation with length+1 )
+  str>length @ tuck index2offset
+  
+  dup rot 1+ 0 swap within
+  
+  0= exp-index-out-of-range AND throw
+;
 
 
 ( String creation, initialisation and destruction )
@@ -184,7 +192,7 @@ end-structure
 
 
 : str-insert-space ( u1 n str -- u2 c-addr = Insert u1 chars at nth position )
-  tuck str-offset                \ Index -> offset
+  tuck str-offset+1              \ Index -> offset
   >r 2dup str-length+! r>        \ Increase the length
   tuck -                         \ Calculate move length
   >r chars swap str-data@ + r>   \ Calculate start of insert space
