@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.3 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,7 @@ xis-new value xis1
 
 
 
-s" index.xml" r/o open-file throw value xis.file  \ Open the file
+s" test.xml" r/o open-file throw value xis.file  \ Open the file
 
 xis.file  ' file-reader   xis1 xis-set-reader     \ Use the xml reader with a file
 

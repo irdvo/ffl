@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2008-02-03 07:18:45 $ $Revision: 1.6 $
+\  $Date: 2008-03-02 15:03:02 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 \
@@ -55,7 +55,7 @@ require timer.fs
 : d<> d= 0= ;
 : ud. <# #s #> type space ;
 
-: sgn              ( n - n = Determine the sign of the number )
+: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
  dup 0= IF
    EXIT
  THEN
@@ -76,35 +76,35 @@ variable ffl.endian   1 ffl.endian !
 
 ( System Settings )
 
-create end-of-line    ( - c-addr = Counted string for the end of line for the current system )
+create end-of-line    ( -- c-addr = Counted string for the end of line for the current system )
  newline s,
 
 
 s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN] 
-  constant #bits/byte   ( - n = Number of bits in a byte )
+  constant #bits/byte   ( -- +n = Number of bits in a byte )
   
 #bits/byte 1 chars *
-  constant #bits/char   ( - n = Number of bits in a char )
+  constant #bits/char   ( -- +n = Number of bits in a char )
   
 #bits/byte cell *
-  constant #bits/cell   ( - n = Number of bits in a cell )  
+  constant #bits/cell   ( -- +n = Number of bits in a cell )  
 
 ffl.endian c@ 0=             
-  constant bigendian?   ( - f = Check for bigendian hardware )
+  constant bigendian?   ( -- flag = Check for bigendian hardware )
 
 
 ( Extension words )
 
-: ms@                                        ( - u = Fetch milliseconds timer )
+: ms@                   ( -- u = Fetch milliseconds timer )
   nstime 1 1000000 m*/ drop
 ;
 
 
-s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the milliseconds timer )
+s" MAX-U" environment? drop constant max-ms@  ( -- u = Max val of the milliseconds timer )
 
 
 1 chars 1 = [IF]
-: char/            ( n:aus - n:chars = Convert address units to chars )
+: char/            ( n1 -- n2 = Convert address units to chars )
 ; immediate
 [ELSE]
 : char/
@@ -113,38 +113,38 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 [THEN]
 
 
-: lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
+: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
  2dup lshift >r
  #bits/cell swap - rshift r>
  or
 ;
 
 
-: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
   2dup rshift >r
   #bits/cell swap - lshift r>
   or
 ;
 
 
-: 0!               ( w - = Set zero in address )
+: 0!               ( a-addr -- = Set zero in address )
  0 swap !
 ;
 
 
-0 constant nil
+0 constant nil     ( -- addr = Nil constant )
 
-: nil!             ( w - = Set nil in address )
+: nil!             ( a-addr -- = Set nil in address )
  nil swap !
 ;
 
 
-: nil=             ( w - f = Check for nil )
+: nil=             ( addr -- flag = Check for nil )
  nil =
 ;
 
 
-: nil<>            ( w - f = Check for unequal to nil )
+: nil<>            ( addr -- flag = Check for unequal to nil )
  nil <>
 ;
 
@@ -158,7 +158,7 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 ; immediate
 
 
-: ?free            ( addr - wior = Free the address if not nil )
+: ?free            ( addr -- wior = Free the address if not nil )
   dup nil<> IF
     free 
   ELSE
@@ -167,29 +167,29 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
 ;
 
 
-: 1+!              ( w - = Increase contents of address by 1 )
+: 1+!              ( a-addr -- = Increase contents of address by 1 )
  1 swap +!
 ;
 
 
-: 1-!              ( w - = Decrease contents of address by 1 )
+: 1-!              ( a-addr -- = Decrease contents of address by 1 )
  -1 swap +!
 ;
 
 
-: @!               ( w a - w = First fetch the contents and then store the new value )
+: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
  dup @ -rot !
 ;
 
 
-: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+: <=>              ( n1 n2 -- n3 = Compare two numbers and return the compare result [-1,0,1] )
  2dup = IF
    2drop 0 EXIT
  THEN
  < 2* 1+
 ;
 
-\ ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
+\ ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
 : index2offset
  over 0< IF
    +
@@ -198,26 +198,35 @@ s" MAX-U" environment? drop constant max-ms@  ( - u = Max val of the millisecond
  THEN
 ;
 
+\ ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
+: >,"
+  count chars + aligned
+;
+
 
 ( Exceptions )
 
 variable exp-next  -2050 exp-next !
 
-: exception      ( w:addr u - n = add an exception )
+: exception      ( c-addr u -- n = Create an exception )
  2drop
  exp-next @
  -1 exp-next +!
 ;
 
 
-\ - n = Index out of range exception number
+\ -- n = Index out of range exception number
 s" Index out of range" exception constant exp-index-out-of-range
-\ - n = Invalid state exception number
+\ -- n = Invalid state exception number
 s" Invalid state"      exception constant exp-invalid-state
-\ - n = No data available exception number
+\ -- n = No data available exception number
 s" No data available"  exception constant exp-no-data
-\ - n = Invalid parameters on stack
+\ -- n = Invalid parameters on stack
 s" Invalid parameters" exception constant exp-invalid-parameters
+\ -- n = Wrong file type
+s" Wrong file type"    exception constant exp-wrong-file-type    
+\ -- n = Wrong file version
+s" Wrong file version" exception constant exp-wrong-file-version 
 
 [ELSE]
  drop

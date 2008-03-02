@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:18:45 $ $Revision: 1.46 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.47 $
 \
 \ ==============================================================================
 \
@@ -187,14 +187,16 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
+: >,"              ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
+  count chars + aligned
+;
+
 [DEFINED] float [IF]
 
 ( Float extension constants )
 
 0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-
 1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-
 2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
 
 
@@ -232,7 +234,7 @@ s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invali
 s" No data available"  exception constant exp-no-data            ( -- n = No data available exception number )
 s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
-s" Wrong flie version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
 
 [ELSE]
   drop

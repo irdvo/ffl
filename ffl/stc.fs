@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-12 19:36:38 $ $Revision: 1.6 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -58,14 +58,13 @@ include ffl/config.fs
 
 ( ANS field definition words )
 
-[UNDEFINED] +field [IF]
+[UNDEFINED] +field [DEFINED] overrule:+field OR [IF]
 : +field   ( structure-sys n "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field of size n bytes, return the field address )
   create
     over , +
   does>
     @ +
 ;
-[THEN]
 
 
 [UNDEFINED] cfield: [IF]

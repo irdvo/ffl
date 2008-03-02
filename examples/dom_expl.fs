@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-24 07:44:04 $ $Revision: 1.1 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -141,6 +141,7 @@ dom1 dom-write-string [IF]
 [ELSE]
   .( Problems writing the xml document.)  cr
 [THEN]
+[THEN]
 
 
 
@@ -188,7 +189,6 @@ dom.output ' dom-writer dom2 dom-write-writer [IF]
 dom2 dom-free
 
 
-
 \ Example 3: build a xml document from scratch using the xml-dom
 
 
@@ -224,6 +224,7 @@ dom3 dom-write-string [IF]
   .( XML successfully written: ) type cr
 [ELSE]
   .( Problems...) cr
+[THEN]
 
 
 \ Free the dom from the heap

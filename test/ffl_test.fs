@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-22 06:38:07 $ $Revision: 1.36 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.37 $
 \
 \ ==============================================================================
 
@@ -29,8 +29,8 @@ include ffl/tst.fs
 
 tst-reset-tests
 
-
 \ the test sources
+
 include act_test.fs
 include arg_test.fs
 include bar_test.fs
@@ -42,14 +42,15 @@ include cpx_test.fs
 include crc_test.fs
 include dcl_test.fs
 include dnl_test.fs
+include dom_test.fs
 include dtm_test.fs
 include dos_test.fs
 include est_test.fs
 include frc_test.fs
-include gmo_test.fs
 include hct_test.fs
 include md5_test.fs
 include msc_test.fs
+include gmo_test.fs
 include nct_test.fs
 include nnt_test.fs
 include rdg_test.fs
@@ -66,7 +67,6 @@ include tmr_test.fs
 include tos_test.fs
 include xis_test.fs
 include xos_test.fs
-include dom_test.fs
 
 .( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests took ) . .( ms.) cr
   

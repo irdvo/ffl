@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:18:45 $ $Revision: 1.15 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 \
@@ -51,47 +51,49 @@ variable ffl.endian   1 ffl.endian !
 
 ( System Settings )
 
-create end-of-line   ( - c-addr = Counted string for the end of line for the current system )
+create end-of-line   ( -- c-addr = Counted string for the end of line for the current system )
   1 c, 10 c,         \ unix: lf
 \ 2 c, 13 c, 10 c,   \ dos:  cr lf
 
 
 s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN] 
-  constant #bits/byte   ( - n = Number of bits in a byte )
+  constant #bits/byte   ( -- n = Number of bits in a byte )
   
 #bits/byte 1 chars *
-  constant #bits/char   ( - n = Number of bits in a char )
+  constant #bits/char   ( -- n = Number of bits in a char )
   
 #bits/byte 1 cells *
-  constant #bits/cell   ( - n = Number of bits in a cell )  
+  constant #bits/cell   ( -- n = Number of bits in a cell )  
 
 ffl.endian c@ 0=             
-  constant bigendian?   ( - f = Check for bigendian hardware )
+  constant bigendian?   ( -- flag = Check for bigendian hardware )
+
+create overrule:+field  ( -- = PFE ships with incompatible +field )
 
 
 ( Extension words )
 
-: ms@                                            ( - ud = Fetch milliseconds timer )
+: ms@                                            ( -- ud = Fetch milliseconds timer )
   gettimeofday
   1000 * swap
   1000 / +
 ;
 
 
-s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the millisecond timer )
+s" MAX-U" environment? drop constant max-ms@    ( -- ud = Maximum value of the millisecond timer )
 
 
-: #args   ( - n = Get the number of command line arguments )
+: #args            ( -- n = Get the number of command line arguments )
   argc
 ;
 
-: arg@   ( n - c-addr u = Get the nth command line argument )
+: arg@             ( n -- c-addr u = Get the nth command line argument )
   argv
 ;
 
 
 1 chars 1 = [IF]
-: char/            ( n:aus - n:chars = Convert address units to chars )
+: char/            ( n1 -- n2 = Convert address units to chars )
 ; immediate
 [ELSE]
 : char/
@@ -100,40 +102,40 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 [THEN]
 
 
-: rdrop            ( - )
+: rdrop            ( R: x -- )
   r> r> drop >r
 ;
 
-: cell             ( - n = Cell size)
+: cell             ( -- n = Cell size)
   1 cells
 ;
 
 
-: lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
+: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
   2dup lshift >r
   #bits/cell swap - rshift r>
   or
 ;
 
 
-: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
+: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
   2dup rshift >r
   #bits/cell swap - lshift r>
   or
 ;
 
 
-: u<>              ( u u - f = Check if two unsigned words are unequal )
+: u<>              ( u1 u2 -- flag = Check if two unsigneds are unequal )
   <>
 ;
 
 
-: d<>              ( d d - f = Check if two two double are unequal )
+: d<>              ( d1 d2 -- flag = Check if two doubles are unequal )
   d= 0=
 ;
 
 
-: sgn              ( n - n = Determine the sign of the number )
+: sgn              ( n1 -- n2 = Determine the sign of the number [-1,0,1] )
   dup 0= IF 
     EXIT 
   THEN
@@ -141,30 +143,30 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-0 constant nil     ( - w = Nil address )
+0 constant nil     ( -- addr = Nil address )
 
 
-: 0!               ( w - = Set zero in address )
+: 0!               ( a-addr -- = Set zero in address )
   0 swap !
 ;
 
 
-: nil!             ( w - = Set nil in address )
+: nil!             ( a-addr -- = Set nil in address )
   nil swap !
 ;
 
 
-: nil=             ( w - f = Check for nil )
+: nil=             ( addr -- flag = Check for nil )
   nil =
 ;
 
 
-: nil<>            ( w - f = Check for unequal to nil )
+: nil<>            ( addr -- flag = Check for unequal to nil )
   nil <>
 ;
 
 
-: nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
+: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
   state @ IF
     postpone ?dup
   ELSE
@@ -173,7 +175,7 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ; immediate
 
 
-: ?free            ( addr - wior = Free the address if not nil )
+: ?free            ( addr -- wior = Free the address if not nil )
   dup nil<> IF
     free
   ELSE
@@ -182,22 +184,22 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-: 1+!              ( w - = Increase contents of address by 1 )
+: 1+!              ( a-addr -- = Increase contents of address by 1 )
   1 swap +!
 ;
 
 
-: 1-!              ( w - = Decrease contents of address by 1 )
+: 1-!              ( a-addr -- = Decrease contents of address by 1 )
   -1 swap +!
 ;
 
 
-: @!               ( w a - w = First fetch the contents and then store the new value )
+: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
   dup @ -rot !
 ;
 
 
-: icompare         ( c-addr u c-addr u - n = Compare case-insensitive two strings )
+: icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings )
   rot swap 2swap 2over
   min 0 ?DO
     over c@ toupper over c@ toupper - sgn ?dup IF
@@ -212,7 +214,7 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
+: <=>              ( n1 n2 -- n3 = Compare two numbers and return the compare result [-1,0,1] )
   2dup = IF 
     2drop 0 EXIT 
   THEN
@@ -220,7 +222,7 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-: index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
+: index2offset     ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset [0..length> n3 )
   over 0< IF
     +
   ELSE
@@ -229,44 +231,43 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 ;
 
 
-[DEFINED] floats [IF]
+: >,"              ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
+  count chars + aligned
+;
 
+
+[DEFINED] floats [IF]
 
 ( Float constants )
 
-0e0 fconstant 0e0  ( - r:0e0 = Float constant 0.0 )
-
-1e0 fconstant 1e0  ( - r:1e0 = Float constant 1.0 )
-
-2e0 fconstant 2e0  ( - r:2e0 = Float constant 2.0 )
+0E+0 fconstant 0E+0  ( -- r = Float constant 0.0 )
+1E+0 fconstant 1E+0  ( -- r = Float constant 1.0 )
+2E+0 fconstant 2E+0  ( -- r = Float constant 2.0 )
 
 
 ( Float extension words )
 
-: float
-  1 floats
-;
+1 floats constant float ( -- n = Size of one float )
 
 
-: f>r
+: f>r                ( r --; R: -- r = Put float to return stack )
   r> rp@ 1 floats - rp! rp@ f! >r 
 ;
 
 
-: fr>
+: fr>                ( -- r; R: r -- = Get float from return stack )
   r> rp@ f@ 1 floats rp@ + rp! >r
 ;
 
 
-: fr@
+: fr@                ( -- r; R: r -- r = Fetch float of return stack )
   r> rp@ f@ >r
 ;
 
 
-: f2dup            ( r1 r2 - r1 r2 r1 r2 = Duplicate two floats )
+: f2dup             ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
-
 [THEN]
 
 
@@ -274,17 +275,19 @@ s" MAX-U" environment? drop constant max-ms@    ( - ud = Maximum value of the mi
 
 variable exp-next  -2050 exp-next !
 
-: exception      ( w:addr u - n = add an exception )
+: exception      ( c-addr u -- n = Create an exception )
   2drop
   exp-next @ 
   exp-next 1-!
 ;
 
 
-s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
-s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
-s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
-s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
+s" Index out of range" exception constant exp-index-out-of-range ( -- n = Index out of range exception number )
+s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invalid state exception number )
+s" No data available"  exception constant exp-no-data            ( -- n = No data available exception number )
+s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
+s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
+s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
 
 [ELSE]
   drop

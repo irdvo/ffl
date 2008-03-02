@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:17 $ $Revision: 1.2 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -78,8 +78,7 @@ include ffl/config.fs
     2dup <>
   WHILE
     dup ,                         \ Store the start of the strings
-    count chars +
-    aligned
+    >,"                           \ Move to the next string
   REPEAT
   2drop
 ;
