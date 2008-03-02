@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.5 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -33,7 +33,8 @@ include ffl/config.fs
 
 [DEFINED] float [IF]
 s" FLOATING-EXT"   environment? [IF] drop
-s" FLOATING-STACK" environment? [IF] drop
+s" FLOATING-STACK" environment? [IF]
+23 > [IF]
 
 
 include ffl/stc.fs
@@ -43,7 +44,9 @@ include ffl/stc.fs
 ( The rdg module implements pseudo random number generators with a        )
 ( distribution. The module requires a pseudo random generator with an     )
 ( uniform distribution which returns floating point random numbers with   )
-( a range of [0,1>.                                                       )
+( a range of [0,1>. Due to the extensive use of the floating point stack, )
+( this module has an environmental dependency.                            )
+
 
 1 constant rdg.version
 
@@ -129,12 +132,12 @@ end-structure
     fdup 0.27597E+0 f< IF                   \ Done if Q < 0.27597
       fdrop false
     ELSE
-      0.27846E+0 f> IF                      \ Continu if Q > 0.27846
+      0.27846E+0 fswap f< IF                \ Continu if Q > 0.27846
         true
       ELSE
         fover fdup fdup f* fswap fln f* -4E+0 f*   \ -4 * u^2 * ln(u)
         fover fdup f*                               \ v^2
-        fswap f>                            \ Continu if v^2 > -4 * u^2 * ln(u) 
+        f<                                  \ Continu if v^2 > -4 * u^2 * ln(u) 
       THEN
     THEN
    WHILE
@@ -251,7 +254,7 @@ end-structure
   >r
   0                               \ k = 0 mu = r
   BEGIN
-    fdup 10E+0 f>
+    fdup 10E+0 fswap f<
   WHILE                           \ while mu > 0
     fdup 7E+0 f* 8E+0 f/
     f>d drop                      \   m = (unsigned) mu * 7/8
@@ -269,7 +272,7 @@ end-structure
   BEGIN                          \  BEGIN
     1+                           \    k++
     r@ rdg-gen-[0,1> f*          \    prod *= rng
-    fover fover fswap f> 0=      \  UNTIL prod <= emu
+    fover fover f< 0=            \  UNTIL prod <= emu
   UNTIL
   fdrop fdrop
   rdrop
@@ -291,6 +294,9 @@ end-structure
   f*                             \ r1 * z
 ;
 
+[ELSE]
+.( Warning: rdg expects a floating point stack depth of at least 24 floats ) cr
+[THEN]
 [ELSE]
 .( Warning: rdg requires a separate floating point stack ) cr
 [THEN]

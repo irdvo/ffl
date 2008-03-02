@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-06 06:37:25 $ $Revision: 1.3 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,6 @@ include ffl/tst.fs
 t{ 5489 rng-create rng3 }t
 
 t{ rng3 ' rng-next-float rdg-create rdg1 }t
-
 
 \ checked with gsl-1.10: gsl_ran_gaussian_ratio_method
 t{  0E+0 0.5E+0 rdg1 rdg-normal -0.44759539E+0 ?r }t 
@@ -145,8 +144,6 @@ t{  3.5E+0 6.5E+0 rdg1 rdg-weibull  3.66115208E+0 ?r }t
 t{  0.5E+0 7.5E+0 rdg1 rdg-weibull  0.50733162E+0 ?r }t
 t{  0.5E+0 8.5E+0 rdg1 rdg-weibull  0.50523448E+0 ?r }t
 t{  4.5E+0 9.5E+0 rdg1 rdg-weibull  4.85256504E+0 ?r }t
-
-[THEN]
 
 [THEN]
 

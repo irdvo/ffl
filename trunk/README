@@ -140,9 +140,10 @@ pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
 
 (or Win32Forth)
 
-Use 'chdir' to move to the test directory.
-Remove from the 'ffl_test.fs' file the ending 'bye'.
-Use 'include ffl_test.fs' to run the tests.
+1. Use an editor to remove the ending 'bye' from the 'ffl_test.fs' file.
+2. Start Win32Forth.
+3. Use in the window the 'chdir' word to move to the test directory.
+4. Use 'include ffl_test.fs' to run the tests.
 
 
 (or minForth)
@@ -169,9 +170,11 @@ Documentation
 
 In the directory 'html' there is the HTML documentation of the library. The
 file 'index.html' contains an overview of all the modules in the library. In 
-the file 'words.html' all words of the libary are alphabetically listed.
+the file 'words.html' all words of the libary are alphabetically listed. In
+the file 'manual.html' there is simple manual.
 
-On the site there is also a manual. 
+On the site there is also a link to the manual. This is actually a wiki with 
+more information about the library.
 
 
 Porting to other forth systems

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.10 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -237,7 +237,10 @@ t{ s" iii" s" i" s1 str-replace        }t
 t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
 
 \ split
-t{ s" this is a test of the column splitter" 10 str+columns 4 ?s
+: str-test-split1 s" this is a test of the column splitter" ;
+: str-test-split2 s" thisisatestofthecolumnsplitter" ;
+  
+t{ str-test-split1 10 str+columns 4 ?s
    s" this is a"  ?str
    s" test of"    ?str 
    s" the column" ?str
@@ -252,7 +255,7 @@ t{ s" 1234567890    " 10 str+columns 1 ?s
 t{ s"     1234567890" 10 str+columns 1 ?s
    s" 1234567890" ?str }t
 
-t{ s" thisisatestofthecolumnsplitter" 10 str+columns 3 ?s
+t{ str-test-split2 10 str+columns 3 ?s
    s" thisisates" ?str
    s" tofthecolu" ?str 
    s" mnsplitter" ?str }t

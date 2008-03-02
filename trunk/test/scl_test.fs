@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.7 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -31,170 +31,170 @@ include ffl/sci.fs
 
 .( Testing: scl, scn and sci) cr 
 
-t{ scl-create l1  }t
+t{ scl-create scl1  }t
 
-t{    l1 scl-length@   ?0   }t
-t{    l1 scl-empty?   ?true   }t
+t{    scl1 scl-length@   ?0   }t
+t{    scl1 scl-empty?   ?true   }t
 
-t{ 1  l1 scl-append   }t
-t{ 2  l1 scl-append   }t
-t{ 3  l1 scl-append   }t
+t{ 1  scl1 scl-append   }t
+t{ 2  scl1 scl-append   }t
+t{ 3  scl1 scl-append   }t
 
-t{ 0  l1 scl-prepend   }t
-t{ -1 l1 scl-prepend   }t
+t{ 0  scl1 scl-prepend   }t
+t{ -1 scl1 scl-prepend   }t
 
-t{    l1 scl-length@   5 ?s   }t
-t{    l1 scl-empty?   ?false  }t
+t{    scl1 scl-length@   5 ?s   }t
+t{    scl1 scl-empty?   ?false  }t
 
-t{ 3 3 l1 scl-insert   }t
+t{ 3 3 scl1 scl-insert   }t
 
-t{ 3  l1 scl-count   2 ?s }t
-t{ 4  l1 scl-count   ?0   }t
+t{ 3  scl1 scl-count   2 ?s }t
+t{ 4  scl1 scl-count   ?0   }t
 
-t{ -1 l1 scl-find   ?0    }t
-t{ 5  l1 scl-find   -1 ?s }t
-t{ 3  l1 scl-find    3 ?s }t
+t{ -1 scl1 scl-find   ?0    }t
+t{ 5  scl1 scl-find   -1 ?s }t
+t{ 3  scl1 scl-find    3 ?s }t
 
-t{ 2  l1 scl-has?   ?true   }t
-t{ -2 l1 scl-has?   ?false   }t
+t{ 2  scl1 scl-has?   ?true   }t
+t{ -2 scl1 scl-has?   ?false   }t
 
-t{    l1 scl-clear          }t
+t{    scl1 scl-clear          }t
 
-t{    l1 scl-length@   ?0   }t
-t{    l1 scl-empty?   ?true   }t
+t{    scl1 scl-length@   ?0   }t
+t{    scl1 scl-empty?   ?true   }t
 
-t{ scl-new constant l2   }t
+t{ scl-new constant scl2   }t
 
 \ Insert-sorted
 
-t{ 9  l2 scl-insert-sorted   }t
-t{ 12 l2 scl-insert-sorted   }t
-t{ 10 l2 scl-insert-sorted   }t
-t{ 5  l2 scl-insert-sorted   }t
-t{ 1  l2 scl-insert-sorted   }t
-t{ 7  l2 scl-insert-sorted   }t
-t{ 7  l2 scl-insert-sorted   }t
+t{ 9  scl2 scl-insert-sorted   }t
+t{ 12 scl2 scl-insert-sorted   }t
+t{ 10 scl2 scl-insert-sorted   }t
+t{ 5  scl2 scl-insert-sorted   }t
+t{ 1  scl2 scl-insert-sorted   }t
+t{ 7  scl2 scl-insert-sorted   }t
+t{ 7  scl2 scl-insert-sorted   }t
 
-t{    l2 scl-length@   7 ?s   }t
+t{    scl2 scl-length@   7 ?s   }t
 
-t{ 0  l2 scl-get   1 ?s }t
-t{ 1  l2 scl-get   5 ?s }t
-t{ 2  l2 scl-get   7 ?s }t
-t{ 3  l2 scl-get   7 ?s }t
-t{ 4  l2 scl-get   9 ?s }t
-t{ 5  l2 scl-get   10 ?s }t
-t{ 6  l2 scl-get   12 ?s }t
+t{ 0  scl2 scl-get   1 ?s }t
+t{ 1  scl2 scl-get   5 ?s }t
+t{ 2  scl2 scl-get   7 ?s }t
+t{ 3  scl2 scl-get   7 ?s }t
+t{ 4  scl2 scl-get   9 ?s }t
+t{ 5  scl2 scl-get   10 ?s }t
+t{ 6  scl2 scl-get   12 ?s }t
 
-t{    l2 scl-free   }t
+t{    scl2 scl-free   }t
 
 
-t{ 1  l1 scl-append              }t
-t{ 2  l1 scl-append              }t
-t{ 4  l1 scl-append              }t
-t{ 4  l1 scl-append              }t
-t{ 5  l1 scl-append              }t
-t{ 6  l1 scl-append              }t
+t{ 1  scl1 scl-append              }t
+t{ 2  scl1 scl-append              }t
+t{ 4  scl1 scl-append              }t
+t{ 4  scl1 scl-append              }t
+t{ 5  scl1 scl-append              }t
+t{ 6  scl1 scl-append              }t
 
 \ set test
 
-t{ 3  l1 scl-get 4 ?s            }t
-t{ 7 3 l1 scl-set                }t
-t{ 3  l1 scl-get 7 ?s            }t
-t{ 4 3 l1 scl-set                }t
+t{ 3  scl1 scl-get 4 ?s            }t
+t{ 7 3 scl1 scl-set                }t
+t{ 3  scl1 scl-get 7 ?s            }t
+t{ 4 3 scl1 scl-set                }t
 
-t{    l1 scl-empty?   ?false     }t
+t{    scl1 scl-empty?   ?false     }t
 
 \ Iterator test
 
-t{    l1 sci-create i1           }t
+t{    scl1 sci-create sci1           }t
 
-t{    i1 sci-first    ?true 1 ?s }t
-t{    i1 sci-first?   ?true      }t
-t{    i1 sci-last?    ?false     }t
-t{    i1 sci-next     ?true 2 ?s }t
-t{    i1 sci-next     ?true 4 ?s }t
-t{  3 i1 sci-set                 }t
-t{    i1 sci-get      ?true 3 ?s }t
-t{    i1 sci-next     ?true 4 ?s }t
-t{    i1 sci-first?   ?false     }t
-t{    i1 sci-last?    ?false     }t
-t{    i1 sci-next     ?true 5 ?s }t
-t{    i1 sci-next     ?true 6 ?s }t
-t{    i1 sci-first?   ?false     }t
-t{    i1 sci-last?    ?true      }t
-
-
-t{    i1 sci-first    ?true 1 ?s }t
-t{    i1 sci-next     ?true 2 ?s }t
-t{    i1 sci-next     ?true 3 ?s }t
-t{    i1 sci-next     ?true 4 ?s }t
-t{    i1 sci-next     ?true 5 ?s }t
-t{    i1 sci-next     ?true 6 ?s }t
-t{    i1 sci-next     ?false     }t
-
-t{    l1 scl-reverse   }t
-
-t{    i1 sci-first    ?true 6 ?s }t
-t{    i1 sci-next     ?true 5 ?s }t
-t{    i1 sci-next     ?true 4 ?s }t
-t{    i1 sci-next     ?true 3 ?s }t
-t{    i1 sci-next     ?true 2 ?s }t
-t{    i1 sci-next     ?true 1 ?s }t
-t{    i1 sci-next     ?false     }t
-
-t{    i1 sci-first    ?true 6 ?s }t
-t{ 2  i1 sci-move     ?true      }t
-t{    i1 sci-get      ?true 2 ?s }t
-t{ 7  i1 sci-insert-after        }t
-t{    i1 sci-get      ?true 2 ?s }t
-t{    i1 sci-next     ?true 7 ?s }t
-t{    i1 sci-next     ?true 1 ?s }t
-t{    i1 sci-next     ?false     }t
-
-t{    l1 scl-clear               }t
+t{    sci1 sci-first    ?true 1 ?s }t
+t{    sci1 sci-first?   ?true      }t
+t{    sci1 sci-last?    ?false     }t
+t{    sci1 sci-next     ?true 2 ?s }t
+t{    sci1 sci-next     ?true 4 ?s }t
+t{  3 sci1 sci-set                 }t
+t{    sci1 sci-get      ?true 3 ?s }t
+t{    sci1 sci-next     ?true 4 ?s }t
+t{    sci1 sci-first?   ?false     }t
+t{    sci1 sci-last?    ?false     }t
+t{    sci1 sci-next     ?true 5 ?s }t
+t{    sci1 sci-next     ?true 6 ?s }t
+t{    sci1 sci-first?   ?false     }t
+t{    sci1 sci-last?    ?true      }t
 
 
-t{ 1  l1 scl-append              }t
-t{ 2  l1 scl-append              }t
-t{ 3  l1 scl-append              }t
-t{ 4  l1 scl-append              }t
-t{ 5  l1 scl-append              }t
+t{    sci1 sci-first    ?true 1 ?s }t
+t{    sci1 sci-next     ?true 2 ?s }t
+t{    sci1 sci-next     ?true 3 ?s }t
+t{    sci1 sci-next     ?true 4 ?s }t
+t{    sci1 sci-next     ?true 5 ?s }t
+t{    sci1 sci-next     ?true 6 ?s }t
+t{    sci1 sci-next     ?false     }t
+
+t{    scl1 scl-reverse   }t
+
+t{    sci1 sci-first    ?true 6 ?s }t
+t{    sci1 sci-next     ?true 5 ?s }t
+t{    sci1 sci-next     ?true 4 ?s }t
+t{    sci1 sci-next     ?true 3 ?s }t
+t{    sci1 sci-next     ?true 2 ?s }t
+t{    sci1 sci-next     ?true 1 ?s }t
+t{    sci1 sci-next     ?false     }t
+
+t{    sci1 sci-first    ?true 6 ?s }t
+t{ 2  sci1 sci-move     ?true      }t
+t{    sci1 sci-get      ?true 2 ?s }t
+t{ 7  sci1 sci-insert-after        }t
+t{    sci1 sci-get      ?true 2 ?s }t
+t{    sci1 sci-next     ?true 7 ?s }t
+t{    sci1 sci-next     ?true 1 ?s }t
+t{    sci1 sci-next     ?false     }t
+
+t{    scl1 scl-clear               }t
+
+
+t{ 1  scl1 scl-append              }t
+t{ 2  scl1 scl-append              }t
+t{ 3  scl1 scl-append              }t
+t{ 4  scl1 scl-append              }t
+t{ 5  scl1 scl-append              }t
 
 \ scl-delete test
 
-t{ 2  l1 scl-delete         3 ?s }t
-t{ 0  l1 scl-delete         1 ?s }t
-t{ 2  l1 scl-delete         5 ?s }t
+t{ 2  scl1 scl-delete         3 ?s }t
+t{ 0  scl1 scl-delete         1 ?s }t
+t{ 2  scl1 scl-delete         5 ?s }t
 
-t{ 0  l1 scl-prepend             }t
-t{ 6  l1 scl-append              }t
+t{ 0  scl1 scl-prepend             }t
+t{ 6  scl1 scl-append              }t
 
-t{    i1 sci-first    ?true 0 ?s }t
-t{    i1 sci-next     ?true 2 ?s }t
-t{    i1 sci-next     ?true 4 ?s }t
-t{    i1 sci-next     ?true 6 ?s }t
-t{    i1 sci-next     ?false     }t
+t{    sci1 sci-first    ?true 0 ?s }t
+t{    sci1 sci-next     ?true 2 ?s }t
+t{    sci1 sci-next     ?true 4 ?s }t
+t{    sci1 sci-next     ?true 6 ?s }t
+t{    sci1 sci-next     ?false     }t
 
-t{ 5  l1 scl-remove   ?false     }t
-t{ 6  l1 scl-remove   ?true      }t
+t{ 5  scl1 scl-remove   ?false     }t
+t{ 6  scl1 scl-remove   ?true      }t
 
-t{ 0 ' + l1 scl-execute  6 ?s   }t \ sum contents list
+t{ 0 ' + scl1 scl-execute  6 ?s   }t \ sum contents list
 
-t{    l1 scl-clear              }t
+t{    scl1 scl-clear              }t
 
 : scl-test-compare
   - negate
 ;
 
-t{ ' scl-test-compare l1 scl-compare! }t
+t{ ' scl-test-compare scl1 scl-compare! }t
 
-t{ 5  l1 scl-insert-sorted       }t
-t{ 1  l1 scl-insert-sorted       }t
-t{ 9  l1 scl-insert-sorted       }t
-t{ 7  l1 scl-insert-sorted       }t
-t{ 7  l1 scl-insert-sorted       }t
+t{ 5  scl1 scl-insert-sorted       }t
+t{ 1  scl1 scl-insert-sorted       }t
+t{ 9  scl1 scl-insert-sorted       }t
+t{ 7  scl1 scl-insert-sorted       }t
+t{ 7  scl1 scl-insert-sorted       }t
 
-t{  l1 sci-new constant sci2     }t
+t{  scl1 sci-new constant sci2     }t
 
 t{  sci2 sci-first    ?true 9 ?s }t
 t{  sci2 sci-next     ?true 7 ?s }t
@@ -205,7 +205,7 @@ t{  sci2 sci-next     ?false     }t
 
 t{  sci2 sci-free                }t
 
-t{  l1 scl-clear                 }t
+t{  scl1 scl-clear                 }t
 
 \ ==============================================================================
 

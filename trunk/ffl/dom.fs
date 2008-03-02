@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-22 06:38:06 $ $Revision: 1.11 $
+\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -35,6 +35,7 @@ include ffl/nnn.fs
 include ffl/nni.fs
 include ffl/nnt.fs
 include ffl/str.fs
+include ffl/msc.fs
 include ffl/xis.fs
 include ffl/xos.fs
 
@@ -175,7 +176,7 @@ end-structure
   \ nni -> ok
   dup dom-(free)             \ Free the internal, private variables from the heap
 
-  nnt-free                   \ Free the tree
+  free throw                 \ Free the dom
 ;
 
 
