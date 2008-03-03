@@ -1,0 +1,158 @@
+Index of used prefices
+
+ ffl  - Forth Foundation Library
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+2 bar - Bit array module
+2 car - Cell Array module
+1 chr - Char module
+3 chs - Char Set module
+4 cpx - Complex module
+2 str - Text string module
+3 dtm - Datetime module
+3 dti - Datetime interator
+4 frc - Fraction module
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+1 sci - Single linked cell list iterator
+1 scl - Single linked cell list
+1 scn - Single linked cell node
+3 hct - Hash cell table module
+3 hci - Hash cell table iterator module
+3 hcn - Hash cell table node
+4 bct - Binary cell tree module
+4 bcn - Binary cell tree node
+4 bci - Binary cell tree iterator
+4 act - AVL cell tree module
+4 acn - AVL cell tree node
+4 dni - Double linked node list iterator
+4 dnl - Double linked node list
+4 dnn - Double linked list node
+4 dci - Double linked cell list iterator
+4 dcl - Double linked cell list
+4 dcn - Double linked cell list node
+5 sni - Single linked node list iterator
+5 snl - Single linked node list
+5 snn - Single linked node
+5 nnn - n-Tree base node
+5 nnt - n-Tree base module
+5 nni - n-Tree base iterator
+5 ncn - n-Tree cell node
+5 nct - n-Tree cell module
+5 nci - n-Tree cell iterator
+6 hnt - Hash table base module
+6 hni - Hash table base iterator module
+6 hnn - Hash table baes node
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+1 tst - Unit tests
+6 stc - ANS structures
+6 stt - Stringtable defintion
+6 est - String with escaped characters
+6 enm - Enumerations
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+1 crc - 32-bit Cyclic Redundancy Check
+4 trm - Terminal escape sequences outputter
+3 md5 - MD5 module
+4 rng - Pseudo Random module
+4 sh1 - SHA1 module
+5 sh2 - SHA2 module
+4 tmr - Timer module
+6 gmo - Gettexts mo-file import
+6 xis - XML/HTML reader module
+6 xos - XML/HTML writer module
+6 rdg - Random distribution generator
+6 dom - XML-DOM module
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+6 arg - Argument parser
+6 dos - Datetime output stream
+5 nfe - non-deterministic finite automate expression
+5 nfs - non-deterministic finite automata state
+5 rgx - Regular expression module
+2 tis - Text Input Stream
+2 tos - Text Output Stream
+6 msc - Message Catalog
+----- - ------------------------------------------------
+
+
+
+      ToDo
+----- - ------------------------------------------------
+      - Data type
+----- - ------------------------------------------------
+7 clr - Color module
+9     - Big Number module
+9     - Big Float module
+9     - Big Fraction module
+9     - Big Complex module
+----- - ------------------------------------------------
+      - Collection
+----- - ------------------------------------------------
+7 fsm - Finite state machine module
+8 grp - Graph module
+8 gre - GRaph edge module
+8 grn - GRaph node module
+      - red black balanced tree
+      - splay tree
+----- - ------------------------------------------------
+      - Development
+----- - ------------------------------------------------
+7 log - Logger module
+  hlp - Manual/help/info module
+----- - ------------------------------------------------
+      - Interface
+----- - ------------------------------------------------
+  cfg - Configuration file
+7 bzf - BZip2 file module
+7 bzp - BZip2 module
+8 dbm - DBM module
+7 gzf - GZip file module
+7 gzp - GZip module
+      - css module
+      - url module
+a    - crypt: aes
+a    - crypt: dsa
+a    - crypt: ???
+----- - ------------------------------------------------
+      - Graphics
+----- - ------------------------------------------------
+b gpc - Graphics module
+b     - JPEG
+b     - PNG
+b     - Font ??
+----- - ------------------------------------------------
+      - Compound
+----- - ------------------------------------------------
+7 dis - DateTime input stream
+7 gps - nmea handling, distance calculation
+----- - ------------------------------------------------
+      - Components
+----- - ------------------------------------------------
+        File viewer
+        File editor
+        Line editor
+        Info viewer
+        Man viewer
+----- - ------------------------------------------------        
+
+ToDo
+----
+[ ] cpx: cotan ?
+[ ] stc: union
+[ ] frc: lcm
+[x] cfg: newline
+[x] cfg: sys.* -> *
+[ ] rgx: ^ en $
+[ ] rgx: []
+[ ] rgx: [[]]
+[x] cfg: nil<>? ( addr - false | addr true )
+[ ] col: execute?
+[ ] gmo: endian check
+[ ] ffl: dup nil<> en dup nil= check again

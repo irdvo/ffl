@@ -1,0 +1,161 @@
+# Dutch translation of days and months names for the ffl library
+# Copyright (C) 2007 Dick van Oudheusden
+# This file is distributed under the same license as the ffl library.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Forth Foundation Library\n"
+"PO-Revision-Date: 2007-11-17 07:30\n"
+"Last-Translator: Dick van Oudheusden\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#:
+msgid "Sun"
+msgstr "zon"
+
+#:
+msgid "Mon"
+msgstr "maa"
+
+#:
+msgid "Tue"
+msgstr "din"
+
+#:
+msgid "Wed"
+msgstr "woe"
+
+#:
+msgid "Thu"
+msgstr "don"
+
+#:
+msgid "Fri"
+msgstr "vri"
+
+#: 
+msgid "Sat"
+msgstr "zat"
+
+#: 
+msgid "Sunday"
+msgstr "zondag"
+
+#: 
+msgid "Monday"
+msgstr "maandag"
+
+#: 
+msgid "Tueday"
+msgstr "dinsdag"
+
+#: 
+msgid "Wednesday"
+msgstr "woensdag"
+
+#: 
+msgid "Thursday"
+msgstr "donderdag"
+
+#: 
+msgid "Friday"
+msgstr "vrijdag"
+
+#: 
+msgid "Saturday"
+msgstr "zaterdag"
+
+#: 
+msgid "Jan"
+msgstr "jan"
+
+#: 
+msgid "Feb"
+msgstr "feb"
+
+#: 
+msgid "Mar"
+msgstr "maa"
+
+#: 
+msgid "Apr"
+msgstr "apr"
+
+#: 
+msgid "May"
+msgstr "mei"
+
+#: 
+msgid "Jun"
+msgstr "jun"
+
+#: 
+msgid "Jul"
+msgstr "jul"
+
+#: 
+msgid "Aug"
+msgstr "aug"
+
+#: 
+msgid "Sep"
+msgstr "sep"
+
+#: 
+msgid "Oct"
+msgstr "oct"
+
+#: 
+msgid "Nov"
+msgstr "nov"
+
+#: 
+msgid "Dec"
+msgstr "dec"
+
+#: 
+msgid "January"
+msgstr "januari"
+
+#: 
+msgid "February"
+msgstr "februari"
+
+#: 
+msgid "March"
+msgstr "maart"
+
+#: 
+msgid "April"
+msgstr "april"
+
+#: 
+msgid "June"
+msgstr "juni"
+
+#: 
+msgid "July"
+msgstr "juli"
+
+#: 
+msgid "August"
+msgstr "augustus"
+
+#: 
+msgid "September"
+msgstr "september"
+
+#: 
+msgid "October"
+msgstr "october"
+
+#: 
+msgid "November"
+msgstr "november"
+
+#: 
+msgid "December"
+msgstr "december"

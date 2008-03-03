@@ -1,0 +1,208 @@
+
+                     The Forth Foundation Library (FFL)
+                     ----------------------------------
+
+
+The Forth Foundation Library is a general purpose forth library. It gives you
+a collection of words written in (ANS) Forth, in areas such as data types,
+collections, development support, interfaces and compound modules. The
+library is developped with gforth and pfe.
+
+At the moment the library is still under development. The FFL library, the 
+example and test files are licensed under the GNU GPL.
+
+
+Installation
+------------
+
+Copy the directory 'ffl' and its contents to directory where the forth
+system will look for sources. 
+
+
+In case of gforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/share/gforth/site-forth 
+
+
+In case of bigforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/lib/bigforth/src
+
+
+In case of pfe the 'ffl' directory (and its contents) should be copied to:
+
+/usr/local/share/pfe
+
+
+In case of Win32Forth the 'ffl' directory (and its contents) should be
+copied to:
+
+<drive>:\Program Files\Win32Forth
+
+(with <drive> the drive where Win32 is installed, normally this is 'C', or 
+in a directory that is in the search path of Win32Forth.)
+
+
+In case of minForth the 'ffl' directory (and its contents) should be 
+copied to your forth working directory.
+
+
+If your forth only looks in the current directory for forth sources, then copy 
+the directory 'ffl' and its contents to the current directory.
+
+Note: at this moment (2006-06-11) fina is not yet released, so any
+installation and configuration directives are not possible. The config.fs
+file for fina is also preliminary.
+
+
+Configuration
+-------------
+
+The default config.fs and make.fs are for gforth. So no further copying is 
+necessary for gforth.
+
+
+For bigforth the config.fs and make.fs files should be copied from the
+'engines/bigforth' directory to the 'ffl' directory.
+
+For pfe the config.fs and make.fs files should be copied from the 
+'engines/pfe' directory to the 'ffl' directory.
+
+For Win32Forth the config.fs and make.fs files should be copied from the
+'engines/Win32Forth' directory to the 'ffl' directory.
+
+For minForth the config.fs and make.fs files should be copied from the
+'engines/minForth' directory to the 'ffl' directory.
+
+The next step is editing the config.fs file for system settings.
+
+
+At the moment there are four system setting: 
+
+end-of-line
+
+This word defines the ascii end of line as a counted string. For unix this 
+is a linefeed, for dos systems it is carriage return and linefeed. For
+gforth and fina the word 'newline' is used to determine the end of line.
+For bigforth, pfe and minForth the default is the unix end of line, for 
+Win32Forth the default is dos. You should change the 'end-of-line' word 
+if the default is not correct for you.
+
+Note: gforth 0.6.2 returns for dos an incorrect value for end-of-line, so
+if you use gforth 0.6.2 on dos, you should change the 'end-of-line' word.
+
+
+#bits/byte
+
+This word defines the number of bits in a byte. The library queries the
+forth environment for "address-unit-bits". If this is not present, the
+value defaults to 8. In the unlikely event that your system does not
+support the environment query and your system uses a different number of 
+bits in a byte, then you should change this word.
+
+
+#bits/cell
+
+This word defines the number of bits in a cell. The default is the number of
+bits in a byte multipied by the number of bytes in a cell.
+
+
+#bits/char
+
+This word defines the number of bits in a char. The default is the number of
+bits in a byte multipied by the number of bytes in a char.
+
+
+Testing
+-------
+
+After installing the source files the unit test sources in the 'test'
+directory can be run to test the library. The test can be started by:
+
+(for PFE there are command line arguments. These are for test 
+purposes only and have no real meaning. Enter them in the correct case.)
+
+
+(for gforth):
+
+gforth ffl_test.fs
+
+
+(or bigforth):
+
+bigforth ffl_test.fs
+
+
+(or pfe)
+
+pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
+
+
+(or Win32Forth)
+
+1. Use an editor to remove the ending 'bye' from the 'ffl_test.fs' file.
+2. Start Win32Forth.
+3. Use in the window the 'chdir' word to move to the test directory.
+4. Use 'include ffl_test.fs' to run the tests.
+
+
+(or minForth)
+
+For running the tests the minForth engine is too small configured.
+The first step is to extend the engine by editing the kernel.mfc file from
+minForth. Change in this file the NAMES to 512000, the HEAP to 640000, the 
+LIMIT to 1000000, the SPMAX to 256 and the RPMAX to 256. Then rebuild the 
+minForth engine.
+Step two is to copy this new engine (mf and mf.i) to a directory with the
+test sources. Also make sure that in this directory the ffl is installed
+in the 'ffl' directory.
+Step three is to start the minForth engine (mf) and enter 
+'include ffl_test.fs'.
+
+
+The program will tell you which modules are tested and if there were any
+errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+then all went well.
+
+
+Documentation
+-------------
+
+In the directory 'html' there is the HTML documentation of the library. The
+file 'index.html' contains an overview of all the modules in the library. In 
+the file 'words.html' all words of the libary are alphabetically listed. In
+the file 'manual.html' there is simple manual.
+
+On the site there is also a link to the manual. This is actually a wiki with 
+more information about the library.
+
+
+Porting to other forth systems
+------------------------------
+
+The library is developped on gforth and pfe. The intention is that only two 
+files are dependant on the (ANS) forth system:
+
+ ./ffl/config.fs
+ ./ffl/make.fs
+
+All other source files should only use ANS words or extensions that are 
+present on the forth engine or are definied in the config.fs.
+
+If you change these files to make the library work on a particular forth 
+system, let me know, then I can add the changed files to the distribution. 
+Also if there are any specific details concerning installation or testing 
+for a particular forth system, let me know. I will add them to the README.
+
+
+Bugs
+----
+
+Because the library is still beta it is not impossible that you will find 
+bugs. You can send them or any suggestions to the email address which is 
+listed on the site: ffl.dvoudheusden.net.
+
+
+Thanks.
+Dick van Oudheusden
+
