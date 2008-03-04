@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.12 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -85,21 +85,21 @@ end-structure
 
 ( Calculation module words )
 
-: cpx+add          ( r1 r2 r3 r4 -- r5 r6 = Add the complex number r1+jr2 to r3+jr4 )
+: cpx+add          ( F: r1 r2 r3 r4 -- r5 r6 = Add the complex number r1+jr2 to r3+jr4 )
   frot f+
   f-rot f+
   fswap
 ;
 
 
-: cpx+sub          ( r1 r2 r3 r4 -- r5 r6 = Subtract the complex number r1+jr2 from the number r3+jr4 )
+: cpx+sub          ( F: r1 r2 r3 r4 -- r5 r6 = Subtract the complex number r1+jr2 from the number r3+jr4 )
   frot fswap f-
   f-rot f-
   fswap
 ;
 
 
-: cpx+mul          ( r1 r2 r3 r4 -- r5 r6 = Multiply the complex numbers r1+jr2 with r3+jr4 )
+: cpx+mul          ( F: r1 r2 r3 r4 -- r5 r6 = Multiply the complex numbers r1+jr2 with r3+jr4 )
   fswap frot
   f2dup f* f>r                         \ re1 * im2
   f>r
@@ -110,20 +110,20 @@ end-structure
 ;
 
 
-: cpx+rmul         ( r1 r2 r3 -- r4 r5 = Multiply the complex number r1+jr2 with the real number r3 )
+: cpx+rmul         ( F: r1 r2 r3 -- r4 r5 = Multiply the complex number r1+jr2 with the real number r3 )
   frot
   fover f*                             \ re * re2
   f-rot f*                             \ im * re2
 ;
 
 
-: cpx+imul         ( r1 r2 r3 -- r4 r5 = Multiply the complex number r1+jr2 with the imaginary number r3 )
+: cpx+imul         ( F: r1 r2 r3 -- r4 r5 = Multiply the complex number r1+jr2 with the imaginary number r3 )
   ftuck f* fnegate                     \ -im * im2 
   f-rot f*                             \  re * im2
 ;
 
   
-: cpx+div          ( r1 r2 r3 r4 -- r5 r6 = Divide the complex number r3+jr4 by number r1+jr2 )
+: cpx+div          ( F: r1 r2 r3 r4 -- r5 r6 = Divide the complex number r3+jr4 by number r1+jr2 )
   fover fdup f*
   fover fdup f*
   f+ f>r                               \ r = re1 * re1 + im1 * im1
@@ -141,24 +141,24 @@ end-structure
 ;
 
 
-: cpx+conj         ( r1 r2 -- r3 r4 = Conjugate the complex number r1+jr2 )
+: cpx+conj         ( F: r1 r2 -- r3 r4 = Conjugate the complex number r1+jr2 )
   fnegate                              \ negate the imaginary part
 ;
 
 
-: cpx+nrm          ( r1 r2 -- r3 = Calculate the square of the modulus of the complex number r1+jr2 )
+: cpx+nrm          ( F: r1 r2 -- r3 = Calculate the square of the modulus of the complex number r1+jr2 )
   fdup f*
   fswap fdup f*
   f+                                   \ re * re + im * im
 ;
 
 
-: cpx+abs          ( r1 r2 -- r3 = Calculate the modulus of the complex number r1+jr2 )
+: cpx+abs          ( F: r1 r2 -- r3 = Calculate the modulus of the complex number r1+jr2 )
   cpx+nrm fsqrt                        \  sqrt(re * re + im * im)
 ;
 
 
-: cpx+sqrt         ( r1 r2 -- r3 r4 = Calculate the square root for the complex number r1+jr2 )
+: cpx+sqrt         ( F: r1 r2 -- r3 r4 = Calculate the square root for the complex number r1+jr2 )
   fswap
   f2dup fswap cpx+abs                  \ r = abs(re,im)
   fover fabs f+ 2E+0 f/ fsqrt          \ r = sqrt(0.5*(r+abs(re)))
@@ -182,7 +182,7 @@ end-structure
 ;
 
 
-: cpx+exp          ( r1 r2 -- r3 r4 = Calculate the exponent function for the complex number r1+jr2 )
+: cpx+exp          ( F: r1 r2 -- r3 r4 = Calculate the exponent function for the complex number r1+jr2 )
   fsincos                              \ sin(im) cos(im)
   frot fexp                            \ exp(re)
   ftuck f*                             \ exp(re) * cos(im)
@@ -190,14 +190,14 @@ end-structure
 ;
 
 
-: cpx+ln           ( r1 r2 -- r3 r4 = Calculate the natural logarithm for the complex number r1+jr2 )
+: cpx+ln           ( F: r1 r2 -- r3 r4 = Calculate the natural logarithm for the complex number r1+jr2 )
   f2dup cpx+nrm                        \ r = nrm
   fln 2E+0 f/                          \ im = 0.5*ln(r)
   f-rot fswap fatan2                   \ re = atan2(im,re)
 ;
 
 
-: cpx+sin          ( r1 r2 -- r3 r4 = Calculate the trigonometric functions sine for the complex number r1+jr2 )
+: cpx+sin          ( F: r1 r2 -- r3 r4 = Calculate the trigonometric functions sine for the complex number r1+jr2 )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
   frot fdup 1E+0 fswap f/              \ v = 1 / u
   ftuck f+ 2E+0 f/                     \ u = 1/2 * (u+v)
@@ -207,7 +207,7 @@ end-structure
 ;
 
 
-: cpx+cos          ( r1 r2 -- r3 r4 = Calculate the trigonometric functions cosine for the complex number r1+jr2 )
+: cpx+cos          ( F: r1 r2 -- r3 r4 = Calculate the trigonometric functions cosine for the complex number r1+jr2 )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re)
   frot fdup 1E+0 fswap f/              \ v = 1 / u
   ftuck f+ 2E+0 f/                     \ u = 1/2 * (u+v)
@@ -217,7 +217,7 @@ end-structure
 ;
 
 
-: cpx+tan          ( r1 r2 -- r3 r4 = Calculate the trigonometric functions trangent for the complex number r1+jr2 )
+: cpx+tan          ( F: r1 r2 -- r3 r4 = Calculate the trigonometric functions trangent for the complex number r1+jr2 )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re) 
   frot fdup 1E+0 fswap f/              \ v = 1/u
   ftuck f+ 2E+0 f/                     \ u = (u+v)/2
@@ -232,7 +232,7 @@ end-structure
 ;
 
   
-: cpx+asin         ( r1 r2 -- r3 r4 = Calculate the inverse trigonometric function sine for the complex number r1+jr2 )
+: cpx+asin         ( F: r1 r2 -- r3 r4 = Calculate the inverse trigonometric function sine for the complex number r1+jr2 )
   f2dup
   f2dup cpx+mul                        \ w = re,im * re,im
   1E+0 f-rot 
@@ -245,7 +245,7 @@ end-structure
 ;
 
   
-: cpx+acos         ( r1 r2 -- r3 r4 = Calculate the inverse trigonometric function cosine for the complex number r1+jr2 )
+: cpx+acos         ( F: r1 r2 -- r3 r4 = Calculate the inverse trigonometric function cosine for the complex number r1+jr2 )
   f2dup
   f2dup cpx+mul                        \ w = re,im * re,im
   1E+0 f-rot 
@@ -259,7 +259,7 @@ end-structure
 ;
 
 
-: cpx+atan         ( r1 r2 -- r3 r4 = Calculate the inverse trigonometric function tangent for the complex number r1+jr2 )
+: cpx+atan         ( F: r1 r2 -- r3 r4 = Calculate the inverse trigonometric function tangent for the complex number r1+jr2 )
   fnegate fswap                        \ u = -im,re
   f>r f>r 1E+0 0E+0 fr> fr>
   f2dup f>r f>r
@@ -272,7 +272,7 @@ end-structure
 ;
 
 
-: cpx+sinh         ( r1 r2 -- r3 r4 = Calculate the hyperbolic function sine for the complex number r1+jr2 )
+: cpx+sinh         ( F: r1 r2 -- r3 r4 = Calculate the hyperbolic function sine for the complex number r1+jr2 )
   fsincos                              \ sin(im) cos(im)
   frot fexp                            \ u = exp(re)
   1E+0 fover f/                        \ v = 1/u
@@ -283,7 +283,7 @@ end-structure
 ;
 
 
-: cpx+cosh         ( r1 r2 -- r3 r4 = Calculate the hyperbolic function cosine for the complex number r1+jr2 )
+: cpx+cosh         ( F: r1 r2 -- r3 r4 = Calculate the hyperbolic function cosine for the complex number r1+jr2 )
   fsincos                              \ sin(im) cos(im)
   frot fexp                            \ u = exp(re)
   1E+0 fover f/                        \ v = 1/u
@@ -294,7 +294,7 @@ end-structure
 ;
 
 
-: cpx+tanh         ( r1 r2 -- r3 r4 = Calculate the hyperbolic function tangent for the complex number r1+jr2 )
+: cpx+tanh         ( F: r1 r2 -- r3 r4 = Calculate the hyperbolic function tangent for the complex number r1+jr2 )
   fsincos                              \ s = sin(im) c = cos(im)
   frot fexp                            \ u = exp(re)
   1E+0 fover f/                        \ v = 1/u
@@ -307,7 +307,7 @@ end-structure
 ;
 
 
-: cpx+asinh        ( r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function sine for the complex number r1+jr2 )
+: cpx+asinh        ( F: r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function sine for the complex number r1+jr2 )
   f2dup                                \ w = (re,im)
   f2dup cpx+mul                        \ w = w * w
   1E+0 0E+0 cpx+add                    \ u = (1,0) + w
@@ -317,7 +317,7 @@ end-structure
 ;
 
 
-: cpx+acosh        ( r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function cosine for the complex number r1+jr2 )
+: cpx+acosh        ( F: r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function cosine for the complex number r1+jr2 )
   f2dup
   f0= -1E+0 f< AND                     \ f = (im = 0) AND (re < -1)
   f2dup                                \ w = (re,im)
@@ -336,7 +336,7 @@ end-structure
 ;
 
 
-: cpx+atanh        ( r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function tangent for the complex number r1+jr2 )
+: cpx+atanh        ( F: r1 r2 -- r3 r4 = Calculate the inverse hyperbolic function tangent for the complex number r1+jr2 )
   f2dup f>r f>r
   1E+0 0E+0 cpx+add                    \ u = (1,0) + (re,im)
   1E+0 0E+0 fr> fr> cpx+sub            \ w = (1,0) - (re,im)
@@ -348,7 +348,7 @@ end-structure
 
 ( Private words )
 
-: cpx+convert      ( r c-addr1 -- c-addr2 flag = Convert a single float number to a string, return success )
+: cpx+convert      ( F: r -- ; c-addr1 -- c-addr2 flag = Convert a single float number to a string, return success )
   [char] 0 over c! char+
   [char] . over c! char+               \ ToDo: locale
   precision 1 max 32 min               \ Limit precision: PAD is at least 84 characters
@@ -370,7 +370,7 @@ end-structure
   
 ( Conversion module words )
 
-: cpx+to-string    ( r1 r2 -- c-addr u = Convert the complex number r1+jr2 to a string, using precision and PAD )
+: cpx+to-string    ( F: r1 r2 -- ; -- c-addr u = Convert the complex number r1+jr2 to a string, using precision and PAD )
   fswap                                \ re is converted first
   pad
   bl over c! dup char+                 \ start of string, reserve space for sign
@@ -390,44 +390,44 @@ end-structure
 ;
 
 
-: cpx+to-polar     ( r1 r2 -- r3 r4 = Convert the complex number r1+jr2 to polar notation with radius r3 and theta r4 )
+: cpx+to-polar     ( F: r1 r2 -- r3 r4 = Convert the complex number r1+jr2 to polar notation with radius r3 and theta r4 )
   f2dup cpx+abs                       \ r     = abs(re,im)
   f-rot fswap fatan2                  \ theta = atan2(im,re)
 ;
 
 
-: cpx+from-polar   ( r1 r2 -- r3 r4 = Convert the polar radius r1, theta r2 to complex number r3+jr4 )
+: cpx+from-polar   ( F: r1 r2 -- r3 r4 = Convert the polar radius r1, theta r2 to complex number r3+jr4 )
   fsincos frot cpx+rmul fswap         \ re = cos * r im = sin * r
 ;
 
 
 ( Compare module words )
 
-: cpx+equal?       ( r1 r2 r3 r4 -- flag = Check if the complex numbers r1+jr2 and r3+jr4 are [true] equal )
+: cpx+equal?       ( F: r1 r2 r3 r4 -- ; -- flag = Check if the complex numbers r1+jr2 and r3+jr4 are [true] equal )
   frot f= f= AND
 ;
 
 
 ( Variable words )
 
-: cpx-re@         ( cpx -- r = Get the real part of the complex number )
+: cpx-re@         ( F: -- r ; cpx -- = Get the real part of the complex number )
   cpx>re f@
 ;
 
 
-: cpx-im@       ( cpx -- r = Get the imaginary part of the complex number )
+: cpx-im@       ( F: -- r ; cpx -- = Get the imaginary part of the complex number )
   cpx>im f@
 ;
 
 
-: cpx-get          ( cpx -- r1 r2 = Get the complex number r1+jr2 from the complex variable )
+: cpx-get          ( F: -- r1 r2 ; cpx -- = Get the complex number r1+jr2 from the complex variable )
   >r
   r@ cpx-re@ 
   r> cpx-im@
 ;
 
   
-: cpx-set          ( r1 r2 cpx = Set the complex number r1+jr2 in the complex variable )
+: cpx-set          ( F: r1 r2 -- ; cpx -- = Set the complex number r1+jr2 in the complex variable )
   >r
   r@ cpx>im f!
   r> cpx>re f!

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-03 19:34:26 $ $Revision: 1.48 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.49 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )
@@ -195,32 +195,32 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 ( Float extension constants )
 
-0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
+0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
 
 
 ( Float extension words )
 
-: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
+: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
   frot frot
 ;
 
 
-: f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
+: f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 
 
-: f>r              ( r -- ; R: -- r = Push float on the return stack )
+: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
   r> rp@ float - rp! rp@ f! >r 
 ;
 
-: fr>              ( -- r ; R: r -- = Pop float from the return stack )
+: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
   r> rp@ f@ float rp@ + rp! >r
 ;
 
-: fr@              ( -- r ; R: r -- r = Get float from top of return stack )
+: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
   r> rp@ f@ >r
 ;
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2008-03-02 15:03:02 $ $Revision: 1.7 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 \
@@ -66,7 +66,7 @@ require timer.fs
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )

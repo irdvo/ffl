@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:02 $ $Revision: 1.8 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )
@@ -230,9 +230,9 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
 
 ( Float extension constants )
 
-0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
+0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
 
 
 ( Private float variable )
@@ -241,26 +241,26 @@ fvariable float<>cells
 
 ( Float extension words )
 
-: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
+: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
   frot frot
 ;
 
 
-: f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
+: f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 
-: ftuck            ( r1 r2 -- r2 r1 r2 = Tuck two floats )
+: ftuck            ( F: r1 r2 -- r2 r1 r2 = Tuck two floats )
   fswap fover
 ;
 
-: f=               ( r1 r2 -- flag = Compare two floats )
+: f=               ( F: r1 r2 -- flag = Compare two floats )
   f- fabs 1e-99 f<
 ;
 
 cell 4 = float 8 = AND [IF]
 
-: f>r              ( r --; R: -- r = Put float to return stack )
+: f>r              ( F: r --; R: -- r = Put float to return stack )
   r>
   float<>cells f!
   float<>cells @ >r
@@ -268,7 +268,7 @@ cell 4 = float 8 = AND [IF]
   >r
 ;
 
-: fr>              ( -- r; R: r -- = Get float from return stack )
+: fr>              ( F: -- r; R: r -- = Get float from return stack )
   r>
   r> float<>cells cell+ !
   r> float<>cells !
@@ -276,7 +276,7 @@ cell 4 = float 8 = AND [IF]
   >r
 ;
 
-: fr@              ( -- r; R: r -- r = Fetch float of return stack )
+: fr@              ( F: -- r; R: r -- r = Fetch float of return stack )
   1 rpick float<>cells cell+ !
   2 rpick float<>cells !
           float<>cells f@

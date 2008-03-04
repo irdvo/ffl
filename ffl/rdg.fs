@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.6 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -86,14 +86,14 @@ end-structure
 
 ( Private words )
 
-: rdg-gen-[0,1>   ( rdg -- r = Generate a random number [0,1> )
+: rdg-gen-[0,1>   ( F: -- r ; rdg -- = Generate a random number [0,1> )
   dup  rdg>data      @
   swap rdg>generator @ 
   execute
 ;
 
 
-: rdg-gen-<0,1>   ( rdg -- r = Generate a positive random number <0,1> )
+: rdg-gen-<0,1>   ( F: -- r ; rdg -- = Generate a positive random number <0,1> )
   BEGIN
     dup rdg-gen-[0,1>
     fdup f0=
@@ -106,7 +106,7 @@ end-structure
 
 ( Random generator words )
 
-: rdg-uniform   ( r1 r2 rdg -- r3 = Generate a random number with a uniform distribution in the range of [r1,r2> )
+: rdg-uniform   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a uniform distribution in the range of [r1,r2> )
   fover f-                   \ r2 - r1
   rdg-gen-[0,1> f*           \ (r2 - r1) * rng
   f+                         \ r1 + (r2 - r1) * rng
@@ -118,7 +118,7 @@ end-structure
 \ With Leva's modifications to the original K+M method; see:
 \ J. L. Leva, ACM Trans Math Software 18 (1992) 449-453 and 454-455.
 
-: rdg-normal   ( r1 r2 rdg -- r3 = Generate a random number with a normal or gaussian distribution with mu or mean r1 and sigma or standard deviation r2 )
+: rdg-normal   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a normal or gaussian distribution with mu or mean r1 and sigma or standard deviation r2 )
   BEGIN
     1E+0 dup rdg-gen-[0,1> f-               \ u = 1.0 - rng
     dup rdg-gen-[0,1> 0.5E+0 f-             \ v = rng - 0.5
@@ -148,7 +148,7 @@ end-structure
 ;
 
 
-: rdg-exponential   ( r1 rdg -- r2 = Generate a random number with an exponential distribution with mu or mean r1 [>0] )
+: rdg-exponential   ( F: r1 -- r2 ; rdg -- = Generate a random number with an exponential distribution with mu or mean r1 [>0] )
   rdg-gen-<0,1>              \ look for positive random number
   fln fnegate f*             \ -ln rng * r1
 ;
@@ -158,7 +158,7 @@ end-structure
 \ generating gamma variables", ACM Transactions on Mathematical
 \ Software, Vol 26, No 3 (2000), p363-372.
 
-: rdg-gamma   ( r1 r2 rdg -- r3 = Generate a random number with a gamma distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
+: rdg-gamma   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a gamma distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
   fover 1E+0 f< IF
     fover 1E+0 f+ fswap dup recurse         \ rdg-gamma(1+r1, r2) * ..
     1E+0 frot f/ rdg-gen-<0,1> fswap f** f* \ .. rng^(1 / r1)
@@ -204,7 +204,7 @@ end-structure
 
 \ Based on Knuth
 
-: rdg-beta   ( r1 r2 rdg -- r3 = Generate a random number with a beta distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
+: rdg-beta   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a beta distribution with alpha r1 [>0] and beta r2 [>0], alpha*beta = mean, alpha*beta^2 = variance )
   fswap 1E+0 dup rdg-gamma        \ x1 = gamma(r1, 1.0)
   fswap 1E+0     rdg-gamma        \ x2 = gamma(r2, 1.0)
   fover f+ f/                     \ x1 / (x1 + x2)
@@ -213,7 +213,7 @@ end-structure
 
 \ Based on Knuth
 
-: rdg-binomial ( u1 r rdg - u2 = Generate a random number with a binomial distribution with probability r [0,1] and trails u [>=0])
+: rdg-binomial ( F: r -- ; u1 rdg -- u2 = Generate a random number with a binomial distribution with probability r [0,1] and trails u1 [>=0])
   >r
   0                               \ k = 0 n = u1 p = r
   BEGIN
@@ -250,7 +250,7 @@ end-structure
 ;
 
 
-: rdg-poisson ( r rdg -- u = Generate a random number with a poisson distribution with mean r [>=0] )
+: rdg-poisson ( F: r -- ; rdg -- u = Generate a random number with a poisson distribution with mean r [>=0] )
   >r
   0                               \ k = 0 mu = r
   BEGIN
@@ -280,14 +280,14 @@ end-structure
 ;
 
 
-: rdg-pareto   ( r1 r2 rdg -- r3 = Generate a random number with a pareto distribution with alpha r1 [>0] the scale parameter and r2 [>0] the shape parameter )
+: rdg-pareto   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a pareto distribution with alpha r1 [>0] the scale parameter and r2 [>0] the shape parameter )
   rdg-gen-<0,1>                  \ x = rng
   fswap -1E+0 fswap f/ f**       \ z = x ^ (-1/beta)
   f*                             \ r1 * z
 ;
 
 
-: rdg-weibull   ( r1 r2 rdg -- r3 = Generate a random number with a Weibull distribution with alpha r1 [>0] the scale parameter and beta r2 [>0] the shape parameter )
+: rdg-weibull   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a Weibull distribution with alpha r1 [>0] the scale parameter and beta r2 [>0] the shape parameter )
   rdg-gen-<0,1>                  \ x = rng
   fln fnegate                    \ -ln(x)
   fswap 1E+0 fswap f/ f**        \ z = -ln(x) ^ (1/beta)

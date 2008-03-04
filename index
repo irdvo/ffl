@@ -87,7 +87,7 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Data type
 ----- - ------------------------------------------------
-7 clr - Color module
+8 clr - Color module
 9     - Big Number module
 9     - Big Float module
 9     - Big Fraction module
@@ -111,10 +111,10 @@ Index of used prefices
 ----- - ------------------------------------------------
   cfg - Configuration file
 7 bzf - BZip2 file module
-7 bzp - BZip2 module
+7 bzs - BZip2 module
 8 dbm - DBM module
 7 gzf - GZip file module
-7 gzp - GZip module
+7 gzs - GZip module
       - css module
       - url module
 a    - crypt: aes
@@ -131,7 +131,7 @@ b     - Font ??
       - Compound
 ----- - ------------------------------------------------
 7 dis - DateTime input stream
-7 gps - nmea handling, distance calculation
+8 gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------

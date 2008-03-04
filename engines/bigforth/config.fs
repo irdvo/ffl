@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:02 $ $Revision: 1.17 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 
@@ -235,19 +235,19 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
 
 ( Float extension constants )
 
-0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
+0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
 
 
 ( Float extension words )
 
-: f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
+: f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 
 
-: ftuck            ( r1 r2 -- r2 r1 r2 = Swap and over )
+: ftuck            ( F: r1 r2 -- r2 r1 r2 = Swap and over )
   fswap fover
 ;
 

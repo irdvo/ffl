@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:02 $ $Revision: 1.8 $
+\  $Date: 2008-03-04 18:39:15 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 \
@@ -38,7 +38,7 @@
 nostack
 sys-warning-off
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )
@@ -69,7 +69,7 @@ ffl.endian c@ 0=
 ( Extension words )
 
 1 chars 1 = [IF]
-: char/            ( n:aus -- n:chars = Convert address units to chars )
+: char/            ( n1 -- n2 = Convert address units to chars )
 ; immediate
 [ELSE]
 : char/
@@ -78,14 +78,14 @@ ffl.endian c@ 0=
 [THEN]
 
 
-: lroll            ( u1 u -- u2 = Rotate u1 u bits to the left )
+: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
   2dup lshift >r
   #bits/cell swap - rshift r>
   or
 ;
 
 
-: rroll            ( u1 u -- u2 = Rotate u1 u bits to the right )
+: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
   2dup rshift >r
   #bits/cell swap - lshift r>
   or
@@ -218,27 +218,27 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 ( Float extension words )
 
-0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
+0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
 
 
-: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
+: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
   frot frot
 ;
 
 
-: fr>              ( -- r; R: r -- = Get float from return stack )
+: fr>              ( F: -- r; R: r -- = Get float from return stack )
   postpone r>f
 ; immediate
 
 
-: fr@              ( -- r; R: r -- r = Fetch float of return stack )
+: fr@              ( F: -- r; R: r -- r = Fetch float of return stack )
   r> rp@ f@ >r
 ;
 
 
-: ftuck            ( r1 r2 -- r2 r1 r2 = Swap and over )
+: ftuck            ( F: r1 r2 -- r2 r1 r2 = Swap and over )
   fswap fover
 ;
 
