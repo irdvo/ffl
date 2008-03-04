@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-17 07:47:22 $ $Revision: 1.1 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,7 +35,7 @@ include ffl/msc.fs
 msc-create en>nl
 
 
-\ Add translations to the caatalog
+\ Add translations to the catalog
 
 s" yes"  s" ja"    en>nl msc-add
 s" no"   s" nee"   en>nl msc-add

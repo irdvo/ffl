@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.16 $
+\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 \
@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Extra loads )
@@ -240,9 +240,9 @@ s" MAX-U" environment? drop constant max-ms@    ( -- ud = Maximum value of the m
 
 ( Float constants )
 
-0E+0 fconstant 0E+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1E+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2E+0  ( -- r = Float constant 2.0 )
+0E+0 fconstant 0E+0  ( F: -- r = Float constant 0.0 )
+1E+0 fconstant 1E+0  ( F: -- r = Float constant 1.0 )
+2E+0 fconstant 2E+0  ( F: -- r = Float constant 2.0 )
 
 
 ( Float extension words )
@@ -250,22 +250,22 @@ s" MAX-U" environment? drop constant max-ms@    ( -- ud = Maximum value of the m
 1 floats constant float ( -- n = Size of one float )
 
 
-: f>r                ( r --; R: -- r = Put float to return stack )
+: f>r                ( F: r --; R: -- r = Put float to return stack )
   r> rp@ 1 floats - rp! rp@ f! >r 
 ;
 
 
-: fr>                ( -- r; R: r -- = Get float from return stack )
+: fr>                ( F: -- r; R: r -- = Get float from return stack )
   r> rp@ f@ 1 floats rp@ + rp! >r
 ;
 
 
-: fr@                ( -- r; R: r -- r = Fetch float of return stack )
+: fr@                ( F: -- r; R: r -- r = Fetch float of return stack )
   r> rp@ f@ >r
 ;
 
 
-: f2dup             ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
+: f2dup             ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 [THEN]
