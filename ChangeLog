@@ -1,3 +1,8 @@
+0.7.0
+* fsm: new module: Finite State Machine (2008-03-05)
+* fst: new module: FSM State (2008-03-05)
+* ftr: new module: FSM Transition (2008-03-05)
+* snl: new word: snl-execute? (2008-03-05)
 0.6.0
 * tos: new word: tos-set-writer,tos-flush (2008-02-21)
 * bct: new word: bct-clear

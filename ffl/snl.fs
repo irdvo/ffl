@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.6 $
+\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -40,7 +40,7 @@ include ffl/snn.fs
 ( single linked cell list [scl] module. )
 
 
-1 constant snl.version
+2 constant snl.version
 
 
 ( List structure )
@@ -302,6 +302,23 @@ defer snl.remove-first
     snn-next@                \  walk = walk->next
   REPEAT
   drop
+;
+
+
+: snl-execute?     ( i*x xt snl -- j*x flag = Execute xt for every node in the list until xt returns true )
+  snl-first@                 \ walk = first
+  false                      \ keep searching
+  BEGIN
+    over nil<> over 0= AND   \ while walk <> nil and keep searching do
+  WHILE
+    drop
+    2>r
+    2r@ swap execute         \   execute xt with node
+    2r>
+    snn-next@                \   walk = walk->next
+    rot                      \   keep searching to tos
+  REPEAT
+  nip nip
 ;
 
 
