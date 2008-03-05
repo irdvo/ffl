@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.37 $
+\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.38 $
 \
 \ ==============================================================================
 
@@ -47,6 +47,7 @@ include dtm_test.fs
 include dos_test.fs
 include est_test.fs
 include frc_test.fs
+include fsm_test.fs
 include hct_test.fs
 include md5_test.fs
 include msc_test.fs

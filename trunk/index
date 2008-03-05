@@ -73,6 +73,9 @@ Index of used prefices
 ----- - ------------------------------------------------
 6 arg - Argument parser
 6 dos - Datetime output stream
+7 fsm - Finite state machine module
+7 fst - FSM State
+7 ftr - FSM Transition
 5 nfe - non-deterministic finite automate expression
 5 nfs - non-deterministic finite automata state
 5 rgx - Regular expression module
@@ -95,7 +98,6 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
-7 fsm - Finite state machine module
 8 grp - Graph module
 8 gre - GRaph edge module
 8 grn - GRaph node module

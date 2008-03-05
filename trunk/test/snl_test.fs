@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-22 06:38:07 $ $Revision: 1.3 $
+\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -56,11 +56,17 @@ t{ snl1 snl-empty?   ?false  }t
 
 \ execute test
 
-: snl-test-count ( u w:snn - u+1 )
+: snl-test-count ( u snn - u+1 )
   drop 1+
 ;
 
 t{ 0 ' snl-test-count snl1 snl-execute 5 ?s }t
+
+: snl-test-count? ( u snn - u+1 false | u+1 true )
+  swap 1+ swap snn1 =
+;
+
+t{ 0 ' snl-test-count? snl1 snl-execute? ?true 3 ?s }t
 
 \ Iterator test
 
