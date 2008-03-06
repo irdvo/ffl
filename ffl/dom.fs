@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.12 $
+\  $Date: 2008-03-06 18:20:53 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -57,7 +57,7 @@ include ffl/xos.fs
 ( dom.cdata:     -- c-addr u              = CDATA section text                                  )
 ( dom.pi:        -- c-addr u              = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
 ( dom.comment:   -- c-addr n              = Comment                                             )
-( dom.document:  --                       = Document attributes                                 )
+( dom.document:  --                       = Document root                                       )
 ( </pre>                                                                  )
 
 1 constant dom.version
