@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.2 $
+\  $Date: 2008-03-06 18:20:53 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -50,7 +50,7 @@ dom-create dom1
 s" test.xml" r/o open-file throw value dom.input 
 
 
-\ Read the index.html file with the dom-reader in the dom, leading and trailing whitespace is not skipped
+\ Read the index.html file with the dom-reader in the dom, leading and trailing whitespace is skipped
 
 dom.input ' dom-reader true dom1 dom-read-reader [IF]
   .( XML File is successfully read ) cr
