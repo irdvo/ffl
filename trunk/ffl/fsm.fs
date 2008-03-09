@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.1 $
+\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,6 +33,7 @@ include ffl/config.fs
 include ffl/ftr.fs
 include ffl/fst.fs
 include ffl/snl.fs
+include ffl/tos.fs
 
 
 ( fsm = Finite State Machine )
@@ -47,6 +48,8 @@ include ffl/snl.fs
 begin-structure fsm%       ( -- n = Get the required space for a fsm variable )
   snl%
   +field  fsm>states          \ the list with all the states
+  field:  fsm>ids             \ the state id counter
+  field:  fsm>start           \ the start state
   field:  fsm>current         \ the current state
   field:  fsm>previous        \ the previous state
   field:  fsm>events          \ the number of events in the machine
@@ -57,7 +60,9 @@ end-structure
 
 : fsm-init         ( +n fsm -- = Initialise the fsm with the number of events n )
   dup  fsm>states   snl-init
+  dup  fsm>ids      0!
   tuck fsm>events   !
+  dup  fsm>start    nil!
   dup  fsm>current  nil!
        fsm>previous nil!
 ;
@@ -85,17 +90,35 @@ end-structure
 ;
 
 
-( State words )
+( Member words )
 
-: fsm-new-state    ( c-addr u fsm -- fst = Add a new state with label c-addr u to the FSM )
-  >r fst-new dup r>
-  fsm>states snl-push
+: fsm-start@       ( fsm -- fst = Get the start state )
+  fsm>start @
 ;
 
 
-: fsm-start        ( fst fsm -- = Set the start state )
-  dup fsm>current  !
-      fsm>previous nil!
+: fsm-start!       ( fst fsm -- = Set the start state )
+  fsm>start !
+;
+
+
+( State words )
+
+: fsm-new-state    ( x xt1 xt2 c-addr1 u1 fsm -- fst = Add a new state with label c-addr1 u1, entry action xt1, exit action xt2 and data x )
+  >r 
+  r@ fsm>ids dup 1+! @ fst-new    \ Increase ids and create the state 
+  dup r@ fsm>states snl-push
+  r@ fsm-start@ nil= IF
+    dup r@ fsm>start !
+  THEN  
+  rdrop
+;
+
+
+: fsm-start        ( fsm -- = Start the finite state machine )
+  dup  fsm-start@
+  over fsm>current  !
+       fsm>previous nil!
 ;
 
 
@@ -108,9 +131,13 @@ end-structure
 
 ( Transition words )
 
-: fsm-new-transition  ( c-addr u fst1 fst2 fsm -- ftr = Add a new transition from state fst1 to state fst2 with label c-addr u )
-  fsm>events @ swap
-  fst-new-transition
+: fsm-new-transition  ( x xt c-addr1 u1 fst1 fst2 fsm -- ftr = Add a new transition from state fst1 to state fst2 with label c-addr1 u1, action xt and data x )
+  fsm>events @ rot fst-new-transition
+;
+
+
+: fsm-any-transition  ( x xt c-addr1 u1 fst1 fst2 fsm -- ftr = Set the any transition for state fst1 to state fst2 with label c-addr1 u1, action xt and data x )
+  drop swap fst-any-transition
 ;
 
 
@@ -135,8 +162,18 @@ end-structure
 
 ( Conversion words )
 
-: fsm-to-dot       ( fsm -- c-addr u = Convert the FSM to a dot string )
-  \ ToDo
+: fsm-to-dot       ( c-addr u tos fsm -- = Convert the FSM to a dot string using the stream with name c-addr u )
+  swap >r -rot
+  s" digraph "    r@ tos-write-string
+                  r@ tos-write-string     \ Write graph name
+  s"  {"          r@ tos-write-string r@ tos-flush
+  s" rankdir=LR;" r@ tos-write-string r@ tos-flush
+  
+  \ Todo: nodes with attributes
+  \ ToDo: transitions with attributes
+  
+  [char] }        r@ tos-write-char   r> tos-flush
+  drop
 ;
 
  
@@ -145,6 +182,7 @@ end-structure
 : fsm-dump   ( fsm - = Dump the FSM )
   ." fsm:" dup . cr
   ."  states  : " ['] fst-dump over fsm>states snl-execute cr
+  ."  start   : " dup fsm>start ? cr
   ."  current : " dup fsm>current ? cr
   ."  previous: " dup fsm>previous ? cr
   ."  events  : "     fsm>events ? cr

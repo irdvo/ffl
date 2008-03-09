@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.1 $
+\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -61,15 +61,15 @@ end-structure
 
 ( Transition creation, initialisation and destruction )
 
-: ftr-init         ( c-addr u fst +n ftr -- = Initialise the transition with next state fst, label c-addr u and number events n )
+: ftr-init         ( x xt c-addr1 u1 fst +n ftr -- = Initialise the transition to the state fst, label c-addr1 u1, number events n, action xt and data x )
   >r
-  r@ ftr>node         snn-init
-  r@ ftr>condition    bar-init
-  r@ ftr>next         !
-  r@ ftr>label dup    str-init str-set
-  r@ ftr>data         0!
-  r@ ftr>action       nil!
-  r> ftr>attributes   str-init
+  r@ ftr>node           snn-init
+  r@ ftr>condition      bar-init
+  r@ ftr>next           !
+  r@ ftr>attributes     str-init
+  r@ ftr>label      dup str-init str-set
+  r@ ftr>action         !
+  r> ftr>data           !
 ;
 
 
@@ -80,7 +80,7 @@ end-structure
 ;
 
 
-: ftr-new          ( c-addr u fst +n -- ftr = Create a new transition on the heap with next state fst, label c-addr u and number events n )
+: ftr-new          ( x xt c-addr1 u1 fst +n -- ftr = Create a new transition on the heap to the state fst, label c-addr1 u1, number events n, action xt and data x )
   ftr% allocate  throw  >r  r@ ftr-init  r>
 ;
 
@@ -94,19 +94,19 @@ end-structure
 
 ( Member words )
 
+: ftr-condition@   ( ftr -- bar = Get the condition of the transition )
+  ftr>condition
+;
+
+
 : ftr-label@       ( ftr -- c-addr u = Get the label of the transition )
   ftr>label str-get
 ;
 
 
-: ftr-label!       ( c-addr u ftr -- = Set the label of the transition )
-  ftr>label str-set
-;
-
-
 : ftr-label?       ( c-addr u ftr -- ftr true | c-addr u false = Compare the label )
   >r
-  2dup r@ str-ccompare 0= IF
+  2dup r@ ftr>label str-ccompare 0= IF
     2drop r@ true
   ELSE
     false
@@ -130,30 +130,32 @@ end-structure
 ;
 
 
-: ftr-action!      ( xt ftr -- = Set the entry action of the transition )
-  ftr>action !
-;
-
-
-: ftr-attributes@  ( ftr -- c-addr u = Get the attributes of the transition )
+: ftr-attributes!  ( c-addr u ftr -- = Set the extra graphviz attributes of the transition )
   ftr>attributes str-get
 ;
 
 
-: ftr-attributes!  ( c-addr u ftr -- = Set the attributes of the transition )
-  ftr>attributes str-set
+: ftr-attributes@  ( ftr -- c-addr u = Get the extra graphviz attributes of the transition )
+  ftr>attributes str-get
 ;
 
 
 ( Event words )
 
+: ftr-fire         ( n ftr -- fst = Fire the transition, without checking the condition )
+  tuck
+  dup ftr-action@ nil<>? IF          \   If action set Then
+    execute                          \     Execute action with event and transition
+  ELSE
+    2drop
+  THEN
+  ftr>next @                         \   Next state
+;
+
+
 : ftr-feed         ( n ftr -- n false | fst true = Feed the event to this transition, return the next state or the event if the condition does not hit )
   2dup ftr>condition bar-get-bit IF    \ If event in bit array Then
-    dup ftr-action@ nil<>? IF          \   If action set Then
-      over swap execute                \     Execute action with transition
-    THEN
-    nip
-    ftr>next @                         \   Next state
+    ftr-fire
     true
   ELSE
     drop 
