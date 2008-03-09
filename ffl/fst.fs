@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.1 $
+\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -49,6 +49,7 @@ begin-structure fst%       ( -- n = Get the required space for a state variable 
   +field  fst>node            \ the state extends the list node
   snl%
   +field  fst>transitions     \ the list with all the transitions
+  field:  fst>id              \ the state id
   str%
   +field  fst>label           \ the current state
   field:  fst>data            \ the data
@@ -56,31 +57,39 @@ begin-structure fst%       ( -- n = Get the required space for a state variable 
   field:  fst>exit            \ the exit action
   str%
   +field  fst>attributes      \ the graphviz attributes
+  field:  fst>any             \ the any transition
 end-structure
 
 
 ( State creation, initialisation and destruction )
 
-: fst-init         ( c-addr u fst -- = Initialise the state with label c-addr u )
+: fst-init         ( x xt1 xt2 c-addr1 u1 n fst -- = Initialise the state with id n and label c-addr1 u1, entry action xt1, exit action xt2 and data x )
   >r
-  r@ fst>node         snn-init
-  r@ fst>transitions  snl-init
-  r@ fst>label dup    str-init str-set
-  r@ fst>data         0!
-  r@ fst>entry        nil!
-  r@ fst>exit         nil!
-  r> fst>attributes   str-init
+  r@ fst>node           snn-init
+  r@ fst>transitions    snl-init
+  r@ fst>any            nil!
+  r@ fst>id             !
+  r@ fst>attributes     str-init
+  r@ fst>label      dup str-init str-set
+  r@ fst>exit           !
+  r@ fst>entry          !
+  r> fst>data           !
 ;
 
 
 : fst-(free)       ( fst -- = Free the internal, private variables from the heap )
   ['] ftr-free over fst>transitions snl-(free)
+  
+  dup fst>any nil<>? IF
+    ftr-free
+  THEN
+  
   dup fst>label      str-(free)
       fst>attributes str-(free)
 ;
 
 
-: fst-new          ( -- fst = Create a new fst on the heap )
+: fst-new          ( x xt1 xt2 c-addr1 u2 n -- fst = Create a new fst on the heap with id n, label c-addr1 u1, entry action xt1, exit action xt2 and data x )
   fst% allocate  throw  >r r@ fst-init  r>
 ;
 
@@ -94,19 +103,19 @@ end-structure
 
 ( Member words )
 
+: fst-id@          ( fst -- n = Get the id of the state )
+  fst>id @
+;
+
+
 : fst-label@       ( fst -- c-addr u = Get the label of the state )
   fst>label str-get
 ;
 
 
-: fst-label!       ( c-addr u fst -- = Set the label of the state )
-  fst>label str-set
-;
-
-
 : fst-label?       ( c-addr u fst -- c-addr u false | fst true = Compare the label )
   >r
-  2dup r@ str-ccompare 0= IF
+  2dup r@ fst>label str-ccompare 0= IF
     2drop r@ true
   ELSE
     false
@@ -130,43 +139,48 @@ end-structure
 ;
 
 
-: fst-entry!       ( xt fst -- = Set the entry action of the state )
-  fst>entry !
-;
-
-
 : fst-exit@        ( fst -- xt = Get the entry action of the state )
   fst>exit @
 ;
 
 
-: fst-exit!        ( xt fst -- = Set the entry action of the state )
-  fst>exit !
-;
-
-
-: fst-attributes@  ( fst -- c-addr u = Get the attributes of the state )
+: fst-attributes!  ( c-addr u fst -- = Set the extra graphviz attributes of the state )
   fst>attributes str-get
 ;
 
 
-: fst-attributes!  ( c-addr u fst -- = Set the attributes of the state )
-  fst>attributes str-set
+: fst-attributes@  ( fst -- c-addr u = Get the extra graphviz attributes of the state )
+  fst>attributes str-get
 ;
 
 
 ( Transition words )
 
-: fst-new-transition  ( c-addr u fst1 n fst2 -- ftr = Add a new transition to state fst1 with label c-addr u and number events n to this state )
-  >r fst-new dup r>
+: fst-new-transition  ( x xt c-addr1 u1 fst1 n fst -- ftr = Add a new transition to state fst1 with label c-addr1 u1, number events n, action xt and data x )
+  >r ftr-new dup r>
   fst>transitions snl-push
 ;
 
 
+: fst-any-transition  ( x xt c-addr1 u1 fst1 fst -- ftr = Add the any transition to state fst1 with label c-addr1 u1, action xt and data x )
+  dup fst>any @ nil<> exp-invalid-state AND throw     \ Only one any transition allowed
+  
+  >r 1 ftr-new dup r> fst>any !
+;
+
+  
 : fst-find-transition  ( c-addr u fst -- ftr | nil = Find the transition with label c-addr u, else return nil )
-  ['] ftr-label? swap fst>transitions snl-execute? 0= IF
-    2drop nil
+  >r
+  ['] ftr-label? r@ fst>transitions snl-execute? 0= IF
+    r@ fst>any @ nil<>? IF
+      ftr-label? 0= IF
+        2drop nil
+      THEN
+    ELSE
+      2drop nil
+    THEN
   THEN
+  rdrop
 ;
 
 
@@ -178,23 +192,33 @@ end-structure
     r@ swap execute
   THEN
   
-  ['] ftr-feed r> fst>transitions snl-execute? IF   \ Call fst-feed for every transition until a hit
+  ['] ftr-feed r@ fst>transitions snl-execute? IF   \ Call ftr-feed for every transition until a hit
     >r
     r@ fst-entry@ nil<>? IF       \ Execute the entry action for the next state
       r@ swap execute
     THEN
     r>
   ELSE
-    drop                          \ ToDo: any transition
-    nil
+    r@ fst>any @ nil<>? IF        \ If nothing hits And any transition set Then
+      ftr-fire                    \   Fire the any transition
+    ELSE                          \ Else
+      drop                        \   No hit
+      nil
+    THEN
   THEN
+  rdrop
 ;
 
 
 : fst-try          ( n fst -- fst | nil = Try the event for this state, return the result )
-  ['] ftr-try swap fst>transitions snl-execute? 0= IF  \ Call fst-try for every transition until a hit
-    drop                          \ ToDo: any transition
-    nil
+  >r
+  ['] ftr-try r@ fst>transitions snl-execute? 0= IF  \ Call fst-try for every transition until a hit
+    drop
+    r@ fst>any @ nil<>? IF        \ No hit, try the any transition
+      ftr>next @
+    ELSE
+      nil
+    THEN
   THEN
 ;
 
@@ -204,6 +228,7 @@ end-structure
 : fst-dump   ( fst - = Dump the state )
   ." fst:" dup . cr
   ."  transitions: " ['] ftr-dump over fst>transitions snl-execute cr
+  ."  id         : " dup fst>id ? cr
   ."  label      : " dup fst>label str-get type cr
   ."  data       : " dup fst>data ? cr
   ."  entry      : " dup fst>entry ? cr
