@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
+\  $Date: 2008-03-09 20:01:23 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -33,6 +33,7 @@ include ffl/config.fs
 include ffl/ftr.fs
 include ffl/snl.fs
 include ffl/str.fs
+include ffl/tos.fs
 
 
 ( fst = FSM State )
@@ -158,7 +159,7 @@ end-structure
 
 : fst-new-transition  ( x xt c-addr1 u1 fst1 n fst -- ftr = Add a new transition to state fst1 with label c-addr1 u1, number events n, action xt and data x )
   >r ftr-new dup r>
-  fst>transitions snl-push
+  fst>transitions snl-append
 ;
 
 
@@ -220,6 +221,81 @@ end-structure
       nil
     THEN
   THEN
+;
+
+
+( Private dot words )
+
+: ftr-to-dot   ( fst tos ftr -- fst tos = Convert ftr to dot, using stream tos and from state fst )
+  swap >r
+  [char] n                r@ tos-write-char           \ Write the transition
+  over fst-id@            r@ tos-write-number
+  s"  -> "                r@ tos-write-string
+  [char] n                r@ tos-write-char
+  dup ftr>next @ fst-id@  r@ tos-write-number
+  
+  dup ftr-label@ ?dup IF
+    s"  [label="          r@ tos-write-string         \ Write the optional label
+    [char] "              r@ tos-write-char
+                          r@ tos-write-string
+    [char] "              r@ tos-write-char
+    [char] ]              r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  
+  ftr-attributes@ ?dup IF
+    s"  ["                r@ tos-write-string         \ Write the optional extra attributes
+                          r@ tos-write-string
+    [char] ]              r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  
+  [char] ;                r@ tos-write-char           \ Finish the line
+                          r@ tos-flush
+  r>
+;
+
+
+: fst-to-dot       ( fst1 tos fst -- fst1 tos = Convert fst to dot, using stream tos and fst1 as start state )
+  swap >r
+  [char] n       r@ tos-write-char          \ Write the node id
+  dup fst-id@    r@ tos-write-number
+  
+  2dup = over fst>transitions snl-empty? OR IF \ If this is a start or end node Then
+    s"  [shape=doublecircle"                   \   Double circle
+  ELSE                                         \ Else
+    s"  [shape=circle"                         \   Single circle
+  THEN
+  r@ tos-write-string
+
+  dup fst-label@ ?dup IF
+    s" ,label="   r@ tos-write-string       \ Write the optional label
+    [char] "       r@ tos-write-char
+                   r@ tos-write-string
+    [char] "       r@ tos-write-char
+  ELSE
+    drop
+  THEN
+  
+  dup fst-attributes@ ?dup IF
+    [char] , r@ tos-write-char              \ Write the optional attributes
+             r@ tos-write-string
+  ELSE
+    drop
+  THEN
+  s" ];" r@ tos-write-string                \ Finish the node line
+         r@ tos-flush
+                                            \ Write the transitions to the stream
+  dup fst>transitions r@ swap ['] ftr-to-dot swap snl-execute drop
+
+  dup fst>any @ nil<>? IF
+    r@ swap ftr-to-dot drop                 \ Write the any transition to the stream
+  THEN
+  drop 
+  
+  r>
 ;
 
 

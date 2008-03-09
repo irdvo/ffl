@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
+\  $Date: 2008-03-09 20:01:23 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -107,7 +107,7 @@ end-structure
 : fsm-new-state    ( x xt1 xt2 c-addr1 u1 fsm -- fst = Add a new state with label c-addr1 u1, entry action xt1, exit action xt2 and data x )
   >r 
   r@ fsm>ids dup 1+! @ fst-new    \ Increase ids and create the state 
-  dup r@ fsm>states snl-push
+  dup r@ fsm>states snl-append
   r@ fsm-start@ nil= IF
     dup r@ fsm>start !
   THEN  
@@ -168,12 +168,11 @@ end-structure
                   r@ tos-write-string     \ Write graph name
   s"  {"          r@ tos-write-string r@ tos-flush
   s" rankdir=LR;" r@ tos-write-string r@ tos-flush
-  
-  \ Todo: nodes with attributes
-  \ ToDo: transitions with attributes
+
+                                          \ Write all nodes with their attributes to the tos
+  dup fsm-start@ swap fsm>states r@ swap ['] fst-to-dot swap snl-execute 2drop
   
   [char] }        r@ tos-write-char   r> tos-flush
-  drop
 ;
 
  
