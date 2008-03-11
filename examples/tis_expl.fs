@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-08 19:20:16 $ $Revision: 1.3 $
+\  $Date: 2008-03-11 18:33:47 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -53,21 +53,24 @@ s" his i" tis1 tis-cmatch-string [IF]
 
 \ Read in the string
 
-tis1 tis-read-char emit cr                    \ The next character is read (e.g. s)
+tis1 tis-read-char [IF]
+  .( Next character: ) emit cr                \ The next character is read (e.g. s)
+[THEN]
 
-
+.( Next five characters: )
 5 tis1 tis-read-string type cr                \ The next five characters are read (e.g. ' a sp')
 
 
 \ Scan for string
 
 s" test" tis1 tis-scan-string [IF]
-  ." String till 'test':" type cr             \ Return the skipped text (e.g. 'ecial ')
+  .( String till 'test': ) type cr            \ Return the skipped text (e.g. 'ecial ')
 [THEN]
 
 
 \ Skip spaces
 
+.( Skipped spaces: )
 tis1 tis-skip-spaces . cr                     \ Skip spaces and return the number of skipped spaces (e.g. 1)
   
 
@@ -111,7 +114,6 @@ show-links
 \ Done, close the file
 
 close-file throw
-
 
 \ Free the stream from the heap
 

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-06 18:20:53 $ $Revision: 1.3 $
+\  $Date: 2008-03-11 18:33:47 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -172,7 +172,7 @@ s" <?xml version='1.1'?>  <!-- test -->  <car>  <color>  blue  </color>  </car>"
 
 \ Open the file for the writer
 
-s" out.xml" w/o open-file throw value dom.output
+s" out.xml" w/o create-file throw value dom.output
 
 
 \ Write the xml-dom to the writer
