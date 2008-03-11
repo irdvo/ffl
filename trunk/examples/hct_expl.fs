@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.3 $
+\  $Date: 2008-03-11 18:33:47 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -78,10 +78,10 @@ height-table hci-create height-iter               \ Create an iterator named hei
 \ Moving the iterator
 
 height-iter hci-first                         \ Move the iterator to the first record
-nil<> [IF]                                    \ If record exists Then ..
+[IF]                                          \ If record exists Then ..
   height-iter hci-key type                    \   Type the key ..
   .(  => )
-  height-iter hci-get drop .                  \   .. and the value
+  .                                           \   .. and the value
   cr
 [THEN]
 
