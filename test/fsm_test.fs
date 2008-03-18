@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 20:01:24 $ $Revision: 1.3 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -107,7 +107,7 @@ t{ char . fsm1 fsm-feed ?nil }t
 tos-new value fsm-tos
 
 : fsm-tos-write    ( c-addr u x -- flag = Write the string )
-  drop type cr true
+  drop type true
 ;
 
 0 ' fsm-tos-write fsm-tos tos-set-writer

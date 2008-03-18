@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-05 20:35:13 $ $Revision: 1.6 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -179,6 +179,9 @@ t{ 0 ' dom-test-writer dom1 dom-write-writer ?true }t
 t{ dom-test-counter @ 13 ?s }t
 
 t{ dom1 dom-free }t
+
+t{ dom.file close-file throw }t
+
 
 \ Building a (small) tree from scratch
 

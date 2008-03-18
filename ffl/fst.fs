@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 20:01:23 $ $Revision: 1.3 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,8 @@ include ffl/tos.fs
 
 
 ( fst = FSM State )
-( The fst module implements a state in a Finite State Machine.            )
+( The fst module implements a state in a Finite State Machine. See fsm for   )
+( using this module.                                                         )
 
 
 1 constant fst.version
@@ -64,7 +65,7 @@ end-structure
 
 ( State creation, initialisation and destruction )
 
-: fst-init         ( x xt1 xt2 c-addr1 u1 n fst -- = Initialise the state with id n and label c-addr1 u1, entry action xt1, exit action xt2 and data x )
+: fst-init         ( x xt1 xt2 c-addr u n fst -- = Initialise the state with id n and label c-addr u, entry action xt1, exit action xt2 and data x )
   >r
   r@ fst>node           snn-init
   r@ fst>transitions    snl-init
@@ -90,12 +91,12 @@ end-structure
 ;
 
 
-: fst-new          ( x xt1 xt2 c-addr1 u2 n -- fst = Create a new fst on the heap with id n, label c-addr1 u1, entry action xt1, exit action xt2 and data x )
+: fst-new          ( x xt1 xt2 c-addr u n -- fst = Create a new state on the heap with id n, label c-addr u, entry action xt1, exit action xt2 and data x )
   fst% allocate  throw  >r r@ fst-init  r>
 ;
 
 
-: fst-free         ( fst -- = Free the fst from the heap )
+: fst-free         ( fst -- = Free the state from the heap )
   dup fst-(free)             \ Free the internal, private variables from the heap
 
   free throw                 \ Free the fst
@@ -130,7 +131,7 @@ end-structure
 ;
 
 
-: fst-data!        ( x fst -- = Set the data of the state )
+: fst-data!        ( x fst -- = Set the data for the state )
   fst>data !
 ;
 
@@ -145,7 +146,7 @@ end-structure
 ;
 
 
-: fst-attributes!  ( c-addr u fst -- = Set the extra graphviz attributes of the state )
+: fst-attributes!  ( c-addr u fst -- = Set the extra graphviz attributes for the state )
   fst>attributes str-get
 ;
 
@@ -157,13 +158,13 @@ end-structure
 
 ( Transition words )
 
-: fst-new-transition  ( x xt c-addr1 u1 fst1 n fst -- ftr = Add a new transition to state fst1 with label c-addr1 u1, number events n, action xt and data x )
+: fst-new-transition  ( x xt c-addr u fst1 n fst -- ftr = Add a new transition to state fst1 with label c-addr u, number events n, action xt and data x )
   >r ftr-new dup r>
   fst>transitions snl-append
 ;
 
 
-: fst-any-transition  ( x xt c-addr1 u1 fst1 fst -- ftr = Add the any transition to state fst1 with label c-addr1 u1, action xt and data x )
+: fst-any-transition  ( x xt c-addr u fst1 fst -- ftr = Set the any transition to state fst1 with label c-addr u, action xt and data x )
   dup fst>any @ nil<> exp-invalid-state AND throw     \ Only one any transition allowed
   
   >r 1 ftr-new dup r> fst>any !
@@ -187,7 +188,7 @@ end-structure
 
 ( Event words )
 
-: fst-feed         ( n fst -- fst | nil = Feed the event to this state, return the next state or nil if no condition hits )
+: fst-feed         ( n fst -- fst | nil = Feed the event to this state, return the next state or nil if the event did not match any condition )
   >r
   r@ fst-exit@ nil<>? IF          \ Execute the exit action for the current state
     r@ swap execute
@@ -226,7 +227,7 @@ end-structure
 
 ( Private dot words )
 
-: ftr-to-dot   ( fst tos ftr -- fst tos = Convert ftr to dot, using stream tos and from state fst )
+: ftr-to-dot   ( fst tos ftr -- fst tos = Convert transition ftr to dot format, using output stream tos, origin state fst )
   swap >r
   [char] n                r@ tos-write-char           \ Write the transition
   over fst-id@            r@ tos-write-number
@@ -253,12 +254,13 @@ end-structure
   THEN
   
   [char] ;                r@ tos-write-char           \ Finish the line
+                          r@ tos-write-line
                           r@ tos-flush
   r>
 ;
 
 
-: fst-to-dot       ( fst1 tos fst -- fst1 tos = Convert fst to dot, using stream tos and fst1 as start state )
+: fst-to-dot       ( fst1 tos fst -- fst1 tos = Convert state fst to dot format, using output stream tos and fst1 as start state )
   swap >r
   [char] n       r@ tos-write-char          \ Write the node id
   dup fst-id@    r@ tos-write-number
@@ -286,6 +288,7 @@ end-structure
     drop
   THEN
   s" ];" r@ tos-write-string                \ Finish the node line
+         r@ tos-write-line
          r@ tos-flush
                                             \ Write the transitions to the stream
   dup fst>transitions r@ swap ['] ftr-to-dot swap snl-execute drop

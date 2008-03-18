@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.11 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -239,27 +239,24 @@ t{ s" Thiiis iiis a logiiish striiig" s1 str-ccompare ?0 }t
 \ split
 : str-test-split1 s" this is a test of the column splitter" ;
 : str-test-split2 s" thisisatestofthecolumnsplitter" ;
-  
+
 t{ str-test-split1 10 str+columns 4 ?s
    s" this is a"  ?str
-   s" test of"    ?str 
+   s" test of"    ?str
    s" the column" ?str
    s" splitter"   ?str }t
-   
-t{ s" 1234567890" 10 str+columns 1 ?s
-   s" 1234567890" ?str }t
-   
-t{ s" 1234567890    " 10 str+columns 1 ?s
-   s" 1234567890" ?str }t
-   
-t{ s"     1234567890" 10 str+columns 1 ?s
-   s" 1234567890" ?str }t
+
+t{ s" 1234567890" 10 str+columns 1 ?s  s" 1234567890" ?str }t
+
+t{ s" 1234567890    " 10 str+columns 1 ?s  s" 1234567890" ?str }t
+
+t{ s"     1234567890" 10 str+columns 1 ?s  s" 1234567890" ?str }t
 
 t{ str-test-split2 10 str+columns 3 ?s
    s" thisisates" ?str
    s" tofthecolu" ?str 
    s" mnsplitter" ?str }t
-   
+
 t{ s2 str-free }t
 
 \ ==============================================================================

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 20:01:23 $ $Revision: 1.3 $
+\  $Date: 2008-03-18 19:09:47 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -37,7 +37,30 @@ include ffl/tos.fs
 
 
 ( fsm = Finite State Machine )
-( The fsm module implements a Finite State Machine.                       )
+( The fsm module implements a Finite State Machine. Use fsm-new-state to add )
+( states to the machine. Then use fsm-new-transition to add transitions      )
+( between the states. fsm-new-transition returns the new transition. Use     )
+( ftr-condition@ on this new transition to get a reference to the condition  )
+( in the transition. This is actually a bit array [see bar]. Use the words   )
+( of the bar module to set the condition. When the whole FSM is built, start )
+( the use of the machine by using fsm-start. By default the first created    )
+( state is the start state, but this can be changed by fsm-start!. After     )
+( starting the machine, feed events to the machine by fsm-feed. This word    )
+( returns the new, current state or nil if no transition matched. The        )
+( machine can be converted to graphviz's dot files by fsm-to-dot. This word  )
+( uses the labels of the states and transitions to build the dot             )
+( representation. It also set the shape of the states [double circle for     )
+( start and end states, circles for the others]. Use fst-attributes! and     )
+( ftr-attributes! to set additional graphviz attributes.                     )
+( During the feeding of events, the optional actions are called. When a      )
+( state is left, the exit action is called, when a state is entered the      )
+( entry state is called. If a transition matched, the action of this         )
+( transition is also called. The stack usage for those actions:              )
+( <pre> )
+( state entry action:  fst -- = State fst is entered                         )
+( state exit action:   fst -- = State fst is left                            )
+( transition action: n ftr -- = Transition fst matched for event n           )
+( </pre> )
 
 
 1 constant fsm.version
@@ -51,7 +74,6 @@ begin-structure fsm%       ( -- n = Get the required space for a fsm variable )
   field:  fsm>ids             \ the state id counter
   field:  fsm>start           \ the start state
   field:  fsm>current         \ the current state
-  field:  fsm>previous        \ the previous state
   field:  fsm>events          \ the number of events in the machine
 end-structure
 
@@ -63,8 +85,7 @@ end-structure
   dup  fsm>ids      0!
   tuck fsm>events   !
   dup  fsm>start    nil!
-  dup  fsm>current  nil!
-       fsm>previous nil!
+       fsm>current  nil!
 ;
 
 
@@ -73,17 +94,17 @@ end-structure
 ;
 
 
-: fsm-create       ( "<spaces>name" +n -- ; -- fsm = Create a named FSM in the dictionary with the number of events n )
+: fsm-create       ( "<spaces>name" +n -- ; -- fsm = Create a named fsm in the dictionary with the number of events n )
   create   here   fsm% allot   fsm-init
 ;
 
 
-: fsm-new          ( +n -- fsm = Create a new FSM on the heap with the number of events n )
+: fsm-new          ( +n -- fsm = Create a new fsm on the heap with the number of events n )
   fsm% allocate  throw  tuck fsm-init
 ;
 
 
-: fsm-free         ( fsm -- = Free the FSM from the heap )
+: fsm-free         ( fsm -- = Free the fsm from the heap )
   dup fsm-(free)             \ Free the internal, private variables from the heap
 
   free throw                 \ Free the fsm
@@ -117,12 +138,11 @@ end-structure
 
 : fsm-start        ( fsm -- = Start the finite state machine )
   dup  fsm-start@
-  over fsm>current  !
-       fsm>previous nil!
+  swap fsm>current  !
 ;
 
 
-: fsm-find-state   ( c-addr u fsm -- fst | nil = Find the state by its label in the FSM )
+: fsm-find-state   ( c-addr u fsm -- fst | nil = Find the state by its label c-addr u in the fsm )
   ['] fst-label? swap fsm>states snl-execute? 0= IF
     2drop nil
   THEN
@@ -143,17 +163,16 @@ end-structure
 
 ( Event words )
 
-: fsm-feed         ( n fsm -- fst | nil = Feed the event to the current state, return the next state or nil if no condition hits )
+: fsm-feed         ( n fsm -- fst | nil = Feed the event to the current state, return the next state or nil if the event did not matched any condition )
   >r
   r@ fsm>current @
-  dup r@ fsm>previous ! 
   dup nil= exp-invalid-state AND throw
   fst-feed 
   dup r> fsm>current !
 ;
 
 
-: fsm-try          ( n fsm -- fst | nil = Try the event for the current event, return the result, but do not move to the state )
+: fsm-try          ( n fsm -- fst | nil = Try the event for the current event, return the next state, but do not move to this state )
   fsm>current @
   dup nil= exp-invalid-state AND throw
   fst-try
@@ -162,17 +181,20 @@ end-structure
 
 ( Conversion words )
 
-: fsm-to-dot       ( c-addr u tos fsm -- = Convert the FSM to a dot string using the stream with name c-addr u )
+: fsm-to-dot       ( c-addr u tos fsm -- = Convert the fsm to a dot string using the stream, giving the graph the name c-addr u )
   swap >r -rot
   s" digraph "    r@ tos-write-string
                   r@ tos-write-string     \ Write graph name
-  s"  {"          r@ tos-write-string r@ tos-flush
-  s" rankdir=LR;" r@ tos-write-string r@ tos-flush
+  s"  {"          r@ tos-write-string 
+                  r@ tos-write-line   r@ tos-flush
+  s" rankdir=LR;" r@ tos-write-string 
+                  r@ tos-write-line   r@ tos-flush
 
                                           \ Write all nodes with their attributes to the tos
   dup fsm-start@ swap fsm>states r@ swap ['] fst-to-dot swap snl-execute 2drop
   
-  [char] }        r@ tos-write-char   r> tos-flush
+  [char] }        r@ tos-write-char   
+                  r@ tos-write-line   r> tos-flush
 ;
 
  
@@ -183,7 +205,6 @@ end-structure
   ."  states  : " ['] fst-dump over fsm>states snl-execute cr
   ."  start   : " dup fsm>start ? cr
   ."  current : " dup fsm>current ? cr
-  ."  previous: " dup fsm>previous ? cr
   ."  events  : "     fsm>events ? cr
 ;
   
