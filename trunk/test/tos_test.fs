@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.3 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -67,7 +67,7 @@ t{ -712 t4 tos-write-number }t
 t{ chr.sp 3 t4 tos-align-left }t
 t{ t4 str-get s" -712" ?str }t
 
-t{ -10.0 t4 tos-write-double }t
+t{ -100. t4 tos-write-double }t
 t{ chr.sp 5 t4 tos-align-right }t
 t{ t4 str-get s" -712 -100" ?str }t
 

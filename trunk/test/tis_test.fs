@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.8 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -166,7 +166,7 @@ t{ t1 tis-read-double ?true -1231231123123. ?d }t
 t{ t1 tis-read-char ?true char a ?s }t
 
 t{ s" 9899898989898998abc" t1 tis-set }t
-t{ t1 tis-read-double ?true 9899898.989898998 ?d }t
+t{ t1 tis-read-double ?true 9899898989898998. ?d }t
 t{ t1 tis-read-char ?true char a ?s }t
 
 t{ s" -abc" t1 tis-set }t

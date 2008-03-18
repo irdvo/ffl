@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-09 07:15:19 $ $Revision: 1.2 $
+\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,8 @@ include ffl/str.fs
 
 
 ( ftr = FSM Transition )
-( The ftr module implements a transition in a Finite State Machine.       )
+( The ftr module implements a transition in a Finite State Machine. See fsm  )
+( using this module.                                                         )
 
 
 1 constant ftr.version
@@ -48,7 +49,7 @@ begin-structure ftr%       ( -- n = Get the required space for a transition vari
   snn%
   +field  ftr>node            \ the transition extends the single list node
   bar%
-  +field  ftr>condition       \ the condition
+  +field  ftr>condition       \ the condition (bit array)
   str%
   +field  ftr>label           \ the label
   field:  ftr>next            \ the next state
@@ -61,7 +62,7 @@ end-structure
 
 ( Transition creation, initialisation and destruction )
 
-: ftr-init         ( x xt c-addr1 u1 fst +n ftr -- = Initialise the transition to the state fst, label c-addr1 u1, number events n, action xt and data x )
+: ftr-init         ( x xt c-addr u fst +n ftr -- = Initialise the transition to the state fst, with label c-addr u, number events n, action xt and data x )
   >r
   r@ ftr>node           snn-init
   r@ ftr>condition      bar-init
@@ -80,12 +81,12 @@ end-structure
 ;
 
 
-: ftr-new          ( x xt c-addr1 u1 fst +n -- ftr = Create a new transition on the heap to the state fst, label c-addr1 u1, number events n, action xt and data x )
+: ftr-new          ( x xt c-addr u fst +n -- ftr = Create a new transition on the heap to the state fst, with label c-addr u, number events n, action xt and data x )
   ftr% allocate  throw  >r  r@ ftr-init  r>
 ;
 
 
-: ftr-free         ( ftr -- = Free the ftr from the heap )
+: ftr-free         ( ftr -- = Free the transition from the heap )
   dup ftr-(free)             \ Free the internal, private variables from the heap
 
   free throw                 \ Free the ftr
@@ -94,7 +95,7 @@ end-structure
 
 ( Member words )
 
-: ftr-condition@   ( ftr -- bar = Get the condition of the transition )
+: ftr-condition@   ( ftr -- bar = Get the condition of the transition as reference to a bit array )
   ftr>condition
 ;
 
@@ -120,7 +121,7 @@ end-structure
 ;
 
 
-: ftr-data!        ( x ftr -- = Set the data of the transition )
+: ftr-data!        ( x ftr -- = Set the data for the transition )
   ftr>data !
 ;
 
@@ -130,8 +131,8 @@ end-structure
 ;
 
 
-: ftr-attributes!  ( c-addr u ftr -- = Set the extra graphviz attributes of the transition )
-  ftr>attributes str-get
+: ftr-attributes!  ( c-addr u ftr -- = Set the extra graphviz attributes for the transition )
+  ftr>attributes str-set
 ;
 
 
@@ -142,7 +143,7 @@ end-structure
 
 ( Event words )
 
-: ftr-fire         ( n ftr -- fst = Fire the transition, without checking the condition )
+: ftr-fire         ( n ftr -- fst = Fire the transition for event n, without checking the condition )
   tuck
   dup ftr-action@ nil<>? IF          \   If action set Then
     execute                          \     Execute action with event and transition
@@ -153,7 +154,7 @@ end-structure
 ;
 
 
-: ftr-feed         ( n ftr -- n false | fst true = Feed the event to this transition, return the next state or the event if the condition does not hit )
+: ftr-feed         ( n ftr -- n false | fst true = Feed the event to this transition, return the next state or the event if the event did not match the condition )
   2dup ftr>condition bar-get-bit IF    \ If event in bit array Then
     ftr-fire
     true
