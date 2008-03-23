@@ -20,23 +20,24 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-23 07:19:36 $ $Revision: 1.50 $
+\  $Date: 2008-03-23 07:19:36 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 \
-\ This file is for gforth.
+\ This file is for iForth.
 \
 \ ==============================================================================
-
 
 s" ffl.version" forth-wordlist search-wordlist 0= [IF]
+
+ANEW -ffl
 
 
 ( config = Forth system specific words )
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000600 constant ffl.version
 
 
 ( Private words )
@@ -47,9 +48,7 @@ variable ffl.endian   1 ffl.endian !
 ( System Settings )
 
 create end-of-line    ( -- c-addr = Counted string for the end of line for the current system )
-  newline string,    \ All hosts except dos  (gforth 0.6.2)
-\ 2 c, 13 c, 10 c,   \ dos:  cr lf
-
+  $CR count end-of-line pack drop	\ All hosts 
 
 s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN] 
   constant #bits/byte   ( -- n = Number of bits in a byte )
@@ -57,6 +56,9 @@ s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN]
 #bits/byte 1 chars *
   constant #bits/char   ( -- n = Number of bits in a char )
   
+1 cells 
+  constant cell         ( -- n = number of bytes in a cell )
+
 #bits/byte cell *
   constant #bits/cell   ( -- n = Number of bits in a cell )  
 
@@ -67,34 +69,33 @@ ffl.endian c@ 0=
 ( Extension words )
 
 : ms@  ( -- u = Fetch milliseconds timer )
-  utime 1 1000 m*/ drop 
-;
+  ms? ;
 
 
 s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
 
-\ No usable command line arguments in gforth
+: char/            ( n1 -- n2 = Convert address units to chars )
+;
+
+: rdrop            ( R: x -- )
+  -R ; \ relying on the fact that this word is inlined
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
+  ROL ;
 
 
 : rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
+  ROR ;
 
 
-: 0!   ( a-addr -- = Set address to zero )
-  0 swap !
-;
+: sgn              ( n1 -- n2 = Determine the sign of the number [-1,0,1] )
+  dup 0= IF EXIT THEN
+  0< 2* 1+ ;
 
+
+0 constant nil     ( -- addr = Nil address )
 
 : nil!   ( a-addr -- = Set address to nil )
   nil swap !
@@ -110,35 +111,12 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
   nil <>
 ;
 
-
-0 nil= [IF]
 : nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-[ELSE]
-: nil<>?
-  dup nil<> IF
-    true
-  ELSE
-    drop
-    false
-  THEN
-;
-[THEN]  
+    ?dup ; \ relies on inlining
 
 
 : ?free   ( addr -- ior = Free the address if not nil )
-  dup nil<> IF
-    free
-  ELSE
-    drop 0
-  THEN
-;
-
+    free ; \ freeing 0 is not an error
 
 : 1+!   ( a-addr -- = Increase contents of address by 1 )
   1 swap +!
@@ -156,14 +134,14 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 
 : icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
-  rot swap 2swap 2over
+  rot swap 2swap 2over ( -- u1 u2 c-addr1 c-addr2 u1 u2 )
   min 0 ?DO
-    over c@ toupper over c@ toupper - sgn ?dup IF
-      >r 2drop 2drop r>
+    over c@ >UPC over c@ >UPC - sgn ?dup IF
+      >r 4drop r>
       unloop 
       exit
     THEN
-    1 chars + swap 1 chars + swap
+    char+ swap char+ swap
   LOOP
   2drop
   - sgn
@@ -186,48 +164,52 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
   THEN
 ;
 
+: ," ," ALIGN ;    CR .( ," instinker -- see dos.fs )
 
 : >,"              ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
   count chars + aligned
 ;
 
-[DEFINED] float [IF]
+[DEFINED] floats [IF]
 
 ( Float extension constants )
 
-0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
+1 floats constant float ( -- n = Size of one float )
+
+0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
 
 
 ( Float extension words )
 
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
-;
+: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
+  -frot ;
 
+CREATE xp 0 C,
+CREATE xstack #256 FLOATS ALLOT
 
-: f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
-  fover fover
-;
+: f>r              ( r -- ; R: -- r = Push float on the return stack )
+  -1 xp C+!  xstack xp C@ FLOAT[] F! ;
 
+: fr>              ( -- r ; R: r -- = Pop float from the return stack )
+  xstack xp C@ FLOAT[] F@   1 xp C+! ;
 
-: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
-  r> rp@ float - rp! rp@ f! >r 
-;
-
-: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ float rp@ + rp! >r
-;
-
-: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
-  r> rp@ f@ >r
-;
+: fr@              ( -- r ; R: r -- r = Get float from top of return stack )
+  xstack xp C@ FLOAT[] F@ ; 
 
 [THEN]
 
 
 ( Exceptions )
+
+variable exp-next  #-2050 exp-next !
+
+: exception      ( c-addr u -- n = Create an exception )
+  2drop
+  exp-next @ 
+  exp-next 1-!
+;
 
 s" Index out of range" exception constant exp-index-out-of-range ( -- n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invalid state exception number )

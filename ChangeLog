@@ -1,4 +1,7 @@
 0.7.0
+* spf: config.fs/make.fs/readme added
+* dist: also zip file with cr/lf line-endings
+* iForth: config.fs/make.fs/readme added
 * fsm: new module: Finite State Machine (2008-03-05)
 * fst: new module: FSM State (2008-03-05)
 * ftr: new module: FSM Transition (2008-03-05)

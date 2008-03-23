@@ -17,6 +17,8 @@ mkdir ${dest}/engines/pfe
 mkdir ${dest}/engines/Win32Forth
 mkdir ${dest}/engines/fina
 mkdir ${dest}/engines/minForth
+mkdir ${dest}/engines/iForth
+mkdir ${dest}/engines/spf
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp       ffl/*.fs     ${dest}/ffl
@@ -30,6 +32,8 @@ cp   engines/pfe/*.fs         ${dest}/engines/pfe
 cp   engines/Win32Forth/*.fs  ${dest}/engines/Win32Forth
 cp   engines/fina/*.fs        ${dest}/engines/fina
 cp   engines/minForth/*.fs    ${dest}/engines/minForth
+cp   engines/iForth/*.fs      ${dest}/engines/iForth
+cp   engines/spf/*.fs         ${dest}/engines/spf
 
 cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
@@ -40,5 +44,26 @@ cp   examples/nl.mo           ${dest}/examples
 cp   examples/index.html      ${dest}/examples
 
 tar cvzf ${package}-${version}.tar.gz ${dest} 
+
+
+unix2dos -k -o ${dest}/AUTHORS 
+unix2dos -k -o ${dest}/COPYING 
+unix2dos -k -o ${dest}/NEWS 
+unix2dos -k -o ${dest}/README 
+unix2dos -k -o ${dest}/ChangeLog
+unix2dos -k -o ${dest}/ffl/*.fs
+unix2dos -k -o ${dest}/test/*.fs
+unix2dos -k -o ${dest}/examples/*.fs
+
+unix2dos -k -o ${dest}/engines/gforth/*.fs
+unix2dos -k -o ${dest}/engines/bigforth
+unix2dos -k -o ${dest}/engines/pfe
+unix2dos -k -o ${dest}/engines/Win32Forth
+unix2dos -k -o ${dest}/engines/fina
+unix2dos -k -o ${dest}/engines/minForth
+unix2dos -k -o ${dest}/engines/iForth
+unix2dos -k -o ${dest}/engines/spf
+
+zip -r ${package}-${version}.zip ${dest}
 
 rm -rf ${dest}
