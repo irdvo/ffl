@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-13 18:23:15 $ $Revision: 1.10 $
+\  $Date: 2008-03-23 15:27:01 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -382,6 +382,7 @@ end-structure
 
 : chs-char?        ( char chs -- flag = Check if the character is in the set )
   over 127 u> IF
+    2drop
     false
   ELSE
     chs-ch?
@@ -398,7 +399,7 @@ end-structure
       swap >r
       swap >r                \   Clear the stack ..
       r@ execute             \   .. and execute the token
-      r> r>                  \   Restor the stack
+      r> r>                  \   Restore the stack
     THEN
   LOOP
   2drop
