@@ -21,17 +21,17 @@ system will look for sources.
 
 In case of gforth the 'ffl' directory (and its contents) should be copied to:
 
-/usr/local/share/gforth/site-forth 
+/usr/share/gforth/site-forth or /usr/local/share/gforth/site-forth
 
 
 In case of bigforth the 'ffl' directory (and its contents) should be copied to:
 
-/usr/local/lib/bigforth/src
+/usr/lib/bigforth/src or /usr/local/lib/bigforth/src
 
 
 In case of pfe the 'ffl' directory (and its contents) should be copied to:
 
-/usr/local/share/pfe
+/usr/share/pfe or /usr/local/share/pfe
 
 
 In case of Win32Forth the 'ffl' directory (and its contents) should be
@@ -45,6 +45,28 @@ in a directory that is in the search path of Win32Forth.)
 
 In case of minForth the 'ffl' directory (and its contents) should be 
 copied to your forth working directory.
+
+
+In case of iForth the 'ffl' directory (and its contents) should be copied to:
+$IFORTH/include  ( ending up as $IFORTH/include/ffl ).
+
+The ffl-0.6.0 directory, minus the subdirectory ffl, should be placed in 
+$IFORTH/examples/ .
+
+
+In case of spf the 'ffl' directory (and its contents) should be 
+copied to the installation directory of spf. Normally this will be: 
+C:\Program Files\SP-Forth .
+
+Add in the 'spf4.ini' file (also normally in C:\Program Files\SP-Forth) the
+following code (case is important):
+  : include
+    PARSE-NAME 2>R  2R@ + 0 SWAP C!  2R@ INCLUDE-PROBE IF
+      2R> +ModuleDirName INCLUDED
+    ELSE
+      2R> 2DROP
+    THEN
+  ;
 
 
 If your forth only looks in the current directory for forth sources, then copy 
@@ -74,6 +96,12 @@ For Win32Forth the config.fs and make.fs files should be copied from the
 For minForth the config.fs and make.fs files should be copied from the
 'engines/minForth' directory to the 'ffl' directory.
 
+For iForth the config.fs and make.fs files should be copied from the
+'engines/iForth' directory to the 'ffl' directory.
+
+For spf the config.fs and make.fs files should be copied from the
+'engines/spf' directory to the 'ffl' directory.
+
 The next step is editing the config.fs file for system settings.
 
 
@@ -83,10 +111,10 @@ end-of-line
 
 This word defines the ascii end of line as a counted string. For unix this 
 is a linefeed, for dos systems it is carriage return and linefeed. For
-gforth and fina the word 'newline' is used to determine the end of line.
-For bigforth, pfe and minForth the default is the unix end of line, for 
-Win32Forth the default is dos. You should change the 'end-of-line' word 
-if the default is not correct for you.
+gforth, fina and iForth the end of line is supplied by the forth engine,
+so no manual configuration necessary. For bigforth, pfe and minForth the
+default is the unix end of line, for Win32Forth and spf the default is dos.
+You should change the 'end-of-line' word if the default is not correct for you.
 
 Note: gforth 0.6.2 returns for dos an incorrect value for end-of-line, so
 if you use gforth 0.6.2 on dos, you should change the 'end-of-line' word.
@@ -125,39 +153,56 @@ purposes only and have no real meaning. Enter them in the correct case.)
 
 (for gforth):
 
-gforth ffl_test.fs
+1. Change the current directory to the 'test' directory
+2. Enter: gforth ffl_test.fs
 
 
-(or bigforth):
+(for bigforth):
 
-bigforth ffl_test.fs
-
-
-(or pfe)
-
-pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
+1. Change the current directory to the 'test' directory
+2. Enter: bigforth ffl_test.fs
 
 
-(or Win32Forth)
+(for pfe)
 
-1. Use an editor to remove the ending 'bye' from the 'ffl_test.fs' file.
+1. Change the current directory to the 'test' directory
+2. Enter: pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
+
+
+(for Win32Forth)
+
+1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file.
 2. Start Win32Forth.
-3. Use in the window the 'chdir' word to move to the test directory.
+3. Use in the window the 'chdir' word to move to the 'test' directory.
 4. Use 'include ffl_test.fs' to run the tests.
 
 
-(or minForth)
+(for minForth)
 
-For running the tests the minForth engine is too small configured.
-The first step is to extend the engine by editing the kernel.mfc file from
-minForth. Change in this file the NAMES to 512000, the HEAP to 640000, the 
-LIMIT to 1000000, the SPMAX to 256 and the RPMAX to 256. Then rebuild the 
-minForth engine.
-Step two is to copy this new engine (mf and mf.i) to a directory with the
-test sources. Also make sure that in this directory the ffl is installed
-in the 'ffl' directory.
-Step three is to start the minForth engine (mf) and enter 
-'include ffl_test.fs'.
+For running the tests the minForth engine is configured too small:
+1. Extend the engine by editing the kernel.mfc file from minForth. Change 
+   in this file the NAMES to 512000, the HEAP to 640000, the LIMIT to 1000000,
+   the SPMAX to 256 and the RPMAX to 256. Then rebuild the minForth engine.
+2. Copy this new engine (mf and mf.i) to the 'test' directory. Also make sure 
+   that in this directory the 'ffl' is installed.
+3. Start the minForth engine (mf).
+4. Enter: 'include ffl_test.fs'.
+
+
+(for iForth)
+
+1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file.
+2. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
+3. Start iForth.
+4. Use the 'cd' word to move to the $IFORTH/examples/ffl-0.6.0/test directory 
+5. Do 'include ffl_test.fs' to run the tests.
+
+
+(for spf)
+
+1. Start a command or cmd window.
+2. Change the current directory to the 'test' directory.
+3. Enter (including the quotes): "\Program Files\spf4" ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any
