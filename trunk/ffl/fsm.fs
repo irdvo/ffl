@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-18 19:09:47 $ $Revision: 1.4 $
+\  $Date: 2008-03-24 20:48:38 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -186,15 +186,15 @@ end-structure
   s" digraph "    r@ tos-write-string
                   r@ tos-write-string     \ Write graph name
   s"  {"          r@ tos-write-string 
-                  r@ tos-write-line   r@ tos-flush
+                  r@ tos-flush
   s" rankdir=LR;" r@ tos-write-string 
-                  r@ tos-write-line   r@ tos-flush
+                  r@ tos-flush
 
                                           \ Write all nodes with their attributes to the tos
   dup fsm-start@ swap fsm>states r@ swap ['] fst-to-dot swap snl-execute 2drop
   
   [char] }        r@ tos-write-char   
-                  r@ tos-write-line   r> tos-flush
+                  r> tos-flush
 ;
 
  
