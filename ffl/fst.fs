@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.4 $
+\  $Date: 2008-03-24 20:48:39 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -147,7 +147,7 @@ end-structure
 
 
 : fst-attributes!  ( c-addr u fst -- = Set the extra graphviz attributes for the state )
-  fst>attributes str-get
+  fst>attributes str-set
 ;
 
 
@@ -222,6 +222,7 @@ end-structure
       nil
     THEN
   THEN
+  rdrop
 ;
 
 
@@ -254,7 +255,6 @@ end-structure
   THEN
   
   [char] ;                r@ tos-write-char           \ Finish the line
-                          r@ tos-write-line
                           r@ tos-flush
   r>
 ;
@@ -288,7 +288,6 @@ end-structure
     drop
   THEN
   s" ];" r@ tos-write-string                \ Finish the node line
-         r@ tos-write-line
          r@ tos-flush
                                             \ Write the transitions to the stream
   dup fst>transitions r@ swap ['] ftr-to-dot swap snl-execute drop
