@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.3 $
+\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,8 @@ include ffl/str.fs
 
 
 ( ftr = FSM Transition )
-( The ftr module implements a transition in a Finite State Machine. See fsm  )
-( using this module.                                                         )
+( The ftr module implements a transition in a Finite State Machine. See [fsm] )
+( for more info about using this module.                                      )
 
 
 1 constant ftr.version
@@ -126,7 +126,7 @@ end-structure
 ;
 
 
-: ftr-action@      ( ftr -- xt = Get the entry action of the transition )
+: ftr-action@      ( ftr -- xt = Get the action of the transition )
   ftr>action @
 ;
 

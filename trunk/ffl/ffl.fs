@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-30 06:54:00 $ $Revision: 1.44 $
+\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.45 $
 \
 \ ==============================================================================
 
@@ -47,6 +47,9 @@ include ffl/dtm.fs
 include ffl/dti.fs
 include ffl/enm.fs
 include ffl/est.fs
+include ffl/fsm.fs
+include ffl/fst.fs
+include ffl/ftr.fs
 include ffl/frc.fs
 include ffl/gmo.fs
 include ffl/hci.fs
