@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-24 20:48:38 $ $Revision: 1.5 $
+\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/tos.fs
 ( ftr-condition@ on this new transition to get a reference to the condition  )
 ( in the transition. This is actually a bit array [see bar]. Use the words   )
 ( of the bar module to set the condition. When the whole FSM is built, start )
-( the use of the machine by using fsm-start. By default the first created    )
+( using the machine by calling fsm-start. By default the first created       )
 ( state is the start state, but this can be changed by fsm-start!. After     )
 ( starting the machine, feed events to the machine by fsm-feed. This word    )
 ( returns the new, current state or nil if no transition matched. The        )
@@ -163,7 +163,7 @@ end-structure
 
 ( Event words )
 
-: fsm-feed         ( n fsm -- fst | nil = Feed the event to the current state, return the next state or nil if the event did not matched any condition )
+: fsm-feed         ( n fsm -- fst | nil = Feed the event to the current state, return the next state or nil if the event did not match any condition )
   >r
   r@ fsm>current @
   dup nil= exp-invalid-state AND throw

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-24 20:48:39 $ $Revision: 1.5 $
+\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -37,8 +37,8 @@ include ffl/tos.fs
 
 
 ( fst = FSM State )
-( The fst module implements a state in a Finite State Machine. See fsm for   )
-( using this module.                                                         )
+( The fst module implements a state in a Finite State Machine. See [fsm] for )
+( more info about using this module.                                         )
 
 
 1 constant fst.version
@@ -82,7 +82,7 @@ end-structure
 : fst-(free)       ( fst -- = Free the internal, private variables from the heap )
   ['] ftr-free over fst>transitions snl-(free)
   
-  dup fst>any nil<>? IF
+  dup fst>any @ nil<>? IF
     ftr-free
   THEN
   
@@ -141,7 +141,7 @@ end-structure
 ;
 
 
-: fst-exit@        ( fst -- xt = Get the entry action of the state )
+: fst-exit@        ( fst -- xt = Get the exit action of the state )
   fst>exit @
 ;
 

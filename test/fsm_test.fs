@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-24 20:48:39 $ $Revision: 1.5 $
+\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -150,9 +150,9 @@ t{ char . fsm1 fsm-try fst4 ?s }t
 
 t{ char 0 fsm1 fsm-feed fst3 ?s }t
 
-
-
 \ t{ fsm1 fsm-(free) }t
+
+
 
 begin-enumeration
 enum: voilence
@@ -164,23 +164,29 @@ end-enumeration
 
 t{ #events fsm-new value machine }t
 
+variable fsm-test-counter   fsm-test-counter 0!
+
 : say-thank-you
   drop
-  ." Thank you" cr
+  fsm-test-counter @ 7 = IF fsm-test-counter 1+! THEN
+  fsm-test-counter @ 6 = IF fsm-test-counter 1+! THEN
+  fsm-test-counter @ 4 = IF fsm-test-counter 1+! THEN
+  fsm-test-counter @ 2 = IF fsm-test-counter 1+! THEN
+  fsm-test-counter @ 0 = IF fsm-test-counter 1+! THEN
 ;
 
 : say-choice?
   drop
-  ." Please make your choice" cr
+  fsm-test-counter @ 1 = IF fsm-test-counter 1+! THEN
 ;
 
 : say-coin?
   drop
-  ." Please enter your coin" cr
+  fsm-test-counter @ 5 = IF fsm-test-counter 1+! THEN
 ;
 
 : call-support ( fst -- = Call support )
-  ." Voilence against the machine, calling: " fst-data@ . cr
+  fst-data@ 112 = fsm-test-counter @ 8 = AND IF fsm-test-counter 1+! THEN
 ;
 
 t{ 1     nil            ' say-thank-you s" start"    machine fsm-new-state value start   }t
@@ -198,12 +204,11 @@ t{ s" voilence" start fst-find-transition s" color=yellow" rot ftr-attributes! }
 
 : deliver-choice
   2drop
-  ." Deliver choice" cr
+  fsm-test-counter @ 3 = IF fsm-test-counter 1+! THEN
 ;
 
 : do-refund
   2drop
-  ." Refund coin" cr
 ;
 
 t{ 1   ' deliver-choice  s" choice"    choice? start   machine fsm-new-transition ftr-condition@ choice   swap bar-set-bit }t
@@ -226,16 +231,47 @@ t{ choice   machine fsm-feed coin?   ?s }t
 t{ refuse   machine fsm-feed start   ?s }t
 t{ voilence machine fsm-feed support ?s }t
 
+t{ fsm-test-counter @ 9 ?s }t
+
 
 tos-new value fsm-tos
 
+fsm-test-counter 0!
+
 : fsm-tos-write    ( c-addr u x -- flag = Write the string )
-  \ drop 2drop true
-  drop type true
+  drop
+  fsm-test-counter @ CASE
+     0 OF s" digraph Machine {" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     1 OF s" rankdir=LR;" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     2 OF s\" n1 [shape=doublecircle,label=\"start\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     3 OF s\" n1 -> n2 [label=\"coin\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     4 OF s\" n1 -> n3 [label=\"choice\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     5 OF s\" n1 -> n4 [label=\"voilence\"] [color=yellow];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     6 OF s\" n2 [shape=circle,label=\"choice?\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     7 OF s\" n2 -> n1 [label=\"choice\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     8 OF s\" n2 -> n1 [label=\"refuse\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+     9 OF s\" n2 -> n4 [label=\"voilence\"] [color=yellow];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    10 OF s\" n3 [shape=circle,label=\"coin?\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    11 OF s\" n3 -> n1 [label=\"coin\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    12 OF s\" n3 -> n1 [label=\"refuse\"];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    13 OF s\" n3 -> n4 [label=\"voilence\"] [color=yellow];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    14 OF s\" n4 [shape=doublecircle,label=\"support\",color=red];" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    15 OF s" }" compare 0= IF fsm-test-counter 1+! THEN ENDOF
+    >r 2drop r>
+  ENDCASE
+  true
 ;
+
 
 0 ' fsm-tos-write fsm-tos tos-set-writer
 
+
 t{ s" Machine" fsm-tos machine fsm-to-dot }t
+
+t{ fsm-test-counter @ 16 ?s }t
+
+t{ fsm-tos tos-free }t
+
+t{ machine fsm-free }t
 
 \ ==============================================================================
