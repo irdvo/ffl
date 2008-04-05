@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\            ffl_test - the test-all source file in the ffl
+\               make - the 'make' source file for gforth
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
@@ -20,59 +20,32 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.39 $
+\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
+: timer@
+  time_of_day
+  swap 1000 um*
+  rot  1000 /
+  m+ drop
+;
 
-include ffl/tst.fs
+.( Forth Foundation Library: ) cr
+timer@
+cunused
+unused
 
-tst-reset-tests
+include ffl/ffl.fs
 
-\ the test sources
+unused - swap
+cunused - +
 
-include a32_test.fs
-include act_test.fs
-include arg_test.fs
-include bar_test.fs
-include bct_test.fs
-include car_test.fs
-include chr_test.fs
-include chs_test.fs
-include cpx_test.fs
-include crc_test.fs
-include dcl_test.fs
-include dnl_test.fs
-\ include dom_test.fs
-include dtm_test.fs
-include dos_test.fs
-include est_test.fs
-include frc_test.fs
-include fsm_test.fs
-include hct_test.fs
-include md5_test.fs
-include msc_test.fs
-include gmo_test.fs
-include nct_test.fs
-include nnt_test.fs
-\ include rdg_test.fs
-include rgx_test.fs
-include rng_test.fs
-include scl_test.fs
-include snl_test.fs
-include sh1_test.fs
-include sh2_test.fs
-include str_test.fs
-include stt_test.fs
-include tis_test.fs
-include tmr_test.fs
-include tos_test.fs
-include xis_test.fs
-include xos_test.fs
-
-.( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests took ) . .( ms.) cr
+.( Compilation Size: ) . .( bytes) cr
   
-bye
+timer@ swap -
+
+.( Compilation Time: ) . .( msec) cr
 
 \ ==============================================================================
 

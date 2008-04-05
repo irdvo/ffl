@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-18 19:09:48 $ $Revision: 1.7 $
+\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -185,7 +185,7 @@ t{ dom.file close-file throw }t
 
 \ Building a (small) tree from scratch
 
-t{ dom-create dom2 }t
+t{ dom-new value dom2 }t
 
 t{ dom.document dom2 dom-append-node }t
 

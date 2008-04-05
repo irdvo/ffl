@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.18 $
+\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.19 $
 \
 \ ==============================================================================
 \
@@ -122,10 +122,7 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
 
 
 : sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  dup 0= IF 
-    EXIT 
-  THEN
-  0< 2* 1+
+  -1 max 1 min
 ;
 
 

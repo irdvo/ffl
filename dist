@@ -19,6 +19,7 @@ mkdir ${dest}/engines/fina
 mkdir ${dest}/engines/minForth
 mkdir ${dest}/engines/iForth
 mkdir ${dest}/engines/spf
+mkdir ${dest}/engines/flk
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp       ffl/*.fs     ${dest}/ffl
@@ -34,6 +35,7 @@ cp   engines/fina/*.fs        ${dest}/engines/fina
 cp   engines/minForth/*.fs    ${dest}/engines/minForth
 cp   engines/iForth/*.fs      ${dest}/engines/iForth
 cp   engines/spf/*.fs         ${dest}/engines/spf
+cp   engines/flk/*.fs         ${dest}/engines/spf
 
 cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
@@ -56,13 +58,14 @@ unix2dos -k -o ${dest}/test/*.fs
 unix2dos -k -o ${dest}/examples/*.fs
 
 unix2dos -k -o ${dest}/engines/gforth/*.fs
-unix2dos -k -o ${dest}/engines/bigforth
-unix2dos -k -o ${dest}/engines/pfe
-unix2dos -k -o ${dest}/engines/Win32Forth
-unix2dos -k -o ${dest}/engines/fina
-unix2dos -k -o ${dest}/engines/minForth
-unix2dos -k -o ${dest}/engines/iForth
-unix2dos -k -o ${dest}/engines/spf
+unix2dos -k -o ${dest}/engines/bigforth/*.fs
+unix2dos -k -o ${dest}/engines/pfe/*.fs
+unix2dos -k -o ${dest}/engines/Win32Forth/*.fs
+unix2dos -k -o ${dest}/engines/fina/*.fs
+unix2dos -k -o ${dest}/engines/minForth/*.fs
+unix2dos -k -o ${dest}/engines/iForth/*.fs
+unix2dos -k -o ${dest}/engines/spf/*.fs
+unix2dos -k -o ${dest}/engines/flk/*.fs
 
 zip -r ${package}-${version}.zip ${dest}
 
