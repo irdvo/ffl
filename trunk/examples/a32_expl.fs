@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\               make - the 'make' source file for gforth
+\              a32_expl - the Adler32 example in the ffl
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,27 +20,49 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.16 $
+\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include tags.fs
-
-.( Forth Foundation Library: ) cr
-utime
-
-unused
-
-include ffl/ffl.fs
-
-unused -
+include ffl/a32.fs
 
 
-.( Compilation Size: ) . .( bytes) cr
-  
-utime 2swap d- 1 1000 m*/
+\ Create an Adler32 variable ad1 in the dictionary
 
-.( Compilation Time: ) d. .( msec) cr
+a32-create ad1
 
-\ ==============================================================================
+\ Update the variable with data
 
+s" The quick brown fox jumps over the lazy dog" ad1 a32-update
+
+\ Finish the Adler32 calculation resulting in unsigned 32 bit word
+\ on the stack representing the value
+
+ad1 a32-finish
+
+\ Convert the value to a hex string and print
+
+a32+to-string type cr
+
+
+
+\ Create an Adler32 variable on the heap
+
+a32-new value ad2
+
+\ Update the variable with multiple data
+
+s" The quick brown fox " ad2 a32-update
+s" jumps over the lazy dog" ad2 a32-update
+
+\ Finish the calculation
+
+ad2 a32-finish
+
+\ Convert the value to a hex string and print
+
+a32+to-string type cr
+
+\ Free the variable from the heap
+
+ad2 a32-free

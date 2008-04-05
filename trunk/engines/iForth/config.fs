@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-23 07:19:36 $ $Revision: 1.1 $
+\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
@@ -79,20 +79,23 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 : rdrop            ( R: x -- )
-  -R ; \ relying on the fact that this word is inlined
+  -R 
+; \ relying on the fact that this word is inlined
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  ROL ;
+  ROL 
+;
 
 
 : rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  ROR ;
+  ROR 
+;
 
 
 : sgn              ( n1 -- n2 = Determine the sign of the number [-1,0,1] )
-  dup 0= IF EXIT THEN
-  0< 2* 1+ ;
+  -1 max 1 min
+;
 
 
 0 constant nil     ( -- addr = Nil address )
