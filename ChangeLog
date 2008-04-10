@@ -1,4 +1,5 @@
 0.7.0
+* bnt,bnn,bni: new modules: Generic binary tree (2008-04-06)
 * a32: new module: Adler32 algorithm (2008-04-03)
 * chs: chs-char? bug fixed
 * spf: config.fs/make.fs/readme added

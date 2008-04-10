@@ -68,6 +68,7 @@ Index of used prefices
 6 xos - XML/HTML writer module
 6 rdg - Random distribution generator
 6 dom - XML-DOM module
+7 a32 - Adler32 Algorithm
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -76,7 +77,7 @@ Index of used prefices
 7 fsm - Finite state machine module
 7 fst - FSM State
 7 ftr - FSM Transition
-5 nfe - non-deterministic finite automate expression
+5 nfe - non-deterministic finite automata expression
 5 nfs - non-deterministic finite automata state
 5 rgx - Regular expression module
 2 tis - Text Input Stream
