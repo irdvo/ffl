@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-10 16:12:01 $ $Revision: 1.1 $
+\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -130,11 +130,11 @@ t{ bni1 bni-prev  bnn8 ?s }t
   
 t{ bni1 bni-prev  ?nil }t
 
-0 [IF]
 
 \ Delete test
 
 t{  5 bnt1 bnt-delete ?true bnn1 ?s }t
+
 
 t{  7 bnt1 bnt-delete ?true bnn4 ?s }t
 t{  2 bnt1 bnt-delete ?true bnn5 ?s }t
@@ -146,7 +146,6 @@ t{ bnt1 bnt-length@ 5 ?s }t
 t{ 0 ' bnt-sum   bnt1 bnt-execute 22 ?s }t
 t{ 0 ' bnt-count bnt1 bnt-execute  5 ?s }t
 
-[THEN]
 
 t{ ' bnn-free bnt1 bnt-clear }t
 

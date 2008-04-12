@@ -166,7 +166,7 @@ purposes only and have no real meaning. Enter them in the correct case.)
 (for pfe)
 
 1. Change the current directory to the 'test' directory
-2. Enter: pfe ffl_test.fs -ab -c TEST --verbose -file=FILE input
+2. Enter: pfe ffl_test.fs -ab -c TEST --verbose --file=FILE input
 
 
 (for Win32Forth)
