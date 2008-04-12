@@ -20,10 +20,11 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.45 $
+\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.46 $
 \
 \ ==============================================================================
 
+include ffl/a32.fs
 include ffl/acn.fs
 include ffl/act.fs
 include ffl/arg.fs
@@ -31,6 +32,9 @@ include ffl/bar.fs
 include ffl/bci.fs
 include ffl/bcn.fs
 include ffl/bct.fs
+include ffl/bni.fs
+include ffl/bnn.fs
+include ffl/bnt.fs
 include ffl/car.fs
 include ffl/chr.fs
 include ffl/chs.fs
@@ -39,6 +43,7 @@ include ffl/crc.fs
 include ffl/dci.fs
 include ffl/dcl.fs
 include ffl/dcn.fs
+include ffl/dni.fs
 include ffl/dnl.fs
 include ffl/dnn.fs
 include ffl/dom.fs

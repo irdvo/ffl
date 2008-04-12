@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.39 $
+\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.40 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include act_test.fs
 include arg_test.fs
 include bar_test.fs
 include bct_test.fs
+include bnt_test.fs
 include car_test.fs
 include chr_test.fs
 include chs_test.fs
