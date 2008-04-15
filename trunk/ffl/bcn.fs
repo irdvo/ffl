@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\           bcn - the Binary tree cell node module in the ffl
+\              bcn - the Binary tree cell node in the ffl
 \
-\             Copyright (C) 2006-2007  Dick van Oudheusden
+\             Copyright (C) 2006-2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.6 $
+\  $Date: 2008-04-15 17:13:54 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -31,24 +31,22 @@ include ffl/config.fs
 [UNDEFINED] bcn.version [IF]
 
 
-include ffl/stc.fs
+include ffl/bnn.fs
 
 
-( bcn = Binary tree cell node module )
-( The bcn module implements a node in an unbalanced binary tree. )
-
+( bcn = Binary cell tree node )
+( The bcn module implements a node in an unbalanced binary tree that can )
+( cell wide data.                                                        )
 
 1 constant bcn.version
 
 
 ( Node structure )
 
-begin-structure bcn%       ( -- n = Get the required space for a bcn node )
-  field:  bcn>parent         \ the parent node
-  field:  bcn>left           \ the left node
-  field:  bcn>right          \ the right node
-  field:  bcn>key            \ the key
-  field:  bcn>cell           \ the cell data
+begin-structure bcn%  ( -- n = Get the required space for a bcn node )
+  bnn%
+  +field  bcn>bnn            \ Extend the bnn structure with .. 
+  field:  bcn>cell           \ .. cell data
 end-structure
 
 
@@ -56,11 +54,9 @@ end-structure
 ( Node creation, initialisation and destruction )
 
 : bcn-init         ( x1 x2 bcn1 bcn2 -- = Initialise the node bcn2 with the parent bcn1, key x2 and data x1 )
-  tuck bcn>parent    !
-  dup  bcn>left   nil!
-  dup  bcn>right  nil!
-  tuck bcn>key       !
-       bcn>cell      !
+  >r 
+  r@ bnn-init
+  r> bcn>cell !
 ;
 
 
@@ -74,49 +70,23 @@ end-structure
 ;
 
 
-( Private words )
+( Members words )
 
-
-: bcn-left@        ( bcn1 -- bcn2 = Get the left node from the node bcn1)
-  bcn>left @
+: bcn-cell@        ( bcn1 -- bcn2 = Get the left node from the node bcn1)
+  bcn>cell @
 ;
 
 
-: bcn-right@       ( bcn1 -- bcn2 = Get the right node from the node bcn1)
-  bcn>right @
-;
-
-
-: bcn-parent@      ( bcn1 -- bcn2 = Get the parent from the node bcn1 )
-  bcn>parent @
-;
-
-
-: bcn-parent!      ( bcn1 bcn2 -- = Set for the node bcn2 the parent to bcn1, if bcn2 is not nil )
-  nil<>? IF
-    bcn>parent !
-  ELSE
-    drop
-  THEN
-;
-
-
-: bcn-compare-key  ( x xt bcn -- x xt bcn n = Compare with xt the key in the node bcn with the key x resulting in n )
-  >r
-  2dup r@ bcn>key @ swap execute
-  r> swap
+: bcn-cell!        ( bcn1 -- bcn2 = Get the right node from the node bcn1)
+  bcn>cell !
 ;
 
 
 ( Inspection )
 
 : bcn-dump         ( bcn -- = Dump the node )
-  ." bcn:" dup . cr
-  ."   parent :" dup bcn>parent  ? cr
-  ."   left   :" dup bcn>left    ? cr
-  ."   right  :" dup bcn>right   ? cr
-  ."   key    :" dup bcn>key     ? cr
-  ."   cell   :"     bcn>cell    ? cr
+  dup bnn-dump
+  ."   cell   :" bcn>cell ? cr
 ;
 
 [THEN]

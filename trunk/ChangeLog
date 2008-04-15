@@ -1,4 +1,7 @@
 0.7.0
+* bcn: new words: bcn-cell@,bcn-cell!
+* bct: new word: bct-execute?
+* bct,bcn,bci extends bnt,bnn,bni (2008-04-14)
 * bnt,bnn,bni: new modules: Generic binary tree (2008-04-06)
 * a32: new module: Adler32 algorithm (2008-04-03)
 * chs: chs-char? bug fixed
