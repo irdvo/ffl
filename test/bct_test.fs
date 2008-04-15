@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-10-27 20:02:44 $ $Revision: 1.4 $
+\  $Date: 2008-04-15 17:13:54 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -66,12 +66,18 @@ t{ 4 bct1 bct-get   ?true 5 ?s }t
   rot + +
 ;
 
+: bct-sum?  ( n:sum w:data w:key - n:sum flag = Sum data till key = 7 )
+  >r + r> 7 =
+;
+
 : bct-count ( n:count w:data w:key - n:count = Count the nodes )
   2drop 1+
 ;
 
 
 t{ 0 ' bct-sum bct1 bct-execute 101 ?s }t
+
+t{ 0 ' bct-sum? bct1 bct-execute? ?true 23 ?s }t
 
 
 \ Iterator test

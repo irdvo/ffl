@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.9 $
+\  $Date: 2008-04-15 17:13:54 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -170,7 +170,7 @@ variable dom-test-counter  dom-test-counter 0!
     12 OF s" </TEST>" compare 0= IF dom-test-counter 1+! THEN ENDOF
     >r 2drop r>
   ENDCASE
-  true
+  false 0= \ true
 ;
 
 
