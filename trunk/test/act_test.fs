@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-01-11 19:22:04 $ $Revision: 1.4 $
+\  $Date: 2008-04-24 16:50:23 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -39,14 +39,14 @@ include ffl/rng.fs
     drop 0
   ELSE
     >r
-    r@ bcn-right@  recurse
-    r@ bcn-left@   recurse
+    r@ bnn-right@  recurse
+    r@ bnn-left@   recurse
     2dup -
     dup r@ acn-balance@ <> IF
-      ." Invalid balance for node:" r@ bcn>key ? cr
+      ." Invalid balance for node:" r@ bnn>key ? cr
     THEN
     dup -1 < swap 1 > OR IF
-      ." Unbalanced at node:" r@ bcn>key ? cr
+      ." Unbalanced at node:" r@ bnn>key ? cr
     THEN
     rdrop
     max 1+
@@ -55,7 +55,7 @@ include ffl/rng.fs
 
 
 : act-verify       ( w:act - = Verify the act tree )
-  bct>root @
+  bnt>root @
   act-verify-node
   drop
 ;

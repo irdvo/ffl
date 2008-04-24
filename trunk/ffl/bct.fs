@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-15 17:13:54 $ $Revision: 1.13 $
+\  $Date: 2008-04-24 16:50:23 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -118,7 +118,8 @@ bnt% constant bct%  ( -- n = Get the required space for a bct variable )
 
 : bct-delete       ( x1 bct -- false | x2 true = Delete key x1 from the tree, return the cell data x2 )
   bnt-delete IF
-    bcn-cell@
+    dup  bcn-cell@
+    swap bct-free
     true
   ELSE
     false

@@ -1,4 +1,6 @@
 0.7.0
+* act: new words: act-clear, act-execute?
+* act,acn extends bct,bcn (2008-04-24)
 * bcn: new words: bcn-cell@,bcn-cell!
 * bct: new word: bct-execute?
 * bct,bcn,bci extends bnt,bnn,bni (2008-04-14)
