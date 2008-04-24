@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.7 $
+\  $Date: 2008-04-24 16:50:23 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/bct.fs
 ( non-recursive.                                                               )
 
 
-2 constant act.version
+3 constant act.version
 
 
 bct% constant act%      ( -- n = Get the required space for an act variable )
@@ -102,61 +102,61 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
 : act-rotate-left  ( acn1 act -- acn2 = Rotate nodes to the left for balance, return the root node of the subtree )
   >r
-  dup bcn-right@                       \ root' = root.right
-  2dup bcn-left@ swap bcn>right !      \ root.right = root'.left
-  2dup bcn-left@ bcn-parent!           \ root'.left.parent = root
-  2dup bcn>left !                      \ root'.left = root
+  dup bnn-right@                       \ root' = root.right
+  2dup bnn-left@ swap bnn>right !      \ root.right = root'.left
+  2dup bnn-left@ bnn-parent!           \ root'.left.parent = root
+  2dup bnn>left !                      \ root'.left = root
   swap
-  2dup bcn>parent @!                   \ root.parent = root'
+  2dup bnn>parent @!                   \ root.parent = root'
   dup nil= IF                          \ IF root.parent = nil Then
     2drop
-    dup r@ bct>root !                  \   tree.root = root
+    dup r@ bnt>root !                  \   tree.root = root
     nil
   ELSE                                 \ Else
-    tuck bcn-left@ = IF                \  IF root = parent.left Then
-      2dup bcn>left !                  \    parent.left = root'
+    tuck bnn-left@ = IF                \  IF root = parent.left Then
+      2dup bnn>left !                  \    parent.left = root'
     ELSE                               \  Else
-      2dup bcn>right !                 \    parent.right = root'
+      2dup bnn>right !                 \    parent.right = root'
     THEN
   THEN
-  over bcn-parent!                     \ root'.parent = parent or nil
+  over bnn-parent!                     \ root'.parent = parent or nil
   rdrop
 ;
 
 
 : act-rotate-right ( acn1 act -- acn2 = Rotate nodes to the right for balance, return the new root node of the subtree )
   >r
-  dup bcn-left@                        \ root' = root.left
-  2dup bcn-right@ swap bcn>left !      \ root.left = root'.right
-  2dup bcn-right@ bcn-parent!          \ root'.right.parent = root
-  2dup bcn>right !                     \ root'.right = root
+  dup bnn-left@                        \ root' = root.left
+  2dup bnn-right@ swap bnn>left !      \ root.left = root'.right
+  2dup bnn-right@ bnn-parent!          \ root'.right.parent = root
+  2dup bnn>right !                     \ root'.right = root
   swap
-  2dup bcn>parent @!                   \ root.parent = root'
+  2dup bnn>parent @!                   \ root.parent = root'
   dup nil= IF                          \ IF root.parent = nil Then
     2drop
-    dup r@ bct>root !                  \   tree.root = root
+    dup r@ bnt>root !                  \   tree.root = root
     nil
   ELSE                                 \ Else
-    tuck bcn-left@ = IF                \  IF root = parent.left Then
-      2dup bcn>left !                  \    parent.left = root'
+    tuck bnn-left@ = IF                \  IF root = parent.left Then
+      2dup bnn>left !                  \    parent.left = root'
     ELSE                               \  Else
-      2dup bcn>right !                 \    parent.right = root'
+      2dup bnn>right !                 \    parent.right = root'
     THEN
   THEN
-  over bcn-parent!                     \ root'.parent = parent or nil
+  over bnn-parent!                     \ root'.parent = parent or nil
   rdrop
 ;
 
 
 : act-heavy-left   ( acn1 act -- acn2 = Change the tree if tree is left heavy, return the new root node of the subtree)
   >r
-  dup bcn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
+  dup bnn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
     dup acn>balance 0!                 \   node.balance = equal
-    dup bcn-left@ acn>balance 0!       \   node.left.balance = equal
+    dup bnn-left@ acn>balance 0!       \   node.left.balance = equal
     r@ act-rotate-right                \   rotate subtree right
   ELSE                                 \ Else
     >r                                 \   If node.left.right.balance = equal Then
-    0 r@ bcn-left@ bcn-right@ acn>balance @! ?dup 0= IF
+    0 r@ bnn-left@ bnn-right@ acn>balance @! ?dup 0= IF
       0 0                              \     equal, equal
     ELSE                               \   Else
       0< IF                            \     If ...balance = LEFT Then
@@ -165,10 +165,10 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
         0 -1                           \       equal, left
       THEN
     THEN
-    r@ bcn-left@ acn>balance !         \   Set node.left.balance
+    r@ bnn-left@ acn>balance !         \   Set node.left.balance
     r@ acn>balance !                   \   Set node.balance
     r>
-    dup bcn-left@ r@ act-rotate-left drop \  rotate left subtree to the left
+    dup bnn-left@ r@ act-rotate-left drop \  rotate left subtree to the left
     r@ act-rotate-right                \  rotate subtree to the right
   THEN
   rdrop
@@ -177,13 +177,13 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
 : act-heavy-right  ( acn1 act -- acn2 = Change the tree if tree is right heavy, return the new root node of the subtree )
   >r
-  dup bcn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
+  dup bnn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
     dup acn>balance 0!                 \   node.balance = equal
-    dup bcn-right@ acn>balance 0!      \   node.right.balance = equal
+    dup bnn-right@ acn>balance 0!      \   node.right.balance = equal
     r@ act-rotate-left                 \   rotate subtree left
   ELSE                                 \ Else
     >r                                 \   If node.right.left.balance = equal Then
-    0 r@ bcn-right@ bcn-left@ acn>balance @! ?dup 0= IF
+    0 r@ bnn-right@ bnn-left@ acn>balance @! ?dup 0= IF
       0 0                              \     equal, equal
     ELSE                               \   Else
       0< IF                            \     If ...balance = LEFT Then
@@ -192,10 +192,10 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
         -1 0                           \       left, equal
       THEN
     THEN
-    r@ bcn-right@ acn>balance !        \   Set node.right.balance
+    r@ bnn-right@ acn>balance !        \   Set node.right.balance
     r@ acn>balance !                   \   Set node.balance
     r>
-    dup bcn-right@ r@ act-rotate-right drop \  rotate right subtree to the right
+    dup bnn-right@ r@ act-rotate-right drop \  rotate right subtree to the right
     r@ act-rotate-left                 \  rotate subtree to the left
   THEN
   rdrop
@@ -237,35 +237,35 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
  
 : act-replace-node ( acn1 -- acn2 = Replace the node with another node )
-  dup bcn-left@ nil<> over bcn-right@ nil<> AND IF \ Both branches not nil Then
+  dup bnn-left@ nil<> over bnn-right@ nil<> AND IF \ Both branches not nil Then
     dup acn-balance@ 0< IF                  \ If subtree is left heavy Then
-      dup bcn-left@ bct-greatest-node       \   Find the replacement in the left subtree
+      dup bnn-left@ bnt-greatest-node       \   Find the replacement in the left subtree
     ELSE                                    \ Else
-      dup bcn-right@ bct-smallest-node      \   In the right subtree
+      dup bnn-right@ bnt-smallest-node      \   In the right subtree
     THEN
   
-    2dup bcn>key  @ swap bcn>key  !         \   Copy the contents
-    tuck bcn>cell @ swap bcn>cell ! 
+    2dup bnn-key@  swap bnn>key !           \   Copy the contents
+    tuck bcn-cell@ swap bcn-cell! 
   THEN
 ;
 
 
 : act-light-right  ( acn1 act -- acn2 flag = Change the tree if tree is right light, return new root subtree and rebalance flag )
   >r
-  dup bcn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
+  dup bnn-left@ acn-balance@ 0< IF     \ If node.left.balance = LEFT Then
     dup acn>balance 0!                 \   node.balance = equal
-    dup bcn-left@ acn>balance 0!       \   node.left.balance = equal
+    dup bnn-left@ acn>balance 0!       \   node.left.balance = equal
     r@ act-rotate-right                \   rotate subtree right
     true
   ELSE                                 \ Else
-    dup bcn-left@ acn-balance@ 0= IF
+    dup bnn-left@ acn-balance@ 0= IF
       -1 over acn>balance !
-       1 over bcn-left@ acn>balance !
+       1 over bnn-left@ acn>balance !
       r@ act-rotate-right
       false
     ELSE
       >r                                 \   If node.left.right.balance = equal Then
-      0 r@ bcn-left@ bcn-right@ acn>balance @! ?dup 0= IF
+      0 r@ bnn-left@ bnn-right@ acn>balance @! ?dup 0= IF
         0 0                              \     equal, equal
       ELSE                               \   Else
         0< IF                            \     If ...balance = LEFT Then
@@ -274,10 +274,10 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
           0 -1                           \       equal, left
         THEN
       THEN
-      r@ bcn-left@ acn>balance !         \   Set node.left.balance
+      r@ bnn-left@ acn>balance !         \   Set node.left.balance
       r@ acn>balance !                   \   Set node.balance
       r>
-      dup bcn-left@ r@ act-rotate-left drop \  rotate left subtree to the left
+      dup bnn-left@ r@ act-rotate-left drop \  rotate left subtree to the left
       r@ act-rotate-right                \  rotate subtree to the right
       true
     THEN
@@ -288,20 +288,20 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
 : act-light-left   ( acn1 act -- acn2 flag = Change the tree if tree is left light, return new root subtree and rebalance flag )
   >r
-  dup bcn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
+  dup bnn-right@ acn-balance@ 0> IF    \ If node.right.balance = RIGHT Then
     dup acn>balance 0!                 \   node.balance = equal
-    dup bcn-right@ acn>balance 0!      \   node.right.balance = equal
+    dup bnn-right@ acn>balance 0!      \   node.right.balance = equal
     r@ act-rotate-left                 \   rotate subtree left
     true
   ELSE                                 \ Else
-    dup bcn-right@ acn-balance@ 0= IF
+    dup bnn-right@ acn-balance@ 0= IF
        1 over acn>balance !            \   node.balance = right
-      -1 over bcn-right@ acn>balance ! \   node.right.balance = left
+      -1 over bnn-right@ acn>balance ! \   node.right.balance = left
       r@ act-rotate-left               \   rotate subtree left
       false
     ELSE
       >r                                 \   If node.right.left.balance = equal Then
-      0 r@ bcn-right@ bcn-left@ acn>balance @! ?dup 0= IF
+      0 r@ bnn-right@ bnn-left@ acn>balance @! ?dup 0= IF
         0 0                              \     equal, equal
       ELSE                               \   Else
         0< IF                            \     If ...balance = LEFT Then
@@ -310,10 +310,10 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
           -1 0                           \       left, equal
         THEN
       THEN
-      r@ bcn-right@ acn>balance !        \   Set node.right.balance
+      r@ bnn-right@ acn>balance !        \   Set node.right.balance
       r@ acn>balance !                   \   Set node.balance
       r>
-      dup bcn-right@ r@ act-rotate-right drop \  rotate right subtree to the right
+      dup bnn-right@ r@ act-rotate-right drop \  rotate right subtree to the right
       r@ act-rotate-left                 \  rotate subtree to the left
       true
     THEN
@@ -358,16 +358,16 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 
 : act-shrunk       ( acn act -- = Rebalance after the tree is shrunk )
   >r
-  dup bcn-parent@ true               \   Balance the tree
+  dup bnn-parent@ true               \   Balance the tree
   BEGIN
     over nil<> AND                   \   While nodes and not balanced Do
   WHILE
-    tuck bcn-left@ = IF              \   If walked left Then
+    tuck bnn-left@ = IF              \   If walked left Then
       r@ act-shrunk-left              \     Grown left
     ELSE                             \   Else
       r@ act-shrunk-right             \     Grown right
     THEN
-    >r dup bcn-parent@ r>            \   Move to the parent
+    >r dup bnn-parent@ r>            \   Move to the parent
   REPEAT
   2drop
   rdrop
@@ -376,41 +376,50 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
    
 ( Tree words )
 
+: act-clear        ( act -- = Delete all nodes in the tree )
+  bct-(free)
+;
+
+
 : act-insert       ( x1 x2 act -- = Insert data x1 with key x2 in the tree )
-  >r ['] acn-new -rot r@
-  bct-insert-node
+  >r 
+  ['] acn-new swap
+  r@ bnt-insert
   
   IF                                   \ If inserted Then
-    dup bcn-parent@ true               \   Balance the tree
+    dup bnn-parent@ true               \   Balance the tree
     BEGIN
       over nil<> AND                   \   While nodes and not balanced Do
     WHILE
-      tuck bcn-left@ = IF              \   If walked left Then
+      tuck bnn-left@ = IF              \   If walked left Then
         r@ act-grown-left              \     Grown left
       ELSE                             \   Else
         r@ act-grown-right             \     Grown right
       THEN
-      >r dup bcn-parent@ r>            \   Move to the parent
+      >r dup bnn-parent@ r>            \   Move to the parent
     REPEAT
-    drop
+    2drop
+  ELSE
+    bcn-cell!
   THEN
-  drop
   rdrop
 ;
 
 
 : act-delete       ( x1 act -- false | x2 true = Delete key x1 from the tree, return the data x2 if found )
   >r
-  r@ bct-search-node
+  r@ bnt-search-node
   nil<>? IF
-    r@ bct>length 1-!             \ Update length if deleted
-    >r r@ bcn>cell @ true r>      \ Save return info
+    r@ bnt>length 1-!             \ Update length if deleted
+    >r r@ bcn-cell@ true r>       \ Save return info
       
     act-replace-node              \ Try to replace the node
     
     dup r@ act-shrunk             \ Rebalance, the tree is shrunk
     
-    r@ bct-delete-node            \ Delete the node
+    r@ bnt-delete-node            \ Delete the node
+    
+    acn-free
   ELSE
     false
   THEN
@@ -418,12 +427,18 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 ;
 
 : act-get          ( x1 act -- false | x2 true = Get the data x2 related to key x1 from the tree )
-  bct-get
+  bnt-search-node
+  nil<>? IF
+    bcn-cell@
+    true
+  ELSE
+    false
+  THEN
 ;
 
 
 : act-has?         ( x1 act -- flag = Check if the key x1 is present in the tree )
-  bct-has?
+  bnt-has?
 ;
 
 
@@ -431,6 +446,10 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
   bct-execute
 ;
 
+
+: act-execute?     ( i*x xt bct -- j*x flag = Execute xt for every key and data in the tree until xt returns true )
+  bct-execute?
+;
 
 ( Inspection )
 

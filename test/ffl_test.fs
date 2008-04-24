@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.40 $
+\  $Date: 2008-04-24 16:50:23 $ $Revision: 1.41 $
 \
 \ ==============================================================================
 
@@ -44,7 +44,7 @@ include cpx_test.fs
 include crc_test.fs
 include dcl_test.fs
 include dnl_test.fs
-\ include dom_test.fs
+include dom_test.fs
 include dtm_test.fs
 include dos_test.fs
 include est_test.fs
@@ -56,7 +56,7 @@ include msc_test.fs
 include gmo_test.fs
 include nct_test.fs
 include nnt_test.fs
-\ include rdg_test.fs
+include rdg_test.fs
 include rgx_test.fs
 include rng_test.fs
 include scl_test.fs

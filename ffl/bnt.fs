@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.2 $
+\  $Date: 2008-04-24 16:50:23 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -249,6 +249,44 @@ end-structure
 ;
 
 
+: bnt-delete-node  ( bnn1 bnt -- bnn2 = Delete node bnn from the tree, return the deleted node )
+  >r
+  dup bnn-left@ nil= IF
+    dup bnn-right@ nil= IF
+      nil                       \ Both left and right nil -> child = nil
+    ELSE
+      dup bnn-right@            \ Only left nil -> child = right
+    THEN
+  ELSE
+    dup bnn-right@ nil= IF
+      dup bnn-left@             \ Only right nil -> child = left
+    ELSE
+      dup bnt-swap-smallest     \ Both not nil -> swap with smallest to the right
+    THEN
+  THEN  
+    
+  dup nil<> IF                  \ If child <> nil Then
+    over bnn-parent@ 
+    over bnn-parent!            \   child.parent = node.parent
+  THEN
+  over bnn-parent@ nil= IF      \ If node.parent = nil Then
+    r@ bnt>root !               \   root = child
+  ELSE                          \ Else
+    over dup bnn-parent@        \   node.parent
+    tuck bnn-left@ = IF         \   If node.parent.left = node Then
+      bnn>left !                \     node.parent.left = child
+    ELSE                        \   Else 
+      bnn>right !               \     node.parent.right = child
+    THEN
+  THEN
+     
+  dup bnn>parent nil!
+  dup bnn>left   nil!
+  dup bnn>right  nil!
+  rdrop
+;
+
+
 ( Tree words )
 
 : bnt-clear        ( xt bnt -- = Delete all nodes in the tree using word xt )
@@ -308,38 +346,7 @@ end-structure
   nil<>? IF
     r@ bnt>length 1-!             \ Update length if deleted
 
-    dup bnn-left@ nil= IF
-      dup bnn-right@ nil= IF
-        nil                       \ Both left and right nil -> child = nil
-      ELSE
-        dup bnn-right@            \ Only left nil -> child = right
-      THEN
-    ELSE
-      dup bnn-right@ nil= IF
-        dup bnn-left@             \ Only right nil -> child = left
-      ELSE
-        dup bnt-swap-smallest     \ Both not nil -> swap with smallest to the right
-      THEN
-    THEN  
-    
-    dup nil<> IF                  \ If child <> nil Then
-      over bnn-parent@ 
-      over bnn-parent!            \   child.parent = node.parent
-    THEN
-    over bnn-parent@ nil= IF      \ If node.parent = nil Then
-      r@ bnt>root !               \   root = child
-    ELSE                          \ Else
-      over dup bnn-parent@        \   node.parent
-      tuck bnn-left@ = IF         \   If node.parent.left = node Then
-        bnn>left !                \     node.parent.left = child
-      ELSE                        \   Else 
-        bnn>right !               \     node.parent.right = child
-      THEN
-    THEN
-      
-    dup bnn>parent nil!
-    dup bnn>left   nil!
-    dup bnn>right  nil!
+    r@ bnt-delete-node
     
     true
   ELSE
