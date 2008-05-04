@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               make - the 'make' source file for gforth
+\               make - the 'make' source file for sp-forth
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
@@ -20,13 +20,11 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-23 07:19:36 $ $Revision: 1.1 $
+\  $Date: 2008-05-04 09:42:22 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
-include ffl/config.fs
-
-.( Forth Foundation Library: ) cr
+REQUIRE ffl.version ffl/config.fs
 
 ms@
 
@@ -37,11 +35,11 @@ include ffl/ffl.fs
 unused -
 
 
-.( Compilation Size: ) . .( bytes) cr
-  
+.( Compilation size: ) . .( bytes) cr
+
 ms@ swap -
 
-.( Compilation Time: ) . .( msec) cr
+.( Compilation time: ) u. .( msec) cr
 
 \ ==============================================================================
 

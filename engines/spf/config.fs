@@ -2,7 +2,8 @@
 \
 \                  config - the config in the ffl
 \
-\             Copyright (C) 2005-2008  Dick van Oudheusden
+\             Copyright (C) 2005-2007  Dick van Oudheusden
+\                    Copyright (C) 2008 ygrek
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,30 +21,36 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-23 07:19:36 $ $Revision: 1.1 $
+\  $Date: 2008-05-04 09:42:22 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 \
-\ This file is for spf.
+\ This file is for SP-Forth.
 \
 \ ==============================================================================
 
+REQUIRE [IF] lib/include/tools.f
 
-REQUIRE [UNDEFINED] lib/include/ansi.f
+S" ffl.version" FORTH-WORDLIST SEARCH-WORDLIST 0= [IF]
 
-[UNDEFINED] ffl.version [IF]
+REQUIRE ANSI-FILE lib/include/ansi-file.f
+REQUIRE F. lib/include/float2.f
+REQUIRE .R lib/include/core-ext.f
+REQUIRE BOUNDS ~ygrek/lib/string.f
+REQUIRE /STRING lib/include/string.f
+REQUIRE DEFER lib/include/defer.f
+REQUIRE M*/ lib/include/double.f
+REQUIRE CASE lib/ext/case.f
+REQUIRE TIME&DATE lib/include/facil.f
+REQUIRE CASE-INS lib/ext/caseins.f
+REQUIRE COMPARE-U ~ac/lib/string/compare-u.f
 
-
-REQUIRE CASE-INS    lib/ext/caseins.f
-REQUIRE F.          lib/include/float2.f
-REQUIRE DEFER       lib/include/defer.f
-REQUIRE DATE&TIME   lib/include/facil.f
-
+CASE-INS ON
 
 ( config = Forth system specific words )
 ( The config module contains the extension and missing words for a forth system.)
 
-000700 constant ffl.version
+000600 constant ffl.version
 
 
 ( Private words )
@@ -53,18 +60,17 @@ variable ffl.endian   1 ffl.endian !
 
 ( System Settings )
 
-create end-of-line   ( -- c-addr = Counted string for the end of line for the current system )
-  2 c, 13 c, 10 c,   \ dos:  cr lf
-  
-  
+create end-of-line    ( -- c-addr = Counted string for the end of line for the current system )
+EOLN S",  
+
 s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN] 
-  constant #bits/byte   ( -- +n = Number of bits in a byte )
+  constant #bits/byte   ( -- n = Number of bits in a byte )
   
 #bits/byte 1 chars *
-  constant #bits/char   ( -- +n = Number of bits in a char )
+  constant #bits/char   ( -- n = Number of bits in a char )
   
 #bits/byte cell *
-  constant #bits/cell   ( -- +n = Number of bits in a cell )  
+  constant #bits/cell   ( -- n = Number of bits in a cell )  
 
 ffl.endian c@ 0=             
   constant bigendian?   ( -- flag = Check for bigendian hardware )
@@ -72,163 +78,146 @@ ffl.endian c@ 0=
 
 ( Extension words )
 
-1 chars 1 = [IF]
-: char/            ( n1 -- n2 = Convert address units to chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
+[UNDEFINED] ms@ [IF]
+
+ \ assume windows
+ [UNDEFINED] GetTickCount [IF]
+ WINAPI: GetTickCount KERNEL32.DLL
+ [THEN]
+
+ : ms@ ( -- u ) GetTickCount  ;
+
 [THEN]
 
 
-: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
+s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
+
+
+\ Command line is a single string in SPF/Win32
+
+[DEFINED] ARGC [IF] \ available in SPF/Linux
+
+: #args            ( -- n = Get the number of command line arguments )
+  ARGC
+;
+
+: arg@             ( n -- c-addr u = Get the nth command line argument )
+  1+ CELLS ARGV + @ ASCIIZ>
+;
+[THEN]
+
+: lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
   2dup lshift >r
   #bits/cell swap - rshift r>
   or
 ;
 
 
-: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
+: rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
   2dup rshift >r
   #bits/cell swap - lshift r>
   or
 ;
 
 
-: ms@
-  GetTickCount
+
+: include PARSE-NAME ANSI-FILE::>ZFILENAME INCLUDED ;
+
+: SGN -1 MAX 1 MIN ;
+
+: MS PAUSE ;
+
+: BIN ;
+
+: CHAR/ 1 CHARS / ;
+
+: 0>= 0< 0= ;
+: >= < 0= ;
+: <= > 0= ;
+: D<> D= 0= ;
+: UD. D. ;
+: NIL 0 ;
+: 0<= 0> 0= ;
+: U<= U> 0= ;
+
+\ : 0!   ( a-addr -- = Set address to zero )
+\   0 swap !
+\ ;
+
+
+: nil!   ( a-addr -- = Set address to nil )
+  0!
 ;
 
-  
-s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
-
-: ms
-  Sleep drop
+: nil=   ( addr -- flag = Check for nil )
+  0=
 ;
 
 
-0 constant nil     ( -- nil = Nil constant )
-
-
-: nil!             ( a-addr -- = Set nil in address )
-  nil swap !
+: nil<>   ( addr -- flag = Check for unequal to nil )
+  0 <>
 ;
 
 
-: nil=             ( addr -- flag = Check for nil )
-  nil =
-;
-
-
-: nil<>            ( addr -- flag = Check for unequal to nil )
-  nil <>
-;
-
-
-: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
+0 nil= [IF]
+: nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
   state @ IF
     postpone ?dup
   ELSE
     ?dup
   THEN
 ; immediate
-
-
-: ?free            ( addr -- wior = Free the address if not nil )
+[ELSE]
+: nil<>?
   dup nil<> IF
-    free 
+    true
+  ELSE
+    drop
+    false
+  THEN
+;
+[THEN]  
+
+
+: ?free   ( addr -- ior = Free the address if not nil )
+  dup nil<> IF
+    free
   ELSE
     drop 0
   THEN
 ;
 
 
-: 1-!              ( a-addr -- = Decrease contents of address by 1 )
+\ : 1+!   ( a-addr -- = Increase contents of address by 1 )
+\  1 swap +!
+\ ;
+
+
+: 1-!   ( a-addr -- = Decrease contents of address by 1 )
   -1 swap +!
 ;
 
 
-: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
+: @!   ( x1 a-addr -- x2 = First fetch the contents x2 and then store value x1 )
   dup @ -rot !
 ;
 
 
-: u<=
-  u> 0=
+: icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
+  COMPARE-U
 ;
 
 
-: 0>=
-  0< 0=
-;
-
-
-: 0<=
-  0> 0=
-;
-
-
-: <=
-  > 0=
-;
-
-
-: >=
-  < 0=
-;
-
-
-: d<>
-  d= 0=
-;
-
-
-: ud.  
-  <# #s #> type space
-;
-
-
-: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  dup 0= IF 
-    EXIT 
-  THEN
-  0< 2* 1+
-;
-
-
-: toupper          ( char1 -- char2 = Convert the character to upper case )
-  dup [char] a >= over [char] z <= AND IF
-    [ char a char A - ] literal -
-  THEN
-;
-
-
-: icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings, return [-1,0,1] )
-  rot swap 2swap 2over
-  min 0 ?DO
-    over c@ toupper over c@ toupper - sgn ?dup IF
-      >r 2drop 2drop r>
-      unloop 
-      exit
-    THEN
-    1 chars + swap 1 chars + swap
-  LOOP
-  2drop
-  - sgn
-;
-
-
-: <=>              ( n1 n2 -- n = Compare two numbers and return the compare result [-1,0,1] )
+: <=>   ( n1 n2 -- n = Compare the two numbers and return the compare result [-1,0,1] )
   2dup = IF 
     2drop 0 EXIT 
   THEN
   < 2* 1+
 ;
 
-
-: index2offset     ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
+      
+: index2offset   ( n1 n2 -- n3 = Convert the index n1 range [-n2..n2> into offset n3 range [0..n2>, negative values of n1 downward length n2 )
   over 0< IF
     +
   ELSE
@@ -237,71 +226,71 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-: bounds
-  over + swap
-;
-
-
 : >,"              ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
-  count chars + aligned         \ Win32Forth stores a trailing 0 after the string ...
+  count chars + aligned
 ;
+
+
+\ size of float value in bytes
+\ float2.f operates with 64-bit floats by default
+8    CONSTANT float
+
+TRUE CONSTANT FLOATING-EXT
+6    CONSTANT FLOATING-STACK
+
+[DEFINED] float [IF]
+
+( Float extension constants )
+
+0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
+1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
+2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
 
 
 ( Float extension words )
 
-1 floats constant float
-
-0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
-
-
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
+: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
   frot frot
 ;
 
+: ftuck ( f1 f2 -- f2 f1 f2 )
+  FSWAP FOVER 
+;
 
-: f2dup
+
+: f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
 ;
 
 
-: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
+: f>r              ( r -- ; R: -- r = Push float on the return stack )
   r> rp@ float - rp! rp@ f! >r 
 ;
 
-: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
+: fr>              ( -- r ; R: r -- = Pop float from the return stack )
   r> rp@ f@ float rp@ + rp! >r
 ;
 
-: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
+: fr@              ( -- r ; R: r -- r = Get float from top of return stack )
   r> rp@ f@ >r
 ;
 
-
-: ftuck            ( F: r1 r2 -- r2 r1 r2 = Swap and over )
-  fswap fover
-;
-
-
-variable exp-next  -2050 exp-next !
-
-: exception      ( c-addr u -- n = Create an exception )
-  2drop
-  exp-next @ 
-  exp-next 1-!
-;
+[THEN]
 
 
 ( Exceptions )
 
-s" Index out of range" exception constant exp-index-out-of-range ( -- n = Index out of range exception number )
-s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invalid state exception number )
-s" No data available"  exception constant exp-no-data            ( -- n = No data available exception number )
-s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
-s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
-s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+\ FIXME
+200001 constant exp-index-out-of-range ( -- n = Index out of range exception number )
+200002 constant exp-invalid-state      ( -- n = Invalid state exception number )
+200003 constant exp-no-data            ( -- n = No data available exception number )
+200004 constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
+200005 constant exp-wrong-file-type    ( -- n = Wrong file type )
+200006 constant exp-wrong-file-version ( -- n = Wrong file version )
 
+[ELSE]
+  drop
 [THEN]
 
 \ ==============================================================================
+
