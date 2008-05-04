@@ -54,19 +54,9 @@ The ffl-0.6.0 directory, minus the subdirectory ffl, should be placed in
 $IFORTH/examples/ .
 
 
-In case of spf the 'ffl' directory (and its contents) should be 
-copied to the installation directory of spf. Normally this will be: 
+In case of SP-Forth the 'ffl' directory (and its contents) should be 
+copied to the installation directory of SP-Forth. Normally this will be: 
 C:\Program Files\SP-Forth .
-
-Add in the 'spf4.ini' file (also normally in C:\Program Files\SP-Forth) the
-following code (case is important):
-  : include
-    PARSE-NAME 2>R  2R@ + 0 SWAP C!  2R@ INCLUDE-PROBE IF
-      2R> +ModuleDirName INCLUDED
-    ELSE
-      2R> 2DROP
-    THEN
-  ;
 
 
 If your forth only looks in the current directory for forth sources, then copy 
@@ -99,7 +89,7 @@ For minForth the config.fs and make.fs files should be copied from the
 For iForth the config.fs and make.fs files should be copied from the
 'engines/iForth' directory to the 'ffl' directory.
 
-For spf the config.fs and make.fs files should be copied from the
+For SP-Forth the config.fs and make.fs files should be copied from the
 'engines/spf' directory to the 'ffl' directory.
 
 The next step is editing the config.fs file for system settings.
@@ -198,11 +188,11 @@ For running the tests the minForth engine is configured too small:
 5. Do 'include ffl_test.fs' to run the tests.
 
 
-(for spf)
+(for SP-Forth)
 
 1. Start a command or cmd window.
 2. Change the current directory to the 'test' directory.
-3. Enter (including the quotes): "\Program Files\spf4" ffl_test.fs
+3. Enter (including the quotes): "\Program Files\spf4" ffl/config.fs ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any
