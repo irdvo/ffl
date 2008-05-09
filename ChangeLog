@@ -1,4 +1,6 @@
 0.7.0
+* gzf: new module: GZip file (2008-05-07)
+* gzs: new module: GZip stream (2008-05-07)
 * act: new words: act-clear, act-execute?
 * act,acn extends bct,bcn (2008-04-24)
 * bcn: new words: bcn-cell@,bcn-cell!
