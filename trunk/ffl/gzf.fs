@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-09 12:52:25 $ $Revision: 1.1 $
+\  $Date: 2008-05-11 05:52:05 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -81,18 +81,26 @@ end-structure
 ( gzf structure )
 
 begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
+  field:  gzf>state           \ the state: 1=reading 2=writing 0=none
   field:  gzf>file            \ the current file
   field:  gzf>text            \ is the gzip file a text file ?
   field:  gzf>mode            \ the compression mode
   field:  gzf>os              \ the operating system
   field:  gzf>mtime           \ the modification time
-  field:  gzf>reading         \ is gzf in reading mode ?
 end-structure
 
 
 ( GZip file variable creation, initialisation and destruction )
 
 : gzf-init         ( gzf -- = Initialise the GZip file variable )
+  dup  gzf>state 0!
+  dup  gzf>file  0!
+  dup  gzf>text  off
+  dup  gzf>mode  0!
+  dup  gzf>mtime 0!
+  gzf.unknown
+  over gzf>os     !
+  drop
 \ ToDo
 ;
 
@@ -102,13 +110,13 @@ end-structure
 ;
 
 
-: gzf-create       ( "<spaces>name" +n -- ; -- gzf = Create a named GZip file variable in the dictionary )
+: gzf-create       ( "<spaces>name" -- ; -- gzf = Create a named GZip file variable in the dictionary )
   create   here   gzf% allot   gzf-init
 ;
 
 
-: gzf-new          ( +n -- gzf = Create a new GZip file variable on the heap )
-  gzf% allocate  throw  tuck gzf-init
+: gzf-new          ( -- gzf = Create a new GZip file variable on the heap )
+  gzf% allocate  throw  dup gzf-init
 ;
 
 
@@ -211,7 +219,7 @@ end-structure
       0 r@ gzf>file @!
       close-file throw
     ELSE
-      r@ gzf>reading on
+      r@ gzf>state on
     THEN
   THEN
   rdrop
@@ -256,7 +264,13 @@ end-structure
 ( Inspection )
 
 : gzf-dump   ( gzf - = Dump the gzf )
-  ." gzf:" . cr
+  ." gzf:" dup . cr
+  ."  state:" dup gzf>state ? cr
+  ."  file :" dup gzf>file  ? cr
+  ."  text?:" dup gzf>text  ? cr
+  ."  mode :" dup gzf>mode  ? cr
+  ."  os   :" dup gzf>os    ? cr
+  ."  mtime:"     gzf>mtime ? cr
 ;
   
 [THEN]
