@@ -20,12 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-11 05:52:05 $ $Revision: 1.2 $
+\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
 include ffl/gzf.fs
 include ffl/tst.fs
+include ffl/dtm.fs
 
 
 [DEFINED] gzf.version [IF]
@@ -39,7 +40,15 @@ t{ s" unknown.gz" gzf1 gzf-open-file ?true }t  \ actually <>0
 
 t{ s" gzf.gz"     gzf1 gzf-open-file ?0 }t
 
+t{ gzf1 gzf-read-header ?0 }t
+
 gzf1 gzf-dump
+
+dtm-create gzfd
+
+gzf1 gzf-mtime@ 0  dtm.unix-epoch  gzfd  dtm-set-with-seconds 
+
+.( Mtime: ) gzfd dtm-get . . . . . . . cr
 
 [THEN]
 

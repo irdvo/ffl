@@ -21,7 +21,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-04 09:42:22 $ $Revision: 1.2 $
+\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 \
@@ -287,6 +287,7 @@ TRUE CONSTANT FLOATING-EXT
 200004 constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 200005 constant exp-wrong-file-type    ( -- n = Wrong file type )
 200006 constant exp-wrong-file-version ( -- n = Wrong file version )
+200007 constant exp-wrong-file-data    ( -- n = Wrong file data )
 
 [ELSE]
   drop
