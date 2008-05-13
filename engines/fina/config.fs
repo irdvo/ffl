@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \
-\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.9 $
+\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 \
@@ -224,6 +224,8 @@ s" Invalid parameters" exception constant exp-invalid-parameters
 s" Wrong file type"    exception constant exp-wrong-file-type    
 \ -- n = Wrong file version
 s" Wrong file version" exception constant exp-wrong-file-version 
+\ -- n = Wrong file data
+s" Wrong file data"    exception constant exp-wrong-file-data
 
 [ELSE]
  drop
