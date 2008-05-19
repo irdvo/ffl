@@ -192,7 +192,7 @@ For running the tests the minForth engine is configured too small:
 
 1. Start a command or cmd window.
 2. Change the current directory to the 'test' directory.
-3. Enter (including the quotes): "\Program Files\spf4" ffl/config.fs ffl_test.fs
+3. Enter (including the quotes): "\Program Files\sp-forth\spf4" ffl\config.fs ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any
