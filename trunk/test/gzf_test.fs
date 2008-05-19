@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.3 $
+\  $Date: 2008-05-19 05:44:00 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -49,6 +49,20 @@ dtm-create gzfd
 gzf1 gzf-mtime@ 0  dtm.unix-epoch  gzfd  dtm-set-with-seconds 
 
 .( Mtime: ) gzfd dtm-get . . . . . . . cr
+
+t{ gzf1 gzf-close-file ?0 }t
+
+t{ s" temp.gz" gzf1 gzf-create-file ?0 }t
+
+t{ s" temp.txt" gzf1 gzf-name! }t
+t{ s" Temporary test file for forth zlib library" gzf1 gzf-comment! }t
+t{ gzf.unix gzf1 gzf-os! }t
+
+t{ gzf1 gzf-write-header ?0 }t
+
+t{ gzf1 gzf-close-file ?0 }t
+
+t{ gzf1 gzf-(free) }t
 
 [THEN]
 

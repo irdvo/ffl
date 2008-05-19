@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.3 $
+\  $Date: 2008-05-19 05:43:45 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -235,11 +235,11 @@ end-structure
   dup gzf>hdr>cm c@ 8 u>               \ Check compression mode
   exp-wrong-file-data AND throw
 
-  dup gzf>hdr>xfl c@ 224 AND 0<>       \ Check extra flags
+  dup gzf>hdr>flg c@ 224 AND 0<>       \ Check flags
   exp-wrong-file-data AND throw
      
-  dup gzf>hdr>xfl c@                   \ Process the extra flags
-
+  dup gzf>hdr>flg c@                   \ Process flags
+~~
   dup 1 AND 0<>                        \ File is text
   r@ gzf-text!
 
@@ -281,6 +281,8 @@ end-structure
 
 : gzf-open-file    ( c-addr u gzf -- ior = Open an existing gzip file for reading with name c-addr u )
   >r
+  r@ gzf>state @ 0<> exp-invalid-state AND throw
+
   r/o bin open-file ?dup IF
     nip
   ELSE
@@ -294,6 +296,8 @@ end-structure
 
 : gzf-read-header  ( gzf -- ior = Read the [next] header from the gzip file )
   >r
+  r@ gzf>state @ 1 <> exp-invalid-state AND throw
+
   gzf%hdr% allocate throw    \ Allocate space for the header
     
   dup r> ['] gzf-do-read-header catch
@@ -317,17 +321,83 @@ end-structure
 
 
 : gzf-create-file  ( c-addr u gzf -- ior = Create a gzip file for writing with name c-addr u )
-\ ToDo
+  >r
+  r@ gzf>state @ 0<> exp-invalid-state AND throw
+
+  w/o bin create-file ?dup IF
+    nip
+  ELSE
+      r@ gzf>file     !
+    2 r@ gzf>state    !
+
+    8 r@ gzf>mode     !      \ Reset the header info
+      r@ gzf>mtime   0!
+      r@ gzf>name    str-clear
+      r@ gzf>comment str-clear
+    gzf.unknown
+      r@ gzf>os       !
+    0
+  THEN
+  rdrop
 ;
 
 
 : gzf-write-header ( gzf -- ior = Write the [next] header in the gzip file )
-\ todo
+  >r
+  r@ gzf>state @ 2 <> exp-invalid-state AND throw
+  
+  gzf%hdr% allocate throw    \ Allocate space for the header
+
+  31  over gzf>hdr>id1 c!
+  139 over gzf>hdr>id2 c!
+
+  r@ gzf-mode@
+      over gzf>hdr>cm  c!
+  0
+  r@ gzf-text@ IF
+    1 OR
+  THEN
+  r@ gzf>name str-empty? 0= IF
+    8 OR
+  THEN
+  r@ gzf>comment str-empty? 0= IF
+    16 OR
+  THEN
+      over gzf>hdr>flg c!
+  r@ gzf-mtime@
+      over gzf>hdr>mtime !
+  0   over gzf>hdr>xfl  c!
+  r@ gzf-os@
+      over gzf>hdr>os   c!
+
+  dup gzf%hdr%  r@ gzf-file@  write-file 
+  
+  ?dup 0= IF
+    r@ gzf>name str-length@ ?dup IF
+      r@ gzf>name str-get-zstring
+      swap char+  r@ gzf-file@  write-file
+    ELSE
+      0
+    THEN
+  THEN
+
+  ?dup 0= IF
+    r@ gzf>comment str-length@ ?dup IF
+      r@ gzf>comment str-get-zstring
+      swap char+  r@ gzf-file@  write-file
+    ELSE
+      0
+    THEN
+  THEN
+
+  swap free throw
+
+  rdrop
 ;
 
 
 : gzf-write-file   ( c-addr u gzf -- ior = Write/compress u2 bytes to the file, starting from c-addr )
-\ ToDo;
+\ ToDo
 ;
 
 
@@ -342,7 +412,11 @@ end-structure
 
 
 : gzf-close-file   ( gzf -- ior = Close the file )
-\ ToDo
+  dup  gzf>state @ 0= exp-invalid-state AND throw
+
+  dup  gzf-file@ close-file 
+
+  swap gzf>state 0!
 ;
 
  

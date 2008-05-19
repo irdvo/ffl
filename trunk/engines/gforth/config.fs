@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-04 18:39:16 $ $Revision: 1.17 $
+\  $Date: 2008-05-19 05:44:00 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 \
@@ -235,6 +235,7 @@ s" No data available"  exception constant exp-no-data            ( -- n = No dat
 s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
 s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong file data )
 
 [ELSE]
   drop

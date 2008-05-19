@@ -21,7 +21,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.3 $
+\  $Date: 2008-05-19 05:44:00 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 \
@@ -29,21 +29,28 @@
 \
 \ ==============================================================================
 
-REQUIRE [IF] lib/include/tools.f
+REQUIRE [IF]      lib/include/tools.f
 
 S" ffl.version" FORTH-WORDLIST SEARCH-WORDLIST 0= [IF]
 
 REQUIRE ANSI-FILE lib/include/ansi-file.f
-REQUIRE F. lib/include/float2.f
-REQUIRE .R lib/include/core-ext.f
-REQUIRE BOUNDS ~ygrek/lib/string.f
-REQUIRE /STRING lib/include/string.f
-REQUIRE DEFER lib/include/defer.f
-REQUIRE M*/ lib/include/double.f
-REQUIRE CASE lib/ext/case.f
+REQUIRE F.        lib/include/float2.f
+REQUIRE .R        lib/include/core-ext.f
+REQUIRE /STRING   lib/include/string.f
+REQUIRE DEFER     lib/include/defer.f
+REQUIRE M*/       lib/include/double.f
+REQUIRE CASE      lib/ext/case.f
 REQUIRE TIME&DATE lib/include/facil.f
-REQUIRE CASE-INS lib/ext/caseins.f
-REQUIRE COMPARE-U ~ac/lib/string/compare-u.f
+
+\ REQUIRE COMPARE-U ~ac/lib/string/compare-u.f
+[UNDEFINED] CHAR-UPPERCASE [IF]
+: CHAR-UPPERCASE ( c -- c1 )
+  DUP [CHAR] a [CHAR] z 1+ WITHIN IF 32 - EXIT THEN
+  DUP [CHAR] а [CHAR] я 1+ WITHIN IF 32 - THEN
+;
+[THEN]
+
+REQUIRE CASE-INS  lib/ext/caseins.f
 
 CASE-INS ON
 
@@ -81,45 +88,44 @@ ffl.endian c@ 0=
 [UNDEFINED] ms@ [IF]
 
  \ assume windows
- [UNDEFINED] GetTickCount [IF]
+[UNDEFINED] GetTickCount [IF]
  WINAPI: GetTickCount KERNEL32.DLL
- [THEN]
+[THEN]
 
- : ms@ ( -- u ) GetTickCount  ;
+: ms@ ( -- u ) GetTickCount  ;
 
 [THEN]
 
 
-s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
+s" MAX-U" environment? 0= [IF] -1 [THEN] constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
 
 \ Command line is a single string in SPF/Win32
-
 [DEFINED] ARGC [IF] \ available in SPF/Linux
 
+\ Warning: this only works if there are two scripts after spf4
 : #args            ( -- n = Get the number of command line arguments )
-  ARGC
+  ARGC 3 -
 ;
 
 : arg@             ( n -- c-addr u = Get the nth command line argument )
-  1+ CELLS ARGV + @ ASCIIZ>
+  3 + CELLS ARGV + @ ASCIIZ>
 ;
 [THEN]
 
-: lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
 
+
+: lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
+2dup lshift >r
+#bits/cell swap - rshift r>
+or
+;
 
 : rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
+2dup rshift >r
+#bits/cell swap - lshift r>
+or
 ;
-
-
 
 : include PARSE-NAME ANSI-FILE::>ZFILENAME INCLUDED ;
 
@@ -132,17 +138,22 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 : CHAR/ 1 CHARS / ;
 
 : 0>= 0< 0= ;
+
 : >= < 0= ;
+
 : <= > 0= ;
+
 : D<> D= 0= ;
+
 : UD. D. ;
+
 : NIL 0 ;
+
 : 0<= 0> 0= ;
+
 : U<= U> 0= ;
 
-\ : 0!   ( a-addr -- = Set address to zero )
-\   0 swap !
-\ ;
+: bounds OVER + SWAP ;
 
 
 : nil!   ( a-addr -- = Set address to nil )
@@ -183,15 +194,10 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 : ?free   ( addr -- ior = Free the address if not nil )
   dup nil<> IF
     free
-  ELSE
+   ELSE
     drop 0
   THEN
 ;
-
-
-\ : 1+!   ( a-addr -- = Increase contents of address by 1 )
-\  1 swap +!
-\ ;
 
 
 : 1-!   ( a-addr -- = Decrease contents of address by 1 )
@@ -203,9 +209,41 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
   dup @ -rot !
 ;
 
+MODULE: inner
+[DEFINED] COMPARE-U [IF]
+: COMPARE-U COMPARE-U ;
+[ELSE]
+: UPPERCASE ( addr1 u1 -- )
+  OVER + SWAP ?DO
+    I C@ CHAR-UPPERCASE I C!
+  LOOP ;
+
+: COMPARE-CHAR-U ( c1 c2 --  -1|0|1 )
+  2DUP = IF 2DROP 0 EXIT THEN
+  CHAR-UPPERCASE SWAP CHAR-UPPERCASE -
+  DUP 0= IF EXIT THEN
+  0< IF 1 EXIT THEN -1
+  \ n is minus-one (-1) if the character c1 has a lesser numeric value than the character c2
+  \ and one (1) otherwise.
+;
+
+: COMPARE-U ( addr1 u1 addr2 u2 -- flag )
+  ROT 2DUP - >R UMIN
+  0 ?DO 2DUP
+  C@ SWAP C@ SWAP
+  COMPARE-CHAR-U DUP IF NIP NIP UNLOOP RDROP EXIT THEN DROP
+  SWAP CHAR+ SWAP CHAR+
+  LOOP 2DROP R>
+  DUP 0= IF EXIT THEN
+  0< IF 1 EXIT THEN -1
+  \ n is minus-one (-1) if u1 is less than u2 and one (1) otherwise
+;
+[THEN]
+;MODULE
+
 
 : icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
-  COMPARE-U
+  inner::COMPARE-U
 ;
 
 
@@ -287,7 +325,6 @@ TRUE CONSTANT FLOATING-EXT
 200004 constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 200005 constant exp-wrong-file-type    ( -- n = Wrong file type )
 200006 constant exp-wrong-file-version ( -- n = Wrong file version )
-200007 constant exp-wrong-file-data    ( -- n = Wrong file data )
 
 [ELSE]
   drop
