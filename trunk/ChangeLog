@@ -1,4 +1,6 @@
 0.7.0
+* lxf: config.fs/make.fs/readme added (2008-05-23)
+* stc: bug fix in +field (2008-05-23)
 * gzf: new module: GZip file (2008-05-07)
 * gzs: new module: GZip stream (2008-05-07)
 * act: new words: act-clear, act-execute?
@@ -9,7 +11,7 @@
 * bnt,bnn,bni: new modules: Generic binary tree (2008-04-06)
 * a32: new module: Adler32 algorithm (2008-04-03)
 * chs: chs-char? bug fixed
-* spf: config.fs/make.fs/readme added
+* SP-Forth: config.fs/make.fs/readme added
 * dist: also zip file with cr/lf line-endings
 * iForth: config.fs/make.fs/readme added
 * fsm: new module: Finite State Machine (2008-03-05)
