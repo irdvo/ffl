@@ -56,7 +56,11 @@ $IFORTH/examples/ .
 
 In case of SP-Forth the 'ffl' directory (and its contents) should be 
 copied to the installation directory of SP-Forth. Normally this will be: 
-C:\Program Files\SP-Forth .
+C:\Program Files\SP-Forth (for windows).
+
+
+In case of lxf/ntf the 'ffl' directory (and its contents) should be 
+copied to your forth working directory.
 
 
 If your forth only looks in the current directory for forth sources, then copy 
@@ -92,6 +96,10 @@ For iForth the config.fs and make.fs files should be copied from the
 For SP-Forth the config.fs and make.fs files should be copied from the
 'engines/spf' directory to the 'ffl' directory.
 
+For lxf/ntf the config.fs and make.fs files shoud be copied from the 
+'engines/lxf' directory to the 'ffl' directory.
+
+
 The next step is editing the config.fs file for system settings.
 
 
@@ -101,9 +109,10 @@ end-of-line
 
 This word defines the ascii end of line as a counted string. For unix this 
 is a linefeed, for dos systems it is carriage return and linefeed. For
-gforth, fina and iForth the end of line is supplied by the forth engine,
-so no manual configuration necessary. For bigforth, pfe and minForth the
-default is the unix end of line, for Win32Forth and spf the default is dos.
+gforth, fina, iForth, SP-Forth and lxf/nft the end of line is supplied by 
+the forth engine, so no manual configuration necessary. For bigforth, pfe 
+and minForth the default is the unix end of line, for Win32Forth the default
+is dos.
 You should change the 'end-of-line' word if the default is not correct for you.
 
 Note: gforth 0.6.2 returns for dos an incorrect value for end-of-line, so
@@ -137,12 +146,12 @@ Testing
 After installing the source files the unit test sources in the 'test'
 directory can be run to test the library. The test can be started by:
 
-(for PFE there are command line arguments. These are for test 
+(for PFE and SP-Forth there are command line arguments. These are for test 
 purposes only and have no real meaning. Enter them in the correct case.)
 
 
 (for gforth):
-
+ToDo: test directory ?
 1. Change the current directory to the 'test' directory
 2. Enter: gforth ffl_test.fs
 
@@ -188,11 +197,24 @@ For running the tests the minForth engine is configured too small:
 5. Do 'include ffl_test.fs' to run the tests.
 
 
-(for SP-Forth)
+(for SP-Forth, windows)
 
 1. Start a command or cmd window.
 2. Change the current directory to the 'test' directory.
 3. Enter (including the quotes): "\Program Files\sp-forth\spf4" ffl\config.fs ffl_test.fs
+
+( for SP-Forth, linux)
+
+1. Change the current directory to the 'test' directory
+2. Enter: spf4 -ab -c TEST --verbose --file=FILE input
+3. Spf4 will report error #-2003, that is okee.
+4. Enter: ffl/config.fs
+5. Enter: ffl_test.fs
+
+( for lxf )
+ToDo: test directory, installation ?
+1. Change the current directory to the 'test' directory
+2. Enter: lxf include ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any

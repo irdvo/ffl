@@ -20,6 +20,7 @@ mkdir ${dest}/engines/minForth
 mkdir ${dest}/engines/iForth
 mkdir ${dest}/engines/spf
 mkdir ${dest}/engines/flk
+mkdir ${dest}/engines/lxf
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp       ffl/*.fs     ${dest}/ffl
@@ -36,6 +37,7 @@ cp   engines/minForth/*.fs    ${dest}/engines/minForth
 cp   engines/iForth/*.fs      ${dest}/engines/iForth
 cp   engines/spf/*.fs         ${dest}/engines/spf
 cp   engines/flk/*.fs         ${dest}/engines/flk
+cp   engines/lxf/*.fs         ${dest}/engines/lxf
 
 cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
@@ -66,6 +68,7 @@ todos  ${dest}/engines/minForth/*.fs
 todos  ${dest}/engines/iForth/*.fs
 todos  ${dest}/engines/spf/*.fs
 todos  ${dest}/engines/flk/*.fs
+todos  ${dest}/engines/lxf/*.fs
 
 zip -r ${package}-${version}.zip ${dest}
 

@@ -1,8 +1,8 @@
 \ ==============================================================================
 \
-\               make - the 'make' source file for gforth
+\               make - the 'make' source file for lxf
 \
-\               Copyright (C) 2005  Dick van Oudheusden
+\               Copyright (C) 2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,14 +20,13 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-24 11:01:18 $ $Revision: 1.21 $
+\  $Date: 2008-05-24 11:01:18 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include tags.fs
 
 .( Forth Foundation Library: ) cr
-utime
+ms@
 
 unused
 
@@ -38,9 +37,9 @@ unused -
 
 .( Compilation Size: ) . .( bytes) cr
   
-utime 2swap d- 1 1000 m*/
+ms@ swap -
 
-.( Compilation Time: ) d. .( msec) cr
+.( Compilation Time: ) . .( msec) cr
 
 \ ==============================================================================
 

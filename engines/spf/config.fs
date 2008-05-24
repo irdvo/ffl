@@ -21,7 +21,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-19 05:44:00 $ $Revision: 1.4 $
+\  $Date: 2008-05-24 11:01:18 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -103,13 +103,12 @@ s" MAX-U" environment? 0= [IF] -1 [THEN] constant max-ms@   ( -- u = Maximum val
 \ Command line is a single string in SPF/Win32
 [DEFINED] ARGC [IF] \ available in SPF/Linux
 
-\ Warning: this only works if there are two scripts after spf4
 : #args            ( -- n = Get the number of command line arguments )
-  ARGC 3 -
+  ARGC 1-
 ;
 
 : arg@             ( n -- c-addr u = Get the nth command line argument )
-  3 + CELLS ARGV + @ ASCIIZ>
+  1+ CELLS ARGV + @ ASCIIZ>
 ;
 [THEN]
 
