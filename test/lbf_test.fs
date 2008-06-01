@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-29 05:31:05 $ $Revision: 1.1 $
+\  $Date: 2008-06-01 06:51:39 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -30,15 +30,15 @@ include ffl/lbf.fs
 
 .( Testing: lbf ) cr 
 
-t{ 1 chars 50 lbf-create lbf1 }t
+t{ 1 chars 10 lbf-create lbf1 }t
 
 \ Access words check
 
 t{ lbf1 lbf-access@ ?nil ?nil }t
 
-t{ ' ! ' @ lbf1 lbf-access! }t
+t{ ' c! ' c@ lbf1 lbf-access! }t
 
-\ Fifo check
+\ Lifo check
 
 t{ lbf1 lbf-length@ ?0 }t
 
@@ -52,5 +52,94 @@ t{ lbf1 lbf-length@ ?0 }t
 
 t{ lbf1 lbf-dequeue ?false }t
 
+
+t{ s" Hello" lbf1 lbf-set }t
+
+t{ 3 lbf1 lbf-get s" Hel" compare ?0 }t
+
+t{ 3 lbf1 lbf-get s" lo" compare ?0 }t
+
+t{ 5 lbf1 lbf-get ?0 }t
+
+t{ s" GoodMorning" lbf1 lbf-set }t
+
+t{ 4 lbf1 lbf-fetch s" Good" compare ?0 }t
+
+t{ s" HaveANiceDay" lbf1 lbf-set }t
+
+t{ 4 lbf1 lbf-fetch s" Good" compare ?0 }t
+
+t{ 15 lbf1 lbf-fetch s" GoodMorningHave" compare ?0 }t
+
+t{ 7 4 lbf1 lbf-seek-fetch s" Morning" compare ?0 }t
+
+t{ 4 -7 lbf1 lbf-seek-fetch s" Nice" compare ?0 }t
+
+t{ 1 -1 lbf1 lbf-seek-fetch s" y" compare ?0 }t
+
+t{ 15 lbf1 lbf-get s" GoodMorningHave" compare ?0 }t
+
+t{ lbf1 lbf-length@ 8 ?s }t
+
+t{ lbf1 lbf-clear }t
+
+t{ lbf1 lbf-length@ ?0 }t
+
+\ Fifo check
+
+t{ lbf1 lbf-tos ?false }t
+
+t{ char b lbf1 lbf-push }t
+
+t{ char c lbf1 lbf-push }t
+
+t{ lbf1 lbf-length@ 2 ?s }t
+
+t{ lbf1 lbf-tos ?true char c ?s }t
+
+t{ lbf1 lbf-pop ?true char c ?s }t
+
+t{ lbf1 lbf-pop ?true char b ?s }t
+
+t{ lbf1 lbf-pop ?false }t
+
+t{ lbf1 lbf-(free) }t
+
+\ Address check
+
+t{ 2 cells 2 lbf-new value lbf2 }t
+
+2variable lbf.var
+
+t{ lbf2 lbf-extra@ lbf+extra@ ?s }t
+
+t{ 5 lbf2 lbf-extra! }t
+
+t{ lbf2 lbf-extra@ 5 ?s }t
+
+
+10 20 lbf.var 2!
+
+t{ lbf.var lbf2 lbf-enqueue }t
+
+30 40 lbf.var 2!
+
+t{ lbf.var lbf2 lbf-enqueue }t
+
+50 60 lbf.var 2!
+
+t{ lbf.var lbf2 lbf-enqueue }t
+
+t{ lbf2 lbf-length@ 3 ?s }t
+
+t{ lbf2 lbf-dequeue ?true dup @ 20 ?s cell+ @ 10 ?s }t
+
+t{ 1 lbf2 lbf-skip 1 ?s }t
+
+t{ 0 lbf2 lbf-reduce }t
+
+t{ lbf2 lbf-dequeue ?true dup @ 60 ?s cell+ @ 50 ?s }t
+
+t{ lbf2 lbf-free }t
 
 \ ==============================================================================
