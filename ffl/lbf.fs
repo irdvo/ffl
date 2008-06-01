@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-01 06:51:33 $ $Revision: 1.2 $
+\  $Date: 2008-06-01 18:21:40 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -36,14 +36,14 @@ include ffl/stc.fs
 
 ( lbf = Lineair buffer module )
 ( The lbf module implements a lineair buffer with variable elements. During  )
-( adding of extra data, the buffer will be resized. This buffer is only      )
-( usefull if the buffer is empty on a regular bases: the pointers are then   )
-( automatically resetted to the start of the buffer. If the buffer is not    )
-( regular empty, use the lbf-reduce word to reuse the unused space in the    )
+( adding of extra data, the buffer will be resized. This type of buffer is   )
+( most efficient if the buffer is empty on a regular bases: the unused space )
+( in the buffer is then automatically reduced. If the buffer is not          )
+( regularly empty, use the lbf-reduce word to reuse the unused space in the  )
 ( buffer. The lbf-access! word expects two execution tokens on the stack:    )
 ( store with stack effect:  i*x addr --  and fetch: addr -- i*x. Those two   )
-( words are used t0 store data and fetch data from the buffer. Their         )
-( behaviour should match the size of the elements in the buffer.             )
+( words are used to store data in the buffer  and fetch data from the buffer.)
+( Their behaviour should match the size of the elements in the buffer.       )
 ( Important: the lbf-get and lbf-fetch returning addresses are located       )
 ( in the buffer so the contents of these addresses can change with the next  )
 ( call to the buffer. This is different from the circulair buffer [cbf]      )
