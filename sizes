@@ -43,5 +43,6 @@ dom.fs: 169424
 fsm.fs: 177440
 a32.fs: 
 bn?.fs: 185408
+lbf.fs: 186208
 
 fina: CompileSize=80186 CompileTime=10714 msec TestTime=24450 msec (without floats)
