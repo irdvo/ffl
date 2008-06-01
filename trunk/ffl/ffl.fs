@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-12 05:56:55 $ $Revision: 1.46 $
+\  $Date: 2008-06-01 18:28:03 $ $Revision: 1.47 $
 \
 \ ==============================================================================
 
@@ -63,6 +63,7 @@ include ffl/hct.fs
 include ffl/hni.fs
 include ffl/hnn.fs
 include ffl/hnt.fs
+include ffl/lbf.fs
 include ffl/md5.fs
 include ffl/msc.fs
 include ffl/nci.fs

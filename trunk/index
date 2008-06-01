@@ -13,6 +13,8 @@ Index of used prefices
 3 dtm - Datetime module
 3 dti - Datetime interator
 4 frc - Fraction module
+7 lbf - Lineair buffer module
+7 cbf - Circulair buffer module
 ----- - ------------------------------------------------
       - Collection
 ----- - ------------------------------------------------
@@ -113,11 +115,12 @@ Index of used prefices
       - Interface
 ----- - ------------------------------------------------
   cfg - Configuration file
-7 bzf - BZip2 file module
-7 bzs - BZip2 module
+a bzf - BZip2 file module
+a bzs - BZip2 module
 8 dbm - DBM module
 7 gzf - GZip file module
-7 gzs - GZip module
+7 gzs - GZip stream module
+7 gzp - GZip base module
       - css module
       - url module
 a    - crypt: aes
@@ -133,7 +136,7 @@ b     - Font ??
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
-7 dis - DateTime input stream
+8 dis - DateTime input stream
 8 gps - nmea handling, distance calculation
 ----- - ------------------------------------------------
       - Components
