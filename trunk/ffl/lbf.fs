@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-29 05:31:05 $ $Revision: 1.1 $
+\  $Date: 2008-06-01 06:51:33 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -35,11 +35,20 @@ include ffl/stc.fs
 
 
 ( lbf = Lineair buffer module )
-( The lbf module implements a lineair buffer with variable elements. )
-( Important: the lbf-get and lbf-fetch returning addresses are located in    )
-( in the buffer so the contents can change with the next call to the buffer. )
-( This is different from the circulair buffer implementation: the cbf-get    )
-( and cbf-fetch words copy data from the buffer to the destination addresses.)
+( The lbf module implements a lineair buffer with variable elements. During  )
+( adding of extra data, the buffer will be resized. This buffer is only      )
+( usefull if the buffer is empty on a regular bases: the pointers are then   )
+( automatically resetted to the start of the buffer. If the buffer is not    )
+( regular empty, use the lbf-reduce word to reuse the unused space in the    )
+( buffer. The lbf-access! word expects two execution tokens on the stack:    )
+( store with stack effect:  i*x addr --  and fetch: addr -- i*x. Those two   )
+( words are used t0 store data and fetch data from the buffer. Their         )
+( behaviour should match the size of the elements in the buffer.             )
+( Important: the lbf-get and lbf-fetch returning addresses are located       )
+( in the buffer so the contents of these addresses can change with the next  )
+( call to the buffer. This is different from the circulair buffer [cbf]      )
+( implementation: the cbf-get and cbf-fetch words copy data from the buffer  )
+( to the destination addresses. )
 
 
 1 constant lbf.version
@@ -54,7 +63,7 @@ include ffl/stc.fs
 ( Lineair Buffer Structure )
 
 begin-structure lbf%       ( -- n = Get the required space for a lbf variable )
-  field: lbf>record        \ the record size
+  field: lbf>record        \ the element size
   field: lbf>in            \ the in pointer
   field: lbf>out           \ the out pointer
   field: lbf>extra         \ the extra size during resizing
@@ -72,11 +81,11 @@ end-structure
 
 
 
-( Array creation, initialisation and destruction )
+( Buffer creation, initialisation and destruction )
 
-: lbf-init         ( +n1 +n2 lbf -- = Initialise the buffer with an initial length n1 and record size n2 )
+: lbf-init         ( +n1 +n2 lbf -- = Initialise the buffer with element size n1 and initial length n2 )
   >r
-            r@ lbf>record !
+  swap      r@ lbf>record !
   lbf.extra r@ lbf>extra  !
   nil       r@ lbf>fetch  !
   nil       r@ lbf>store  !
@@ -98,12 +107,12 @@ end-structure
 ;
 
 
-: lbf-create       ( +n1 +n2 "<spaces>name" -- ; -- lbf = Create a lineair buffer in the dictionary with an initial length n1 and record size n2 )
+: lbf-create       ( +n1 +n2 "<spaces>name" -- ; -- lbf = Create a lineair buffer in the dictionary with element size n1 and initial length n2 )
   create  here  lbf% allot  lbf-init
 ;
 
 
-: lbf-new          ( +n1 +n2 -- lbf = Create a lineair buffer with an initial length n1 and record size n2 on the heap )
+: lbf-new          ( +n1 +n2 -- lbf = Create a lineair buffer with element size n1 and initial length n2 on the heap )
   lbf% allocate throw  dup >r lbf-init r> 
 ;
 
@@ -122,26 +131,26 @@ end-structure
 ;
 
 
+: lbf-in@          ( lbf -- u = Get the in offset )
+  lbf>in @
+;
+
+
+: lbf-out@         ( lbf -- u = Get the out offset )
+  lbf>out @
+;
+
+
+: lbf-record@      ( lbf -- u = Get the element size )
+  lbf>record @
+;
+
 
 ( Member words )
 
 : lbf-length@      ( lbf -- u = Get the number of elements in the buffer )
-  dup  lbf>in  @
-  swap lbf>out @ -
-;
-
-
-: lbf-size!        ( +n lbf -- = Insure the size of the buffer )
-  2dup lbf>size @ > IF
-    tuck lbf>extra @ +       \ add extra space 
-    2dup swap lbf>size !     \ set the new size in cells
-    over lbf>record @ *      \ size in bytes
-    over lbf-buffer@
-    swap resize throw        \ resize the array
-    swap lbf>buffer !
-  ELSE
-    2drop
-  THEN
+  dup  lbf-in@
+  swap lbf-out@ -
 ;
 
 
@@ -155,6 +164,20 @@ end-structure
 ;
 
 
+: lbf-size!        ( +n lbf -- = Insure the size of the buffer )
+  2dup lbf>size @ > IF
+    tuck lbf-extra@ +        \ add extra space 
+    2dup swap lbf>size !     \ set the new size in cells
+    over lbf-record@ *       \ size in bytes
+    over lbf-buffer@
+    swap resize throw        \ resize the array
+    swap lbf>buffer !
+  ELSE
+    2drop
+  THEN
+;
+
+
 : lbf+extra@       ( -- u = Get the initial extra space allocated during resizing of the buffer )
   lbf.extra
 ;
@@ -165,7 +188,7 @@ end-structure
 ;
 
 
-: lbf-access@      ( lbf -- xt1 xt2 = Get the store word xt1 and the fetch word x2 for the buffer )
+: lbf-access@      ( lbf -- xt1 xt2 = Get the store word xt1 and the fetch word xt2 for the buffer )
   dup  lbf>store @
   swap lbf>fetch @
 ;
@@ -179,22 +202,22 @@ end-structure
 ( Private words )
 
 : lbf-in           ( lbf -- addr = Get the address of in )
-  dup  lbf>in @
-  over lbf>record @ *
+  dup  lbf-in@
+  over lbf-record@ *
   swap lbf-buffer@ +
 ;
 
 
 : lbf-out          ( lbf -- addr = Get the address of out )
-  dup  lbf>out @
-  over lbf>record @ *
+  dup  lbf-out@
+  over lbf-record@ *
   swap lbf-buffer@ +
 ;
 
 
 : lbf-reset?       ( lbf -- = Reset the buffer to initial state if empty )
-  dup  lbf>in  @
-  over lbf>out @ = IF
+  dup  lbf-in@
+  over lbf-out@ = IF
     dup lbf>in  0!
         lbf>out 0!
   ELSE
@@ -207,13 +230,13 @@ end-structure
 
 : lbf-set          ( addr u lbf -- = Set u elements, starting from addr in the buffer, resize if necessary )
   >r
-  r@ lbf>in @ over + r@ lbf-size!           \ Insure size of in + new elements
-  tuck r@ lbf-in swap r@ lbf>record * move  \ Move data in the buffer
-  r> lbf>in +!                              \ in += new elements
+  r@ lbf-in@ over + r@ lbf-size!              \ Insure size of in + new elements
+  tuck r@ lbf-in swap r@ lbf-record@ * move   \ Move data in the buffer
+  r> lbf>in +!                                \ in += new elements
 ;
 
 
-: lbf-get          ( u1 lbf -- addr u2 | 0 = Get maximum u1 elements from the buffer, return the actual number of returned elements u2 )
+: lbf-get          ( u1 lbf -- addr u2 | 0 = Get maximum u1 elements from the buffer, return the actual number of elements u2 )
   >r
   r@ lbf-length@ min            \ actual number of elements
   dup IF
@@ -225,7 +248,7 @@ end-structure
 ;
 
 
-: lbf-fetch        ( u1 lbf -- addr u2 = Fetch maximum u1 elements from the buffer, but keep them in the buffer, return the actual number of returned elements u2 )
+: lbf-fetch        ( u1 lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, return the actual number of elements u2 )
   >r
   r@ lbf-length@ min            \ actual number of elements
   dup IF
@@ -235,18 +258,31 @@ end-structure
 ;
 
 
-: lbf-seek-fetch   ( u1 n lbf -- addr u2 = Fetch maximum u1 elements from the buffer, offsetted by n, but keep them in the buffer, return the actual number of returned elements u2 )
+: lbf-seek-fetch   ( u1 n lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
   >r
-  dup 0< IF
-    r@ lbf>in @ +
+  dup 0< IF                     \ Find index for fetch
+    r@ lbf-in@ +
+    dup r@ lbf-out@ <
   ELSE
-    r@ lbf>out @ +
+    r@ lbf-out@ +
+    dup r@ lbf-in@ >= 
   THEN
-  \ ToDo
+  exp-index-out-of-range AND throw
+
+  tuck r@ lbf-in@ swap - min    \ Calculate length
+  dup IF
+    swap
+    r@ lbf-record@ *
+    r@ lbf-buffer@ +
+    swap
+  ELSE
+    nip
+  THEN
+  rdrop
 ;
 
 
-: lbf-skip         ( u1 lbf -- u2 = Skip maximum u1 elements from the buffer, return the actually skipped elements )
+: lbf-skip         ( u1 lbf -- u2 = Skip maximum u1 elements from the buffer, return the actually skipped elements u2 )
   >r
   r@ lbf-length@ min         \ actual number of elements to skip
   dup IF
@@ -259,17 +295,17 @@ end-structure
 
 : lbf-enqueue      ( i*x | addr lbf -- = Enqueue one element in the buffer, optional using the store word )
   >r
-  r@ lbf>in @ 1+ r@ lbf-size!           \ Insure size of one extra element
+  r@ lbf-in@ 1+ r@ lbf-size!            \ Insure size of one extra element
   r@ lbf>store @ nil<>? IF              \ If store word Then
     r@ lbf-in swap execute              \   Store i*x
   ELSE                                  \ Else
-    r@ lbf-in r@ lbf>record @ move      \   Move addr
+    r@ lbf-in r@ lbf-record@ move       \   Move addr
   THEN
   r> lbf>in 1+!
 ;
 
 
-: lbf-dequeue      ( lbf -- = i*x | addr true | false = Dequeue one element from the buffer, optional using the fetch word )
+: lbf-dequeue      ( lbf -- i*x | addr true | false = Dequeue one element from the buffer, optional using the fetch word )
   >r
   r@ lbf-length@ IF              \ Check data present
     r@ lbf-out
@@ -290,7 +326,9 @@ end-structure
 
 : lbf-tos          ( lbf -- i*x | addr true | false = Fetch the top element, optional using the fetch word )
   dup lbf-length@ IF            \ Check data present
-    dup  lbf-out
+    dup  lbf-in@      1-        \ Fetch tos
+    over lbf-record@ *
+    over lbf-buffer@ +
     swap lbf>fetch @ nil<>? IF  \ If fetcher present, then fetch data
       execute
     THEN
@@ -313,7 +351,7 @@ end-structure
     r@ lbf>in 1-!               \ Pop data
     r@ lbf-in
     r@ lbf>fetch @ nil<>? IF    \ If fetcher present, then fetch data
-      execute
+      execute 
     THEN
     r@ lbf-reset?
     true
@@ -326,11 +364,17 @@ end-structure
 
 ( Buffer words )
 
-: lbf-reduce       ( u lbf -- = Remove the leading unused space in the buffer if this is at least u elements )
+: lbf-clear        ( lbf -- = Clear the buffer )
+  dup lbf>out 0!
+      lbf>in  0!
+;
+
+
+: lbf-reduce       ( u lbf -- = Remove the leading unused space in the buffer if the unused length is at least u elements )
   >r
-  r@ lbf>out @ < IF                       \ Test for threshold
-    r@ lbf-out  r@ lbf-buffer@  r@ lbf-length@ r@ lbf>record @ *  move  \ Move the data to start of buffer
-    r@ lbf>out @  negate  r@ lbf>in +!    \ Update the in and out pointers
+  r@ lbf-out@ < IF                        \ Test for threshold
+    r@ lbf-out  r@ lbf-buffer@  r@ lbf-length@ r@ lbf-record@ *  move  \ Move the data to start of buffer
+    r@ lbf-out@  negate  r@ lbf>in +!     \ Update the in and out pointers
     r@ lbf>out 0!
   THEN
   rdrop 
