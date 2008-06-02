@@ -1,4 +1,5 @@
 0.7.0
+* cbf: new module: circulair buffer (2008-06-02)
 * lbf: new module: lineair buffer (2008-05-29)
 * lxf: config.fs/make.fs/readme added (2008-05-23)
 * stc: bug fix in +field (2008-05-23)

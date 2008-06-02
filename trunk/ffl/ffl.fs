@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-01 18:28:03 $ $Revision: 1.47 $
+\  $Date: 2008-06-02 05:24:51 $ $Revision: 1.48 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include ffl/bni.fs
 include ffl/bnn.fs
 include ffl/bnt.fs
 include ffl/car.fs
+include ffl/cbf.fs
 include ffl/chr.fs
 include ffl/chs.fs
 include ffl/cpx.fs
