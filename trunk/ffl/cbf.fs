@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-02 05:24:51 $ $Revision: 1.1 $
+\  $Date: 2008-06-03 15:08:54 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -222,38 +222,78 @@ end-structure
 ;
 
 
+: cbf-in+!         ( n cbf -- = Add n elements to the in index )
+  tuck
+  cbf-in@ +
+  2dup swap cbf-size@ >= IF   \ Circulair buffer
+    over cbf-size@ -
+  THEN
+  swap cbf>in !
+;
+
+
+: cbf-out+!        ( n cbf -- = Add n elements to the out index )
+  tuck
+  cbf-out@ +
+  2dup swap cbf-size@ >= IF   \ Circulair buffer
+    over cbf-size@ -
+  THEN
+  swap cbf>out !
+;
+
+
 ( Lifo words )
 
 : cbf-set          ( addr u cbf -- = Set u elements, starting from addr in the buffer, resize if necessary )
-  \ ToDo
   >r
-  r@ cbf-in@ over + r@ cbf-size!              \ Insure size of in + new elements
-  tuck r@ cbf-in swap r@ cbf-record@ * move   \ Move data in the buffer
-  r> cbf>in +!                                \ in += new elements
+  r@ cbf-length@ over + r@ cbf-size!    \ Insure size of buffer
+  tuck                                  \ Save number of elements
+  2dup r@ cbf-size@ r@ cbf-in@ - min    \ Insert until end of buffer
+  ?dup IF
+    tuck
+    r@ cbf-in swap  r@ cbf-record@ * move \ Move till end of buffer
+    tuck -
+    >r r@ cbf-record@ * + r>            \ Update address and number after moving
+  ELSE
+    drop
+  THEN
+  ?dup IF
+    r@ cbf-buffer@ swap  r@ cbf-record@ * move \ Move remaining at start of buffer
+  ELSE
+    drop
+  THEN
+  r> cbf-in+!                           \ Update in index
 ;
 
 
-: cbf-get          ( u1 cbf -- addr u2 | 0 = Get maximum u1 elements from the buffer, return the actual number of elements u2 )
-  \ ToDo
+: cbf-fetch        ( addr u1 cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, return the actual number of elements u2 )
   >r
-  r@ cbf-length@ min            \ actual number of elements
-  dup IF
-    r@ cbf-out swap
-    dup r@ cbf>out +!           \ out += returned elements
+  r@ cbf-length@ min
+  tuck                                 \ Save actual number of elements
+  2dup r@ cbf-size@ r@ cbf-out@ - min  \ Fetch until end of buffer
+  ?dup IF
+    tuck
+    r@ cbf-out -rot  r@ cbf-record@ *  move  \ Move till end of buffer
+    tuck -
+    >r r@ cbf-record@ * + r>           \ Update address and number after moving
+  ELSE
+    drop
+  THEN
+  ?dup IF
+    r@ cbf-buffer@ -rot  r@ cbf-record@ * move  \ Move remaining from start of buffer
+  ELSE
+    drop
   THEN
   rdrop
 ;
 
 
-: cbf-fetch        ( u1 cbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, return the actual number of elements u2 )
-  \ ToDo
+: cbf-get          ( addr u1 cbf -- u2 = Get maximum u1 elements from the buffer in addr<<<<, return the actual number of elements u2 )
   >r
-  r@ cbf-length@ min            \ actual number of elements
-  dup IF
-    r@ cbf-out swap             \ return the output pointer
-  THEN
-  rdrop
+  r@ cbf-fetch              \ Fetch the data
+  dup r> cbf-out+!          \ Update the out index
 ;
+
 
 
 : cbf-seek-fetch   ( u1 n cbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
@@ -281,39 +321,34 @@ end-structure
 ;
 
 
-: cbf-skip         ( u1 cbf -- u2 = Skip maximum u1 elements from the buffer, return the actually skipped elements u2 )
-  \ ToDo
-  >r
-  r@ cbf-length@ min         \ actual number of elements to skip
-  dup IF
-    dup r@ cbf>out +!        \ update the out pointer
-  THEN
-  rdrop
+: cbf-skip         ( +n1 cbf -- +n2 = Skip maximum u1 elements from the buffer, return the actually skipped elements u2 )
+  swap
+  over cbf-length@ min       \ Acutal elements to skip
+  tuck swap cbf-out+!        \ Update out pointer
 ;
 
 
 : cbf-enqueue      ( i*x | addr cbf -- = Enqueue one element in the buffer, optional using the store word )
-  \ ToDo
   >r
-  r@ cbf-in@ 1+ r@ cbf-size!            \ Insure size of one extra element
+  r@ cbf-length@ 1+ r@ cbf-size!        \ Insure size of one extra element
+  r@ cbf-in
   r@ cbf>store @ nil<>? IF              \ If store word Then
-    r@ cbf-in swap execute              \   Store i*x
+    execute                             \   Store i*x
   ELSE                                  \ Else
-    r@ cbf-in r@ cbf-record@ move       \   Move addr
+    r@ cbf-record@ move                 \   Move addr
   THEN
-  r> cbf>in 1+!
+  1 r> cbf-in+!
 ;
 
 
 : cbf-dequeue      ( cbf -- i*x | addr true | false = Dequeue one element from the buffer, optional using the fetch word )
-  \ ToDo
   >r
   r@ cbf-length@ IF              \ Check data present
     r@ cbf-out
     r@ cbf>fetch @ nil<>? IF     \ If fetcher present, then fetch the data
       execute
     THEN
-    r@ cbf>out 1+!               \ Set data read
+    1 r@ cbf-out+!               \ Set data read
     true
   ELSE
     false

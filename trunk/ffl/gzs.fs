@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-09 12:52:25 $ $Revision: 1.1 $
+\  $Date: 2008-06-03 15:08:54 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -34,8 +34,8 @@ include ffl/stc.fs
 
 
 ( gzs = GZip Stream )
-( The gzs module implements GZip steam. It compresses [deflate] or           )
-( decompresses [inflage] a stream of data.a Finite State Machine.            )
+( The gzs module implements a gzip stream. It compresses [deflate] or        )
+( decompresses [inflate] a stream of data.                                   )
 
 
 1 constant gzs.version
