@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-03 15:08:54 $ $Revision: 1.2 $
+\  $Date: 2008-06-15 12:43:09 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -147,67 +147,6 @@ end-structure
 ;
 
 
-( Member words )
-
-: cbf-length@      ( cbf -- u = Get the number of elements in the buffer )
-  dup  cbf-in@
-  over cbf-out@ -
-  dup 0< IF
-    swap cbf-size@ +
-  ELSE
-    nip
-  THEN
-;
-
-
-: cbf-extra@       ( cbf -- u = Get the number of extra elements allocated during resizing of the buffer )
-  cbf>extra @
-;
-
-
-: cbf-extra!       ( u cbf -- = Set the nmber of extra elements allocated during resizing of the buffer )
-  swap 1 max swap cbf>extra !
-;
-
-
-: cbf-size!        ( +n cbf -- = Insure the size of the buffer )
-  2dup cbf>size @ > IF
-    tuck cbf-extra@ +        \ add extra space 
-    2dup swap cbf>size !     \ set the new size in cells
-    over cbf-record@ *       \ size in bytes
-    over cbf-buffer@
-    swap resize throw        \ resize the array
-    swap cbf>buffer !
-    \ ToDo : move
-  ELSE
-    2drop
-  THEN
-;
-
-
-: cbf+extra@       ( -- u = Get the initial number of extra elements allocated during resizing of the buffer )
-  cbf.extra
-;
-
-
-: cbf+extra!       ( u -- = Set the initial number of extra elements allocated during resizing of the buffer )
-  1 max to cbf.extra
-;
-
-
-: cbf-access@      ( cbf -- xt1 xt2 = Get the store word xt1 and the fetch word xt2 for the buffer )
-  dup  cbf>store @
-  swap cbf>fetch @
-;
-
-
-: cbf-access!      ( xt1 xt2 cbf -- = Set the store word xt1 and the fetch word x2 for the buffer )
-  tuck cbf>fetch !
-       cbf>store !
-;
- 
-( Private words )
-
 : cbf-in           ( cbf -- addr = Get the address of in )
   dup  cbf-in@
   over cbf-record@ *
@@ -242,6 +181,81 @@ end-structure
 ;
 
 
+( Member words )
+
+: cbf-length@      ( cbf -- u = Get the number of elements in the buffer )
+  dup  cbf-in@
+  over cbf-out@ -
+  dup 0< IF
+    swap cbf-size@ +
+  ELSE
+    nip
+  THEN
+;
+
+
+: cbf-extra@       ( cbf -- u = Get the number of extra elements allocated during resizing of the buffer )
+  cbf>extra @
+;
+
+
+: cbf-extra!       ( u cbf -- = Set the nmber of extra elements allocated during resizing of the buffer )
+  swap 1 max swap cbf>extra !
+;
+
+
+: cbf-size!        ( +n cbf -- = Insure the size of the buffer )
+  2dup cbf>size @ >= IF
+    >r
+    r@ cbf-size@ swap        \ Save original size
+    r@ cbf-extra@ +          \ add extra space 
+    dup r@ cbf>size !        \ set the new size in cells
+    r@ cbf-record@ *         \ size in bytes
+    r@ cbf-buffer@
+    swap resize throw        \ resize the array
+    r@ cbf>buffer !
+    
+    r@ cbf-out@ r@ cbf-in@ > IF       \ Loop around ?
+      r@ cbf-size@ over -             \ offset for out index
+      swap r@ cbf-out@ -              \ number elements to copy
+      r@ cbf-size@ over -             \ the to index
+      r@ cbf-record@ * r@ cbf-buffer@ +  \ the to pointer
+      swap r@ cbf-record@ *           \ number bytes to copy
+      r@ cbf-out                      \ the from pointer
+      -rot move                       \ move the data to the end of the buffer
+      r@ cbf-out+!                    \ move the out index
+    ELSE
+      drop
+    THEN
+    rdrop
+  ELSE
+    2drop
+  THEN
+;
+
+
+: cbf+extra@       ( -- u = Get the initial number of extra elements allocated during resizing of the buffer )
+  cbf.extra
+;
+
+
+: cbf+extra!       ( u -- = Set the initial number of extra elements allocated during resizing of the buffer )
+  1 max to cbf.extra
+;
+
+
+: cbf-access@      ( cbf -- xt1 xt2 = Get the store word xt1 and the fetch word xt2 for the buffer )
+  dup  cbf>store @
+  swap cbf>fetch @
+;
+
+
+: cbf-access!      ( xt1 xt2 cbf -- = Set the store word xt1 and the fetch word x2 for the buffer )
+  tuck cbf>fetch !
+       cbf>store !
+;
+
+
 ( Lifo words )
 
 : cbf-set          ( addr u cbf -- = Set u elements, starting from addr in the buffer, resize if necessary )
@@ -253,7 +267,7 @@ end-structure
     tuck
     r@ cbf-in swap  r@ cbf-record@ * move \ Move till end of buffer
     tuck -
-    >r r@ cbf-record@ * + r>            \ Update address and number after moving
+    -rot r@ cbf-record@ * + swap        \ Update address and number after moving
   ELSE
     drop
   THEN
@@ -275,7 +289,7 @@ end-structure
     tuck
     r@ cbf-out -rot  r@ cbf-record@ *  move  \ Move till end of buffer
     tuck -
-    >r r@ cbf-record@ * + r>           \ Update address and number after moving
+    -rot r@ cbf-record@ * + swap       \ Update address and number after moving
   ELSE
     drop
   THEN
@@ -288,7 +302,7 @@ end-structure
 ;
 
 
-: cbf-get          ( addr u1 cbf -- u2 = Get maximum u1 elements from the buffer in addr<<<<, return the actual number of elements u2 )
+: cbf-get          ( addr u1 cbf -- u2 = Get maximum u1 elements from the buffer in address, return the actual number of elements u2 )
   >r
   r@ cbf-fetch              \ Fetch the data
   dup r> cbf-out+!          \ Update the out index
@@ -296,26 +310,36 @@ end-structure
 
 
 
-: cbf-seek-fetch   ( u1 n cbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
-  \ ToDo
+: cbf-seek-fetch   ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
   >r
-  dup 0< IF                     \ Find index for fetch
+  dup 0< IF                  \ Check if offset inside length
+    dup abs 1-
+  ELSE
+    dup
+  THEN
+  r@ cbf-length@ >= exp-index-out-of-range AND throw
+  
+  dup 0< IF                  \ Convert offset to index
     r@ cbf-in@ +
-    dup r@ cbf-out@ <
+    dup 0< IF
+      r@ cbf-size@ +
+    THEN
   ELSE
     r@ cbf-out@ +
-    dup r@ cbf-in@ >= 
+    dup r@ cbf-size@ >= IF
+      r@ cbf-size@ -
+    THEN
   THEN
-  exp-index-out-of-range AND throw
 
-  tuck r@ cbf-in@ swap - min    \ Calculate length
+  tuck r@ cbf-in@ swap -     \ Determine actual length
+  0< IF
+    r@ cbf-size@ +
+  THEN
+  min
+  
+  \ Move data from buffer to destination
   dup IF
-    swap
-    r@ cbf-record@ *
-    r@ cbf-buffer@ +
-    swap
   ELSE
-    nip
   THEN
   rdrop
 ;
@@ -360,9 +384,11 @@ end-structure
 ( Fifo words )
 
 : cbf-tos          ( cbf -- i*x | addr true | false = Fetch the top element, optional using the fetch word )
-  \ ToDo
   dup cbf-length@ IF            \ Check data present
-    dup  cbf-in@      1-        \ Fetch tos
+    dup cbf-in@ ?dup 0= IF      \ Fetch tos
+      dup cbf-size@
+    THEN
+    1-
     over cbf-record@ *
     over cbf-buffer@ +
     swap cbf>fetch @ nil<>? IF  \ If fetcher present, then fetch data
@@ -382,10 +408,12 @@ end-structure
 
 
 : cbf-pop          ( cbf -- i*x | addr true | false = Pop one element from the buffer, optional using the fetch word )
-  \ ToDo
   >r
   r@ cbf-length@ IF             \ Check data present
-    r@ cbf>in 1-!               \ Pop data
+    r@ cbf-in@ ?dup 0= IF       \ Move in pointer for pop
+      r@ cbf-size@
+    THEN
+    1- r@ cbf>in !
     r@ cbf-in
     r@ cbf>fetch @ nil<>? IF    \ If fetcher present, then fetch data
       execute 

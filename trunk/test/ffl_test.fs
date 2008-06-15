@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-01 06:51:39 $ $Revision: 1.42 $
+\  $Date: 2008-06-15 12:43:09 $ $Revision: 1.43 $
 \
 \ ==============================================================================
 
@@ -38,6 +38,7 @@ include bar_test.fs
 include bct_test.fs
 include bnt_test.fs
 include car_test.fs
+include cbf_test.fs
 include chr_test.fs
 include chs_test.fs
 include cpx_test.fs
