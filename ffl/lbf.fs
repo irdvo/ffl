@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-01 18:21:40 $ $Revision: 1.3 $
+\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -282,7 +282,7 @@ end-structure
 ;
 
 
-: lbf-skip         ( u1 lbf -- u2 = Skip maximum u1 elements from the buffer, return the actually skipped elements u2 )
+: lbf-skip         ( u1 lbf -- u2 = Skip maximum u1 elements from the buffer, return the actual skipped elements u2 )
   >r
   r@ lbf-length@ min         \ actual number of elements to skip
   dup IF
@@ -340,7 +340,7 @@ end-structure
 ;
 
 
-: lbf-push         ( i*x | addr lbf -- = Push one element in the buffer, optional using the fetch word )
+: lbf-push         ( i*x | addr lbf -- = Push one element in the buffer, optional using the store word )
   lbf-enqueue
 ;
 
@@ -383,7 +383,7 @@ end-structure
 
 ( Inspection )
 
-: lbf-dump         ( lbf -- = Dump the lineair buffer )
+: lbf-dump         ( lbf -- = Dump the lineair buffer variable )
   ." lbf:" dup . cr
   ."   record:" dup lbf>record ? cr
   ."   in    :" dup lbf>in     ? cr
