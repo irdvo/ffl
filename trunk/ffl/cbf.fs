@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-15 12:43:09 $ $Revision: 1.3 $
+\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -62,6 +62,7 @@ begin-structure cbf%       ( -- n = Get the required space for a cbf variable )
   field: cbf>record        \ the element size
   field: cbf>in            \ the in pointer
   field: cbf>out           \ the out pointer
+  field: cbf>start         \ the start pointer, during fetching
   field: cbf>extra         \ the extra size during resizing
   field: cbf>size          \ the size of the buffer array
   field: cbf>buffer        \ the buffer array
@@ -87,6 +88,7 @@ end-structure
   nil       r@ cbf>store  !
             r@ cbf>in    0!
             r@ cbf>out   0!
+            r@ cbf>start 0!
   ?dup 0= IF                        \ size = length or cbf.extra
     cbf.extra
   THEN
@@ -137,6 +139,11 @@ end-structure
 ;
 
 
+: cbf-start@       ( cbf -- u = Get the seek offset )
+  cbf>start @
+;
+
+
 : cbf-record@      ( cbf -- u = Get the element size )
   cbf>record @
 ;
@@ -156,6 +163,13 @@ end-structure
 
 : cbf-out          ( cbf -- addr = Get the address of out )
   dup  cbf-out@
+  over cbf-record@ *
+  swap cbf-buffer@ +
+;
+
+
+: cbf-start        ( cbf -- addr = Get the address of start )
+  dup  cbf-start@
   over cbf-record@ *
   swap cbf-buffer@ +
 ;
@@ -256,6 +270,34 @@ end-structure
 ;
 
 
+( Private lifo words )
+
+: cbf-do-fetch     ( addr u1 cbf -- u2 = Fetch maximum u1 elements from start in the buffer in addr, return the actual number of elements u2 )
+  >r
+  r@ cbf-in@ r@ cbf-start@ -
+  dup 0< IF
+    r@ cbf-size@ +
+  THEN
+  min                                   \ Actual number of elements to fetch
+  tuck                                  \ Save actual number of elements
+  2dup r@ cbf-size@ r@ cbf-start@ - min \ Fetch until end of buffer
+  ?dup IF
+    tuck
+    r@ cbf-start -rot  r@ cbf-record@ *  move  \ Move till end of buffer
+    tuck -
+    -rot r@ cbf-record@ * + swap        \ Update address and number after moving
+  ELSE
+    drop
+  THEN
+  ?dup IF
+    r@ cbf-buffer@ -rot  r@ cbf-record@ * move  \ Move remaining from start of buffer
+  ELSE
+    drop
+  THEN
+  rdrop
+;
+
+
 ( Lifo words )
 
 : cbf-set          ( addr u cbf -- = Set u elements, starting from addr in the buffer, resize if necessary )
@@ -281,36 +323,19 @@ end-structure
 
 
 : cbf-fetch        ( addr u1 cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, return the actual number of elements u2 )
-  >r
-  r@ cbf-length@ min
-  tuck                                 \ Save actual number of elements
-  2dup r@ cbf-size@ r@ cbf-out@ - min  \ Fetch until end of buffer
-  ?dup IF
-    tuck
-    r@ cbf-out -rot  r@ cbf-record@ *  move  \ Move till end of buffer
-    tuck -
-    -rot r@ cbf-record@ * + swap       \ Update address and number after moving
-  ELSE
-    drop
-  THEN
-  ?dup IF
-    r@ cbf-buffer@ -rot  r@ cbf-record@ * move  \ Move remaining from start of buffer
-  ELSE
-    drop
-  THEN
-  rdrop
+  dup cbf-out@ over cbf>start !  \ Fetch from out
+  cbf-do-fetch
 ;
 
 
-: cbf-get          ( addr u1 cbf -- u2 = Get maximum u1 elements from the buffer in address, return the actual number of elements u2 )
+: cbf-get          ( addr u1 cbf -- u2 = Get maximum u1 elements from the buffer in addr, return the actual number of elements u2 )
   >r
   r@ cbf-fetch              \ Fetch the data
   dup r> cbf-out+!          \ Update the out index
 ;
 
 
-
-: cbf-seek-fetch   ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
+: cbf-seek-fetch   ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, offsetted by n, return the actual number of elements u2 )
   >r
   dup 0< IF                  \ Check if offset inside length
     dup abs 1-
@@ -331,21 +356,12 @@ end-structure
     THEN
   THEN
 
-  tuck r@ cbf-in@ swap -     \ Determine actual length
-  0< IF
-    r@ cbf-size@ +
-  THEN
-  min
-  
-  \ Move data from buffer to destination
-  dup IF
-  ELSE
-  THEN
-  rdrop
+  r@ cbf>start !             \ Fetch from index
+  r> cbf-do-fetch
 ;
 
 
-: cbf-skip         ( +n1 cbf -- +n2 = Skip maximum u1 elements from the buffer, return the actually skipped elements u2 )
+: cbf-skip         ( +n1 cbf -- +n2 = Skip maximum u1 elements from the buffer, return the actual skipped elements u2 )
   swap
   over cbf-length@ min       \ Acutal elements to skip
   tuck swap cbf-out+!        \ Update out pointer
@@ -402,7 +418,7 @@ end-structure
 ;
 
 
-: cbf-push         ( i*x | addr cbf -- = Push one element in the buffer, optional using the fetch word )
+: cbf-push         ( i*x | addr cbf -- = Push one element in the buffer, optional using the store word )
   cbf-enqueue
 ;
 
@@ -436,11 +452,12 @@ end-structure
 
 ( Inspection )
 
-: cbf-dump         ( cbf -- = Dump the circulair buffer )
+: cbf-dump         ( cbf -- = Dump the circulair buffer variable )
   ." cbf:" dup . cr
   ."   record:" dup cbf>record ? cr
   ."   in    :" dup cbf>in     ? cr
   ."   out   :" dup cbf>out    ? cr
+  ."   start :" dup cbf>start  ? cr
   ."   extra :" dup cbf>extra  ? cr
   ."   size  :" dup cbf>size   ? cr
   ."   fetch :" dup cbf>fetch  ? cr

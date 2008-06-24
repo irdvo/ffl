@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\      lbf_expl - the example file for the lbf module in the ffl
+\      cbf_expl - the example file for the cbf module in the ffl
 \
 \               Copyright (C) 2008  Dick van Oudheusden
 \  
@@ -20,67 +20,67 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.2 $
+\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.1 $
 \
 \ ==============================================================================
 
-include ffl/lbf.fs
+include ffl/cbf.fs
 
 
 \ Example 1: buffering characters strings
 
 
-\ Create the lineair buffer in the dictionary with an initial size of 10 chars
+\ Create the circulair buffer in the dictionary with an initial size of 10 chars
 
-1 chars 10 lbf-create char-buf
+1 chars 10 cbf-create char-buf
 
 
 \ Put characters in the buffer
 
-s" Hello" char-buf lbf-set
+s" Hello" char-buf cbf-set
 
 \ Get the length of the stored characters
 
-.( Number characters in buffer:) char-buf lbf-length@ . cr
+.( Number characters in buffer:) char-buf cbf-length@ . cr
 
 \ Put more characters in the buffer, resulting in a resize of the buffer
 
-s" , a nice morning to you." char-buf lbf-set
+s" , a nice morning to you." char-buf cbf-set
 
 
 \ Get characters from the buffer
 
-.( Read the buffer:) 29 char-buf lbf-get type cr
+.( Read the buffer:) pad 29 char-buf cbf-get pad swap type cr
 
 
 
 \ Example 2: buffering compound data: pair of cells as element
 
 
-\ Create the lineair buffer on the heap with an initial size of 3 elements
+\ Create the circulair buffer on the heap with an initial size of 3 elements
 
-2 cells 3 lbf-new value xy-buf
+2 cells 3 cbf-new value xy-buf
 
 
 \ Set the store and fetch words for the buffer
 
-' 2! ' 2@ xy-buf lbf-access!
+' 2! ' 2@ xy-buf cbf-access!
 
 
 \ Use the buffer as fifo buffer, using the store and fetch words
 
-1 2 xy-buf lbf-enqueue
-3 4 xy-buf lbf-enqueue
-5 6 xy-buf lbf-enqueue
-7 8 xy-buf lbf-enqueue       \ Buffer is resized
+1 2 xy-buf cbf-enqueue
+3 4 xy-buf cbf-enqueue
+5 6 xy-buf cbf-enqueue
+7 8 xy-buf cbf-enqueue       \ Buffer is resized
 
 \ Get the length of the stored elements in the buffer
 
-.( Number elements in buffer:) xy-buf lbf-length@ . cr
+.( Number elements in buffer:) xy-buf cbf-length@ . cr
 
 \ Get first element from buffer
 
-.( First pair in buffer:) xy-buf lbf-dequeue [IF]
+.( First pair in buffer:) xy-buf cbf-dequeue [IF]
   .  . cr
 [ELSE]
   .(  nothing in buffer) cr
@@ -91,7 +91,7 @@ s" , a nice morning to you." char-buf lbf-set
 
 \ Get last pair from buffer
 
-.( Last pair in buffer:) xy-buf lbf-pop [IF]
+.( Last pair in buffer:) xy-buf cbf-pop [IF]
   . . cr
 [ELSE]
   .(  nothing in buffer) cr
@@ -99,6 +99,6 @@ s" , a nice morning to you." char-buf lbf-set
 
 \ Free the buffer from the heap
 
-xy-buf lbf-free
+xy-buf cbf-free
 
 \ ==============================================================================
