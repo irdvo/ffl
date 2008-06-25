@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.4 $
+\  $Date: 2008-06-25 16:48:34 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -64,7 +64,7 @@ end-structure
 ;
 
 
-: sni-new      ( w:snl -- sni = Create an iterator on the snl list on the heap )
+: sni-new      ( snl -- sni = Create an iterator on the snl list on the heap )
   sni% allocate  throw  tuck sni-init
 ;
 

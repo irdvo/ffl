@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:33 $ $Revision: 1.3 $
+\  $Date: 2008-06-25 16:48:34 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -63,7 +63,7 @@ dni% constant dci%  ( -- n = Get the required space for a dci variable )
 ;
 
 
-: dci-free     ( w:dci -- = Free the iterator from the heap )
+: dci-free     ( dci -- = Free the iterator from the heap )
   dni-free
 ;
 

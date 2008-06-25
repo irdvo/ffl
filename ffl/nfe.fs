@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:18 $ $Revision: 1.18 $
+\  $Date: 2008-06-25 16:48:34 $ $Revision: 1.19 $
 \
 \ ==============================================================================
 
@@ -596,7 +596,7 @@ end-structure
 
 ( Private inspection words )
 
-: nfe+dump-out   ( w:nfs -- = Dump the first out pointer )
+: nfe+dump-out   ( nfs -- = Dump the first out pointer )
   ." ->"        
   nfs-out1@ nfs-id@ 0 .r 
 ;
