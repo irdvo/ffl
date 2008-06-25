@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
+\  $Date: 2008-06-25 16:48:34 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -53,7 +53,7 @@ end-structure
 
 ( Private words )
 
-: hni-search-table ( u:start hni -- nil | u:index w:hnn = Search in the tabel for a node )
+: hni-search-table ( u1 hni -- nil | u2 hnn = Search in the tabel for a node from start u, resulting in index u2 )
   >r dup r>
   hni>table @
   hnt-table-bounds ?DO                \ end and start of table for DO; S: index
@@ -96,7 +96,7 @@ end-structure
 
 ( Member words )
 
-: hni-get      ( hni -- w:hnn | nil = Get the node from the current record )
+: hni-get      ( hni -- hnn | nil = Get the node from the current record )
   hni>walk @
 ;
 
@@ -113,7 +113,7 @@ end-structure
 
 ( Iterator words )
 
-: hni-first    ( hni -- w:hnn | nil = Move the iterator to the first record, return the node in this record )
+: hni-first    ( hni -- hnn | nil = Move the iterator to the first record, return the node in this record )
   >r
   r@ hni>index   0!
   r@ hni>walk  nil!
@@ -129,7 +129,7 @@ end-structure
 ;
 
 
-: hni-next     ( hni -- w:hnn | nil = Move the iterator to the next record, return the node in this record )
+: hni-next     ( hni -- hnn | nil = Move the iterator to the next record, return the node in this record )
   >r
   r@ hni>walk @              \ check if current node has a next node
   nil<>? IF

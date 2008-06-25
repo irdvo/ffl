@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-01-09 19:30:48 $ $Revision: 1.4 $
+\  $Date: 2008-06-25 16:48:34 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -64,12 +64,12 @@ end-structure
 ;
 
 
-: dni-new      ( w:dnl -- w:dni = Create an iterator on the heap )
+: dni-new      ( dnl -- dni = Create an iterator on the heap )
   dni% allocate  throw  tuck dni-init
 ;
 
 
-: dni-free     ( w:dni -- = Free the iterator from the heap )
+: dni-free     ( dni -- = Free the iterator from the heap )
   free throw
 ;
 
