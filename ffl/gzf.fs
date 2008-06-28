@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-19 05:43:45 $ $Revision: 1.4 $
+\  $Date: 2008-06-28 06:12:29 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -32,6 +32,7 @@ include ffl/config.fs
 
 include ffl/gzs.fs
 include ffl/str.fs
+include ffl/gzp.fs
 
 ( gzf = GZip File )
 ( The gzf module implements a GZip file. It compresses [deflate] or          )
@@ -91,6 +92,8 @@ begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
   +field  gzf>name           \ Name string
   str%
   +field  gzf>comment        \ Comment string
+  gzp%
+  +field  gzf>gzp            \ GZip base words
 end-structure
 
 
@@ -106,6 +109,7 @@ end-structure
   over gzf>os      !
   dup  gzf>name    str-init
   dup  gzf>comment str-init
+  dup  gzf>gzp     gzp-init
   drop
 \ ToDo
 ;
@@ -114,6 +118,7 @@ end-structure
 : gzf-(free)       ( gzf -- = Free the internal, private variables from the heap )
   dup gzf>name    str-(free)
   dup gzf>comment str-(free)
+  dup gzf>gzp     gzp-(free)
   drop
   \ ToDo
 ;
@@ -298,19 +303,22 @@ end-structure
   >r
   r@ gzf>state @ 1 <> exp-invalid-state AND throw
 
-  gzf%hdr% allocate throw    \ Allocate space for the header
+  gzf%hdr% allocate throw       \ Allocate space for the header
     
-  dup r> ['] gzf-do-read-header catch
+  dup r@ ['] gzf-do-read-header catch  \ Try to read the header
 
   dup IF
-    nip nip                  \ Exception -> drop gzf,hdr
+    nip nip                     \ Exception -> drop gzf,hdr
+  ELSE
+    r@ gzf>gzp gzp-init-inflate \ Start inflation
   THEN
-  
   swap free throw
+  rdrop
 ;
 
 
 : gzf-read-file    ( c-addr1 u1 gzf -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
+\ Buffer? -> read bytes from file -> feed gzp -> process result, keep reading till u1 bytes 
 \ ToDo
 ;
 
@@ -432,6 +440,7 @@ end-structure
   ."  mtime  :" dup gzf>mtime ? cr
   ."  name   :" dup gzf>name    str-get type cr
   ."  comment:" dup gzf>comment str-get type cr
+  ."  GZip   :" dup gzf>gzp     gzp-dump cr
   drop
 ;
   
