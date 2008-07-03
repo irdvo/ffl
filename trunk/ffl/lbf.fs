@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.5 $
+\  $Date: 2008-07-03 17:26:06 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -43,10 +43,10 @@ include ffl/stc.fs
 ( buffer. The lbf-access! word expects two execution tokens on the stack:    )
 ( store with stack effect:  i*x addr --  and fetch: addr -- i*x. Those two   )
 ( words are used to store data in the buffer and fetch data from the buffer. )
+( Their behaviour should match the size of the elements in the buffer.       )
 ( Besides the normal out pointer there is a secondary out pointer. This      )
 ( pointer will always stay between the normal out pointer and the in         )
 ( pointer. The words lbf-get' and lbf-length' use the secondary out pointer. )
-( Their behaviour should match the size of the elements in the buffer.       )
 ( Important: the lbf-get and lbf-fetch returning addresses are located       )
 ( in the buffer so the contents of these addresses can change with the next  )
 ( call to the buffer. This is different from the circulair buffer [cbf]      )
