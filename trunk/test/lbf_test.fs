@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-01 06:51:39 $ $Revision: 1.2 $
+\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -52,10 +52,19 @@ t{ lbf1 lbf-length@ ?0 }t
 
 t{ lbf1 lbf-dequeue ?false }t
 
-
 t{ s" Hello" lbf1 lbf-set }t
 
+t{ 2 lbf1 lbf-get' s" He" compare ?0 }t
+
+t{ lbf1 lbf-length'@ 3 ?s }t
+t{ lbf1 lbf-length@  5 ?s }t
+
 t{ 3 lbf1 lbf-get s" Hel" compare ?0 }t
+
+t{ lbf1 lbf-length'@ 2 ?s }t
+t{ lbf1 lbf-length@  2 ?s }t
+
+t{ 3 lbf1 lbf-get' s" lo" compare ?0 }t
 
 t{ 3 lbf1 lbf-get s" lo" compare ?0 }t
 
@@ -71,11 +80,11 @@ t{ 4 lbf1 lbf-fetch s" Good" compare ?0 }t
 
 t{ 15 lbf1 lbf-fetch s" GoodMorningHave" compare ?0 }t
 
-t{ 7 4 lbf1 lbf-seek-fetch s" Morning" compare ?0 }t
+t{ 7 4 lbf1 lbf-fetch+ s" Morning" compare ?0 }t
 
-t{ 4 -7 lbf1 lbf-seek-fetch s" Nice" compare ?0 }t
+t{ 4 -7 lbf1 lbf-fetch+ s" Nice" compare ?0 }t
 
-t{ 1 -1 lbf1 lbf-seek-fetch s" y" compare ?0 }t
+t{ 1 -1 lbf1 lbf-fetch+ s" y" compare ?0 }t
 
 t{ 15 lbf1 lbf-get s" GoodMorningHave" compare ?0 }t
 

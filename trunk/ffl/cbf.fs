@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.4 $
+\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -335,7 +335,7 @@ end-structure
 ;
 
 
-: cbf-seek-fetch   ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, offsetted by n, return the actual number of elements u2 )
+: cbf-fetch+       ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, offsetted by n, return the actual number of elements u2 )
   >r
   dup 0< IF                  \ Check if offset inside length
     dup abs 1-

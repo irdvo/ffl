@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.4 $
+\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,10 @@ include ffl/stc.fs
 ( regularly empty, use the lbf-reduce word to reuse the unused space in the  )
 ( buffer. The lbf-access! word expects two execution tokens on the stack:    )
 ( store with stack effect:  i*x addr --  and fetch: addr -- i*x. Those two   )
-( words are used to store data in the buffer  and fetch data from the buffer.)
+( words are used to store data in the buffer and fetch data from the buffer. )
+( Besides the normal out pointer there is a secondary out pointer. This      )
+( pointer will always stay between the normal out pointer and the in         )
+( pointer. The words lbf-get' and lbf-length' use the secondary out pointer. )
 ( Their behaviour should match the size of the elements in the buffer.       )
 ( Important: the lbf-get and lbf-fetch returning addresses are located       )
 ( in the buffer so the contents of these addresses can change with the next  )
@@ -64,8 +67,9 @@ include ffl/stc.fs
 
 begin-structure lbf%       ( -- n = Get the required space for a lbf variable )
   field: lbf>record        \ the element size
-  field: lbf>in            \ the in pointer
-  field: lbf>out           \ the out pointer
+  field: lbf>in            \ the in offset
+  field: lbf>out           \ the out offset
+  field: lbf>out'          \ the secondary out offset
   field: lbf>extra         \ the extra size during resizing
   field: lbf>size          \ the size of the buffer array
   field: lbf>buffer        \ the buffer array
@@ -91,6 +95,7 @@ end-structure
   nil       r@ lbf>store  !
             r@ lbf>in    0!
             r@ lbf>out   0!
+            r@ lbf>out'  0!
   ?dup 0= IF                        \ size = length or lbf.extra
     lbf.extra
   THEN
@@ -141,6 +146,11 @@ end-structure
 ;
 
 
+: lbf-out'@        ( lbf -- u = Get the secondary out offset )
+  lbf>out' @
+;
+
+
 : lbf-record@      ( lbf -- u = Get the element size )
   lbf>record @
 ;
@@ -151,6 +161,12 @@ end-structure
 : lbf-length@      ( lbf -- u = Get the number of elements in the buffer )
   dup  lbf-in@
   swap lbf-out@ -
+;
+
+
+: lbf-length'@     ( lbf -- u = Get the number of elements in the buffer based on the second out pointer )
+  dup  lbf-in@
+  swap lbf-out'@ -
 ;
 
 
@@ -215,11 +231,24 @@ end-structure
 ;
 
 
-: lbf-reset?       ( lbf -- = Reset the buffer to initial state if empty )
+: lbf-out'         ( lbf -- addr = Get the address of secondary out )
+  dup  lbf-out'@
+  over lbf-record@ *
+  swap lbf-buffer@ +
+;
+
+
+: lbf-norm         ( lbf -- = Reset the buffer to initial state if empty )
+  dup  lbf-out@
+  over lbf-out'@ > IF   \ If out higher than secondary out Then 
+    dup  lbf-out@
+    over lbf>out' !     \   Update secondary out
+  THEN
   dup  lbf-in@
   over lbf-out@ = IF
-    dup lbf>in  0!
-        lbf>out 0!
+    dup lbf>in   0!
+    dup lbf>out  0!
+        lbf>out' 0!
   ELSE
     drop
   THEN
@@ -242,11 +271,21 @@ end-structure
   dup IF
     r@ lbf-out swap
     dup r@ lbf>out +!           \ out += returned elements
-    r@ lbf-reset?
+    r@ lbf-norm
   THEN
   rdrop
 ;
 
+
+: lbf-get'         ( u1 lbf -- addr u2 | 0 = Get maximum u1 elements from the buffer, based on secondary out, return the actual number of elements u2 )
+  >r
+  r@ lbf-length'@ min           \ actual number of elements (secondary based)
+  dup IF
+    r@ lbf-out' swap
+    dup r@ lbf>out' +!          \ out += returned elements
+  THEN
+  rdrop
+;
 
 : lbf-fetch        ( u1 lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, return the actual number of elements u2 )
   >r
@@ -258,7 +297,7 @@ end-structure
 ;
 
 
-: lbf-seek-fetch   ( u1 n lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
+: lbf-fetch+       ( u1 n lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
   >r
   dup 0< IF                     \ Find index for fetch
     r@ lbf-in@ +
@@ -287,7 +326,7 @@ end-structure
   r@ lbf-length@ min         \ actual number of elements to skip
   dup IF
     dup r@ lbf>out +!        \ update the out pointer
-    r@ lbf-reset?
+    r@ lbf-norm
   THEN
   rdrop
 ;
@@ -313,7 +352,7 @@ end-structure
       execute
     THEN
     r@ lbf>out 1+!               \ Set data read
-    r@ lbf-reset?
+    r@ lbf-norm
     true
   ELSE
     false
@@ -353,7 +392,7 @@ end-structure
     r@ lbf>fetch @ nil<>? IF    \ If fetcher present, then fetch data
       execute 
     THEN
-    r@ lbf-reset?
+    r@ lbf-norm
     true
   ELSE
     false
@@ -365,17 +404,20 @@ end-structure
 ( Buffer words )
 
 : lbf-clear        ( lbf -- = Clear the buffer )
-  dup lbf>out 0!
-      lbf>in  0!
+  dup lbf>out  0!
+  dup lbf>out' 0!
+      lbf>in   0!
 ;
 
 
 : lbf-reduce       ( u lbf -- = Remove the leading unused space in the buffer if the unused length is at least u elements )
   >r
-  r@ lbf-out@ < IF                        \ Test for threshold
+  r@ lbf-out@ < IF              \ Test for threshold
     r@ lbf-out  r@ lbf-buffer@  r@ lbf-length@ r@ lbf-record@ *  move  \ Move the data to start of buffer
-    r@ lbf-out@  negate  r@ lbf>in +!     \ Update the in and out pointers
-    r@ lbf>out 0!
+    r@ lbf-out@  negate  
+    dup r@ lbf>in   +!          \ Update the in and .. 
+        r@ lbf>out' +!          \ .. the out' and ..   
+        r@ lbf>out  0!          \ .. and out offset 
   THEN
   rdrop 
 ;
@@ -388,6 +430,7 @@ end-structure
   ."   record:" dup lbf>record ? cr
   ."   in    :" dup lbf>in     ? cr
   ."   out   :" dup lbf>out    ? cr
+  ."   out'  :" dup lbf>out'   ? cr
   ."   extra :" dup lbf>extra  ? cr
   ."   size  :" dup lbf>size   ? cr
   ."   fetch :" dup lbf>fetch  ? cr
