@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.2 $
+\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -74,11 +74,11 @@ t{ pad 4 cbf1 cbf-fetch pad swap s" Morn" compare ?0 }t
 
 t{ pad 15 cbf1 cbf-fetch pad swap s" MorningHaveANic" compare ?0 }t
 
-t{ pad 7 4 cbf1 cbf-seek-fetch pad swap s" ingHave" compare ?0 }t
+t{ pad 7 4 cbf1 cbf-fetch+ pad swap s" ingHave" compare ?0 }t
 
-t{ pad 4 -7 cbf1 cbf-seek-fetch pad swap s" Nice" compare ?0 }t
+t{ pad 4 -7 cbf1 cbf-fetch+ pad swap s" Nice" compare ?0 }t
 
-t{ pad 1 -1 cbf1 cbf-seek-fetch pad swap s" y" compare ?0 }t
+t{ pad 1 -1 cbf1 cbf-fetch+ pad swap s" y" compare ?0 }t
 
 t{ pad 15 cbf1 cbf-get pad swap s" MorningHaveANic" compare ?0 }t
 
