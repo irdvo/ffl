@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-03 17:26:06 $ $Revision: 1.6 $
+\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -286,6 +286,7 @@ end-structure
   THEN
   rdrop
 ;
+
 
 : lbf-fetch        ( u1 lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, return the actual number of elements u2 )
   >r

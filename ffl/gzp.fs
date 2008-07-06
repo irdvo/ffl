@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-28 06:12:29 $ $Revision: 1.1 $
+\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -43,18 +43,19 @@ include ffl/lbf.fs
 ( gzp constants )
 
 0 constant gzp.ok            ( -- n = [De]compression is finished okee )
-1 constant gzp.more          ( -- n = [De]compression needs more data )
+1 constant gzp.done          ( -- n = [De]compression is done )
+2 constant gzp.more          ( -- n = [De]compression step needs more data )
+3 constant gzp.eof           ( -- n = End of input file )
+
 
 ( gzp structure )
 
 begin-structure gzp%  ( -- n = Get the required space for a gzp variable )
-  field:  gzp>input          \ the current input buffer
-  field:  gzp>in-len         \ the input buffer length
+  dfield: gzp>input          \ the current input buffer and length
   field:  gzp>hold           \ the current data from the input buffer
   field:  gzp>bits           \ the number of bits in the hold
   field:  gzp>state          \ the current state (as xt)
   field:  gzp>result         \ the result of the conversion
-  field:  gzp>out-len        \ the length of the conversion
   \ crc?
   lbf%
   +field  gzp>output         \ the output buffer
@@ -64,13 +65,12 @@ end-structure
 ( GZip file variable creation, initialisation and destruction )
 
 : gzp-init         ( gzp -- = Initialise the GZip file variable )
-  dup  gzp>input    0!
-  dup  gzp>in-len   0!
+  nil over 0 
+  swap gzp>input    2!
   dup  gzp>hold     0!
   dup  gzp>bits     0!
   dup  gzp>state    0!
   dup  gzp>result   0!
-  dup  gzp>out-len  0!
   1 chars over
   32768   swap 
        gzp>output lbf-init   \ initialise the output buffers for chars and size 32k byte
@@ -103,24 +103,106 @@ end-structure
 ;
 
 
-( Private bit words )
+( Input buffer words )
 
-: gzp-need-bits    ( n gzp -- flag = Reserve n bits )
-  BEGIN                      \ while bits < n and index < length Do
-    2dup gzp>bits @ >
-    over gzp>in-len @ AND
-  WHILE
-    dup  gzp>input @ c@      \   hold = hold + ([input] << bits)
-    dup  gzp>bits  @ lshift
-    over gzp>hold +!
-    
-    #bits/byte over gzp>bits +!    \ bits = bits + 8
-    1 chars    over gzp>input +!   \ input++
-               dup  gzp>in-len 1-! \ in-len--
-  REPEAT
-  gzp>bits @ <=              \ result = (n <= bits)
+: gzp-clear        ( gzp -- Clear the input buffer )
+  nil over 0 
+  swap gzp>input 2!
+  dup  gzp>hold  0!
+       gzp>bits  0!
 ;
 
+
+: gzp-set          ( c-addr u gzp -- Set the input buffer )
+  dup gzp>input 2@ nip exp-invalid-state AND throw
+
+  gzp>input 2!
+;
+
+
+: gzp-align        ( gzp -- Remove bits for going to byte boundary )
+  dup gzp>hold 0!
+  dup gzp>bits @ #bits/byte >= IF
+    ." Warning: more than a byte in the hold buffer "
+  THEN
+  gzp>bits 0!
+;
+
+
+: gzp-byte          ( gzp -- n true | false = Get a byte )
+  >r
+  r@ gzp>input 2@ dup IF
+    over c@ -rot
+    1 /string r@ gzp>input 2!
+    true
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
+: gzp-byte2        ( gzp -- n true | false = Get two bytes )
+  >r
+  r@ gzp>input 2@ dup 1 > IF
+    over dup c@ swap char+ c@ 8 lshift + -rot
+    2 /string r@ gzp>input 2!
+    true
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
+: gzp-byte4        ( gzp -- n true | false = Get four bytes )
+  >r
+  r@ gzp>input 2@ dup 3 > IF
+    over
+    dup c@ swap char+
+    dup c@ 8  lshift swap char+
+    dup c@ 16 lshift swap char+
+        c@ 24 lshift + + + -rot
+    4 /string r@ gzp>input 2!
+    true
+  ELSE
+    2drop false
+  THEN
+  rdrop
+;
+
+
+: gzp-skip-bytes   ( n gzp -- flag = Skip n bytes )
+  >r
+  r@ gzp>input 2@ rot 2dup >= IF  \ If input length >= n
+    /string r@ gzp>input 2!       \   Remove from input
+    true
+  ELSE
+    drop 2drop
+    false
+  THEN
+  rdrop
+;
+
+
+: gzp-need-bits    ( n gzp -- flag = Reserve n bits )
+  >r
+  r@ gzp>input 2@ rot
+  BEGIN
+    2dup r@ gzp>bits @ > AND \ while bits < n and length > 0 Do
+  WHILE
+    -rot
+    over c@
+    r@ gzp>bits @ lshift
+    r@ gzp>hold +!           \  hold = hold + ([input] << bits)
+
+    1 /string                \  input++
+    #bits/byte @ gzp>bits +! \  bits += 8
+    rot
+  REPEAT
+  r@ gzp>input 2!
+  r> gzp>bits @ <=           \ result = (n <= bits)
+;
 
 
 : gzp-bits         ( n1 gzp -- n2 = Get n1 bits )
@@ -135,6 +217,13 @@ end-structure
   tuck gzp>hold @ swap rshift  \ hold = hold >> n
   swap gzp>hold !
   swap negate swap gzp>bits +! \ bits -= n
+;
+
+
+( Output buffer words )
+
+: gzp-get          ( u1 gzp -- c-addr u2 | 0 = Get n bytes from the output buffer )
+  gzp>output lbf-get'
 ;
 
 
@@ -162,24 +251,24 @@ end-structure
 
 : gzp-init-inflate ( gzp -- = Start the inflation of data )
   ['] gzp-do-type over gzp>state !
-  dup gzp>bits 0!
-  dup gzp>hold 0!
   
   drop
   \ ToDo
 ;
 
 
-: gzp-inflate      ( c-addr1 u1 gzp -- c-addr2 u2 | 0 n = Inflate data with result code n )
-  tuck gzp>in-len    !       \ Save buffer
-  tuck gzp>input     !
-  dup  gzp>result   0!
+: gzp-inflate      ( n1 gzp -- n2 = Inflate data till n bytes in output buffer with result code n )
+  gzp.ok
   BEGIN
+    \ ToDo stack
+    dup gzp.ok = IF
+      2dup gzp>output lbf-length'@ >
+    ELSE
+      false
+    THEN
+  WHILE
     dup dup gzp>state @ execute
-    ?dup 
-  UNTIL
-  \ ToDo
-  tuck gzp>result !
+  REPEAT
 ;
 
 
@@ -196,7 +285,7 @@ end-structure
 ;
 
 
-: gzp-deflate      ( c-addr1 u1 gzp -- c-addr2 u2 | 0 n = Deflate data with result code n )
+: gzp-deflate      ( gzp -- n = Deflate data with result code n )
 ;
 
 
@@ -208,13 +297,11 @@ end-structure
 
 : gzp-dump   ( gzp - = Dump the gzp )
   ." gzp:" dup . cr
-    ."  input   :" dup gzp>input    ? cr
-    ."  in-len  :" dup gzp>in-len   ? cr
+    ."  input   :" dup gzp>input 2@ . . cr
     ."  hold    :" dup gzp>hold     ? cr
     ."  bits    :" dup gzp>bits     ? cr
     ."  state   :" dup gzp>state    ? cr
     ."  result  :" dup gzp>result   ? cr
-    ."  out-len :" dup gzp>out-len  ? cr
     ."  output  :" dup gzp>output   lbf-dump cr
   drop
 ;
