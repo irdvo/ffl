@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.6 $
+\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ include ffl/gzp.fs
 
 ( gzf = GZip File )
 ( The gzf module implements a GZip file. It compresses [deflate] or          )
-( decompresses [inflage] a file.                                             )
+( decompresses [inflate] a file.                                             )
 
 
 1 constant gzf.version
@@ -44,26 +44,30 @@ include ffl/gzp.fs
 
 ( Operating Systems )
 
-  0 constant gzf.fat       ( - n = FAT OS )
-  1 constant gzf.amiga     ( - n = Amiga OS )
-  2 constant gzf.vms       ( - n = VMS OS )
-  3 constant gzf.unix      ( - n = UNIX OS )
-  4 constant gzf.vm/cms    ( - n = VM-CMS OS )
-  5 constant gzf.atari     ( - n = ATARI OS )
-  6 constant gzf.hpfs      ( - n = HPFS OS )
-  7 constant gzf.macintos  ( - n = MACINTOS OS )
-  8 constant gzf.z-system  ( - n = Z-SYSTEM OS )
-  9 constant gzf.cp/m      ( - n = CP-M OS )
- 10 constant gzf.tops-20   ( - n = TOPS-20 OS )
- 11 constant gzf.ntfs      ( - n = NTFS OS )
- 12 constant gzf.qdos      ( - n = QDOS OS )
- 13 constant gzf.acorn     ( - n = ACORN OS )
-255 constant gzf.unknown   ( - n = other  )
+  0 constant gzf.fat       ( -- n = FAT OS )
+  1 constant gzf.amiga     ( -- n = Amiga OS )
+  2 constant gzf.vms       ( -- n = VMS OS )
+  3 constant gzf.unix      ( -- n = UNIX OS )
+  4 constant gzf.vm/cms    ( -- n = VM-CMS OS )
+  5 constant gzf.atari     ( -- n = ATARI OS )
+  6 constant gzf.hpfs      ( -- n = HPFS OS )
+  7 constant gzf.macintos  ( -- n = MACINTOS OS )
+  8 constant gzf.z-system  ( -- n = Z-SYSTEM OS )
+  9 constant gzf.cp/m      ( -- n = CP-M OS )
+ 10 constant gzf.tops-20   ( -- n = TOPS-20 OS )
+ 11 constant gzf.ntfs      ( -- n = NTFS OS )
+ 12 constant gzf.qdos      ( -- n = QDOS OS )
+ 13 constant gzf.acorn     ( -- n = ACORN OS )
+255 constant gzf.unknown   ( -- n = other  )
 
+
+( Default buffer size )
+
+2048 value gzf.size        ( -- n = Default input buffer size )
 
 ( Compression modes )
 
-  8 constant gzf.deflate   ( - n = Deflate Compression mode )
+  8 constant gzf.deflate   ( -- n = Deflate Compression mode )
 
 
 ( Private structure )
@@ -82,8 +86,10 @@ end-structure
 ( gzf structure )
 
 begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
-  field:  gzf>state          \ the state: 1=reading 2=writing 0=none
+  field:  gzf>access         \ the access: 1=reading 2=writing 0=none
   field:  gzf>file           \ the current file
+  field:  gzf>state          \ the execution state
+  field:  gzf>buffer         \ the input buffer
   field:  gzf>text           \ is the gzip file a text file ?
   field:  gzf>mode           \ the compression mode
   field:  gzf>os             \ the operating system
@@ -100,8 +106,11 @@ end-structure
 ( GZip file variable creation, initialisation and destruction )
 
 : gzf-init         ( gzf -- = Initialise the GZip file variable )
-  dup  gzf>state  0!
+  dup  gzf>access 0!
   dup  gzf>file   0!
+  dup  gzf>state  nil!
+  gzf.size allocate throw
+  over gzf>buffer !
   dup  gzf>text   off
   dup  gzf>mode   0!
   dup  gzf>mtime  0!
@@ -116,9 +125,10 @@ end-structure
 
 
 : gzf-(free)       ( gzf -- = Free the internal, private variables from the heap )
-  dup gzf>name    str-(free)
-  dup gzf>comment str-(free)
-  dup gzf>gzp     gzp-(free)
+  dup gzf>buffer @ free throw
+  dup gzf>name     str-(free)
+  dup gzf>comment  str-(free)
+  dup gzf>gzp      gzp-(free)
   drop
   \ ToDo
 ;
@@ -282,17 +292,27 @@ end-structure
 ;
 
 
+( Private header words )
+
+: gzf-do-id        ( gzf -- n = Check the IDs from the gzip file )
+  ." Try IDs"
+  drop \ ToDo
+  gzp.ok
+;
+
 ( File words )
 
 : gzf-open-file    ( c-addr u gzf -- ior = Open an existing gzip file for reading with name c-addr u )
   >r
-  r@ gzf>state @ 0<> exp-invalid-state AND throw
+  r@ gzf>access @ 0<> exp-invalid-state AND throw
 
   r/o bin open-file ?dup IF
     nip
   ELSE
-      r@ gzf>file  !
-    1 r@ gzf>state !
+      r@ gzf>file   !        \ Save file id
+    1 r@ gzf>access !        \ Set reading
+    ['] gzf-do-id            \ Header: check ids
+      r@ gzf>state  !
     0
   THEN
   rdrop
@@ -301,25 +321,29 @@ end-structure
 
 : gzf-read-header  ( gzf -- ior = Read the [next] header from the gzip file )
   >r
-  r@ gzf>state @ 1 <> exp-invalid-state AND throw
-
-  gzf%hdr% allocate throw       \ Allocate space for the header
-    
-  dup r@ ['] gzf-do-read-header catch  \ Try to read the header
-
-  dup IF
-    nip nip                     \ Exception -> drop gzf,hdr
-  ELSE
-    r@ gzf>gzp gzp-init-inflate \ Start inflation
-  THEN
-  swap free throw
-  rdrop
+  r@ gzf>access @ 1 <> exp-invalid-state AND throw
+  BEGIN
+    r@ dup gzf>state @ execute
+    dup gzp.more = IF
+      drop
+      r@ gzf>buffer @  gzf.size  r@ gzf>file @   read-file  \ gzp.okee = 0
+      \ ToDo: gzp buffer, length=0 -> eof own word
+    THEN
+    dup
+  UNTIL
+  r> gzf>gzp gzp-init-inflate     \ Start inflating
 ;
 
 
 : gzf-read-file    ( c-addr1 u1 gzf -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
+  >r
+  BEGIN
+    dup r@ lbf-length'@ >
+  WHILE
+  REPEAT 
 \ Buffer? -> read bytes from file -> feed gzp -> process result, keep reading till u1 bytes 
 \ ToDo
+  rdrop
 ;
 
 
@@ -330,13 +354,13 @@ end-structure
 
 : gzf-create-file  ( c-addr u gzf -- ior = Create a gzip file for writing with name c-addr u )
   >r
-  r@ gzf>state @ 0<> exp-invalid-state AND throw
+  r@ gzf>access @ 0<> exp-invalid-state AND throw
 
   w/o bin create-file ?dup IF
     nip
   ELSE
       r@ gzf>file     !
-    2 r@ gzf>state    !
+    2 r@ gzf>access   !
 
     8 r@ gzf>mode     !      \ Reset the header info
       r@ gzf>mtime   0!
@@ -420,11 +444,11 @@ end-structure
 
 
 : gzf-close-file   ( gzf -- ior = Close the file )
-  dup  gzf>state @ 0= exp-invalid-state AND throw
+  dup  gzf>access @ 0= exp-invalid-state AND throw
 
   dup  gzf-file@ close-file 
 
-  swap gzf>state 0!
+  swap gzf>access 0!
 ;
 
  
@@ -432,7 +456,7 @@ end-structure
 
 : gzf-dump   ( gzf - = Dump the gzf )
   ." gzf:" dup . cr
-  ."  state  :" dup gzf>state ? cr
+  ."  access  :" dup gzf>access ? cr
   ."  file   :" dup gzf>file  ? cr
   ."  text?  :" dup gzf>text  ? cr
   ."  mode   :" dup gzf>mode  ? cr
