@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.7 $
+\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -88,18 +88,22 @@ end-structure
 begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
   field:  gzf>access         \ the access: 1=reading 2=writing 0=none
   field:  gzf>file           \ the current file
+  field:  gzf>eof            \ is the end of file reached for the current file ?
   field:  gzf>state          \ the execution state
   field:  gzf>buffer         \ the input buffer
   field:  gzf>text           \ is the gzip file a text file ?
-  field:  gzf>mode           \ the compression mode
+  field:  gzf>flags          \ the flags
   field:  gzf>os             \ the operating system
   field:  gzf>mtime          \ the modification time
+  field:  gzf>xflags         \ the extra flags
+  field:  gzf>xlen           \ the extra length
   str%
   +field  gzf>name           \ Name string
   str%
   +field  gzf>comment        \ Comment string
   gzp%
   +field  gzf>gzp            \ GZip base words
+  field:  gzf>result         \ Result
 end-structure
 
 
@@ -108,17 +112,20 @@ end-structure
 : gzf-init         ( gzf -- = Initialise the GZip file variable )
   dup  gzf>access 0!
   dup  gzf>file   0!
+  dup  gzf>eof    off
   dup  gzf>state  nil!
   gzf.size allocate throw
   over gzf>buffer !
   dup  gzf>text   off
-  dup  gzf>mode   0!
   dup  gzf>mtime  0!
   gzf.unknown
   over gzf>os      !
+  dup  gzf>xflags 0!
+  dup  gzf>xlen   0!
   dup  gzf>name    str-init
   dup  gzf>comment str-init
   dup  gzf>gzp     gzp-init
+  dup  gzf>result 0!
   drop
 \ ToDo
 ;
@@ -162,16 +169,6 @@ end-structure
   gzf>text !
 ;
   
-
-: gzf-mode@        ( gzf -- n = Get the compression mode of the current file in the gzip file )
-  gzf>mode @
-;
-
-
-: gzf-mode!        ( n gzf -- = Set the compression mode for the next file in the gzip file )
-  gzf>mode !
-;
-
 
 : gzf-os@          ( gzf -- n = Get the operting system of the current file in the gzip file )
   gzf>os @
@@ -220,85 +217,191 @@ end-structure
 ;
 
 
-: gzf+read-zstring    ( c-addr fileid str -- = Read a z-string from the gzip file )
+: gzf-read            ( gzf -- n = Read another block of data from the file )
+  ." gzf-read"
   >r
-  r@ str-clear
-  BEGIN
-    2dup 1 swap read-file throw
-
-    1 <> exp-no-data AND throw    \ Data available ?
-
-    over c@ ?dup             \ While not eos
-  WHILE
-    r@ str-append-char
-  REPEAT
-  2drop
+  r@ gzf>eof @ IF
+    exp-no-data
+  ELSE
+    r@ gzf>buffer @  gzf.size  r@ gzf-file@  read-file ?dup IF \ ToDo gzf.size
+      nip
+    ELSE
+      ?dup IF                                    \ If data available Then
+        dup gzf.size < r@ gzf>eof !              \   Not all available -> eof
+        r@ gzf>buffer @ swap  r@ gzf>gzp gzp-set \   Setup buffer in gzp module
+        gzp.ok
+      ELSE                                       \ Else end of file
+        r@ gzf>eof on
+        exp-no-data
+      THEN
+    THEN
+  THEN
   rdrop
-;
-
-
-: gzf-do-read-header  ( hdr gzf -- = Read the gzip file header )
-  >r
-  dup gzf%hdr% r@ gzf-file@ read-file throw  \ Read the header
-
-  gzf%hdr% <> exp-no-data AND throw    \ Check the length the read data
-    
-  dup  gzf>hdr>id1 c@ 31  <>           \ Check file type
-  over gzf>hdr>id2 c@ 139 <> OR
-  exp-wrong-file-type AND throw
-
-  dup gzf>hdr>cm c@ 8 u>               \ Check compression mode
-  exp-wrong-file-data AND throw
-
-  dup gzf>hdr>flg c@ 224 AND 0<>       \ Check flags
-  exp-wrong-file-data AND throw
-     
-  dup gzf>hdr>flg c@                   \ Process flags
-
-  dup 1 AND 0<>                        \ File is text
-  r@ gzf-text!
-
-  dup 4 AND IF                         \ Extra fields
-    over 2 r@ gzf-file@ read-file throw  \ Reuse id fields ...
-
-    2 <> exp-no-data AND throw         \ Data present ?
-
-    over dup c@ swap char+ c@ 256 * +  \ xlen 
-    
-    r@ gzf-file@ file-position throw
-    rot m+ r@ gzf-file@ reposition-file throw \ Skip extra fields
-  THEN
-
-  dup 8 AND IF                \ Name field
-    over  r@ gzf-file@  r@ gzf>name  gzf+read-zstring
-  THEN
-
-  dup 16 AND IF               \ Comment field
-    over  r@ gzf-file@  r@ gzf>comment  gzf+read-zstring
-  THEN
-
-  2 AND IF                    \ (Skip) CRC field
-    over 2 r@ gzf-file@ read-file throw  \ Reuse id fields ...
-  THEN
-
-  dup gzf>hdr>cm c@          \ Header seems okee, save the info
-  r@  gzf-mode!
-
-  dup gzf>hdr>mtime @
-  r@  gzf-mtime!
-
-  gzf>hdr>os c@
-  r>  gzf-os!
 ;
 
 
 ( Private header words )
 
-: gzf-do-id        ( gzf -- n = Check the IDs from the gzip file )
-  ." Try IDs"
-  drop \ ToDo
-  gzp.ok
+: gzf-do-crc       ( gzf -- n = Skip CRC )
+  dup gzf>flags @ 2 AND IF
+    2 swap gzf>gzp gzp-skip-bytes IF 
+      gzp.done                         \ Header is succesfull processed
+    ELSE
+      gzp.more
+    THEN
+  ELSE
+    drop gzp.done                      \ No CRC -> done
+  THEN
 ;
+
+  
+: gzf-do-comment   ( gzf -- n = Read the comment )
+  dup gzf>flags @ 16 AND IF
+    BEGIN
+      dup gzf>gzp gzp-byte IF
+        ?dup IF                             \ If not eos Then
+          over gzf>comment str-append-char  \   Append char
+          false                             \   Continue
+        ELSE                                \ Else
+          ['] gzf-do-crc swap gzf>state !   \   Next skip crc
+          gzp.ok true                       \   Done & okee
+        THEN
+      ELSE
+        drop gzp.more true                  \ No data -> more
+      THEN
+    UNTIL
+  ELSE
+    ['] gzf-do-crc swap gzf>state !         \ Next skip crc
+    gzp.ok
+  THEN
+;
+
+ 
+: gzf-do-name      ( gzf -- n = Read the filename )
+  dup gzf>flags @ 8 AND IF
+    BEGIN
+      dup gzf>gzp gzp-byte IF
+        ?dup IF                          \ If not eos Then
+          over gzf>name str-append-char  \   Append char  
+          false                          \   Continue
+        ELSE                             \ Else
+          ['] gzf-do-comment swap gzf>state ! \  Next: comment
+          gzp.ok true                    \   Done & okee
+        THEN
+      ELSE
+        drop gzp.more true               \ No data -> more
+      THEN
+    UNTIL
+  ELSE
+    ['] gzf-do-comment swap gzf>state ! \ Next: comment
+    gzp.ok
+  THEN
+;
+
+      
+: gzf-do-extra     ( gzf -- n = Skip the extra bytes )
+  dup gzf>xlen @ ?dup IF
+    over gzp-skip-bytes IF
+      ['] gzf-do-name swap gzf>state !  \ Next ..
+      gzp.ok
+    ELSE
+      drop gzp.more
+    THEN    
+  ELSE
+    ['] gzf-do-name swap gzf>state !  \ Next ..
+    gzp.ok
+  THEN
+;
+
+
+: gzf-do-xlen      ( gzf -- n = Read the extra length )
+  dup gzf>flags @ 4 AND IF
+    dup gzf>gzp gzp-byte2 IF
+      over gzf>xlen !
+      ['] gzf-do-extra swap gzf>state ! \ Next extra bytes
+      gzp.ok
+    ELSE
+      drop gzp.more
+    THEN
+  ELSE
+    ['] gzf-do-name swap gzf>state ! \ Next name
+    gzp.ok
+  THEN
+;
+
+
+: gzf-do-os        ( gzf -- n = Save the Operating System )
+  dup gzf>gzp gzp-byte IF
+    over gzf-os!
+    ['] gzf-do-xlen swap gzf>state ! \ Next extra fields
+    gzp.ok
+  ELSE
+    drop gzp.more
+  THEN
+;
+
+
+: gzf-do-xflags    ( gzf -- n = Check and save the extra flags )
+  dup gzf>gzp gzp-byte IF
+    over gzf>xflags ! \ ToDo Check
+    ['] gzf-do-os swap gzf>state ! \ Next: os
+    gzp.ok
+  ELSE
+    drop gzp.more
+  THEN
+;
+
+
+: gzf-do-mtime     ( gzf -- n = Check and process the modification time )
+  dup gzf>gzp gzp-byte4 IF
+    over gzf-mtime!
+    ['] gzf-do-xflags swap gzf>state ! \ Next: extra flags
+    gzp.ok
+  ELSE
+    drop gzp.more
+  THEN
+;
+
+
+: gzf-do-flags     ( gzf -- n = Check and process the flags )
+  dup gzf>gzp gzp-byte IF
+    2dup 1 AND 0<> swap gzf-text!
+    over gzf>flags !
+    ['] gzf-do-mtime swap gzf>state ! \ Next: mtime
+    gzp.ok
+  ELSE
+    drop gzp.more
+  THEN
+;
+
+  
+: gzf-do-cm        ( gzf -- n = Check the Compression Mode )
+  dup gzf>gzp gzp-byte IF
+    gzf.deflate = IF         \ Only support deflate
+      ['] gzf-do-flags swap gzf>state ! \ Next: flags
+      gzp.ok
+    ELSE
+      drop exp-wrong-file-data
+    THEN
+  ELSE
+    drop gzp.more
+  THEN
+;
+
+
+: gzf-do-id        ( gzf -- n = Check the IDs from the gzip file )
+  dup gzf>gzp gzp-byte2 IF
+    35615 = IF
+      ['] gzf-do-cm swap gzf>state !   \ Next: check CM
+      gzp.ok
+    ELSE
+      drop exp-wrong-file-type
+    THEN
+  ELSE
+    drop gzp.more
+  THEN
+;
+
 
 ( File words )
 
@@ -309,10 +412,12 @@ end-structure
   r/o bin open-file ?dup IF
     nip
   ELSE
-      r@ gzf>file   !        \ Save file id
-    1 r@ gzf>access !        \ Set reading
+      r@ gzf>file    !        \ Save file id
+      r@ gzf>eof     off      
+    1 r@ gzf>access  !       \ Set reading
     ['] gzf-do-id            \ Header: check ids
-      r@ gzf>state  !
+      r@ gzf>state   !
+      r@ gzf>gzp     gzp-clear
     0
   THEN
   rdrop
@@ -321,28 +426,74 @@ end-structure
 
 : gzf-read-header  ( gzf -- ior = Read the [next] header from the gzip file )
   >r
-  r@ gzf>access @ 1 <> exp-invalid-state AND throw
+  r@ gzf>access @ 1 <> exp-invalid-state AND throw  \ reading ?
+
+  r@ gzf>text   0!                \ Reset the header fields
+  r@ gzf>flags  0!
+  gzf.unknown
+  r@ gzf>os      !
+  r@ gzf>mtime  0!
+  r@ gzf>xflags 0!
+  r@ gzf>xlen   0!
+  r@ gzf>name    str-clear
+  r@ gzf>comment str-clear
+  gzp.ok
+  r@ gzf>result  !
   BEGIN
-    r@ dup gzf>state @ execute
-    dup gzp.more = IF
+    r@ dup gzf>state @ execute    \ Execute next step in header reading
+    dup gzp.more = IF             \ If more file data is needed Then
       drop
-      r@ gzf>buffer @  gzf.size  r@ gzf>file @   read-file  \ gzp.okee = 0
-      \ ToDo: gzp buffer, length=0 -> eof own word
+      r@ gzf-read                 \   Read another buffer of data
     THEN
-    dup
-  UNTIL
-  r> gzf>gzp gzp-init-inflate     \ Start inflating
+    ?dup
+  UNTIL                           \ Continue until done or error
+  dup gzp.done = IF
+    r@ gzf>gzp gzp-init-inflate   \ If done Then Start inflating and ..
+    drop 0                        \ .. return okee
+  THEN
+  rdrop
 ;
 
 
 : gzf-read-file    ( c-addr1 u1 gzf -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
   >r
+  r@ gzf>result @                 \ Inflate until u1 bytes and okee
   BEGIN
-    dup r@ lbf-length'@ >
+    gzp.ok = IF
+      r@ gzf>gzp gzp-get-length over <
+    ELSE
+      false
+    THEN
   WHILE
-  REPEAT 
-\ Buffer? -> read bytes from file -> feed gzp -> process result, keep reading till u1 bytes 
-\ ToDo
+    r@ gzf>gzp gzp-inflate 
+    dup gzp.more = IF             \ Read more data
+      drop
+      r@ gzf-read
+    THEN
+  REPEAT
+  dup r@ gzf>result !
+
+  dup gzp.done = IF               \ Inflate done
+    drop
+    r@ gzf>gzp gzp-end-inflate
+    gzp.ok
+  THEN
+
+  dup gzp.ok = IF
+    drop
+    dup r@ gzf>gzp gzp-get ?dup IF
+      rot min >r                  \ Min of requested and present length
+      swap r@ move                \ Switch source and dest and move
+      r>                          \ Return length
+    ELSE
+      2drop
+      0
+    THEN
+    gzp.ok
+  ELSE
+    nip nip
+    0 swap
+  THEN
   rdrop
 ;
 
@@ -362,8 +513,7 @@ end-structure
       r@ gzf>file     !
     2 r@ gzf>access   !
 
-    8 r@ gzf>mode     !      \ Reset the header info
-      r@ gzf>mtime   0!
+      r@ gzf>mtime   0!      \ Reset the header info
       r@ gzf>name    str-clear
       r@ gzf>comment str-clear
     gzf.unknown
@@ -376,14 +526,14 @@ end-structure
 
 : gzf-write-header ( gzf -- ior = Write the [next] header in the gzip file )
   >r
-  r@ gzf>state @ 2 <> exp-invalid-state AND throw
+  r@ gzf>state @ 2 <> exp-invalid-state AND throw  \ writing ?
   
   gzf%hdr% allocate throw    \ Allocate space for the header
 
   31  over gzf>hdr>id1 c!
   139 over gzf>hdr>id2 c!
 
-  r@ gzf-mode@
+  gzf.deflate
       over gzf>hdr>cm  c!
   0
   r@ gzf-text@ IF
@@ -459,7 +609,6 @@ end-structure
   ."  access  :" dup gzf>access ? cr
   ."  file   :" dup gzf>file  ? cr
   ."  text?  :" dup gzf>text  ? cr
-  ."  mode   :" dup gzf>mode  ? cr
   ."  os     :" dup gzf>os    ? cr
   ."  mtime  :" dup gzf>mtime ? cr
   ."  name   :" dup gzf>name    str-get type cr

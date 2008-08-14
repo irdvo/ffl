@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.2 $
+\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -45,7 +45,6 @@ include ffl/lbf.fs
 0 constant gzp.ok            ( -- n = [De]compression is finished okee )
 1 constant gzp.done          ( -- n = [De]compression is done )
 2 constant gzp.more          ( -- n = [De]compression step needs more data )
-3 constant gzp.eof           ( -- n = End of input file )
 
 
 ( gzp structure )
@@ -197,16 +196,16 @@ end-structure
     r@ gzp>hold +!           \  hold = hold + ([input] << bits)
 
     1 /string                \  input++
-    #bits/byte @ gzp>bits +! \  bits += 8
+    #bits/byte r@ gzp>bits +! \  bits += 8
     rot
   REPEAT
-  r@ gzp>input 2!
+  -rot r@ gzp>input 2!
   r> gzp>bits @ <=           \ result = (n <= bits)
 ;
 
 
 : gzp-bits         ( n1 gzp -- n2 = Get n1 bits )
-  gzp>hold @
+  gzp>hold @ 
   swap 1 swap lshift 1 -  \ hold & ((1 << n1) - 1)
   AND
 ;
@@ -227,13 +226,20 @@ end-structure
 ;
 
 
-( Private inflate words )
-
-: gzp-do-stored    ( gzp -- n = Process uncompressed data )
+: gzp-get-length   ( gzp -- u = Get the length of the output buffer )
+  gzp>output lbf-length'@
 ;
 
 
-: gzp-do-type      ( gzp -- n = Check last block and inflation type )
+( Private inflate words )
+
+: gzp-do-stored    ( gzp -- ior = Process uncompressed data )
+  drop gzp.done
+;
+
+
+: gzp-do-type      ( gzp -- ior = Check last block and inflation type )
+  ." gzp-do-type" cr
   3 over gzp-need-bits IF
     1 over gzp-bits ." Last:" . cr
     2 over gzp-bits ." Type:" . cr
@@ -257,22 +263,13 @@ end-structure
 ;
 
 
-: gzp-inflate      ( n1 gzp -- n2 = Inflate data till n bytes in output buffer with result code n )
-  gzp.ok
-  BEGIN
-    \ ToDo stack
-    dup gzp.ok = IF
-      2dup gzp>output lbf-length'@ >
-    ELSE
-      false
-    THEN
-  WHILE
-    dup dup gzp>state @ execute
-  REPEAT
+: gzp-inflate      ( gzp -- ior = Do the next step in inflating data, return the result code )
+  dup gzp>state @ execute
 ;
 
 
 : gzp-end-inflate  ( gzp -- = Finish the inflation of data )
+  drop \ ToDo
 ;
 
 
