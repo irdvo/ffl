@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-19 05:44:00 $ $Revision: 1.4 $
+\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -38,9 +38,13 @@ t{ gzf-create gzf1 }t
 
 t{ s" unknown.gz" gzf1 gzf-open-file ?true }t  \ actually <>0
 
-t{ s" gzf.gz"     gzf1 gzf-open-file ?0 }t
+t{ s" stored.gz"     gzf1 gzf-open-file ?0 }t
+
+\ t{ s" ../ffl-0.6.1.tar.gz" gzf1 gzf-open-file ?0 }t
 
 t{ gzf1 gzf-read-header ?0 }t
+
+t{ pad 80 gzf1 gzf-read-file ?0 . }t
 
 gzf1 gzf-dump
 
