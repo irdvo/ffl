@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.49 $
+\  $Date: 2008-08-20 16:20:18 $ $Revision: 1.50 $
 \
 \ ==============================================================================
 
@@ -32,6 +32,7 @@ include ffl/bar.fs
 include ffl/bci.fs
 include ffl/bcn.fs
 include ffl/bct.fs
+include ffl/bis.fs
 include ffl/bni.fs
 include ffl/bnn.fs
 include ffl/bnt.fs

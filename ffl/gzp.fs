@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.3 $
+\  $Date: 2008-08-20 16:20:18 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -53,6 +53,7 @@ begin-structure gzp%  ( -- n = Get the required space for a gzp variable )
   dfield: gzp>input          \ the current input buffer and length
   field:  gzp>hold           \ the current data from the input buffer
   field:  gzp>bits           \ the number of bits in the hold
+  field:  gzp>bytes          \ the number of bytes in the hold
   field:  gzp>state          \ the current state (as xt)
   field:  gzp>result         \ the result of the conversion
   \ crc?
@@ -105,73 +106,38 @@ end-structure
 ( Input buffer words )
 
 : gzp-clear        ( gzp -- Clear the input buffer )
-  nil over 0 
-  swap gzp>input 2!
-  dup  gzp>hold  0!
-       gzp>bits  0!
+  dup gzp>hold  0!
+  dup gzp>bits  0!
+      gzp>bytes 0!
 ;
 
 
-: gzp-set          ( c-addr u gzp -- Set the input buffer )
-  dup gzp>input 2@ nip exp-invalid-state AND throw
-
+: gzp-set-buffer   ( c-addr u gzp -- Set the input buffer )
   gzp>input 2!
 ;
 
 
-: gzp-align        ( gzp -- Remove bits for going to byte boundary )
-  dup gzp>hold 0!
-  dup gzp>bits @ #bits/byte >= IF
-    ." Warning: more than a byte in the hold buffer "
-  THEN
-  gzp>bits 0!
+: gzp-bits>bytes   ( gzp -- Remove bits for going to byte boundary )
+  \ ToDo
 ;
 
 
-: gzp-byte          ( gzp -- n true | false = Get a byte )
-  >r
-  r@ gzp>input 2@ dup IF
-    over c@ -rot
-    1 /string r@ gzp>input 2!
-    true
-  ELSE
-    2drop false
-  THEN
-  rdrop
-;
-
-
-: gzp-byte2        ( gzp -- n true | false = Get two bytes )
-  >r
-  r@ gzp>input 2@ dup 1 > IF
-    over dup c@ swap char+ c@ 8 lshift + -rot
-    2 /string r@ gzp>input 2!
-    true
-  ELSE
-    2drop false
-  THEN
-  rdrop
-;
-
-
-: gzp-byte4        ( gzp -- n true | false = Get four bytes )
-  >r
-  r@ gzp>input 2@ dup 3 > IF
-    over
-    dup c@ swap char+
-    dup c@ 8  lshift swap char+
-    dup c@ 16 lshift swap char+
-        c@ 24 lshift + + + -rot
-    4 /string r@ gzp>input 2!
-    true
-  ELSE
-    2drop false
-  THEN
-  rdrop
+: gzp-get-bytes    ( n gzp -- n true | false = Get a byte )
+  \ Todo
+\  >r
+\  r@ gzp>input 2@ dup IF
+\    over c@ -rot
+\    1 /string r@ gzp>input 2!
+\    true
+\  ELSE
+\    2drop false
+\  THEN
+\  rdrop
 ;
 
 
 : gzp-skip-bytes   ( n gzp -- flag = Skip n bytes )
+  \ ToDo
   >r
   r@ gzp>input 2@ rot 2dup >= IF  \ If input length >= n
     /string r@ gzp>input 2!       \   Remove from input
@@ -204,7 +170,7 @@ end-structure
 ;
 
 
-: gzp-bits         ( n1 gzp -- n2 = Get n1 bits )
+: gzp-get-bits     ( n1 gzp -- n2 = Get n1 bits )
   gzp>hold @ 
   swap 1 swap lshift 1 -  \ hold & ((1 << n1) - 1)
   AND
