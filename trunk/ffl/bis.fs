@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-02 06:06:22 $ $Revision: 1.2 $
+\  $Date: 2008-09-07 06:52:17 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -36,8 +36,10 @@ include ffl/str.fs
 ( The bis module implements words for reading bits and bytes from a stream   )
 ( of bytes. The module uses a cell wide internal buffer to make it possible  )
 ( to keep reading from succeeding input streams. The maximum number of bits  )
-( that can be read per call, is limitted to size of a cell minus one byte.   )
-( So if a cell is 4 bytes wide, this maximum is 24.                          )
+( that can be read per call, is limited to the size of a cell minus one      )
+( byte. So if a cell is 4 bytes wide, this maximum is 24. Keep in mind that  )
+( the module does not copy the data for the stream, it only stores a         )
+( reference to the data.                                                     )
 
 
 1 constant bis.version
@@ -92,12 +94,12 @@ end-structure
 
 ( Input stream words )
 
-: bis-set          ( c-addr u bis -- = Set the string for the input stream )
+: bis-set          ( c-addr u bis -- = Set the data string for the input stream )
   bis>input 2!
 ;
 
 
-: bis-reset        ( bis -- = Reset the input buffer )
+: bis-reset        ( bis -- = Reset the input buffer, not the input stream )
   dup bis>hold  0!
   dup bis>bits  0!
       bis>bytes 0!
@@ -106,7 +108,7 @@ end-structure
 
 ( Read byte words )
 
-: bis-bits>bytes   ( bis -- = Start reading bytes, dropping remaining bits )
+: bis-bits>bytes   ( bis -- = Start reading bytes, dropping the not byte aligned bits )
   >r
   r@ bis>hold @
   0 r@ bis>bits @!           \ bits = 0
@@ -122,7 +124,7 @@ end-structure
   r@ bis>bytes @
   tuck - 0 max               \ need: n1 - bytes, max 0
 
-  r@ bis-bounds .s ?DO
+  r@ bis-bounds ?DO
     tuck
     I c@
     swap #bits/byte * lshift \ hold += [buffer] << bytes * 8
@@ -162,7 +164,7 @@ end-structure
 ;
 
 
-: bis-need-bits    ( n bis -- flag = Make sure there are n bites from the stream available in the buffer )
+: bis-need-bits    ( n bis -- flag = Make sure there are n bits from the stream available in the buffer )
   >r
   r@ bis>hold @ over
   r@ bis>bits @
@@ -178,21 +180,21 @@ end-structure
   LOOP
   tuck
   r@ bis>bits !                 \ Save current state
-  r@ bis>hold !
+  r> bis>hold !
   <=
 ;
 
 
 : bis-fetch-bits    ( n1 bis -- n2 = Fetch n1 bits from the buffer and return the value )
-  1 swap lshift 1-           \ Mask: (1 << n1)-1 for hold
+  swap 1 swap lshift 1-         \ Mask: (1 << n1)-1 for hold
   swap bis>hold @ AND
 ;
 
 
 : bis-next-bits     ( n bis -- = Set n bits processed in the buffer )
-  2dup 
-  tuck bis>hold @ swap rshift swap bis>hold !  \ hold >>= n
-  negate swap bis>bits +!                      \ bits -= n
+  >r
+  r@ bis>hold @ over rshift r@ bis>hold !      \ hold >>= n
+  negate r> bis>bits +!                        \ bits -= n
 ;
 
 
