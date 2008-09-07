@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-15 12:43:09 $ $Revision: 1.43 $
+\  $Date: 2008-09-07 06:52:17 $ $Revision: 1.44 $
 \
 \ ==============================================================================
 
@@ -36,6 +36,7 @@ include act_test.fs
 include arg_test.fs
 include bar_test.fs
 include bct_test.fs
+include bis_test.fs
 include bnt_test.fs
 include car_test.fs
 include cbf_test.fs
