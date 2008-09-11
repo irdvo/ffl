@@ -71,6 +71,7 @@ Index of used prefices
 6 rdg - Random distribution generator
 6 dom - XML-DOM module
 7 a32 - Adler32 Algorithm
+7 log - Logger module
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -109,7 +110,6 @@ Index of used prefices
 ----- - ------------------------------------------------
       - Development
 ----- - ------------------------------------------------
-7 log - Logger module
   hlp - Manual/help/info module
 ----- - ------------------------------------------------
       - Interface

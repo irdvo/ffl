@@ -45,5 +45,6 @@ a32.fs:
 bn?.fs: 185408
 lbf.fs: 186208
 cbf.fs: 191232
+log.fs: 197112
 
 fina: CompileSize=80186 CompileTime=10714 msec TestTime=24450 msec (without floats)
