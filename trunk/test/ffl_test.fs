@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-07 06:52:17 $ $Revision: 1.44 $
+\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.45 $
 \
 \ ==============================================================================
 
@@ -54,6 +54,7 @@ include frc_test.fs
 include fsm_test.fs
 include hct_test.fs
 include lbf_test.fs
+include log_test.fs
 include md5_test.fs
 include msc_test.fs
 include gmo_test.fs

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-10 16:13:40 $ $Revision: 1.1 $
+\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -36,10 +36,27 @@ include ffl/stt.fs
 
 ( log = Logging module )
 ( The log module implements a software logging and tracing module.           )
-( Default: console appender, problem file appender then console appender     )
-( Info about the different appenders                                         )
-( fatal = abort )
-( layout rolling file name )
+( The module uses 6 different log events, from low to high: trace, debug,    )
+( info, warning, error and fatal. All log events will generate a log         )
+( mesage. Only the fatal log event will do an abort. A log message shows the )
+( date and time, the log event and the actual message. The log events can be )
+( skipped during compilation and suppressed during execution. This is done   )
+( by setting the log level with the log-level word. All log events that are  )
+( equal or higher then this level will be compiled c.q. accepted. All events )
+( can be skipped by setting log.none to the log level.                       )
+( A log message can be sent to one of the four so called appenders. The      )
+( default appender is the console. This appender is also used if one of the  )
+( file appenders is not able to write to a file. The second appender is a    )
+( normal text file. The third type appender is a rolling file appender. This )
+( appender writes a number of log messages to the first file, then moves to  )
+( the next file and writes again a number of log messages, and so on, until  )
+( the number of files is reached. Then the appender starts again with the    )
+( first file. The calling word provides the base filename for the rolling    )
+( filename. The logging module appends ".1", ".2" and so on for the          )
+( different filenames. The last appender is the callback appender. With this )
+( appender the calling module can process the messages by its own. The stack )
+( notation for the callback word is: [ c-addr u -- ]                         )
+
 
 1 constant log.version
 
@@ -59,20 +76,20 @@ end-enumeration
 
 ( Private log database )
 
-     defer log.appender   ( --    = the current logging appender )
+     defer log.appender   ( --    = the current log appender )
 
 tos-create log.msg        ( -- tos = the log message )
 
-0    value log.level      ( -- n  = the suppress level )
-0    value log.stack      ( -- n  = the number of stack elements appended to the log message )
+0    value log.level      ( -- n   = the suppress level )
+0    value log.stack      ( -- n   = the number of stack elements appended to the log message )
 
-str-create log.filename   ( -- .. = the logging file name )
+str-create log.filename   ( -- str = the logging file name )
 
-0    value log.entries    ( -- n  = the maximum number of entries in the rolling file )
-0    value log.entry      ( -- n  = the current entry in the current file )
-0    value log.files      ( -- n  = the maximum number of rolling files )
-0    value log.filenr     ( -- n  = the current file number )
-0    value log.file       ( -- n  = the current file )
+0    value log.entries    ( -- n   = the maximum number of entries in the rolling file )
+0    value log.entry      ( -- n   = the current entry in the current file )
+0    value log.files      ( -- n   = the maximum number of rolling files )
+0    value log.filenr     ( -- n   = the current file number )
+0    value log.file       ( -- n   = the current file )
 
 
 begin-stringtable log.event>string
@@ -93,20 +110,21 @@ end-stringtable
 
 
 : log-open-rolling ( c-addr u -- fileid ior = Create the rolling log file )
-  log.msg tos-rewrite         \ use the message to format the log filename
-  log.msg tos-write-string
+  tos-new >r
+  r@ tos-write-string         \ format the log filename
   [char] .   
-  log.msg tos-write-char      \ append the '.'
+  r@ tos-write-char           \ append the '.'
   log.filenr 
-  log.msg tos-write-number    \ append the file nr
+  r@ tos-write-number         \ append the file nr
 
-  log.msg str-get w/o create-file \ create the file
+  r@ str-get w/o create-file  \ create the file
+  r> tos-free
 ;
 
 
 : log-rolling      ( c-addr u -- = Log in a rolling file )
   log.entry 1+                                   \ Increase the entry number
-  dup log.entries > IF
+  dup log.entries >= IF
     log.filenr log.files mod 1+ to log.filenr    \ Roll and increase the file nr
     log.filename str-get log-open-rolling 0= IF  \ Try to create the next file
       log.file close-file drop                   \ If success then close the previous
@@ -207,7 +225,7 @@ end-stringtable
     dup log.trace max log.fatal min log.event>string  \ convert event to text
                log.msg tos-write-string
 
-    -rot       log.msg tos-write-string  \ the message
+    >r         log.msg tos-write-string  \ the message
 
     log.stack IF                         \ add max log.stack stack elements to the message
       s"  : (" log.msg tos-write-string  \ stack depth
@@ -225,7 +243,7 @@ end-stringtable
 
     log.msg str-get log.appender         \ send the message to the appender
 
-    log.fatal = IF
+    r> log.fatal = IF
       abort                              \ Fatal error -> abort
     THEN
   THEN

@@ -1,5 +1,5 @@
 0.7.0
-* log: new module: Log module (2008-09-09)
+* log: new module: Logging module (2008-09-09)
 * bis: new module: Bit input stream (2008-08-20)
 * gzp: new module: GZip base module (2008-06-28)
 * cbf: new module: circulair buffer (2008-06-02)
