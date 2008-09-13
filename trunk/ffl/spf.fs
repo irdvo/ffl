@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-13 05:50:40 $ $Revision: 1.1 $
+\  $Date: 2008-09-13 13:34:03 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -61,12 +61,12 @@ include ffl/str.fs
 
 ( Private bit fields )
 
-1  constant spf.alternative    \ #
-2  constant spf.zero-padding   \ 0
-4  constant spf.left-align     \ -
-8  constant spf.space-sign     \ ' '
-16 constant spf.plus-sign      \ +
-32 constant spf.double         \ l
+1  constant spf.zero-padding   \ 0
+2  constant spf.left-align     \ -
+4  constant spf.space-sign     \ ' '
+8  constant spf.plus-sign      \ +
+16 constant spf.double         \ l
+
 
 ( Private words )
 
@@ -77,12 +77,7 @@ include ffl/str.fs
     over AND
   WHILE
     over c@ 
-    dup [char] # = IF        \ Alternative format
-      drop
-      r> spf.alternative OR >r
-      1 /string
-      true
-    ELSE dup [char] 0 = IF   \ Zero padding
+    dup [char] 0 = IF   \ Zero padding
       drop
       r> spf.zero-padding OR >r
       1 /string
@@ -103,7 +98,7 @@ include ffl/str.fs
       true
     ELSE
       false
-    THEN THEN THEN THEN THEN
+    THEN THEN THEN THEN
   REPEAT
   r>
 ;
@@ -141,27 +136,73 @@ include ffl/str.fs
 ;
 
 
-: spf+specifiers   ( i*x n1 n2 flags c str -- = Process the specifier c with double flags, length n2, flags n1 and parameters i*x )
-  >r
-  CASE
-    [char] d OF  ENDOF
-    [char] i OF  ENDOF
-    [char] o OF  ENDOF
-    [char] u OF  ENDOF
-    [char] x OF  ENDOF
-    [char] X OF  ENDOF
-    [char] c OF  ENDOF
-    [char] s OF  ENDOF
-    [char] % OF  ENDOF
-    \ ToDo : default ?
-  ENDCASE
-  rdrop
+: spf+sign         ( n1 n2 -- char = Use the flags n1 and number n2 to determine the sign char )
+  0< IF
+    [char] -
+  ELSE
+    dup spf.plus-sign AND IF
+      drop
+      [char] +
+    ELSE spf.space-sign AND IF
+      bl
+    ELSE
+      0
+    THEN THEN
+  THEN
 ;
 
 
-( Sprintf word )
+: spf-left-pad     ( n1 n2 str -- = Pad n2 zeros or spaces if indicated by n1 )
+  over IF
+    rot dup spf.left-align AND IF
+      spf.zero-padding AND IF
+        [char] 0
+      ELSE
+        bl
+      THEN
+      -rot str-append-chars
+    ELSE
+      2drop drop
+    THEN
+  ELSE
+    2drop drop
+  THEN
+;
 
-: spf-append    ( i*x c-addr u str -- = Append to the str the format string c-addr with arguments i*x )
+
+: spf-right-pad    ( n1 n2 str -- = Pad n2 spaces if indicated by n1 )
+  over IF
+    rot spf.left-align AND IF
+      bl -rot str-append-chars
+    ELSE
+      2drop drop
+    THEN
+  ELSE
+    2drop drop
+  THEN
+;
+
+
+: spf+specifier    ( i*x n1 n2 str c-addr u -- j*x c-addr u = Process the specifier in c-addr u with length n1, flags n2 and parameters i*x )
+  dup IF
+    over c@ -rot
+    1 /string
+    2>r
+    CASE
+      [char] % OF [char] % swap str-append-char 2drop ENDOF  \ %% specifier
+      \ ToDo more
+      >r [char] ? swap str-append-char 2drop r>              \ Unknown specifier
+    ENDCASE
+    2r>
+  ELSE
+    2>r drop 2drop 2r>
+  THEN
+;
+
+
+( Sprintf words )
+
+: spf-append    ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and append the result to str )
   >r
   BEGIN
     dup
@@ -173,23 +214,19 @@ include ffl/str.fs
 
       spf+flags >r spf+length -rot spf+double r> OR -rot \ Process flags, length and double indication
 
-      2>r
-      2r@ IF
-        c@ r@ spf+specifiers
-      THEN
-      2r>
-      1 /string
+      r@ -rot spf+specifier  \ Process the specifier
     ELSE
       r@ str-append-char
 
       1 /string
     THEN
   REPEAT
+  2drop
   rdrop
 ;
 
 
-: spf-set       ( i*x c-addr u str -- = Set the str with the format string c-addr with arguments i*x )
+: spf-set       ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and set the result in str )
   dup str-clear spf-append
 ;
 
