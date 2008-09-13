@@ -83,6 +83,7 @@ Index of used prefices
 5 nfe - non-deterministic finite automata expression
 5 nfs - non-deterministic finite automata state
 5 rgx - Regular expression module
+7 spf - Sprintf module
 2 tis - Text Input Stream
 2 tos - Text Output Stream
 6 msc - Message Catalog
@@ -162,3 +163,4 @@ ToDo
 [ ] col: execute?
 [ ] gmo: endian check
 [ ] ffl: dup nil<> en dup nil= check again
+[ ] spf: floats in conversion
