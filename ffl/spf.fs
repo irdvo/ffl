@@ -2,7 +2,7 @@
 \
 \                spf - the sprintf formatter in the ffl
 \
-\               Copyright (C) 2007  Dick van Oudheusden
+\               Copyright (C) 2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-13 13:34:03 $ $Revision: 1.2 $
+\  $Date: 2008-09-20 05:31:18 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,201 +34,261 @@ include ffl/str.fs
 
 
 ( spf = Sprintf string formatter )
-( The spf module implements a string with escaped characters. The code is    )
-( inspired by the proposal for escaped strings by Stephen Pelc and Peter     )
-( Knaggs. The following conversion characters are translated:                )
+( The spf module implements a simplified sprintf function in forth.          )
 ( <pre>                                                                      )
-( \a  - bel = ascii 7                                                        )
-( \b  - backspace = ascii 8                                                  )
-( \e  - escape = ascii 27                                                    )
-( \f  - formfeed = ascii 12                                                  )
-( \l  - linefeed = ascii 10                                                  )
-( \m  - cr/lf = ascii 13,10                                                  )
-( \n  - new line                                                             )
-( \q  - quote = ascii 34                                                     )
-( \r  - cr = ascii 13                                                        )
-( \t  - ht = ascii 9                                                         )
-( \v  - vt = ascii 11                                                        )
-( \z  - nul = ascii 0                                                        )
-( \"  - quote = ascii 34                                                     )
-( xhh - hex digit                                                            )
-( \\  - backslash                                                            )
+( Format: %[flags][width][length]specifier                                   )
+(     Flags: 0      = Left-pads the number with zeros instead of spaces      )
+(            -      = Left justify the number                                )
+(            +      = A positive number is preceded with a '+'               )
+(            space  = A positive number is preceded with a space             )
+(     Width: number = the minimum number of characters written               )
+(    Double: l      = the argument is interpreted as a double                )
+( Specifier: c      = format a character [char]                              )
+(            d      = format a signed number [n or d]                        )
+(            i      = format a signed number [n or d]                        )
+(            o      = format a signed octal [n or d]                         )
+(            s      = format a string [c-addr u]                             )
+(            u      = format a unsigned number [u or ud]                     )
+(            x      = format a unsigned hexadecimal number [u or ud]         )
+(            X      = format a unsigned hexadecimal number, capital letters  )
+(            p      = format a unsigned hexadecimal number [u or ud]         )
+(            n      = store the length of the string in [addr]               )
+(            %      = write a '%' []                                         )
 ( </pre>                                                                     )
 
 
 1 constant spf.version
 
 
-( Private bit fields )
+( Private flags )
 
 1  constant spf.zero-padding   \ 0
-2  constant spf.left-align     \ -
+2  constant spf.left-justify   \ -
 4  constant spf.space-sign     \ ' '
 8  constant spf.plus-sign      \ +
 16 constant spf.double         \ l
 
 
-( Private words )
+( Private format words )
 
-: spf+flags        ( c-addr1 u1 -- c-addr2 u2 n1 = Read the flags from the format string )
-  0 >r
-  true                  
-  BEGIN 
-    over AND
-  WHILE
-    over c@ 
-    dup [char] 0 = IF   \ Zero padding
-      drop
-      r> spf.zero-padding OR >r
-      1 /string
-      true
-    ELSE dup [char] - = IF   \ Left align
-      drop
-      r> spf.left-align OR >r
-      1 /string
-      true
-    ELSE dup bl = IF         \ Space sign
-      drop
-      r> spf.space-sign OR >r
-      1 /string
-      true
-    ELSE [char] + = IF       \ Plus sign
-      r> spf.plus-sign OR >r
-      1 /string
-      true
-    ELSE
-      false
-    THEN THEN THEN THEN
-  REPEAT
-  r>
-;
-
-: spf+length       ( c-addr1 u1 -- c-addr2 u2 n1 = Process the length in the format string )
-  0 >r
-  BEGIN
-    dup IF
-      over c@ chr-digit? 
-    ELSE
-      false
-    THEN
-  WHILE                      \ while length > 0 and char is digit
-    over c@ [char] 0 -
-    
-    r> 10 * + >r             \   convert digit and add to length
-
-    1 /string
-  REPEAT
-  r>
-;
-
-
-: spf+double       ( c-addr1 u1 -- c-addr2 u2 n1 = Process the double flag in the format string )
-  dup IF
-    over c@ [char] l = IF
-      1 /string
-      spf.double
-    ELSE
-      0
-    THEN
-  ELSE
-    0
-  THEN
-;
-
-
-: spf+sign         ( n1 n2 -- char = Use the flags n1 and number n2 to determine the sign char )
-  0< IF
-    [char] -
-  ELSE
-    dup spf.plus-sign AND IF
-      drop
-      [char] +
-    ELSE spf.space-sign AND IF
-      bl
-    ELSE
-      0
-    THEN THEN
-  THEN
-;
-
-
-: spf-left-pad     ( n1 n2 str -- = Pad n2 zeros or spaces if indicated by n1 )
-  over IF
-    rot dup spf.left-align AND IF
-      spf.zero-padding AND IF
-        [char] 0
-      ELSE
-        bl
-      THEN
-      -rot str-append-chars
-    ELSE
-      2drop drop
-    THEN
-  ELSE
-    2drop drop
-  THEN
-;
-
-
-: spf-right-pad    ( n1 n2 str -- = Pad n2 spaces if indicated by n1 )
-  over IF
-    rot spf.left-align AND IF
-      bl -rot str-append-chars
-    ELSE
-      2drop drop
-    THEN
-  ELSE
-    2drop drop
-  THEN
-;
-
-
-: spf+specifier    ( i*x n1 n2 str c-addr u -- j*x c-addr u = Process the specifier in c-addr u with length n1, flags n2 and parameters i*x )
-  dup IF
-    over c@ -rot
-    1 /string
-    2>r
-    CASE
-      [char] % OF [char] % swap str-append-char 2drop ENDOF  \ %% specifier
-      \ ToDo more
-      >r [char] ? swap str-append-char 2drop r>              \ Unknown specifier
-    ENDCASE
-    2r>
-  ELSE
-    2>r drop 2drop 2r>
-  THEN
-;
-
-
-( Sprintf words )
-
-: spf-append    ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and append the result to str )
+: spf-left-pad     ( n1 n2 str -- n1 n2 = Pad n2 spaces to the left, if indicated by n1 )
   >r
-  BEGIN
-    dup
-  WHILE
-    over c@ 
-    dup [char] % = IF
-      drop
-      1 /string
-
-      spf+flags >r spf+length -rot spf+double r> OR -rot \ Process flags, length and double indication
-
-      r@ -rot spf+specifier  \ Process the specifier
-    ELSE
-      r@ str-append-char
-
-      1 /string
-    THEN
-  REPEAT
-  2drop
+  over spf.left-justify AND 0= IF
+    bl over r@ str-append-chars
+  THEN
   rdrop
 ;
 
 
-: spf-set       ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and set the result in str )
+: spf-zero-left-pad  ( n1 n2 str -- n1 n2 = Pad n2 spaces of zeros to the left, if indicated by n1 )
+  >r
+  over spf.left-justify AND 0= IF
+    over spf.zero-padding AND IF
+      [char] 0
+    ELSE
+      bl
+    THEN
+    over r@ str-append-chars
+  THEN
+  rdrop
+;
+
+
+: spf-right-pad    ( n1 n2 str -- = Pad n2 spaces to the right, if indicated by n1 )
+  >r
+  swap spf.left-justify AND IF
+    bl swap r@ str-append-chars
+  ELSE
+    drop
+  THEN
+  rdrop
+;
+
+
+: spf+convert-char ( char n1 n2 -- char n1 n3 = Convert a char and determine the pad width n3 )
+  1- 0 max
+;
+
+
+: spf+convert-string ( c-addr u n1 n2 -- c-addr u n1 n3 = Convert a string and determine the pad width n3 )
+  >r over r> swap - 0 max
+;
+
+
+: spf+convert-signed ( n | d n1 n2 -- c-addr u n1 n3 = Convert a signed number and determine the pad width n3 )
+  >r >r
+  r@ spf.double AND 0= IF
+    s>d                           \ Convert single to double
+  THEN
+
+  dup >r dabs <# #s r> 0< IF      \ Convert double to a string
+    [char] - hold
+  ELSE
+    r@ spf.plus-sign AND IF
+      [char] + hold
+    ELSE r@ spf.space-sign AND IF
+      bl hold
+    THEN THEN 
+  THEN #>
+  r>                              \ Flags
+
+  over r> swap - 0 max            \ Pad Width
+;
+
+
+: spf+convert-unsigned  ( u | ud n1 n2 -- c-addr u n1 n3 = Convert an unsigned number and determine the pad width n3 )
+  over spf.double AND IF
+    2swap
+  ELSE
+    rot 0                    \ Convert single to a double
+  THEN
+
+  <# #s #> 2swap             \ Convert double to string
+
+  >r over r> swap - 0 max    \ Pad width
+;
+
+
+: spf-store-lower  ( c-addr u str -- = Store the string lower case in str )
+  -rot
+  bounds ?DO
+    I c@ chr-lower over str-append-char
+  LOOP
+  drop
+;
+
+
+: spf-store-upper  ( c-addr u str -- = Store the string upper case in str )
+  -rot
+  bounds ?DO
+    I c@ chr-upper over str-append-char
+  LOOP
+  drop
+;
+
+
+( Private state words )
+
+0 value spf.check-format
+0 value spf.check-flags
+0 value spf.check-width
+0 value spf.check-double
+0 value spf.check-specifier
+
+
+: spf-check-specifier ( i*x n1 n2 char str -- j*x str xt = Check for specifier, next state = check-format )
+  >r
+  CASE
+    [char] d OF spf+convert-signed  r@ spf-zero-left-pad  2swap r@ str-append-string  r@ spf-right-pad ENDOF
+
+    [char] i OF spf+convert-signed  r@ spf-zero-left-pad  2swap r@ str-append-string  r@ spf-right-pad ENDOF
+
+    [char] u OF spf+convert-unsigned  r@ spf-zero-left-pad  2swap r@ str-append-string  r@ spf-right-pad ENDOF
+
+    [char] x OF base @ >r  hex  spf+convert-unsigned  r> base !  r@ spf-zero-left-pad  2swap r@ spf-store-lower  r@ spf-right-pad ENDOF
+
+    [char] X OF base @ >r  hex  spf+convert-unsigned  r> base !  r@ spf-zero-left-pad  2swap r@ spf-store-upper  r@ spf-right-pad ENDOF
+
+    [char] c OF spf+convert-char  r@ spf-left-pad rot  r@ str-append-char  r@ spf-right-pad ENDOF
+
+    [char] s OF spf+convert-string  r@ spf-left-pad 2swap  r@ str-append-string  r@ spf-right-pad ENDOF
+
+    [char] n OF 2drop  r@ str-length@ swap ! ENDOF
+
+    [char] o OF base @ >r  8 base !  spf+convert-signed  r> base !  r@ spf-zero-left-pad  2swap r@ str-append-string  r@ spf-right-pad ENDOF
+
+    [char] p OF base @ >r  hex  spf+convert-unsigned  r> base !  r@ spf-zero-left-pad  2swap r@ spf-store-lower  r@ spf-right-pad ENDOF
+
+    [char] % OF 2drop [char] % r@ str-append-char ENDOF
+
+    [char] ? r@ str-append-char >r 2drop r>
+  ENDCASE
+  r>
+  spf.check-format
+;
+' spf-check-specifier to spf.check-specifier
+
+
+: spf-check-double ( n1 n2 char str -- n3 n2 str xt1 | str xt2 = Check for double, next states xt1 = check-specifier, xt2 = check-format )
+  over [char] l = IF
+    nip 2>r spf.double OR 2r>
+    spf.check-specifier
+  ELSE
+    spf-check-specifier
+  THEN
+;
+' spf-check-double to spf.check-double
+
+
+: spf-check-width  ( n1 n2 char str -- n1 n3 str xt1 | .. | str xt3 = Check for width, next states xt1 = check-width, xt2 = ..., xt3 = check-format )
+  over chr-digit? IF
+    >r swap 10 * swap [char] 0 - + r>
+    spf.check-width
+  ELSE
+    spf-check-double
+  THEN
+;
+' spf-check-width to spf.check-width
+
+
+: spf-check-flags  ( n1 char str -- n2 str xt1 | n1 n2 str xt2 | str xt3 = Check for flags, next states xt1 = check-flags, xt2 = .., xt3 = check-format )
+  over [char] 0 = IF
+    nip >r spf.zero-padding OR r>
+    spf.check-flags
+  ELSE over [char] - = IF
+    nip >r spf.left-justify OR r>
+    spf.check-flags
+  ELSE over bl = IF
+    nip >r spf.space-sign OR r>
+    spf.check-flags
+  ELSE over [char] + = IF
+    nip >r spf.plus-sign OR r>
+    spf.check-flags
+  ELSE
+    0 -rot spf-check-width
+  THEN THEN THEN THEN
+;
+' spf-check-flags to spf.check-flags
+
+
+: spf-check-format  ( char str -- str xt1 | 0 str xt2 = Check for format character, next states xt1 = check-format, xt2 = check-flags )
+  over [char] % = IF
+    nip 0 swap spf.check-flags
+  ELSE
+    tuck str-append-char
+    spf.check-format
+  THEN
+;
+' spf-check-format to spf.check-format
+
+
+( Sprintf words )
+
+
+: spf-append       ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and append the result to str )
+  spf.check-format 2swap
+  bounds ?DO
+    I c@ -rot execute
+  LOOP
+  2drop
+;
+
+
+: spf-set          ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and set the result in str)
   dup str-clear spf-append
 ;
+
+
+: spf"             ( "ccc<quote>" i*x str -- = Convert the arguments i*x with the format string and set the result in str )
+  [char] " parse
+  state @ IF
+    postpone    sliteral
+    ['] rot     compile,
+    ['] spf-set compile,
+  ELSE
+    rot spf-set
+  THEN
+; immediate
 
 [THEN]
 
