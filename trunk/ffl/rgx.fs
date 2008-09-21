@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-21 20:31:19 $ $Revision: 1.13 $
+\  $Date: 2008-09-21 05:52:03 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -43,7 +43,7 @@ include ffl/nfe.fs
 (      .   Match any char [incl. newline]     *   Match zero or more         )
 (      +   Match one or more                  ?   Match zero or one          )
 (      |   Match alternatives                                                )
-(          Group or subexpression                                            )
+(      &lb;&rb;  Group or subexpression                                      )
 (                                                                            )
 (     Backslash characters:                                                  )
 (      \.  Character .                       \*   Character *                )
