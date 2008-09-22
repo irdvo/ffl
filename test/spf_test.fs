@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-20 05:31:18 $ $Revision: 1.1 $
+\  $Date: 2008-09-22 18:46:53 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -140,7 +140,7 @@ variable spf-result
 
 t{ s" All:" spf1 str-set }t
 t{ spf-result 9 8 7 s" #" char * s" %c %s %d %i %u %n %%" spf1 spf-append }t
-t{ spf1 str-get s" * # 7 8 9  %" ?str }t
+t{ spf1 str-get s" All:* # 7 8 9  %" ?str }t
 t{ spf-result @ 14 ?s }t
 
 t{ char ! s" hello" spf1 spf" %s !%c" }t
