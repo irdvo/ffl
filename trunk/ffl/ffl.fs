@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-10 16:13:40 $ $Revision: 1.52 $
+\  $Date: 2008-09-22 18:46:53 $ $Revision: 1.53 $
 \
 \ ==============================================================================
 
@@ -90,6 +90,7 @@ include ffl/sh2.fs
 include ffl/sni.fs
 include ffl/snl.fs
 include ffl/snn.fs
+include ffl/spf.fs
 include ffl/stc.fs
 include ffl/str.fs
 include ffl/stt.fs

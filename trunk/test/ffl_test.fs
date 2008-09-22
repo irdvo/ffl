@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.45 $
+\  $Date: 2008-09-22 18:46:53 $ $Revision: 1.46 $
 \
 \ ==============================================================================
 
@@ -67,6 +67,7 @@ include scl_test.fs
 include snl_test.fs
 include sh1_test.fs
 include sh2_test.fs
+include spf_test.fs
 include str_test.fs
 include stt_test.fs
 include tis_test.fs
