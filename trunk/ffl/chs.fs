@@ -2,7 +2,7 @@
 \
 \               chs - the character set module in the ffl
 \
-\               Copyright (C) 2006  Dick van Oudheusden
+\              Copyright (C) 2006-2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-23 15:27:01 $ $Revision: 1.11 $
+\  $Date: 2008-10-04 14:56:56 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 
@@ -39,7 +39,7 @@ include ffl/chr.fs
 ( used in regular expressions.                                               )
   
 
-2 constant chs.version
+3 constant chs.version
 
 
 ( Private constant )
@@ -76,10 +76,41 @@ end-structure
   free throw 
 ;
 
+
+( Private set word )
+
+: chs^execute      ( xt chs2 chs1 -- = Execute xt for every byte of chs2 and chs1 and store the result in chs1, xt: [ char1 char2 -- char3] )
+  >r chs>set r> chs>set
+  chs.size bounds DO
+    2dup c@ 
+    I c@ 
+    rot execute
+    I c!
+    char+
+  1 chars +LOOP
+  2drop
+;
+
+
 ( Sets words )
 
-: chs^move         ( chs2 chs1 -- = Move chs2 in chs1 )
+: chs^move         ( chs1 chs2 -- = Move chs1 in chs2 )
   chs>set swap chs>set swap chs.size cmove
+;
+
+
+: chs^or           ( chs1 chs2 -- = OR the sets chs1 with chs2 and store the result in chs2 )
+  ['] OR -rot chs^execute
+;
+
+
+: chs^and          ( chs1 chs2 -- = AND the sets chs1 with chs2 and store the result in chs2 )
+  ['] AND -rot chs^execute
+;
+
+
+: chs^xor          ( chs1 chs2 -- = XOR the sets chs1 with chs2 and store the result in chs2 )
+  ['] XOR -rot chs^execute
 ;
 
 
@@ -208,6 +239,26 @@ end-structure
   bounds ?DO
     I c@ over chs-reset-char
   1 chars +LOOP
+  drop
+;
+
+
+( List words )
+
+: chs-set-list     ( charu .. char1 u chs -- = Set the characters char1 till charu in the set )
+  swap
+  0 ?DO
+    tuck chs-set-char
+  LOOP
+  drop
+;
+
+
+: chs-reset-list   ( charu .. char1 u chs -- = Reset the characters char1 till charu in the set )
+  swap
+  0 ?DO
+    tuck chs-reset-char
+  LOOP
   drop
 ;
 

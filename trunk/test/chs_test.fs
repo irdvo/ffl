@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2006-12-11 18:14:53 $ $Revision: 1.4 $
+\  $Date: 2008-10-04 14:56:56 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -64,6 +64,28 @@ t{ char d chs1 chs-char? ?false }t
 t{ char k chs1 chs-char? ?false }t
 t{ char l chs1 chs-char? ?false }t
 t{ char j chs1 chs-char? ?true  }t
+
+
+\ List words 
+
+t{ chs1 chs-reset }t
+
+t{ char a char b char c 3 chs1 chs-set-list }t
+t{                      0 chs1 chs-set-list }t
+t{ char a chs1 chs-char? ?true  }t
+t{ char b chs1 chs-char? ?true  }t
+t{ char c chs1 chs-char? ?true  }t
+t{ char 7 chs1 chs-char? ?false }t
+
+t{ chs1 chs-set }t
+
+t{ char ; bl char _ char = 4 chs1 chs-reset-list }t
+t{                         0 chs1 chs-reset-list }t
+t{ char ; chs1 chs-char? ?false }t
+t{ bl     chs1 chs-char? ?false }t
+t{ char _ chs1 chs-char? ?false }t
+t{ char = chs1 chs-char? ?false }t
+t{ char a chs1 chs-char? ?true  }t
 
 
 \ Set class words
@@ -501,6 +523,50 @@ t{ chs1 chs2 chs^move }t
 ;
 
 t{ 0 ' chs-test-execute chs2 chs-execute 62 ?s }t   \ char set count alnum
+
+\ operator words 
+
+t{ chs1 chs-reset }t
+t{ chs2 chs-reset }t
+
+t{ chs1 chs-set-digit }t
+t{ chs2 chs-set-space }t
+
+t{ chs2 chs1 chs^or }t
+
+t{ 0 ' chs-test-execute chs1 chs-execute 16 ?s }t
+
+t{ char 8 chs1 chs-char? ?true  }t
+t{ chr.vt chs1 chs-char? ?true  }t
+t{ char a chs1 chs-char? ?false }t
+
+
+t{ chs1 chs-reset }t
+t{ chs2 chs-reset }t
+
+t{ chs1 chs-set-xdigit }t
+t{ chs2 chs-set-digit  }t
+
+t{ chs2 chs1 chs^and }t
+
+t{ 0 ' chs-test-execute chs1 chs-execute 10 ?s }t
+
+t{ char 5 chs1 chs-char? ?true  }t
+t{ char a chs1 chs-char? ?false }t
+
+
+t{ chs1 chs-reset }t
+t{ chs2 chs-reset }t
+
+t{ chs1 chs-set-xdigit }t
+t{ chs2 chs-set-digit  }t
+
+t{ chs2 chs1 chs^xor }t
+
+t{ 0 ' chs-test-execute chs1 chs-execute 12 ?s }t
+
+t{ char 5 chs1 chs-char? ?false  }t
+t{ char a chs1 chs-char? ?true }t
 
 t{ chs2 chs-free }t
 

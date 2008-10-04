@@ -125,9 +125,9 @@ a bzs - BZip2 module
 7 gzp - GZip base module
       - css module
       - url module
-a    - crypt: aes
-a    - crypt: dsa
-a    - crypt: ???
+a     - crypt: aes
+a     - crypt: dsa
+a     - crypt: ???
 ----- - ------------------------------------------------
       - Graphics
 ----- - ------------------------------------------------
@@ -140,6 +140,8 @@ b     - Font ??
 ----- - ------------------------------------------------
 8 dis - DateTime input stream
 8 gps - nmea handling, distance calculation
+      - expert
+      - neural
 ----- - ------------------------------------------------
       - Components
 ----- - ------------------------------------------------

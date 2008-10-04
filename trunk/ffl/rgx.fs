@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-21 05:52:03 $ $Revision: 1.14 $
+\  $Date: 2008-10-04 14:56:56 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -62,7 +62,7 @@ include ffl/nfe.fs
 ( </pre> )
 
 
-1 constant rgx.version
+2 constant rgx.version
 
 
 ( Regular expression structure )
@@ -79,6 +79,7 @@ end-structure
 
 ( Private scanner types )
 
+-1  constant rgx.error        ( -- n = Error in pattern )
 100 constant rgx.eos          ( -- n = End of pattern )
 101 constant rgx.alternation  ( -- n = Alternation [|] )
 102 constant rgx.zero-or-one  ( -- n = Zero or one [?] )
