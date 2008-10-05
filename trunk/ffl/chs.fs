@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-04 14:56:56 $ $Revision: 1.12 $
+\  $Date: 2008-10-05 06:34:20 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -203,7 +203,7 @@ end-structure
 
 ( Character range words )
 
-: chs-set-chars    ( char1 char2 chs -- = Set the character range [char1..char2] in the set )
+: chs-set-chars    ( char1 char2 chs -- = Set the character range [char2..char1] in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
@@ -213,7 +213,7 @@ end-structure
 ;
 
 
-: chs-reset-chars  ( char1 char2 chs -- = Reset the character range [char1..char2] in the set )
+: chs-reset-chars  ( char1 char2 chs -- = Reset the character range [char2..char1] in the set )
   -rot
   2dup chs+validate-chars
   swap 1+ swap DO
