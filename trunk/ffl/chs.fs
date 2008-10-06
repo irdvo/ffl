@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-05 06:34:20 $ $Revision: 1.13 $
+\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -206,7 +206,7 @@ end-structure
 : chs-set-chars    ( char1 char2 chs -- = Set the character range [char2..char1] in the set )
   -rot
   2dup chs+validate-chars
-  swap 1+ swap DO
+  2dup max 1+ -rot min DO
     I over chs-set-ch
   LOOP
   drop
@@ -216,7 +216,7 @@ end-structure
 : chs-reset-chars  ( char1 char2 chs -- = Reset the character range [char2..char1] in the set )
   -rot
   2dup chs+validate-chars
-  swap 1+ swap DO
+  2dup max 1+ -rot min DO
     I over chs-reset-ch
   LOOP
   drop
