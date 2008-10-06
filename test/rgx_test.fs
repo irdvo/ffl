@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-07-09 17:38:09 $ $Revision: 1.5 $
+\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -42,7 +42,10 @@ t{ s" |a" rgx1 rgx-compile ?false 0 ?s }t
 t{ s" *"  rgx1 rgx-compile ?false 0 ?s }t
 t{ s" +"  rgx1 rgx-compile ?false 0 ?s }t
 t{ s" ?"  rgx1 rgx-compile ?false 0 ?s }t
-
+t{ s" ["  rgx1 rgx-compile ?false 0 ?s }t
+t{ s" []" rgx1 rgx-compile ?false 0 ?s }t
+t{ s" [a" rgx1 rgx-compile ?false 0 ?s }t
+t{ s" a[" rgx1 rgx-compile ?false 1 ?s }t
 
 \ Correct patterns
 
@@ -128,6 +131,55 @@ t{ s" .*(Hello|Bye)" rgx1 rgx-compile ?true }t
 
 t{ s" This is then goodbye" rgx1 rgx-cmatch? ?false }t
 t{ s" This is then goodbye" rgx1 rgx-imatch? ?true  }t
+
+
+t{ s" [abc]" rgx1 rgx-compile ?true }t
+
+t{ s" a" rgx1 rgx-cmatch? ?true  }t
+t{ s" z" rgx1 rgx-cmatch? ?false }t
+
+
+t{ s" [^abc]" rgx1 rgx-compile ?true }t
+
+t{ s" a" rgx1 rgx-cmatch? ?false }t
+t{ s" z" rgx1 rgx-cmatch? ?true  }t
+
+
+t{ s" [a-y]" rgx1 rgx-compile ?true }t
+
+t{ s" a" rgx1 rgx-cmatch? ?true  }t
+t{ s" y" rgx1 rgx-cmatch? ?true  }t
+t{ s" z" rgx1 rgx-cmatch? ?false }t
+
+
+t{ s" [\w]" rgx1 rgx-compile ?true }t
+
+t{ s" a" rgx1 rgx-cmatch? ?true  }t
+t{ s" ;" rgx1 rgx-cmatch? ?false }t
+
+
+t{ s" [\d]" rgx1 rgx-compile ?true }t
+
+t{ s" 7" rgx1 rgx-cmatch? ?true  }t
+t{ s" p" rgx1 rgx-cmatch? ?false }t
+
+t{ s" [\s]" rgx1 rgx-compile ?true }t
+
+t{ s"  " rgx1 rgx-cmatch? ?true  }t
+t{ s" ." rgx1 rgx-cmatch? ?false }t
+
+
+t{ s" []a]" rgx1 rgx-compile ?true }t
+
+t{ s" ]" rgx1 rgx-cmatch? ?true  }t
+t{ s" a" rgx1 rgx-cmatch? ?true  }t
+t{ s" 0" rgx1 rgx-cmatch? ?false }t
+
+t{ s" ab[cde-g\d]+z" rgx1 rgx-compile ?true }t
+
+t{ s" abcdefg9876543210z" rgx1 rgx-cmatch? ?true }t
+
+t{ s" abz" rgx1 rgx-cmatch? ?false }t
 
 
 t{ rgx-new value rgx2 }t

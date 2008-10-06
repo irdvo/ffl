@@ -2,7 +2,7 @@
 \
 \           rgx - the regular expression module in the ffl
 \
-\               Copyright (C) 2007  Dick van Oudheusden
+\            Copyright (C) 2007-2008  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-04 14:56:56 $ $Revision: 1.15 $
+\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -42,13 +42,14 @@ include ffl/nfe.fs
 (     This module uses the following syntax:                                 )
 (      .   Match any char [incl. newline]     *   Match zero or more         )
 (      +   Match one or more                  ?   Match zero or one          )
-(      |   Match alternatives                                                )
+(      |   Match alternatives                 []  Class                      )
 (      &lb;&rb;  Group or subexpression                                      )
 (                                                                            )
 (     Backslash characters:                                                  )
 (      \.  Character .                       \*   Character *                )
 (      \+  Character +                       \?   Character ?                )
 (      \|  Character |                       \\   Backslash                  )
+(      \[  Character [                                                       )
 (                                                                            )
 (      \r  Carriage return                   \n   Line feed                  )
 (      \t  Horizontal tab                    \e   Escape                     )
@@ -56,6 +57,24 @@ include ffl/nfe.fs
 (      \d  Digits class: [0-9]               \D   No digits: [^0-9]          )
 (      \w  Word class: [0-9a-zA-Z_]          \W   No word: [^0-9a-zA-Z_]     )
 (      \s  Whitespace                        \S   No whitespace              )
+(                                                                            )
+(      All other backslash characters simply return the trailing character,  )
+(      but this can change in future versions.                               )
+(                                                                            )
+(      Classes:                                                         )
+(       [abc]  - match a or b or c                                           )
+(       [^abc] - match everything except a or b or c                         )
+(       [a-z]  - match a or b or .. z                                        )
+(       [-abc] - match - or a or b or c                                      )
+(       []abc] - match ] or a or b or c                                      )
+(       [\d\n] - match digit or line feed                                    )
+(                                                                            )
+(      Backslash characters in classes:                                      )
+(       \r  Carriage return                \n    Line feed                   )
+(       \t  Horizontal tab                 \e    Escape                      )
+(       \]  Character ]                    \-    Character -                 )
+(       \d  Digits class: [0-9]            \w    Word class: [0-9a-zA-Z_]    )
+(       \s  Whitespace                                                       )
 (                                                                            )
 (      All other backslash characters simply return the trailing character,  )
 (      but this can change in future versions.                               )
@@ -117,18 +136,111 @@ end-structure
 
 ( Private scanner words )
 
-: rgx-scan-init  ( c-addr u rgx -- = Initialise the regular expression scanner )
+: rgx-scan-init    ( c-addr u rgx -- = Initialise the regular expression scanner )
   tuck rgx>length   !
   tuck rgx>pattern  !
        rgx>index   0!
 ;
 
 
+: rgx-scan-char    ( rgx -- char true | false = Get a character from the pattern buffer )
+  dup  rgx>index @ over rgx>next @ +
+  tuck over rgx>length @ < IF           \ If index < length Then
+    rgx>pattern @ swap chars + c@ true  \   Return the character
+  ELSE
+    2drop false
+  THEN
+;
+
+
+: rgx-scan-incr    ( rgx -- = Increment the next pointer )
+  rgx>next 1+!
+;
+
+
+: rgx-scan-class-backslash  ( chs rgx -- chs = Scan the backslash character in the class )
+  >r
+  r@ rgx-scan-char IF
+    CASE
+      [char] n OF chr.lf  over chs-set-char  ENDOF
+      [char] r OF chr.cr  over chs-set-char  ENDOF
+      [char] t OF chr.ht  over chs-set-char  ENDOF
+      [char] e OF chr.esc over chs-set-char  ENDOF
+      [char] d OF         dup  chs-set-digit ENDOF
+      [char] w OF         dup  chs-set-word  ENDOF
+      [char] s OF         dup  chs-set-space ENDOF
+      2dup swap chs-set-char                        \ All others
+    ENDCASE
+    r@ rgx-scan-incr
+  THEN
+  rdrop
+;
+
+
+: rgx-scan-class-range  ( chs char rgx -- chs = Scan the range character in the class )
+  >r
+  ?dup IF
+    over
+    r@ rgx-scan-char IF
+      swap chs-set-chars
+      r@ rgx-scan-incr
+    ELSE
+      2drop
+    THEN
+  THEN
+  rdrop
+;
+
+
+: rgx-scan-class   ( rgx -- x n = Scan for a class, return the type n and the data x for the expression )
+  >r
+  false chs-new 0                 \ S: invert class last-char
+  
+  r@ rgx-scan-char IF             \ Check the first special char after the [: ^,] and -
+    dup [char] ] = over [char] - = OR IF
+      nip 2dup swap chs-set-char
+      r@ rgx-scan-incr
+    ELSE [char] ^ = IF
+      2>r 0= 2r>
+      r@ rgx-scan-incr
+    THEN THEN
+  THEN
+
+  BEGIN                           \ Process all characters in the class
+    r@ rgx-scan-char
+  WHILE
+    r@ rgx-scan-incr
+
+    dup [char] ] = IF             \ If ']' Then done
+      2drop
+      swap IF                     \   Invert the class if there was a '^'
+        dup chs-invert
+      THEN
+      nfs.class
+      rdrop
+      EXIT
+    ELSE dup [char] \ = IF        \ If '\' Then do backslash character
+      2drop
+      r@ rgx-scan-class-backslash
+      0                           \   No range 
+    ELSE dup [char] - = IF
+      drop
+      r@ rgx-scan-class-range      \ If '-' Then range character
+      0
+    ELSE
+      nip 2dup swap chs-set-char  \ All others: add to the set
+    THEN THEN THEN
+  REPEAT
+  drop chs-free drop              \ Error: no ] found
+  r> rgx>next 0!
+  nil rgx.error
+;
+
+
 : rgx-scan-backslash   ( rgx -- x n = Scan for a backslash token, return the type n and data x for the expression )
   >r
-  r@ rgx>index @ 1+ dup  r@ rgx>length @ < IF   \ If there one more character Then
-    chars r@ rgx>pattern @ + c@                 \   Fetch the char
-    r@ rgx>next 1+!                             \   Process two characters
+  r@ rgx-scan-char IF                            \ If there one more character Then
+    r@ rgx-scan-incr                             \   Process the (two) characters
     CASE
       [char] n OF chr.lf                                  nfs.char  ENDOF
       [char] r OF chr.cr                                  nfs.char  ENDOF
@@ -164,6 +276,7 @@ end-structure
       [char] ( OF nil nfs.lparen        ENDOF
       [char] ) OF nil nfs.rparen        ENDOF
       [char] \ OF r@ rgx-scan-backslash ENDOF
+      [char] [ OF r@ rgx-scan-class     ENDOF
       nfs.char over
     ENDCASE
   ELSE
@@ -364,6 +477,7 @@ defer rgx.parse-alternation
   ." rgx:" dup . cr
   ."  pattern   :" dup rgx>pattern ? cr
   ."  length    :" dup rgx>length  ? cr
+  ."  next      :" dup rgx>next    ? cr
   ."  index     :"     rgx>index   ? cr
 ;
 

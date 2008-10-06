@@ -3,7 +3,7 @@
 * bar: new words: bar-set-list,bar-reset-list (2008-10-04)
 * bar: new words: bar^or,bar^and,bar^xor,bar^move (2008-10-03)
 * chs: new words: chs^or,chs^and,chs^xor (2008-10-01)
-* rgx: user classes added (2008-09-27)
+* rgx: classes added (2008-09-27)
 * spf: new module: Sprintf module (2008-09-13)
 * log: new module: Logging module (2008-09-09)
 * bis: new module: Bit input stream (2008-08-20)

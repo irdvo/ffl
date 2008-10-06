@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-06-02 05:59:48 $ $Revision: 1.2 $
+\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -54,7 +54,7 @@ rgx-new value rgx2
 
 \ Compile a regular expression for matching a float number
 
-s" (\+|-|\s)?\d+(\.\d+)?" rgx2 rgx-compile [IF]
+s" [-+\s]?\d+(\.\d+)?" rgx2 rgx-compile [IF]
   .( Expression succesfull compiled) cr
 [ELSE]
   .( Compilation failed on position:) . cr
