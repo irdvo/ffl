@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.16 $
+\  $Date: 2008-10-07 16:45:41 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 
@@ -182,8 +182,12 @@ end-structure
   ?dup IF
     over
     r@ rgx-scan-char IF
-      swap chs-set-chars
-      r@ rgx-scan-incr
+      dup [char] \ <> IF          \ No range with backslash characters
+        swap chs-set-chars
+        r@ rgx-scan-incr
+      ELSE
+        2drop drop
+      THEN
     ELSE
       2drop
     THEN
