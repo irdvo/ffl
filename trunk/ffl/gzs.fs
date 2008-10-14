@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               gzs - the gzip stream module in the ffl
+\             gzs - the gzip stream base module in the ffl
 \
 \               Copyright (C) 2008  Dick van Oudheusden
 \  
@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-06-03 15:08:54 $ $Revision: 1.2 $
+\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -34,13 +34,13 @@ include ffl/stc.fs
 
 
 ( gzs = GZip Stream )
-( The gzs module implements a gzip stream. It compresses [deflate] or        )
-( decompresses [inflate] a stream of data.                                   )
+( The gzs module contains the base definitons for a gzip stream. It is used  )
+( by the zis and zos modules.                                                )
 
 
 1 constant gzs.version
 
-
+\ ToDo Cleanup
 ( gzs structure )
 
 begin-structure gzs%       ( -- n = Get the required space for a gzs variable )

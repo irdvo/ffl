@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-07 06:52:17 $ $Revision: 1.3 $
+\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -30,7 +30,8 @@ include ffl/config.fs
 
 [UNDEFINED] bis.version [IF]
 
-include ffl/str.fs
+
+include ffl/stc.fs
 
 ( bis = Bit Input Stream Module )
 ( The bis module implements words for reading bits and bytes from a stream   )

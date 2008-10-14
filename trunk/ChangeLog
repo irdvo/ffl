@@ -1,4 +1,6 @@
 0.7.0
+* zif: new module: GZip file reader  (2008-10-12)
+* gzi: new module: GZip reader (2008-10-11)
 * chs: new words: chs-set-list,chs-reset-list (2008-10-04)
 * bar: new words: bar-set-list,bar-reset-list (2008-10-04)
 * bar: new words: bar^or,bar^and,bar^xor,bar^move (2008-10-03)
