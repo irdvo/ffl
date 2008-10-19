@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.1 $
+\  $Date: 2008-10-19 06:06:23 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -107,7 +107,7 @@ end-structure
   zif>file @
 ;
 
-0 [IF]
+
 : zif-read            ( zif -- n = Read another block of data from the file )
   >r
   r@ zif>eof @ IF
@@ -118,7 +118,7 @@ end-structure
     ELSE
       ?dup IF                                    \ If data available Then
         dup zif.size < r@ zif>eof !              \   Not all available -> eof
-        r@ zif>buffer @ swap  r@ zif>gzp gzp-set \   Setup buffer in gzp module
+        r@ zif>buffer @ swap  r@ bis-set         \   Setup buffer in gzp module
         gzi.ok
       ELSE                                       \ Else end of file
         r@ zif>eof on
@@ -133,8 +133,9 @@ end-structure
 ( Private header words )
 
 : zif-do-crc       ( zif -- n = Skip CRC )
-  dup zif>flags @ 2 AND IF
-    2 swap zif>gzp gzp-skip-bytes IF 
+  dup zif>gzf gzf-flags@ 2 AND IF
+    2 swap bis-read-bytes IF 
+      drop
       gzi.done                         \ Header is succesfull processed
     ELSE
       gzi.more
@@ -146,11 +147,11 @@ end-structure
 
   
 : zif-do-comment   ( zif -- n = Read the comment )
-  dup zif>flags @ 16 AND IF
+  dup zif>gzf gzf-flags@ 16 AND IF
     BEGIN
-      dup zif>gzp gzp-byte IF
+      1 over bis-read-bytes IF
         ?dup IF                             \ If not eos Then
-          over zif>comment str-append-char  \   Append char
+          over zif>gzf gzf>comment str-append-char  \   Append char
           false                             \   Continue
         ELSE                                \ Else
           ['] zif-do-crc swap gzi-state!    \   Next skip crc
@@ -168,11 +169,11 @@ end-structure
 
  
 : zif-do-name      ( zif -- n = Read the filename )
-  dup zif>flags @ 8 AND IF
+  dup zif>gzf gzf-flags@ 8 AND IF
     BEGIN
-      dup zif>gzp gzp-byte IF
+      1 over bis-read-bytes IF
         ?dup IF                          \ If not eos Then
-          over zif>name str-append-char  \   Append char  
+          over zif>gzf gzf>name str-append-char  \   Append char  
           false                          \   Continue
         ELSE                             \ Else
           ['] zif-do-comment swap gzi-state! \  Next: comment
@@ -190,40 +191,49 @@ end-structure
 
       
 : zif-do-extra     ( zif -- n = Skip the extra bytes )
-  dup zif>xlen @ ?dup IF
-    over gzp-skip-bytes IF
-      ['] zif-do-name swap gzi-state!  \ Next ..
-      gzi.ok
+  >r
+  dup zif>gzf gzf>xlen @          \ Skip xlen byte
+  BEGIN
+    dup IF
+      1 r@ bis-read-bytes
     ELSE
-      drop gzi.more
-    THEN    
+      false
+    THEN
+  WHILE
+    1-
+  REPEAT
+
+  ?dup IF                         \ All bytes done ?
+    r@ zif>gzf gzf>xlen !
+    gzi.more                      \  No, need more data
   ELSE
-    ['] zif-do-name swap gzi-state!   \ Next ..
+    ['] zif-do-name r@ gzi-state! \  Yes, continu with next field
     gzi.ok
   THEN
+  rdrop
 ;
 
 
 : zif-do-xlen      ( zif -- n = Read the extra length )
-  dup zif>flags @ 4 AND IF
-    dup zif>gzp gzp-byte2 IF
-      over zif>xlen !
-      ['] zif-do-extra swap gzi-state!  \ Next extra bytes
+  dup zif>gzf gzf-flags@ 4 AND IF
+    2 over bis-read-bytes IF
+      over zif>gzf gzf>xlen !
+      ['] zif-do-extra swap gzi-state!  \ Next: extra bytes
       gzi.ok
     ELSE
       drop gzi.more
     THEN
   ELSE
-    ['] zif-do-name swap gzi-state!  \ Next name
+    ['] zif-do-name swap gzi-state!  \ Next: name
     gzi.ok
   THEN
 ;
 
 
 : zif-do-os        ( zif -- n = Save the Operating System )
-  dup zif>gzp gzp-byte IF
-    over zif-os!
-    ['] zif-do-xlen swap gzi-state!  \ Next extra fields
+  1 over bis-read-bytes IF
+    over zif>gzf gzf-os!
+    ['] zif-do-xlen swap gzi-state!  \ Next: extra fields
     gzi.ok
   ELSE
     drop gzi.more
@@ -232,8 +242,8 @@ end-structure
 
 
 : zif-do-xflags    ( zif -- n = Check and save the extra flags )
-  dup zif>gzp gzp-byte IF
-    over zif>xflags ! \ ToDo Check
+  1 over bis-read-bytes IF
+    over zif>gzf gzf>xflags ! \ ToDo Check
     ['] zif-do-os swap gzi-state!  \ Next: os
     gzi.ok
   ELSE
@@ -243,8 +253,8 @@ end-structure
 
 
 : zif-do-mtime     ( zif -- n = Check and process the modification time )
-  dup zif>gzp gzp-byte4 IF
-    over zif-mtime!
+  4 over bis-read-bytes IF
+    over zif>gzf gzf-mtime!
     ['] zif-do-xflags swap gzi-state!  \ Next: extra flags
     gzi.ok
   ELSE
@@ -254,9 +264,9 @@ end-structure
 
 
 : zif-do-flags     ( zif -- n = Check and process the flags )
-  dup zif>gzp gzp-byte IF
-    2dup 1 AND 0<> swap zif-text!
-    over zif>flags !
+  1 over bis-read-bytes IF
+    2dup 1 AND 0<> swap zif>gzf gzf-text!
+    over zif>gzf gzf-flags!
     ['] zif-do-mtime swap gzi-state!   \ Next: mtime
     gzi.ok
   ELSE
@@ -266,8 +276,8 @@ end-structure
 
   
 : zif-do-cm        ( zif -- n = Check the Compression Mode )
-  dup zif>gzp gzp-byte IF
-    zif.deflate = IF         \ Only support deflate
+  1 over bis-read-bytes IF
+    gzf.deflate = IF         \ Only support deflate
       ['] zif-do-flags swap gzi-state!  \ Next: flags
       gzi.ok
     ELSE
@@ -277,13 +287,12 @@ end-structure
     drop gzi.more
   THEN
 ;
-[THEN]
 
 
 : zif-do-id        ( zif -- n = Check the IDs from the gzip file )
   2 over bis-read-bytes IF
     35615 = IF
-      \ ['] zif-do-cm swap gzi-state!   \ Next: check CM
+      ['] zif-do-cm swap gzi-state!   \ Next: check CM
       gzi.ok
     ELSE
       drop exp-wrong-file-type
@@ -312,24 +321,14 @@ end-structure
 ;
 
 
-0 [IF]
 : zif-read-header  ( zif -- ior = Read the [next] header from the gzip file )
   >r
-  \ ToDo r@ zif>access @ 1 <> exp-invalid-state AND throw  \ reading ?
 
-  r@ zif>text   0!                \ Reset the header fields
-  r@ zif>flags  0!
-  zif.unknown
-  r@ zif>os      !
-  r@ zif>mtime  0!
-  r@ zif>xflags 0!
-  r@ zif>xlen   0!
-  r@ zif>name    str-clear
-  r@ zif>comment str-clear
-  gzi.ok
-  r@ zif>result  !
+  r@ zif>gzf gzf-reset            \ Reset the header
+
+  gzi.ok r@ zif>result  !
   BEGIN
-    r@ dup zif>state @ execute    \ Execute next step in header reading
+    r@ gzi-inflate                \ Do the next step in inflation: header reading
     dup gzi.more = IF             \ If more file data is needed Then
       drop
       r@ zif-read                 \   Read another buffer of data
@@ -337,13 +336,14 @@ end-structure
     ?dup
   UNTIL                           \ Continue until done or error
   dup gzi.done = IF
-    r@ zif>gzp gzp-init-inflate   \ If done Then Start inflating and ..
+    r@ gzi-init-inflate           \ If done Then Start inflating and ..
     drop 0                        \ .. return okee
   THEN
   rdrop
 ;
 
 
+0 [IF]
 : zif-read-file    ( c-addr1 u1 zif -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
   >r
   r@ zif>result @                 \ Inflate until u1 bytes and okee
@@ -391,10 +391,10 @@ end-structure
 \ ToDo
 ;
 
+[THEN]
 : zif-close-file   ( zif -- ior = Close the file )
   zif-file@ close-file 
 ;
-[THEN]
 
 [THEN]
 

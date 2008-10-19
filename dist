@@ -42,6 +42,7 @@ cp   engines/lxf/*.fs         ${dest}/engines/lxf
 cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
 cp      test/test.xml         ${dest}/test
+cp      test/stored.gz        ${dest}/stored.gz
 
 cp   examples/test.xml        ${dest}/examples
 cp   examples/nl.mo           ${dest}/examples

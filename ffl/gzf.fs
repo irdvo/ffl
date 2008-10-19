@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.9 $
+\  $Date: 2008-10-19 06:06:23 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -85,10 +85,11 @@ end-structure
 
 : gzf-init         ( gzf -- = Initialise the GZip file variable )
   dup  gzf>text   off
-  dup  gzf>xflags 0!
+  dup  gzf>flags  0!
   dup  gzf>mtime  0!
   gzf.unknown
   over gzf>os      !
+  dup  gzf>xflags 0!
   dup  gzf>xlen   0!
   dup  gzf>name    str-init
   dup  gzf>comment str-init
@@ -134,6 +135,16 @@ end-structure
 ;
  
 
+: gzf-flags@       ( gzf -- u = Get the flags from the gzip file header )
+  gzf>flags @
+;
+
+
+: gzf-flags!       ( u gzf -- = Set the flags for the gzip file header )
+  gzf>flags !
+;
+
+
 : gzf-os@          ( gzf -- n = Get the operting system of the current file in the gzip file )
   gzf>os @
 ;
@@ -173,7 +184,22 @@ end-structure
   gzf>comment str-set
 ;
 
- 
+
+( Header words )
+
+: gzf-reset        ( gzf -- = Reset the gzip file header )
+  dup  gzf>text   off
+  dup  gzf>flags  0!
+  gzf.unknown
+  over gzf>os      !
+  dup  gzf>mtime  0!
+  dup  gzf>xflags 0!
+  dup  gzf>xlen   0!
+  dup  gzf>name    str-clear
+       gzf>comment str-clear
+;
+
+
 ( Inspection )
 
 : gzf-dump   ( gzf - = Dump the gzf )
