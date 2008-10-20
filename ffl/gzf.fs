@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-19 06:06:23 $ $Revision: 1.10 $
+\  $Date: 2008-10-20 16:59:45 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -31,6 +31,7 @@ include ffl/config.fs
 [UNDEFINED] gzf.version [IF]
 
 include ffl/str.fs
+include ffl/crc.fs
 
 
 ( gzf = GZip File )
@@ -78,6 +79,8 @@ begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
   +field  gzf>name           \ Name string
   str%
   +field  gzf>comment        \ Comment string
+  crc%
+  +field  gzf>crc            \ CRC
 end-structure
 
 
@@ -93,6 +96,7 @@ end-structure
   dup  gzf>xlen   0!
   dup  gzf>name    str-init
   dup  gzf>comment str-init
+  dup  gzf>crc     crc-init
   drop
 \ ToDo
 ;
@@ -196,7 +200,8 @@ end-structure
   dup  gzf>xflags 0!
   dup  gzf>xlen   0!
   dup  gzf>name    str-clear
-       gzf>comment str-clear
+  dup  gzf>comment str-clear
+       gzf>crc     crc-reset
 ;
 
 
