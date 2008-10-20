@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.1 $
+\  $Date: 2008-10-20 16:59:45 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -31,7 +31,7 @@ include ffl/config.fs
 [UNDEFINED] gzi.version [IF]
 
 include ffl/bis.fs
-\ include ffl/lbf.fs
+include ffl/lbf.fs
 
 
 ( gzi = GZip Input Base Module )
@@ -49,6 +49,8 @@ include ffl/bis.fs
 1 constant gzi.done          ( -- n = Decompression is done )
 2 constant gzi.more          ( -- n = Decompression step needs more data )
 
+32768 constant gzi.out-size  ( -- n = Output buffer size )
+
 
 ( gzi structure )
 
@@ -56,29 +58,29 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   bis%
   +field  gzi>bis            \ the inflator extends the input buffer
   field:  gzi>state          \ the current state (as xt)
+  lbf%
+  +field  gzi>lbf            \ the output buffer
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
-  \ lbf%
-  \ +field  gzi>output         \ the output buffer
 end-structure
 
 
 ( GZip inflation variable creation, initialisation and destruction )
 
 : gzi-init         ( gzi -- = Initialise the GZip inflation variable )
-  dup  gzi>bis      bis-init
-  dup  gzi>state    nil!
-  \ dup  gzi>result   0!
-  \ 1 chars over
-  \ 32768   swap 
-  \     gzi>output lbf-init   \ initialise the output buffers for chars and size 32k byte
-  drop
+  >r
+  r@  gzi>bis    bis-init
+  r@  gzi>state  nil!
+
+  1 chars gzi.out-size 
+  r@  gzi>lbf    lbf-init
+  rdrop
 \ ToDo
 ;
 
 
 : gzi-(free)       ( gzi -- = Free the internal, private variables from the heap )
-  \ dup gzi>output  lbf-(free)
+  dup gzi>lbf    lbf-(free)
   drop
   \ ToDo
 ;
@@ -126,7 +128,6 @@ end-structure
 ;
 
 
-
 ( Inflate words )
 
 : gzi-init-inflate ( gzi -- = Start the inflation of data )
@@ -151,8 +152,9 @@ end-structure
 
 : gzi-dump   ( gzi - = Dump the gzi )
   ." gzi:" dup . cr
-    ."  input   :" dup gzi>bis      bis-dump
-    ."  state   :" dup gzi>state    ? cr
+    ."  bis   :" dup gzi>bis      bis-dump
+    ."  state :" dup gzi>state    ? cr
+    ."  lbf   :" dup gzi>lbf      lbf-dump
   drop
 ;
   
