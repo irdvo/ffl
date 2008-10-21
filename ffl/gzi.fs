@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-20 16:59:45 $ $Revision: 1.2 $
+\  $Date: 2008-10-21 17:27:50 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -60,6 +60,7 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>state          \ the current state (as xt)
   lbf%
   +field  gzi>lbf            \ the output buffer
+  field:  gzi>last           \ is this the last block ?
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -71,9 +72,11 @@ end-structure
   >r
   r@  gzi>bis    bis-init
   r@  gzi>state  nil!
+  r@  gzi>last   off
 
   1 chars gzi.out-size 
   r@  gzi>lbf    lbf-init
+
   rdrop
 \ ToDo
 ;
@@ -118,13 +121,28 @@ end-structure
 
 
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
-  3 over gzi>bis bis-need-bits IF
-    ['] gzi-do-stored swap gzi-state!
-    gzi.ok
+  >r
+  r@ gzi>last @ IF
+    gzi.done                 \ Return to caller
   ELSE
-    drop
-    gzi.more
-  THEN 
+    3 r@ bis-need-bits IF
+      1 r@ bis-fetch-bits  \ Fetch last indicator and save it 
+      0<> r@ gzi>last !
+      1 r@ bis-next-bits   \ Last indicator processed
+
+      2 r@ bis-fetch-bits  \ Fetch block type
+      CASE
+        0 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
+        1 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
+        2 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
+        exp-wrong-file-data swap
+      ENDCASE
+      2 r@ bis-next-bits
+    ELSE
+      gzi.more
+    THEN
+  THEN
+  rdrop
 ;
 
 
@@ -132,7 +150,9 @@ end-structure
 
 : gzi-init-inflate ( gzi -- = Start the inflation of data )
   ['] gzi-do-type over gzi-state!
-  
+ 
+  dup bis-bytes>bits         \ Start reading bits
+
   drop
   \ ToDo
 ;
