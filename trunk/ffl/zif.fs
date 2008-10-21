@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-19 06:06:23 $ $Revision: 1.2 $
+\  $Date: 2008-10-21 17:27:50 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -324,9 +324,9 @@ end-structure
 : zif-read-header  ( zif -- ior = Read the [next] header from the gzip file )
   >r
 
-  r@ zif>gzf gzf-reset            \ Reset the header
+  r@ zif>gzf gzf-reset            \ Reset the header info
 
-  gzi.ok r@ zif>result  !
+  gzi.ok r@ zif>result !
   BEGIN
     r@ gzi-inflate                \ Do the next step in inflation: header reading
     dup gzi.more = IF             \ If more file data is needed Then
@@ -343,18 +343,17 @@ end-structure
 ;
 
 
-0 [IF]
 : zif-read-file    ( c-addr1 u1 zif -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
   >r
   r@ zif>result @                 \ Inflate until u1 bytes and okee
   BEGIN
     gzi.ok = IF
-      r@ zif>gzp gzp-get-length over <
+      r@ gzi>lbf lbf-length'@ over <
     ELSE
       false
     THEN
   WHILE
-    r@ zif>gzp gzp-inflate 
+    r@ gzi-inflate 
     dup gzi.more = IF             \ Read more data
       drop
       r@ zif-read
@@ -362,15 +361,15 @@ end-structure
   REPEAT
   dup r@ zif>result !
 
-  dup gzi.done = IF               \ Inflate done
+  dup gzi.done = IF               \ Inflate done ToDo: CRC check
     drop
-    r@ zif>gzp gzp-end-inflate
+    r@ gzi-end-inflate
     gzi.ok
   THEN
 
   dup gzi.ok = IF
     drop
-    dup r@ zif>gzp gzp-get ?dup IF
+    dup r@ gzi>lbf lbf-get' ?dup IF
       rot min >r                  \ Min of requested and present length
       swap r@ move                \ Switch source and dest and move
       r>                          \ Return length
@@ -386,7 +385,7 @@ end-structure
   rdrop
 ;
 
-
+0 [IF]
 : zif-read-line    ( c-addr1 u1 zif -- u2 ior = Read/decompress till end of line or maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
 \ ToDo
 ;
