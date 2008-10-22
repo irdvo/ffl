@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.2 $
+\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -160,7 +160,7 @@ end-stringtable
 
 ( Appender words )
 
-: log-by-rolling   ( c-addr u n1 n2 -- = Start logging to a rolling files, with names starting with c-addr u, maximum n1 files and n2 entries in one file )
+: log-to-rolling   ( c-addr u n1 n2 -- = Start logging to rolling files, with names starting with c-addr u, maximum n1 files and n2 entries in one file )
   1 to log.filenr
   2over log-open-rolling 0= IF    \ Try creating the log file name, starting with 1
     to log.file
@@ -179,19 +179,19 @@ end-stringtable
 ;
 
 
-: log-by-file      ( fileid -- = Start logging to the file )
+: log-to-file      ( fileid -- = Start logging to the file )
   to log.file
   ['] log-file is log.appender
 
 ;
 
 
-: log-by-callback  ( xt -- = Start logging to the xt callback )
+: log-to-callback  ( xt -- = Start logging to the xt callback )
   is log.appender
 ;
 
 
-: log-by-console   ( -- = Start logging to the console )
+: log-to-console   ( -- = Start logging to the console )
   ['] log-console is log.appender
 ;
 

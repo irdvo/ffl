@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.1 $
+\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -37,9 +37,9 @@ variable log-count  log-count 0!
   log-count 1+!
 ;
 
-\ Test log-by-callback
+\ Test log-to-callback
 
-t{ ' log-callback log-by-callback }t
+t{ ' log-callback log-to-callback }t
 
 t{ trace" Message 1" }t
 
@@ -89,7 +89,7 @@ log.trace log-level
 
 s" log.tmp" w/o create-file 0= [IF]
   
-  t{ log-by-file }t
+  t{ log-to-file }t
 
   t{ trace" Message 18" }t
 
@@ -108,7 +108,7 @@ s" log.tmp" w/o create-file 0= [IF]
 
 \ Test log-by-rolling
 
-t{ s" log" 10 15 log-by-rolling }t
+t{ s" log" 10 15 log-to-rolling }t
 
 : log-test1
   202 0 DO
