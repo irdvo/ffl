@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-11 16:55:41 $ $Revision: 1.1 $
+\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -29,7 +29,7 @@ include ffl/log.fs
 
 .( Logging to the console:) cr
 
-log-by-console
+log-to-console
 
 warning" Warning message"
 
@@ -45,7 +45,7 @@ log.trace log-level          \ Log all events
 .( Logging to file "log.tmp" ) cr
 
 s" log.tmp" w/o create-file 0= [IF]
-  dup log-by-file
+  dup log-to-file
 
   trace" Trace message"
 
@@ -60,7 +60,7 @@ s" log.tmp" w/o create-file 0= [IF]
 
 .( Logging to rolling files: log.1 log.2 and log.3, 5 entries per file .." ) cr
 
-s" log" 3 5 log-by-rolling
+s" log" 3 5 log-to-rolling
 
 3 log-stack                  \ Log also the stack contents, maximum 3 values
 
@@ -83,7 +83,7 @@ do-18logs                    \ Generate 18 log messages in the rolling files
   ." Logging:" type cr       \ Callback shows the message on the console
 ;
 
-' callback log-by-callback
+' callback log-to-callback
 
 0 log-stack                  \ Stop logging the stack contents
 

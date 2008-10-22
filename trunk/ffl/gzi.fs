@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-21 17:27:50 $ $Revision: 1.3 $
+\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -29,6 +29,13 @@ include ffl/config.fs
 
 
 [UNDEFINED] gzi.version [IF]
+
+\ -- ToDo Remove
+include ffl/log.fs
+
+log-to-console
+7 log-stack
+\ ----
 
 include ffl/bis.fs
 include ffl/lbf.fs
@@ -61,6 +68,7 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   lbf%
   +field  gzi>lbf            \ the output buffer
   field:  gzi>last           \ is this the last block ?
+  field:  gzi>length         \ the length of a block
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -73,6 +81,7 @@ end-structure
   r@  gzi>bis    bis-init
   r@  gzi>state  nil!
   r@  gzi>last   off
+  r@  gzi>length 0!
 
   1 chars gzi.out-size 
   r@  gzi>lbf    lbf-init
@@ -115,8 +124,29 @@ end-structure
 
 ( Private inflate words )
 
-: gzi-do-stored    ( gzi -- ior = Process uncompressed data )
+: gzi-do-copy      ( gzi -- ior = Copy uncompressed data )
+  trace" do-copy"
   drop gzi.done
+;
+
+
+: gzi-do-stored    ( gzi -- ior = Process uncompressed data )
+  trace" do-stored"
+  dup bis-bits>bytes
+  4 over bis-read-bytes IF
+    dup            [ hex ] FFFF [ decimal ] AND
+    swap 16 rshift [ hex ] FFFF [ decimal ] XOR
+    over = IF
+      trace" Length:"
+      over gzi>length !
+      ['] gzi-do-copy swap gzi-state!
+      gzi.ok
+    ELSE
+      2drop exp-wrong-file-data
+    THEN
+  ELSE
+    drop gzi.more
+  THEN
 ;
 
 
@@ -127,10 +157,12 @@ end-structure
   ELSE
     3 r@ bis-need-bits IF
       1 r@ bis-fetch-bits  \ Fetch last indicator and save it 
+      trace" LastBlock"
       0<> r@ gzi>last !
       1 r@ bis-next-bits   \ Last indicator processed
 
       2 r@ bis-fetch-bits  \ Fetch block type
+      trace" BlockType"
       CASE
         0 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
         1 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
