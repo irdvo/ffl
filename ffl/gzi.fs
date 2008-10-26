@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.4 $
+\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -35,6 +35,7 @@ include ffl/log.fs
 
 log-to-console
 7 log-stack
+false log-time&date
 \ ----
 
 include ffl/bis.fs
@@ -124,9 +125,26 @@ end-structure
 
 ( Private inflate words )
 
+0 value gzi.do-type  ( -- xt = Xt of gzi-do-type )
+
+
 : gzi-do-copy      ( gzi -- ior = Copy uncompressed data )
   trace" do-copy"
-  drop gzi.done
+  >r
+  r@ gzi>length @ ?dup IF
+    r@ bis-get                         \ Get byte data from input stream
+    rot min                            \ Limit with requested length and stream length
+    tuck r@ gzi>lbf lbf-set            \ Copy data to the output stream
+    dup  negate r@ gzi>length +!       \ Update the requested length
+    r@ bis-get rot /string r@ bis-set  \ Update the input stream
+  THEN
+  r@ gzi>length @ IF
+    gzi.more
+  ELSE
+    gzi.do-type r@ gzi-state!
+    gzi.ok
+  THEN
+  rdrop
 ;
 
 
@@ -151,6 +169,7 @@ end-structure
 
 
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
+  trace" do-type"
   >r
   r@ gzi>last @ IF
     gzi.done                 \ Return to caller
@@ -176,6 +195,7 @@ end-structure
   THEN
   rdrop
 ;
+' gzi-do-type to gzi.do-type
 
 
 ( Inflate words )

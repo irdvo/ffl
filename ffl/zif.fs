@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-21 17:27:50 $ $Revision: 1.3 $
+\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -145,7 +145,7 @@ end-structure
   THEN
 ;
 
-  
+
 : zif-do-comment   ( zif -- n = Read the comment )
   dup zif>gzf gzf-flags@ 16 AND IF
     BEGIN
@@ -344,10 +344,12 @@ end-structure
 
 
 : zif-read-file    ( c-addr1 u1 zif -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
+  trace" >zif-read-file"
   >r
   r@ zif>result @                 \ Inflate until u1 bytes and okee
   BEGIN
-    gzi.ok = IF
+    dup gzi.ok = IF
+      drop
       r@ gzi>lbf lbf-length'@ over <
     ELSE
       false
@@ -367,6 +369,7 @@ end-structure
     gzi.ok
   THEN
 
+  trace" =zif-read-file"
   dup gzi.ok = IF
     drop
     dup r@ gzi>lbf lbf-get' ?dup IF
@@ -383,6 +386,7 @@ end-structure
     0 swap
   THEN
   rdrop
+  trace" <zif-read-file"
 ;
 
 0 [IF]

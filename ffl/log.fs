@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.3 $
+\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -80,8 +80,9 @@ end-enumeration
 
 tos-create log.msg        ( -- tos = the log message )
 
-0    value log.level      ( -- n   = the suppress level )
-0    value log.stack      ( -- n   = the number of stack elements appended to the log message )
+0    value log.level      ( -- n    = the suppress level )
+0    value log.stack      ( -- n    = the number of stack elements appended to the log message )
+true value log.time&date  ( -- flag = log before the message the time and date ? )
 
 str-create log.filename   ( -- str = the logging file name )
 
@@ -203,25 +204,28 @@ end-stringtable
     drop 2drop
   ELSE
     log.msg tos-rewrite                  \ Format the message
-    
-    time&date
-               log.msg tos-write-number  \ Year
-    [char] -   log.msg tos-write-char
-               log.msg tos-write-number  \ Month
-    [char] 0 2 log.msg tos-align-right
-    [char] -   log.msg tos-write-char
-               log.msg tos-write-number  \ Day
-    [char] 0 2 log.msg tos-align-right
-    bl         log.msg tos-write-char
-               log.msg tos-write-number  \ hour
-    [char] 0 2 log.msg tos-align-right
-    [char] :   log.msg tos-write-char
-               log.msg tos-write-number  \ minutes
-    [char] 0 2 log.msg tos-align-right
-    [char] :   log.msg tos-write-char
-               log.msg tos-write-number  \ seconds
-    bl         log.msg tos-write-char
 
+    log.time&date IF
+      time&date
+                 log.msg tos-write-number  \ Year
+      [char] -   log.msg tos-write-char
+                 log.msg tos-write-number  \ Month
+      [char] 0 2 log.msg tos-align-right
+      [char] -   log.msg tos-write-char
+                 log.msg tos-write-number  \ Day
+      [char] 0 2 log.msg tos-align-right
+      bl         log.msg tos-write-char
+                 log.msg tos-write-number  \ hour
+      [char] 0 2 log.msg tos-align-right
+      [char] :   log.msg tos-write-char
+                 log.msg tos-write-number  \ minutes
+      [char] 0 2 log.msg tos-align-right
+      [char] :   log.msg tos-write-char
+                 log.msg tos-write-number  \ seconds
+      [char] 0 2 log.msg tos-align-right
+      bl         log.msg tos-write-char
+    THEN
+    
     dup log.trace max log.fatal min log.event>string  \ convert event to text
                log.msg tos-write-string
 
@@ -259,6 +263,11 @@ end-stringtable
 
 : log-stack        ( n -- = Append max n top stack elements to the log message )
   to log.stack
+;
+
+
+: log-time&date    ( flag -- = Set if the time&date should start the log message )
+  to log.time&date
 ;
 
 

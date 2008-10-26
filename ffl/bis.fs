@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-14 17:18:51 $ $Revision: 1.4 $
+\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -97,6 +97,11 @@ end-structure
 
 : bis-set          ( c-addr u bis -- = Set the data string for the input stream )
   bis>input 2!
+;
+
+
+: bis-get          ( bis -- c-addr u = Get the data string from the input stream )
+  bis>input 2@
 ;
 
 
