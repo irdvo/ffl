@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.4 $
+\  $Date: 2008-11-16 18:55:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -49,7 +49,7 @@ s" test.xml" r/o open-file throw value xis.file  \ Open the file
 
 xis.file  ' file-reader   xis1 xis-set-reader     \ Use the xml reader with a file
 
-true xis1 xis-strip!                              \ Strip leading and trailing spacewhite in the text
+true xis1 xis-strip!                              \ Strip leading and trailing whitespace in the text
 
 
 : ?type ( c-addr u - = Print the string with zero length check )
