@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.4 $
+\  $Date: 2008-11-16 18:55:14 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -46,6 +46,11 @@ include ffl/gzi.fs
 2048 value zif.size        ( -- n = Default input buffer size )
 
 
+( Private zif state )
+
+gzi.states constant zif.done ( -- n = Gzip file reader decompression ready )
+
+
 ( zif structure )
 
 begin-structure zif%       ( -- n = Get the required space for a zif variable )
@@ -56,20 +61,29 @@ begin-structure zif%       ( -- n = Get the required space for a zif variable )
   field:  zif>file           \ the current file
   field:  zif>eof            \ is the end of file reached for the current file ?
   field:  zif>buffer         \ the input buffer
-  field:  zif>result         \ Result
+  field:  zif>result         \ the current result
+  field:  zif>length         \ the total calculated length
+  field:  zif>file-len       \ the length read from the file
+  crc%
+  +field  zif>crc            \ the calculated crc checksum
+  field:  zif>file-crc       \ the crc checksum read from the file
 end-structure
 
 
 ( GZip file reader variable creation, initialisation and destruction )
 
 : zif-init         ( zif -- = Initialise the GZip file reader variable )
-  dup  zif>gzi    gzi-init
-  dup  zif>gzf    gzf-init
-  dup  zif>file   0!
-  dup  zif>eof    off
+  dup  zif>gzi      gzi-init
+  dup  zif>gzf      gzf-init
+  dup  zif>file     0!
+  dup  zif>eof      off
   zif.size allocate throw
-  over zif>buffer !
-  dup  zif>result 0!
+  over zif>buffer   !
+  dup  zif>result   0!
+  dup  zif>length   0!
+  dup  zif>file-len 0!
+  dup  zif>crc      crc-init
+  dup  zif>file-crc 0!
   drop
 \ ToDo
 ;
@@ -79,6 +93,7 @@ end-structure
   dup zif>buffer @ free throw
   dup zif>gzi      gzi-(free)
   dup zif>gzf      gzf-(free)
+  dup zif>crc      crc-(free)
   drop
   \ ToDo
 ;
@@ -303,6 +318,29 @@ end-structure
 ;
 
 
+: zif-do-length    ( zif -- n = Check the data length )
+  4 over bis-read-bytes IF
+    trace" zif-do-length¨
+    swap zif>file-len !       \ Save the length for checking
+    zif.done                 \ All done
+  ELSE
+    drop gzi.more
+  THEN
+;
+
+
+: zif-do-check     ( zif -- n = Check the data checksum )
+  4 over bis-read-bytes IF
+    trace" zif-do-check"
+    over zif>file-crc !          \ Save the crc for checking
+    ['] zif-do-length swap gzi-state!  \ Next: check data length
+    gzi.ok
+  ELSE
+    drop gzi.more
+  THEN
+;
+
+
 ( File words )
 
 : zif-open-file    ( c-addr u zif -- ior = Open an existing gzip file for reading with name c-addr u )
@@ -337,6 +375,8 @@ end-structure
   UNTIL                           \ Continue until done or error
   dup gzi.done = IF
     r@ gzi-init-inflate           \ If done Then Start inflating and ..
+    r@ zif>length 0!
+    r@ zif>crc crc-reset      
     drop 0                        \ .. return okee
   THEN
   rdrop
@@ -355,38 +395,44 @@ end-structure
       false
     THEN
   WHILE
-    r@ gzi-inflate 
-    dup gzi.more = IF             \ Read more data
+    r@ gzi-inflate
+    
+    dup gzi.done = IF             \ Inflator is ready, read the last two fields in the file
+      r@ gzi-end-inflate
+      ['] zif-do-check r@ gzi-state!
+      drop gzi.ok
+    ELSE dup gzi.more = IF        \ Read more data
       drop
       r@ zif-read
-    THEN
+    THEN THEN
+    
   REPEAT
   dup r@ zif>result !
 
-  dup gzi.done = IF               \ Inflate done ToDo: CRC check
-    drop
-    r@ gzi-end-inflate
-    gzi.ok
-  THEN
-
   trace" =zif-read-file"
-  dup gzi.ok = IF
+  dup gzi.ok = over zif.done = OR IF  \ Copy the requested data
     drop
     dup r@ gzi>lbf lbf-get' ?dup IF
-      rot min >r                  \ Min of requested and present length
-      swap r@ move                \ Switch source and dest and move
-      r>                          \ Return length
+       dup r@ zif>length +!           \ Increase the calculated length
+      2dup r@ zif>crc crc-update      \ Update the calculated crc
+      2swap rot
+      2dup - >r                       \ Calculate difference between requested and available bytes
+      min >r                          \ Calculate lowest of requested and available bytes
+      r@ move                         \ Move the data to the destination buffer
+      r> r>
     ELSE
-      2drop
-      0
-    THEN
-    gzi.ok
+      nip 0 swap
+    THEN                              \ S: available requested-available
+    drop                              \ ToDo: checksum and length check
+    0
   ELSE
     nip nip
     0 swap
   THEN
+  r@ zif>length @ r@ zif>file-len @ r@ zif>crc crc-finish r@ zif>file-crc @
   rdrop
-  trace" <zif-read-file"
+  
+  trace" <zif-read-file" 2drop 2drop
 ;
 
 0 [IF]

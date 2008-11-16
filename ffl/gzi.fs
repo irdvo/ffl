@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.5 $
+\  $Date: 2008-11-16 18:55:14 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -53,9 +53,13 @@ include ffl/lbf.fs
 
 ( gzi constants )
 
-0 constant gzi.ok            ( -- n = Decompression is finished okee )
-1 constant gzi.done          ( -- n = Decompression is done )
-2 constant gzi.more          ( -- n = Decompression step needs more data )
+begin-enumeration
+  enum: gzi.ok       ( -- n = Decompression step is okee )
+  enum: gzi.done     ( -- n = Decompression is done )
+  enum: gzi.more     ( -- n = Decompression step needs more data )
+  enum: gzi.states   ( -- n = Decompression step states )
+end-enumeration
+
 
 32768 constant gzi.out-size  ( -- n = Output buffer size )
 
