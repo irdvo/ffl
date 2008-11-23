@@ -23,10 +23,10 @@ mkdir ${dest}/engines/flk
 mkdir ${dest}/engines/lxf
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
-cp       ffl/*.fs     ${dest}/ffl
-cp      test/*.fs     ${dest}/test
-cp      html/*.html   ${dest}/html
-cp      examples/*.fs ${dest}/examples
+cp       ffl/*.fs             ${dest}/ffl
+cp      test/*.fs             ${dest}/test
+cp      html/*.html           ${dest}/html
+cp  examples/*.fs             ${dest}/examples
 
 cp   engines/gforth/*.fs      ${dest}/engines/gforth
 cp   engines/bigforth/*.fs    ${dest}/engines/bigforth
@@ -43,6 +43,8 @@ cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
 cp      test/test.xml         ${dest}/test
 cp      test/stored.gz        ${dest}/stored.gz
+cp      test/fixed.gz         ${dest}/fixed.gz
+cp      test/compr.gz         ${dest}/compr.gz
 
 cp   examples/test.xml        ${dest}/examples
 cp   examples/nl.mo           ${dest}/examples

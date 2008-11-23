@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-04-05 08:05:28 $ $Revision: 1.2 $
+\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 \
@@ -228,6 +228,11 @@ s" Index out of range" exception constant exp-index-out-of-range ( - n = Index o
 s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
 s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
 s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
+s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
+s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong file data )
+s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
+s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 
 [THEN]
 

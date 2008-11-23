@@ -108,15 +108,15 @@ At the moment there are four system setting:
 end-of-line
 
 This word defines the ascii end of line as a counted string. For unix this 
-is a linefeed, for dos systems it is carriage return and linefeed. For
+is a linefeed, for windows/dos systems it is carriage return and linefeed. For
 gforth, fina, iForth, SP-Forth and lxf/nft the end of line is supplied by 
 the forth engine, so no manual configuration necessary. For bigforth, pfe 
 and minForth the default is the unix end of line, for Win32Forth the default
-is dos.
+is windows/dos.
 You should change the 'end-of-line' word if the default is not correct for you.
 
-Note: gforth 0.6.2 returns for dos an incorrect value for end-of-line, so
-if you use gforth 0.6.2 on dos, you should change the 'end-of-line' word.
+Note: gforth returns for windows an incorrect value for end-of-line, so
+if you use gforth on windows, you should change the 'end-of-line' word.
 
 
 #bits/byte

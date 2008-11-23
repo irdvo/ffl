@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-06 18:20:53 $ $Revision: 1.13 $
+\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -51,13 +51,13 @@ include ffl/xos.fs
 ( dom-set, dom-append-node, dom-insert-node-before and                    )
 ( dom-insert-node-after:                                                  )
 ( <pre>                                                                   )
-( dom.element:   -- c-addr u              = Tag name                                            )
-( dom.attribute: -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2      )
-( dom.text:      -- c-addr u              = Normal xml text                                     )
-( dom.cdata:     -- c-addr u              = CDATA section text                                  )
-( dom.pi:        -- c-addr u              = Proc. instr. target c-addr1 u1 and value c-addr2 u2 )
-( dom.comment:   -- c-addr n              = Comment                                             )
-( dom.document:  --                       = Document root                                       )
+( dom.element:   -- c-addr u              = Tag name                                       )
+( dom.attribute: -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2 )
+( dom.text:      -- c-addr u              = Normal xml text                                )
+( dom.cdata:     -- c-addr u              = CDATA section text                             )
+( dom.pi:        -- c-addr u              = Proc. instr. target c-addr u                   )
+( dom.comment:   -- c-addr n              = Comment                                        )
+( dom.document:  --                       = Document root                                  )
 ( </pre>                                                                  )
 
 1 constant dom.version
@@ -73,7 +73,7 @@ begin-enumeration
   enum: dom.cdata              ( -- n  = DOM node: CDATA          )
   enum: dom.entity-ref         ( -- n  = DOM node: Entity reference [not used] )
   enum: dom.entity             ( -- n  = DOM node: Entitiy [not used]          )
-  enum: dom.pi                 ( -- n  = DOM node: Processor Instruction )
+  enum: dom.pi                 ( -- n  = DOM node: Processing Instruction )
   enum: dom.comment            ( -- n  = DOM node: Comment        )
   enum: dom.document           ( -- n  = DOM node: Start document )
   enum: dom.doc-type           ( -- n  = DOM node: Document type [not used]     )
@@ -100,7 +100,7 @@ end-structure
 : dom-node-set    ( i*x dom-node -- = Update the DOM node )
   >r
   r@ dom>node>type @ 
-  dup dom.element <> swap dom.document <> AND IF
+  dup dom.element <> over dom.pi <> AND swap dom.document <> AND IF
     r@ dom>node>value str-set
   THEN
   r@ dom>node>type @
@@ -597,7 +597,7 @@ defer dom.write-nodes
     dom.attribute   OF ." Attribute: " dup dom>node>name  str-get type [char] = emit dup dom>node>value str-get type cr ENDOF
     dom.text        OF ." Text     : " dup dom>node>value str-get type cr ENDOF
     dom.cdata       OF ." CDATA    : " dup dom>node>value str-get type cr ENDOF
-    dom.pi          OF ." PI       : " dup dom>node>value str-get type cr ENDOF
+    dom.pi          OF ." PI       : " dup dom>node>name  str-get type cr ENDOF
     dom.comment     OF ." Comment  : " dup dom>node>value str-get type cr ENDOF
   ENDCASE
   drop
