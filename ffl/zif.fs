@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-11-16 18:55:14 $ $Revision: 1.5 $
+\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -423,16 +423,27 @@ end-structure
     ELSE
       nip 0 swap
     THEN                              \ S: available requested-available
-    drop                              \ ToDo: checksum and length check
-    0
+    
+    0> IF                             \ If last data block Then
+      r@ zif>crc crc-finish r@ zif>file-crc @ <> IF
+        exp-wrong-checksum
+      ELSE                            \   Check CRC and file length
+        r@ zif>length @ r@ zif>file-len @ <> IF
+          exp-wrong-length
+        ELSE
+          0
+        THEN
+      THEN
+    ELSE
+      0
+    THEN
   ELSE
     nip nip
-    0 swap
+    0 swap                             \ Error during inflation
   THEN
-  r@ zif>length @ r@ zif>file-len @ r@ zif>crc crc-finish r@ zif>file-crc @
   rdrop
   
-  trace" <zif-read-file" 2drop 2drop
+  trace" <zif-read-file"
 ;
 
 0 [IF]

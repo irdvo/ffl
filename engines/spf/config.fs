@@ -21,7 +21,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-08-14 17:57:44 $ $Revision: 1.6 $
+\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 \
@@ -331,6 +331,8 @@ s" No data available"  exception constant exp-no-data            ( -- n = No dat
 s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
 s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
+s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 
 [ELSE]
   drop

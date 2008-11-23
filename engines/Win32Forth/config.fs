@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-05-13 05:44:05 $ $Revision: 1.11 $
+\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.12 $
 \
 \ ==============================================================================
 \
@@ -258,6 +258,8 @@ s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invali
 s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
 s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
 s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong file data )
+s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
+s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 
 [THEN]
 
