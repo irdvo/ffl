@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-03-24 18:24:03 $ $Revision: 1.7 $
+\  $Date: 2009-05-03 19:33:15 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -66,12 +66,104 @@ end-enumeration
 15    constant gzi.max-bits  ( -- n = Maximum number of bits  )
 
 
-( private structure )
+( private huffman structure )
 
 begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structure )
-  field:  gzi>hfm>syms         \ number of symbols per bit length
-  field:  gzi>hfm>offs         \ the offsets per symbol
+  field:  gzi>hfm>number       \ number of symbols in table
+  field:  gzi>hfm>lengths      \ the bit length per symbol
+  gzi.max-bits 1+
+  fields: gzi>hfm>counts       \ the number of symbols per bit length
+  gzi.max-bits 1+
+  fields: gzi>hfm>offsets      \ the symbol offset per bit length
+  field:  gzi>hfm>symbols      \ the symbol index, ordered by its bit length
 end-structure
+
+: gzi-hfm-init  ( n hfm -- = Initialise the huffman structure for n symbols )
+  >r
+  dup r@ gzi>hfm>number !      \ save the number of symbols
+  cells
+  dup allocate throw
+  r@ gzi>hfm>lengths !         \ allocate the lengths array
+  allocate throw
+  r@ gzi>hfm>symbols !         \ allocate the symbols array
+  r> gzi>hfm>counts
+  gzi.max-bits 1+ cells erase  \ erase the counts array
+;
+
+: gzi-hfm-new  ( n -- hfm = Create a new huffman structure on the heap with n symbols )
+  gzi%hfm% allocate throw  
+  tuck gzi-hfm-init
+;
+
+: gzi-hfm-(free)  ( hfm -- = Free the internal, private variables from the heap )
+  dup gzi>hfm>lengths @ 
+  free throw
+  gzi>hfm>symbols @
+  free throw
+;
+
+: gzi-hfm-free  ( hfm -- = Free the huffman structure from the heap )
+  dup gzi-hfm-(free)
+  free throw
+;
+
+: gzi-hfm-set  ( u1 u2 hfm -- = Set symbol u2 with bit length u1 in the huffman structure )
+  >r
+  cells r@ gzi>hfm>lengths @ +   \ lengths[symbol] = length
+  over swap !
+  cells r> gzi>hfm>counts + 1+!  \ counts[length]++
+;
+
+: gzi-hfm-construct  ( hfm -- = Construct the huffman structure )
+  trace" >construct"
+  \ Check for no codes
+  dup gzi>hfm>counts @ over gzi>hfm>number @ = IF \ counts[0] == n ?
+    drop 0 EXIT
+  THEN
+  >r
+    
+  \ Check for over-subscribed or incomplete set
+  1                            \ left = 1
+  r@ gzi>hfm>counts cell+ gzi.max-bits cells bounds DO \ For counts[1]..counts[maxbits]
+    1 lshift                   \ left <<= 1
+    I @ -                      \ left -= counts[i], if < 0, then over subscribed
+    dup 0< IF                  
+      LEAVE
+    THEN
+  cell +LOOP                   \ S: n:left
+  
+  dup 0< 0= IF                 \ if left >= 0
+    \ Generate offsets for each bit length
+    r@ gzi>hfm>offsets cell+   \ offsets[1]
+    dup 0!
+    r@ gzi>hfm>counts cell+ gzi.max-bits 1- cells bounds DO \ For counts[1]..counts[maxbits-1]
+      dup cell+
+      swap @
+      I @ +
+      over !
+    cell +LOOP
+    drop
+    
+    \ Generate indices for each symbol, sorted within each bit length
+    r@ gzi>hfm>number @  0
+    BEGIN
+      2dup >                   \ For symbol = 0 .. n-1
+    WHILE
+      r@ gzi>hfm>lengths @ over cells + @ \ lengths[s]
+      ?dup IF
+       cells r@ gzi>hfm>offsets + \ offsets[lengths[s]]
+       dup @                  \ o = offsets[length[s]]
+       swap 1+!               \ offsets[length[s]]++
+       cells r@ gzi>hfm>symbols @ + \ symbols[o]
+       over swap !            \ symbols[o] = s
+      THEN
+      1+
+    REPEAT
+    2drop
+  THEN
+  trace" <construct"
+  rdrop
+;
 
 
 ( gzi structure )
@@ -86,18 +178,11 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>last             \ is this the last block ?
   field:  gzi>length           \ the length of a block
   
-  gzi%hfm%
-  +field  gzi>fix-syms         \ the fixed symbols huffman table
-  gzi%hfm%
-  +field  gzi>fix-dsts         \ the fixed distance huffman table
-
-  gzi.max-codes
-  fields: gzi>lengths          \ the temporary array for the lengths for the symbols, distances
-  gzi.max-bits 1+
-  fields: gzi>offsets          \ the temporary array for the offsets in the symbol table for each length
+  field:  gzi>fixed-symbols    \ the fixed symbols huffman table
+  field:  gzi>fixed-distances  \ the fixed distance huffman table
   
-  field:  gzi>syms             \ the symbols huffman table
-  field:  gzi>dsts             \ the distance huffman table
+  field:  gzi>symbols          \ the symbols huffman table
+  field:  gzi>distances        \ the distance huffman table
   
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
@@ -116,10 +201,11 @@ end-structure
   1 chars gzi.out-size 
   r@  gzi>lbf    lbf-init
 
-  r@ gzi>fix-syms gzi>hfm>syms nil!
-  r@ gzi>fix-syms gzi>hfm>offs nil!
-  r@ gzi>fix-dsts gzi>hfm>syms nil!
-  r@ gzi>fix-dsts gzi>hfm>offs nil!
+  r@ gzi>fixed-symbols   nil!
+  r@ gzi>fixed-distances nil!
+  
+  r@ gzi>symbols   nil!
+  r@ gzi>distances nil!
   
   rdrop
 \ ToDo
@@ -158,53 +244,6 @@ end-structure
 
 
 ( Private inflate words )
-
-: gzi-construct ( gzi%hfm% n gzi -- n = Construct the huffman table with n length starting at gzi>lengths, return left in length set )
-  >r
-  over gzi.max-bits 1+ cells allocate throw swap gzi>hfm>syms !  \ Allocate the huffman arrays
-  2dup                 cells allocate throw swap gzi>hfm>offs !
-  
-  over gzi>hfm>syms @   gzi.max-bits 1+ cells  erase   \ Clear symbols per length array
-
-  over gzi>hfm>syms @
-  over r@ gzi>lengths swap
-  bounds DO                   \ For n symbols Do syms[length[symbol]]++
-    dup I @ cells + 1+!
-  cell +LOOP
-                               \ S: hfm n syms
-  2dup @ = IF rdrop drop 2drop 0 EXIT THEN  \ Check for no codes
-  
-  cell+
-  1                            \ S: hfm n syms+1 left
-  over gzi.max-bits cells      \ Check for over-subscribed or incomplete set of lengths
-  bounds DO
-    1 lshift                   \ left = (left << 1) - syms[length]
-    I @ -
-    dup 0< IF unloop rdrop >r drop 2drop r> EXIT THEN
-  cell +LOOP
-  
-  -rot
-  r@ gzi>offsets cell+
-  dup 0!                       \ offsets[1] = 0
-  swap gzi.max-bits 1- cells 
-  bounds DO                   \ Do for all lengths
-    I @ over @ +
-    swap cell+ tuck !          \   offsets[length+1] = offsets[length] + syms[length]
-  cell +LOOP
-  drop
-  
-  >r swap gzi>hfm>offs @ r>
-  r@ gzi>offsets swap
-  r> gzi>lengths swap
-  0 DO                       \ Do for all symbols
-    dup 2over rot             \ 3dup
-    I cells + @
-    cells +
-    dup @ swap 1+!
-    cells + I swap !          \  offs[offsets[lengths[symbol]]++] = symbol
-  LOOP
-  2drop drop
-;
 
 
 ( Private inflate state words )
@@ -255,25 +294,30 @@ end-structure
 : gzi-do-fixed     ( gzi -- ior = Process data with a fixed table )
   trace" do-fixed"
   >r
-  r@ gzi>fix-syms gzi>hfm>syms @ nil= IF
-    \ the fixed symbols
-    r@ gzi>lengths 0
-    BEGIN dup 144 < WHILE swap dup 8 ! cell+ swap 1+ REPEAT
-    BEGIN dup 256 < WHILE swap dup 9 ! cell+ swap 1+ REPEAT
-    BEGIN dup 280 < WHILE swap dup 7 ! cell+ swap 1+ REPEAT
-    BEGIN dup 288 < WHILE swap dup 8 ! cell+ swap 1+ REPEAT
-    nip
-    r@ gzi>fix-syms swap r@ gzi-construct
-    \ the fixed distances
-    r@ gzi>lengths 0
-    BEGIN dup  30 < WHILE swap dup 5 ! cell+ swap 1+ REPEAT
-    nip
-    r@ gzi>fix-dsts swap r@ gzi-construct
+  r@ gzi>fixed-symbols @ nil= IF
+    \ allocate the fixed symbols
+    288 gzi-hfm-new
+    dup r@ gzi>fixed-symbols !
+    \ fill the fixed symbols with symbols
+    144 0   DO 8 over I swap gzi-hfm-set LOOP
+    256 144 DO 9 over I swap gzi-hfm-set LOOP
+    280 256 DO 7 over I swap gzi-hfm-set LOOP
+    288 280 DO 8 over I swap gzi-hfm-set LOOP
+    \ construct the fixed symbols
+    gzi-hfm-construct drop
+    
+    \ allocate the fixed distances
+    30 gzi-hfm-new
+    dup r@ gzi>fixed-distances !
+    \ fill the fixed distances with symbols
+    30 0 DO 5 over I swap gzi-hfm-set LOOP
+    \ construct the distances
+    gzi-hfm-construct drop
   THEN
-  r@ gzi>fix-syms r@ gzi>syms !    \ Use the fixed huffman tables
-  r@ gzi>fix-dsts r@ gzi>dsts !
+  r@ gzi>fixed-symbols   @ r@ gzi>symbols   !  \ Use the fixed huffman tables
+  r@ gzi>fixed-distances @ r@ gzi>distances !
   rdrop
-  \ ToDo: setup state for decode
+  \ XXX setup state for decode
 ;
 
 
