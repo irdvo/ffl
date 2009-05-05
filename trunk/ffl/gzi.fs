@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-03 19:33:15 $ $Revision: 1.8 $
+\  $Date: 2009-05-05 05:56:30 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -70,13 +70,20 @@ end-enumeration
 
 begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structure )
   field:  gzi>hfm>number       \ number of symbols in table
-  field:  gzi>hfm>lengths      \ the bit length per symbol
+
+  field:  gzi>hfm>lengths      \ array with the bit length per symbol
   gzi.max-bits 1+
-  fields: gzi>hfm>counts       \ the number of symbols per bit length
+  fields: gzi>hfm>offsets      \ array with the offsets per bit length
+  
   gzi.max-bits 1+
-  fields: gzi>hfm>offsets      \ the symbol offset per bit length
-  field:  gzi>hfm>symbols      \ the symbol index, ordered by its bit length
+  fields: gzi>hfm>counts       \ array with the number of symbols per bit length
+  field:  gzi>hfm>symbols      \ array with the symbol index, ordered by its bit length
+  
+  field:  gzi>hfm>index        \ index in symbols during iterating
+  field:  gzi>hfm>first        \ first code in symbols during iterating
+  field:  gzi>hfm>count        \ pointer in counts during iterating
 end-structure
+
 
 : gzi-hfm-init  ( n hfm -- = Initialise the huffman structure for n symbols )
   >r
@@ -90,10 +97,12 @@ end-structure
   gzi.max-bits 1+ cells erase  \ erase the counts array
 ;
 
+
 : gzi-hfm-new  ( n -- hfm = Create a new huffman structure on the heap with n symbols )
   gzi%hfm% allocate throw  
   tuck gzi-hfm-init
 ;
+
 
 : gzi-hfm-(free)  ( hfm -- = Free the internal, private variables from the heap )
   dup gzi>hfm>lengths @ 
@@ -102,10 +111,14 @@ end-structure
   free throw
 ;
 
+
 : gzi-hfm-free  ( hfm -- = Free the huffman structure from the heap )
   dup gzi-hfm-(free)
   free throw
 ;
+
+
+( private huffman structure construct words )
 
 : gzi-hfm-set  ( u1 u2 hfm -- = Set symbol u2 with bit length u1 in the huffman structure )
   >r
@@ -113,6 +126,7 @@ end-structure
   over swap !
   cells r> gzi>hfm>counts + 1+!  \ counts[length]++
 ;
+
 
 : gzi-hfm-construct  ( hfm -- = Construct the huffman structure )
   trace" >construct"
@@ -162,6 +176,39 @@ end-structure
     2drop
   THEN
   trace" <construct"
+  rdrop
+;
+
+
+( private huffman structure iterating words )
+
+: gzi-hfm-start  ( hfm -- = Start iterating the huffman structure with bit length 1 )
+  dup gzi>hfm>index 0!
+  dup gzi>hfm>first 0!
+  
+  dup  gzi>hfm>counts cell+    \ start with bit length 1
+  swap gzi>hfm>count !
+;
+
+
+: gzi-hfm-code?  ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
+  >r
+  r@ gzi>hfm>count @
+  2dup r@ gzi>hfm>first @ + < IF  \ if code < first + [count] then
+    drop
+    r@ gzi>hfm>first @ -
+    r@ gzi>hfm>index @ + cells
+    r@ gzi>hfm>symbols @ + @       \  return symbols[code - first + index]
+    true
+  ELSE                             \ else
+    nip
+    dup r@ gzi>hfm>index +!        \   index += [count]
+    r@ gzi>hfm>first @             \   first  = (first + [count]) << 1
+    + 1 lshift
+    r@ gzi>hfm>first !
+    cell r@ gzi>hfm>count +!       \   count++
+    false
+  THEN
   rdrop
 ;
 
@@ -291,33 +338,40 @@ end-structure
 ;
 
 
+: gzi-do-codes  ( gzi -- ior = Inflate the codes )
+  drop gzi.done
+;
+
+
 : gzi-do-fixed     ( gzi -- ior = Process data with a fixed table )
   trace" do-fixed"
   >r
   r@ gzi>fixed-symbols @ nil= IF
-    \ allocate the fixed symbols
-    288 gzi-hfm-new
+    288 gzi-hfm-new                            \ allocate the fixed symbols
     dup r@ gzi>fixed-symbols !
-    \ fill the fixed symbols with symbols
-    144 0   DO 8 over I swap gzi-hfm-set LOOP
+    
+    144 0   DO 8 over I swap gzi-hfm-set LOOP  \ fill the fixed symbols with symbols
     256 144 DO 9 over I swap gzi-hfm-set LOOP
     280 256 DO 7 over I swap gzi-hfm-set LOOP
     288 280 DO 8 over I swap gzi-hfm-set LOOP
-    \ construct the fixed symbols
-    gzi-hfm-construct drop
     
-    \ allocate the fixed distances
-    30 gzi-hfm-new
+    gzi-hfm-construct drop                     \ construct the fixed symbols
+    
+    
+    30 gzi-hfm-new                             \ allocate the fixed distances
     dup r@ gzi>fixed-distances !
-    \ fill the fixed distances with symbols
-    30 0 DO 5 over I swap gzi-hfm-set LOOP
-    \ construct the distances
-    gzi-hfm-construct drop
+    
+    30 0 DO 5 over I swap gzi-hfm-set LOOP     \ fill the fixed distances with symbols
+    
+    gzi-hfm-construct drop                     \ construct the distances
   THEN
   r@ gzi>fixed-symbols   @ r@ gzi>symbols   !  \ Use the fixed huffman tables
   r@ gzi>fixed-distances @ r@ gzi>distances !
-  rdrop
+
   \ XXX setup state for decode
+
+  ['] gzi-do-codes r> gzi-state!
+  gzi.ok
 ;
 
 

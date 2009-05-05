@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.5 $
+\  $Date: 2009-05-05 05:56:30 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -191,7 +191,7 @@ end-structure
 ;
 
 
-: bis-fetch-bits    ( n1 bis -- n2 = Fetch n1 bits from the buffer and return the value )
+: bis-fetch-bits    ( u1 bis -- u2 = Fetch u1 bits from the buffer and return the value )
   swap 1 swap lshift 1-         \ Mask: (1 << n1)-1 for hold
   swap bis>hold @ AND
 ;
@@ -201,6 +201,37 @@ end-structure
   >r
   r@ bis>hold @ over rshift r@ bis>hold !      \ hold >>= n
   negate r> bis>bits +!                        \ bits -= n
+;
+
+
+: bis-get-bit      ( bis -- false | u true = Get a single bit u from the buffer )
+  >r
+  r@ bis>bits @                \ Get the number of bits in the buffer and keep it on the stack
+  dup 0= IF                    \ If buffer is empty
+    r@ bis>input 2@
+    ?dup IF                    \   If stream is not empty
+      over c@ r@ bis>hold !    \     Read from stream and store in buffer
+      1 /string
+      r@ bis>input 2!          \     Update stream and save
+      #bits/byte +             \     Update bits in buffer
+    ELSE
+      drop
+    THEN
+  THEN
+  
+  dup IF                       \ If buffer is not empty
+    1-                         \   Bits in buffer--
+    r@ bis>hold @              \   Get bit from buffer and rotate
+    dup  1 AND
+    swap 1 rshift
+    r@ bis>hold !
+    true                       \   Success
+    rot
+  ELSE
+    false
+    swap
+  THEN
+  r> bis>bits !
 ;
 
 
