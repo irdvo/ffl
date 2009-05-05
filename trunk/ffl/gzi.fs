@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-05 05:56:30 $ $Revision: 1.9 $
+\  $Date: 2009-05-05 18:59:02 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -61,9 +61,11 @@ begin-enumeration
 end-enumeration
 
 
-32768 constant gzi.out-size  ( -- n = Output buffer size )
-320   constant gzi.max-codes ( -- n = Maximum number of codes )
-15    constant gzi.max-bits  ( -- n = Maximum number of bits  )
+32768 constant gzi.out-size   ( -- n = Output buffer size )
+320   constant gzi.max-codes  ( -- n = Maximum number of codes )
+15    constant gzi.max-bits   ( -- n = Maximum number of bits  )
+gzi.max-bits 1+
+      constant gzi.max-bits+1 ( -- n = Maximum number of bits + 1 )
 
 
 ( private huffman structure )
@@ -72,10 +74,10 @@ begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structur
   field:  gzi>hfm>number       \ number of symbols in table
 
   field:  gzi>hfm>lengths      \ array with the bit length per symbol
-  gzi.max-bits 1+
+  gzi.max-bits+1
   fields: gzi>hfm>offsets      \ array with the offsets per bit length
   
-  gzi.max-bits 1+
+  gzi.max-bits+1
   fields: gzi>hfm>counts       \ array with the number of symbols per bit length
   field:  gzi>hfm>symbols      \ array with the symbol index, ordered by its bit length
   
@@ -94,7 +96,7 @@ end-structure
   allocate throw
   r@ gzi>hfm>symbols !         \ allocate the symbols array
   r> gzi>hfm>counts
-  gzi.max-bits 1+ cells erase  \ erase the counts array
+  gzi.max-bits+1 cells erase   \ erase the counts array
 ;
 
 
@@ -193,8 +195,8 @@ end-structure
 
 : gzi-hfm-code?  ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
   >r
-  r@ gzi>hfm>count @
-  2dup r@ gzi>hfm>first @ + < IF  \ if code < first + [count] then
+  r@ gzi>hfm>count @ @
+  2dup r@ gzi>hfm>first @ + trace" code?" < IF  \ if code < first + [count] then
     drop
     r@ gzi>hfm>first @ -
     r@ gzi>hfm>index @ + cells
@@ -231,6 +233,9 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>symbols          \ the symbols huffman table
   field:  gzi>distances        \ the distance huffman table
   
+  field:  gzi>code             \ the current code
+  field:  gzi>code-length      \ the current code length
+  
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -253,6 +258,9 @@ end-structure
   
   r@ gzi>symbols   nil!
   r@ gzi>distances nil!
+  
+  r@ gzi>code        0!
+  r@ gzi>code-length 0!
   
   rdrop
 \ ToDo
@@ -337,9 +345,54 @@ end-structure
   THEN
 ;
 
+: gzi-start-codes  ( gzi -- = Start decoding codes )
+    dup  gzi>code 0!
+  1 over gzi>code-length !
+         gzi>symbols @   gzi-hfm-start
+;
+
 
 : gzi-do-codes  ( gzi -- ior = Inflate the codes )
-  drop gzi.done
+  trace" >do-codes"
+  BEGIN
+    dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
+      dup bis-get-bit IF                       \   if bit available in the input buffer
+        over gzi>code @ 1 lshift OR            \     put the bit in the code
+        2dup swap gzi>symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
+          dup 256 < IF                         \       if normal character then
+            ." Symbol:" . CR
+            \ XXX put symbol in buffer
+            drop
+            dup gzi-start-codes                \         setup for next code
+            false
+          ELSE 
+            dup 256 = IF                       \       else if end-of-block then
+              2drop
+              trace" end-of-block"
+              gzi.done true
+            ELSE                               \        else distance code
+              ." Distance:" . CR
+              \ XXX scan length and distance
+              drop
+              \ ['] xxxx over gzi-state!
+              \ gzi.ok
+              gzi.done true
+            THEN
+          THEN
+        ELSE                                   \    else code not in huffman structure
+          over gzi>code !
+          dup  gzi>code-length 1+!
+          false
+        THEN
+      ELSE                                     \   else bit not available
+        gzi.more true
+      THEN
+    ELSE                                       \ else all bits done
+      exp-wrong-file-data true
+    THEN
+  UNTIL
+  nip
+  trace" <do-codes"
 ;
 
 
@@ -368,7 +421,7 @@ end-structure
   r@ gzi>fixed-symbols   @ r@ gzi>symbols   !  \ Use the fixed huffman tables
   r@ gzi>fixed-distances @ r@ gzi>distances !
 
-  \ XXX setup state for decode
+  r@ gzi-start-codes                           \ Setup for decode codes
 
   ['] gzi-do-codes r> gzi-state!
   gzi.ok
