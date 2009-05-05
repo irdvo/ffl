@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-07 06:52:17 $ $Revision: 1.1 $
+\  $Date: 2009-05-05 05:56:30 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -86,21 +86,44 @@ t{ 5 bis1 bis-next-bits }t
 
 t{ 10 bis1 bis-need-bits ?false }t
 
-: bis-jkl ( -- c-addr u ) s" jkl" ;
+: bis-j ( -- c-addr u ) s" j" ;
 
-t{ bis-jkl bis1 bis-set }t
+t{ bis-j bis1 bis-set }t
 
 t{ 10 bis1 bis-need-bits ?true }t \ j = 0110 1010
 
 t{ 10 bis1 bis-fetch-bits 308 ?s }t
 
-t{ 10 bis1 bis-next-bits }t
+t{ 10 bis1 bis-next-bits }t       \ remaining in buffer: 01101
+
+\ Testing bis-get-bit
+
+t{ bis1 bis-get-bit ?true 1 ?s }t
+
+t{ bis1 bis-get-bit ?true 0 ?s }t
+
+t{ bis1 bis-get-bit ?true 1 ?s }t
+
+t{ bis1 bis-get-bit ?true 1 ?s }t
+
+t{ bis1 bis-get-bit ?true 0 ?s }t
+
+t{ bis1 bis-get-bit ?false }t
+
+: bis-jkl  ( -- c-addr u ) s" jkl" ;
+
+t{ bis-jkl bis1 bis-set }t
+
+t{ bis1 bis-get-bit ?true 0 ?s }t
+
+t{ bis1 bis-get-bit ?true 1 ?s }t
 
 \ Testing bits > byte
 
 t{ bis1 bis-bits>bytes }t
 
 t{ 1 bis1 bis-read-bytes ?true char k ?s }t
+
 
 
 cell 3 > [IF]
