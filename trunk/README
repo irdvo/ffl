@@ -244,7 +244,7 @@ files are dependant on the (ANS) forth system:
  ./ffl/make.fs
 
 All other source files should only use ANS words or extensions that are 
-present on the forth engine or are definied in the config.fs.
+present on the forth engine or are defined in the config.fs.
 
 If you change these files to make the library work on a particular forth 
 system, let me know, then I can add the changed files to the distribution. 
