@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-05 18:59:02 $ $Revision: 1.10 $
+\  $Date: 2009-05-06 05:57:18 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -67,6 +67,26 @@ end-enumeration
 gzi.max-bits 1+
       constant gzi.max-bits+1 ( -- n = Maximum number of bits + 1 )
 
+( private gzi constants )
+
+: gzi.table        ( "<spaces>name" -- ; u1 -- u2 = Create a cell based lookup table )
+  create
+  does>
+    swap cells + @
+;
+
+gzi.table gzi.length-offsets  ( u1 -- u2 = Table with the offsets for the length codes 257..285 )
+    3 ,  4 ,  5 ,  6 ,  7 ,  8 ,  9 , 10 ,  11 ,  13 ,  15 ,  17 ,  19 ,  23 , 27 , 
+   31 , 35 , 43 , 51 , 59 , 67 , 83 , 99 , 115 , 131 , 163 , 195 , 227 , 258 ,
+gzi.table gzi.length-extras   ( u1 -- u2 = Table with the extra bits for the length codes 257..185 )
+    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 2 , 2 , 2 , 
+    2 , 3 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 5 , 5 , 5 , 5 , 0 , 
+gzi.table gzi.distance-offsets (  u1 -- u2 = Table with the offsets for the distance codes 0..29 )
+      1 ,   2 ,   3 ,   4 ,   5 ,    7 ,    9 ,   13 ,   17 ,   25 ,   33 ,    49 ,    65 ,    97 ,   129 , 
+    193 , 257 , 385 , 513 , 769 , 1025 , 1537 , 2049 , 3073 , 4097 , 6145 ,  8193 , 12289 , 16385 , 24577 ,
+gzi.table gzi.distance-extras
+    0 , 0 , 0 , 0 , 1 , 1 , 2 ,  2 ,  3 ,  3 ,  4 ,  4 ,  5 ,  5 ,  6 , 
+    6 , 7 , 7 , 8 , 8 , 9 , 9 , 10 , 10 , 11 , 11 , 12 , 12 , 13 , 13 ,
 
 ( private huffman structure )
 
@@ -236,6 +256,9 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>code             \ the current code
   field:  gzi>code-length      \ the current code length
   
+  field:  gzi>copy-length      \ the copy length
+  field:  gzi>copy-distance    \ the copy distance
+  
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -352,6 +375,26 @@ end-structure
 ;
 
 
+: gzi-do-length-extra  ( gzi -- ior = Read the extra copy length bits )
+  trace" >do-length-extra"
+  dup gzi>code @ gzi.length-extras        \ get extra length bits based on symbol
+  over 2dup bis-need-bits IF              \ if extra bits in the buffer then
+    2dup bis-fetch-bits
+    over gzi>code @ gzi.length-offsets +  \   copy-length = length-offsets[symbol] + extra bits
+    ." Copy lenght:" dup . CR
+    over gzi>copy-length !
+    bis-next-bits                         \   set bits processed
+    \ XXX setup decode distance
+    \ ['] do-distance over gzi-state!
+    \ gzi.ok
+    gzi.done
+  ELSE                                    \ else input buffer empty
+    2drop gzi.more
+  THEN
+  nip
+  trace" <do-length-extra"
+;
+
 : gzi-do-codes  ( gzi -- ior = Inflate the codes )
   trace" >do-codes"
   BEGIN
@@ -359,24 +402,29 @@ end-structure
       dup bis-get-bit IF                       \   if bit available in the input buffer
         over gzi>code @ 1 lshift OR            \     put the bit in the code
         2dup swap gzi>symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
+          nip                                  \       drop code, S:gzi symbol
           dup 256 < IF                         \       if normal character then
             ." Symbol:" . CR
             \ XXX put symbol in buffer
-            drop
             dup gzi-start-codes                \         setup for next code
             false
           ELSE 
             dup 256 = IF                       \       else if end-of-block then
-              2drop
-              trace" end-of-block"
-              gzi.done true
-            ELSE                               \        else distance code
-              ." Distance:" . CR
-              \ XXX scan length and distance
               drop
-              \ ['] xxxx over gzi-state!
-              \ gzi.ok
-              gzi.done true
+              ." End of block" CR
+              gzi.do-type over gzi-state!
+              gzi.ok true
+            ELSE                               \        else copy length code
+              ." Copy length:" dup . CR
+              257 -
+              dup 28 > IF
+                drop exp-wrong-file-data true
+              ELSE
+                trace" 1"
+                over gzi>code !                \          save symbol for copy length
+                ['] gzi-do-length-extra over gzi-state!
+                gzi.ok true
+              THEN
             THEN
           THEN
         ELSE                                   \    else code not in huffman structure
