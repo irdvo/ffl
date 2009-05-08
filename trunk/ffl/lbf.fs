@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-06 14:44:49 $ $Revision: 1.7 $
+\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -333,7 +333,7 @@ end-structure
 ;
 
 
-: lbf-enqueue      ( i*x | addr lbf -- = Enqueue one element in the buffer, optional using the store word )
+: lbf-enqueue      ( i*x lbf | addr lbf -- = Enqueue one element in the buffer, using the store word if available )
   >r
   r@ lbf-in@ 1+ r@ lbf-size!            \ Insure size of one extra element
   r@ lbf>store @ nil<>? IF              \ If store word Then
@@ -345,7 +345,7 @@ end-structure
 ;
 
 
-: lbf-dequeue      ( lbf -- i*x | addr true | false = Dequeue one element from the buffer, optional using the fetch word )
+: lbf-dequeue      ( lbf -- i*x true | addr true | false = Dequeue one element from the buffer, using the fetch word if available )
   >r
   r@ lbf-length@ IF              \ Check data present
     r@ lbf-out
@@ -364,7 +364,7 @@ end-structure
 
 ( Fifo words )
 
-: lbf-tos          ( lbf -- i*x | addr true | false = Fetch the top element, optional using the fetch word )
+: lbf-tos          ( lbf -- i*x true | addr true | false = Fetch the top element, using the fetch word if available )
   dup lbf-length@ IF            \ Check data present
     dup  lbf-in@      1-        \ Fetch tos
     over lbf-record@ *
@@ -380,12 +380,12 @@ end-structure
 ;
 
 
-: lbf-push         ( i*x | addr lbf -- = Push one element in the buffer, optional using the store word )
+: lbf-push         ( i*x lbf | addr lbf -- = Push one element in the buffer, using the store word if available )
   lbf-enqueue
 ;
 
 
-: lbf-pop          ( lbf -- i*x | addr true | false = Pop one element from the buffer, optional using the fetch word )
+: lbf-pop          ( lbf -- i*x true | addr true | false = Pop one element from the buffer, using the fetch word if available )
   >r
   r@ lbf-length@ IF             \ Check data present
     r@ lbf>in 1-!               \ Pop data

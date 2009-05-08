@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.6 $
+\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -128,12 +128,12 @@ end-structure
   r@ zif>eof @ IF
     exp-no-data
   ELSE
-    r@ zif>buffer @  zif.size  r@ zif-file@  read-file ?dup IF \ ToDo zif.size
+    r@ zif>buffer @  zif.size  r@ zif-file@  read-file ?dup IF \ XXX zif.size
       nip
     ELSE
       ?dup IF                                    \ If data available Then
         dup zif.size < r@ zif>eof !              \   Not all available -> eof
-        r@ zif>buffer @ swap  r@ bis-set         \   Setup buffer in gzp module
+        r@ zif>buffer @ swap r@ bis-set          \   Setup buffer in gzp module
         gzi.ok
       ELSE                                       \ Else end of file
         r@ zif>eof on
@@ -405,7 +405,6 @@ end-structure
       drop
       r@ zif-read
     THEN THEN
-    
   REPEAT
   dup r@ zif>result !
 

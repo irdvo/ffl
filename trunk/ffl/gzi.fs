@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-06 17:29:54 $ $Revision: 1.12 $
+\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.13 $
 \
 \ ==============================================================================
 
@@ -61,7 +61,7 @@ begin-enumeration
 end-enumeration
 
 
-32768 constant gzi.out-size   ( -- n = Output buffer size )
+65536 constant gzi.out-size   ( -- n = Output buffer size )
 320   constant gzi.max-codes  ( -- n = Maximum number of codes )
 15    constant gzi.max-bits   ( -- n = Maximum number of bits  )
 gzi.max-bits 1+
@@ -379,6 +379,26 @@ end-structure
 ;
 
 
+: gzi-do-distance-extra  ( gzi -- ior = Read the extra copy distance bits )
+  trace" >do-distance-extra"
+  dup gzi>code @ gzi.distance-extras      \ get extra length bits based on symbol
+  over 2dup bis-need-bits IF              \ if extra bits in the buffer then
+    2dup bis-fetch-bits
+    over gzi>code @ gzi.distance-offsets +  \   copy-distance = distance-offsets[symbol] + extra bits
+    ." Copy distance:" dup . CR
+    over gzi>copy-distance !
+    bis-next-bits                         \   set bits processed
+
+    dup gzi-start-codes                   \   continue decoding the codes
+    gzi.ok
+  ELSE                                    \ else input buffer empty
+    2drop gzi.more
+  THEN
+  nip
+  trace" <do-distance-extra"
+;
+
+
 : gzi-do-distance  ( gzi -- ior = Decode the distance code )
   trace" >do-distance"
   BEGIN
@@ -389,19 +409,17 @@ end-structure
           nip                                  \       drop code, S:gzi symbol
           dup 30 < IF                          \       if valid distance code then
             ." Distance code:" dup . CR
-            dup gzi.distance-extras 0= IF      \         if no extra bits to read
+            dup gzi.distance-extras 0= IF      \         if no extra distance bits to read
               gzi.distance-offsets
               ." Copy distance:" dup . CR
               over gzi>copy-distance !
               \ XXX copy in output buffer
-              dup gzi-start-codes              \           start decoding codes
+              dup gzi-start-codes              \           continu decoding codes
               gzi.ok
             ELSE
-              over gzi>code !                    \         save distance code for distance length
-              \ XXX scan extra bits for distance
-              \ ['] gzi-do-distance-extra over gzi-state!
-              \ gzi.ok true
-              gzi.done
+              over gzi>code !                  \           save distance code for distance length
+              ['] gzi-do-distance-extra over gzi-state! \  and read the extra bits
+              gzi.ok
             THEN
             true
           ELSE                                 \       else invalid file data
@@ -478,9 +496,15 @@ end-structure
               dup 28 > IF
                 drop exp-wrong-file-data true
               ELSE
-                \ XXX extra bits = 0 -> skip do-length-extra
-                over gzi>code !                \          save symbol for copy length
-                ['] gzi-do-length-extra over gzi-state!
+                dup gzi.length-extras 0= IF    \          if no extra length bits to read then
+                  gzi.length-offsets
+                  ." Copy length:" dup . CR    \            convert code to copy length
+                  over gzi>copy-length !
+                  dup gzi-start-distance       \            start decoding distance
+                ELSE
+                  over gzi>code !              \          else save symbol for copy length
+                  ['] gzi-do-length-extra over gzi-state! \  and read the extra bits
+                THEN
                 gzi.ok true
               THEN
             THEN
