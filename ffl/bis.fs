@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-05 05:56:30 $ $Revision: 1.6 $
+\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -192,7 +192,7 @@ end-structure
 
 
 : bis-fetch-bits    ( u1 bis -- u2 = Fetch u1 bits from the buffer and return the value )
-  swap 1 swap lshift 1-         \ Mask: (1 << n1)-1 for hold
+  swap 1 swap lshift 1-         \ Mask: (1 << u1)-1 for hold
   swap bis>hold @ AND
 ;
 
@@ -210,7 +210,8 @@ end-structure
   dup 0= IF                    \ If buffer is empty
     r@ bis>input 2@
     ?dup IF                    \   If stream is not empty
-      over c@ r@ bis>hold !    \     Read from stream and store in buffer
+      over c@ 
+      r@ bis>hold !    \     Read from stream and store in buffer
       1 /string
       r@ bis>input 2!          \     Update stream and save
       #bits/byte +             \     Update bits in buffer
