@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.8 $
+\  $Date: 2009-05-10 14:36:26 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -298,30 +298,6 @@ end-structure
 ;
 
 
-: lbf-fetch+       ( u1 n lbf -- addr u2 | 0 = Fetch maximum u1 elements from the buffer, offsetted by n, return the actual number of elements u2 )
-  >r
-  dup 0< IF                     \ Find index for fetch
-    r@ lbf-in@ +
-    dup r@ lbf-out@ <
-  ELSE
-    r@ lbf-out@ +
-    dup r@ lbf-in@ >= 
-  THEN
-  exp-index-out-of-range AND throw
-
-  tuck r@ lbf-in@ swap - min    \ Calculate length
-  dup IF
-    swap
-    r@ lbf-record@ *
-    r@ lbf-buffer@ +
-    swap
-  ELSE
-    nip
-  THEN
-  rdrop
-;
-
-
 : lbf-skip         ( u1 lbf -- u2 = Skip maximum u1 elements from the buffer, return the actual skipped elements u2 )
   >r
   r@ lbf-length@ min         \ actual number of elements to skip
@@ -401,6 +377,45 @@ end-structure
   rdrop
 ;
 
+( Private copy words )
+
+: lbf-setup-copy   ( u1 u2 lbf -- addr1 addr2 u3 = Determine from address addr1, to address addr2 and copy length u3 from length u1 and distance u2, also update in offset )
+  >r
+  over
+  r@ lbf-in                    \ to^
+  swap r@ lbf>in +!            \ update in offset with length
+  swap r> lbf-record@ *        \ from^ = to^ - distance * record
+  over swap -
+  swap
+  rot
+;
+
+( Copy words )
+
+: lbf-copy         ( u1 u2 lbf -- = Copy records u1 times from distance u2, u1 >= u2 is allowed )
+  >r
+  dup r@ lbf-length@ > exp-invalid-parameters AND throw
+  over r@ lbf-in@ + r@ lbf-size!  \ insure the size of the buffer
+  
+  2dup < IF                    \ if length < distance then
+    r@ lbf-setup-copy
+    r@ lbf-record@ * move      \   direct copy of records
+  ELSE                         \ else
+    r@ lbf-setup-copy
+    BEGIN
+      ?dup
+    WHILE
+      -rot
+      2dup r@ lbf-record@ move \   copy repeatedly the last record(s)
+      r@ lbf-record@ tuck + 
+      >r + r>
+      rot
+      1-
+    REPEAT
+    2drop
+  THEN
+  rdrop
+;
 
 ( Buffer words )
 
