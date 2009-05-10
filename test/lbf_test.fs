@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-07-03 17:21:49 $ $Revision: 1.3 $
+\  $Date: 2009-05-10 14:36:26 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -80,15 +80,19 @@ t{ 4 lbf1 lbf-fetch s" Good" compare ?0 }t
 
 t{ 15 lbf1 lbf-fetch s" GoodMorningHave" compare ?0 }t
 
-t{ 7 4 lbf1 lbf-fetch+ s" Morning" compare ?0 }t
-
-t{ 4 -7 lbf1 lbf-fetch+ s" Nice" compare ?0 }t
-
-t{ 1 -1 lbf1 lbf-fetch+ s" y" compare ?0 }t
-
 t{ 15 lbf1 lbf-get s" GoodMorningHave" compare ?0 }t
 
 t{ lbf1 lbf-length@ 8 ?s }t
+
+\ Copy check
+
+t{ 4 7 lbf1 lbf-copy }t
+
+t{ 8 4 lbf1 lbf-copy }t
+
+t{ lbf1 lbf-length@ 20 ?s }t
+
+t{ 20 lbf1 lbf-get s" ANiceDayNiceNiceNice" compare ?0 }t
 
 t{ lbf1 lbf-clear }t
 
