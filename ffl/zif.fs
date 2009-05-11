@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.7 $
+\  $Date: 2009-05-11 04:42:13 $ $Revision: 1.8 $
 \
 \ ==============================================================================
 
@@ -389,12 +389,12 @@ end-structure
   r@ zif>result @                 \ Inflate until u1 bytes and okee
   BEGIN
     dup gzi.ok = IF
-      drop
-      r@ gzi>lbf lbf-length'@ over <
+      over r@ gzi>lbf lbf-length'@ >
     ELSE
       false
     THEN
   WHILE
+    drop
     r@ gzi-inflate
     
     dup gzi.done = IF             \ Inflator is ready, read the last two fields in the file

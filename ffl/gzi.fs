@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-08 06:12:41 $ $Revision: 1.13 $
+\  $Date: 2009-05-11 04:42:13 $ $Revision: 1.14 $
 \
 \ ==============================================================================
 
@@ -274,8 +274,11 @@ end-structure
   r@  gzi>length 0!
 
   1 chars gzi.out-size 
-  r@  gzi>lbf    lbf-init
+  r@ gzi>lbf    lbf-init
 
+  ['] c! ['] c@ 
+  r@ gzi>lbf    lbf-access!
+  
   r@ gzi>fixed-symbols   nil!
   r@ gzi>fixed-distances nil!
   
@@ -385,9 +388,13 @@ end-structure
   over 2dup bis-need-bits IF              \ if extra bits in the buffer then
     2dup bis-fetch-bits
     over gzi>code @ gzi.distance-offsets +  \   copy-distance = distance-offsets[symbol] + extra bits
-    ." Copy distance:" dup . CR
     over gzi>copy-distance !
     bis-next-bits                         \   set bits processed
+
+    \ XXX Distance on stack
+    dup gzi>copy-length @
+    over dup gzi>copy-distance @
+    swap gzi>lbf lbf-copy            \           copy from output buffer
 
     dup gzi-start-codes                   \   continue decoding the codes
     gzi.ok
@@ -408,12 +415,14 @@ end-structure
         2dup swap gzi>distances @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
           nip                                  \       drop code, S:gzi symbol
           dup 30 < IF                          \       if valid distance code then
-            ." Distance code:" dup . CR
             dup gzi.distance-extras 0= IF      \         if no extra distance bits to read
               gzi.distance-offsets
-              ." Copy distance:" dup . CR
               over gzi>copy-distance !
-              \ XXX copy in output buffer
+              
+              dup gzi>copy-length @
+              over dup gzi>copy-distance @
+              swap gzi>lbf lbf-copy            \           copy from output buffer
+  
               dup gzi-start-codes              \           continu decoding codes
               gzi.ok
             ELSE
@@ -457,7 +466,6 @@ end-structure
   over 2dup bis-need-bits IF              \ if extra bits in the buffer then
     2dup bis-fetch-bits
     over gzi>code @ gzi.length-offsets +  \   copy-length = length-offsets[symbol] + extra bits
-    ." Copy lenght:" dup . CR
     over gzi>copy-length !
     bis-next-bits                         \   set bits processed
 
@@ -480,25 +488,21 @@ end-structure
         2dup swap gzi>symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
           nip                                  \       drop code, S:gzi symbol
           dup 256 < IF                         \       if normal character then
-            ." Symbol:" dup . emit CR
-            \ XXX put symbol in buffer
+            over gzi>lbf lbf-enqueue           \         put symbol in buffer
             dup gzi-start-codes                \         setup for next code
             false
           ELSE 
             dup 256 = IF                       \       else if end-of-block then
               drop
-              ." End of block" CR
               gzi.do-type over gzi-state!
               gzi.ok true
             ELSE                               \        else copy length code
-              ." Length code:" dup . CR
               257 -
               dup 28 > IF
                 drop exp-wrong-file-data true
               ELSE
                 dup gzi.length-extras 0= IF    \          if no extra length bits to read then
                   gzi.length-offsets
-                  ." Copy length:" dup . CR    \            convert code to copy length
                   over gzi>copy-length !
                   dup gzi-start-distance       \            start decoding distance
                 ELSE
