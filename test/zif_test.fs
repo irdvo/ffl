@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-11 04:43:08 $ $Revision: 1.1 $
+\  $Date: 2009-05-12 05:01:53 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -78,7 +78,8 @@ t{ gzf1 gzf-close-file ?0 }t
 
 t{ zif-new value zif2 }t
 
-t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
+\ t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
+t{ s" comp.gz"  zif2 zif-open-file ?0 }t
 
 t{ zif2 zif-read-header . cr }t
 
