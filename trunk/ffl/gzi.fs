@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-11 04:42:13 $ $Revision: 1.14 $
+\  $Date: 2009-05-12 05:01:53 $ $Revision: 1.15 $
 \
 \ ==============================================================================
 
@@ -259,6 +259,10 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>copy-length      \ the copy length
   field:  gzi>copy-distance    \ the copy distance
   
+  field:  gzi>length-codes     \ the number of literal/length codes
+  field:  gzi>distance-codes   \ the number of distance codes
+  field:  gzi>code-codes       \ the number of code length codes
+  
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -287,7 +291,11 @@ end-structure
   
   r@ gzi>code        0!
   r@ gzi>code-length 0!
-  
+
+  r@ gzi>length-codes    0!
+  r@ gzi>distance-codes  0!
+  r@ gzi>code-codes      0!
+
   rdrop
 \ ToDo
 ;
@@ -563,6 +571,46 @@ end-structure
 ;
 
 
+: gzi-do-table     ( gzi -- ior = Start processing the dynamic table by reading the table lengths )
+  trace" >do-table"
+  14 over bis-need-bits IF
+    5 over bis-fetch-bits         \ Read number of literal/length codes
+    257 +
+    ." length-codes:" dup . cr
+    dup 286 > IF
+      drop exp-wrong-file-data
+    ELSE
+      over gzi>length-codes !
+      5 over bis-next-bits
+    
+      5 over bis-fetch-bits       \ Read number of distance codes
+      1+
+      ." distance-codes:" dup . cr
+      dup 30 > IF
+        drop exp-wrong-file-data
+      ELSE
+        over gzi>distance-codes !
+        5 over bis-next-bits
+    
+        4 over bis-fetch-bits     \ Read number of code length codes
+        4 +
+        ." code-codes:" dup . cr
+        over gzi>code-codes !
+        4 over bis-next-bits
+    
+        \ XXX setup next step
+        \ ['] gzi-do.. over gzi-state!
+        \ gzi.ok
+        gzi.done
+      THEN
+    THEN
+  ELSE
+    gzi.more
+  THEN
+  nip
+  trace" <do-table"
+;
+
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
   trace" do-type"
   >r
@@ -580,7 +628,7 @@ end-structure
       CASE
         0 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
         1 OF ['] gzi-do-fixed  r@ gzi-state!  gzi.ok ENDOF
-        2 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
+        2 OF ['] gzi-do-table  r@ gzi-state!  gzi.ok ENDOF
         exp-wrong-file-data swap
       ENDCASE
       2 r@ bis-next-bits
