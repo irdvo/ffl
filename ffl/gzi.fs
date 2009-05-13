@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-12 05:01:53 $ $Revision: 1.15 $
+\  $Date: 2009-05-13 05:30:28 $ $Revision: 1.16 $
 \
 \ ==============================================================================
 
@@ -87,7 +87,9 @@ gzi.table gzi.distance-offsets (  u1 -- u2 = Table with the offsets for the dist
 gzi.table gzi.distance-extras
     0 , 0 , 0 , 0 , 1 , 1 , 2 ,  2 ,  3 ,  3 ,  4 ,  4 ,  5 ,  5 ,  6 , 
     6 , 7 , 7 , 8 , 8 , 9 , 9 , 10 , 10 , 11 , 11 , 12 , 12 , 13 , 13 ,
-
+gzi.table gzi.code-orders
+    16 , 17 , 18 , 0 , 8 , 7 , 9 , 6 , 10 , 5 , 11 , 4 , 12 , 3 , 13 , 2 , 14 , 1 , 15 ,
+  
 ( private huffman structure )
 
 begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structure )
@@ -142,7 +144,12 @@ end-structure
 
 ( private huffman structure construct words )
 
-: gzi-hfm-set  ( u1 u2 hfm -- = Set symbol u2 with bit length u1 in the huffman structure )
+: gzi-hfm-reset    ( hfm -- = Reset the huffman structure to initial state )
+  gzi>hfm>counts gzi.max-bits+1 cells erase
+;
+
+
+: gzi-hfm-set      ( u1 u2 hfm -- = Set symbol u2 with bit length u1 in the huffman structure )
   >r
   cells r@ gzi>hfm>lengths @ +   \ lengths[symbol] = length
   over swap !
@@ -204,7 +211,7 @@ end-structure
 
 ( private huffman structure iterating words )
 
-: gzi-hfm-start  ( hfm -- = Start iterating the huffman structure with bit length 1 )
+: gzi-hfm-start    ( hfm -- = Start iterating the huffman structure with bit length 1 )
   dup gzi>hfm>index 0!
   dup gzi>hfm>first 0!
   
@@ -213,7 +220,7 @@ end-structure
 ;
 
 
-: gzi-hfm-code?  ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
+: gzi-hfm-code?    ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
   >r
   r@ gzi>hfm>count @ @
   2dup r@ gzi>hfm>first @ + < IF  \ if code < first + [count] then
@@ -263,6 +270,11 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>distance-codes   \ the number of distance codes
   field:  gzi>code-codes       \ the number of code length codes
   
+  gzi%hfm%
+  +field  gzi>hfm-code-codes   \ the code lengths for the code length huffman table
+  
+  field:  gzi>index            \ index during building lengths
+  
   \ field:  gzi>result         \ the result of the conversion
   \ crc?
 end-structure
@@ -296,6 +308,8 @@ end-structure
   r@ gzi>distance-codes  0!
   r@ gzi>code-codes      0!
 
+  19 r@ gzi>hfm-code-codes gzi-hfm-init
+  
   rdrop
 \ ToDo
 ;
@@ -571,6 +585,36 @@ end-structure
 ;
 
 
+: gzi-do-code-codes ( gzi -- ior = Read the code length code lengths )
+  trace" >do-code-codes"
+  BEGIN
+    dup gzi>index @ over gzi>code-codes @ < IF  \ if not all lengths read then
+      3 over bis-need-bits IF
+        3 over bis-fetch-bits                   \   read the length and store in huffman
+        over dup gzi>index @ gzi.code-orders swap gzi>hfm-code-codes gzi-hfm-set
+        3 over bis-next-bits
+        dup gzi>index 1+!
+        false
+      ELSE
+        gzi.more true
+      THEN
+    ELSE
+      19 over gzi>index @ ?DO                   \ if all lengths read than fill out with zero's and
+        0 over I gzi.code-orders swap gzi>hfm-code-codes gzi-hfm-set
+      LOOP
+      dup gzi>hfm-code-codes gzi-hfm-construct IF \ construct the huffman table
+        exp-wrong-file-data true
+      ELSE
+        \ ['] gzi-do... over gzi-state!
+        \ gzi.ok true
+        gzi.done true
+      THEN
+    THEN
+  UNTIL
+  nip
+  trace" <do-code-codes"
+;
+
 : gzi-do-table     ( gzi -- ior = Start processing the dynamic table by reading the table lengths )
   trace" >do-table"
   14 over bis-need-bits IF
@@ -598,10 +642,10 @@ end-structure
         over gzi>code-codes !
         4 over bis-next-bits
     
-        \ XXX setup next step
-        \ ['] gzi-do.. over gzi-state!
-        \ gzi.ok
-        gzi.done
+        dup gzi>index 0!           \ Setup next step
+        dup gzi>hfm-code-codes gzi-hfm-reset
+        ['] gzi-do-code-codes over gzi-state!
+        gzi.ok
       THEN
     THEN
   ELSE
