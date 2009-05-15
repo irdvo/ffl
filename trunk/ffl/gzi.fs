@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-13 05:30:28 $ $Revision: 1.16 $
+\  $Date: 2009-05-15 04:40:50 $ $Revision: 1.17 $
 \
 \ ==============================================================================
 
@@ -95,7 +95,7 @@ gzi.table gzi.code-orders
 begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structure )
   field:  gzi>hfm>number       \ number of symbols in table
 
-  field:  gzi>hfm>lengths      \ array with the bit length per symbol
+  field:  gzi>hfm>lengths      \ pointer to array with the bit length per symbol
   gzi.max-bits+1
   fields: gzi>hfm>offsets      \ array with the offsets per bit length
   
@@ -109,56 +109,22 @@ begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structur
 end-structure
 
 
-: gzi-hfm-init  ( n hfm -- = Initialise the huffman structure for n symbols )
+: gzi-hfm-init  ( a-addr u hfm -- n = Initialise the huffman structure for u symbols and bit lengths a-addr, return completness n )
   >r
   dup r@ gzi>hfm>number !      \ save the number of symbols
-  cells
-  dup allocate throw
-  r@ gzi>hfm>lengths !         \ allocate the lengths array
-  allocate throw
+  cells allocate throw
   r@ gzi>hfm>symbols !         \ allocate the symbols array
-  r> gzi>hfm>counts
-  gzi.max-bits+1 cells erase   \ erase the counts array
-;
-
-
-: gzi-hfm-new  ( n -- hfm = Create a new huffman structure on the heap with n symbols )
-  gzi%hfm% allocate throw  
-  tuck gzi-hfm-init
-;
-
-
-: gzi-hfm-(free)  ( hfm -- = Free the internal, private variables from the heap )
-  dup gzi>hfm>lengths @ 
-  free throw
-  gzi>hfm>symbols @
-  free throw
-;
-
-
-: gzi-hfm-free  ( hfm -- = Free the huffman structure from the heap )
-  dup gzi-hfm-(free)
-  free throw
-;
-
-
-( private huffman structure construct words )
-
-: gzi-hfm-reset    ( hfm -- = Reset the huffman structure to initial state )
-  gzi>hfm>counts gzi.max-bits+1 cells erase
-;
-
-
-: gzi-hfm-set      ( u1 u2 hfm -- = Set symbol u2 with bit length u1 in the huffman structure )
-  >r
-  cells r@ gzi>hfm>lengths @ +   \ lengths[symbol] = length
-  over swap !
-  cells r> gzi>hfm>counts + 1+!  \ counts[length]++
-;
-
-
-: gzi-hfm-construct  ( hfm -- = Construct the huffman structure )
+  r@ gzi>hfm>lengths !
+  r@ gzi>hfm>counts gzi.max-bits+1 cells erase   \ erase the counts array
+  
   trace" >construct"
+
+  r>
+  dup gzi>hfm>lengths @ over gzi>hfm>number @ cells bounds DO
+    I @ cells
+    over gzi>hfm>counts + 1+!
+  cell +LOOP
+  
   \ Check for no codes
   dup gzi>hfm>counts @ over gzi>hfm>number @ = IF \ counts[0] == n ?
     drop 0 EXIT
@@ -204,8 +170,28 @@ end-structure
     REPEAT
     2drop
   THEN
+  r> gzi>hfm>lengths nil!
   trace" <construct"
-  rdrop
+;
+
+
+: gzi-hfm-new  ( a-addr u -- n hfm = Create a new huffman structure on the heap with u symbols and bit lengths a-addr, return completness n )
+  gzi%hfm% allocate throw  
+  >r r@ gzi-hfm-init r>
+;
+
+
+: gzi-hfm-(free)  ( hfm -- = Free the internal, private variables from the heap )
+  dup gzi>hfm>lengths @ 
+  free throw
+  gzi>hfm>symbols @
+  free throw
+;
+
+
+: gzi-hfm-free  ( hfm -- = Free the huffman structure from the heap )
+  dup gzi-hfm-(free)
+  free throw
 ;
 
 
@@ -250,15 +236,21 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>state            \ the current state (as xt)
   lbf%
   +field  gzi>lbf              \ the output buffer
+
   
-  field:  gzi>last             \ is this the last block ?
-  field:  gzi>length           \ the length of a block
+  field:  gzi>last-block       \ is this the last block ?
+  field:  gzi>block-length     \ the length of a block
+
+  gzi.max-codes
+  fields: gzi>lengths          \ the array with the bit lengths for the symbols
+
+  field:  gzi>hfm-fixed-symbols    \ the fixed symbols huffman table
+  field:  gzi>hfm-fixed-distances  \ the fixed distance huffman table
   
-  field:  gzi>fixed-symbols    \ the fixed symbols huffman table
-  field:  gzi>fixed-distances  \ the fixed distance huffman table
+  field:  gzi>hfm-current          \ the current huffman table
   
-  field:  gzi>symbols          \ the symbols huffman table
-  field:  gzi>distances        \ the distance huffman table
+  field:  gzi>hfm-symbols      \ the symbols huffman table
+  field:  gzi>hfm-distances    \ the distance huffman table
   
   field:  gzi>code             \ the current code
   field:  gzi>code-length      \ the current code length
@@ -270,8 +262,7 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>distance-codes   \ the number of distance codes
   field:  gzi>code-codes       \ the number of code length codes
   
-  gzi%hfm%
-  +field  gzi>hfm-code-codes   \ the code lengths for the code length huffman table
+  field:  gzi>hfm-code-codes   \ the code lengths for the code length huffman table
   
   field:  gzi>index            \ index during building lengths
   
@@ -284,22 +275,22 @@ end-structure
 
 : gzi-init         ( gzi -- = Initialise the GZip inflation variable )
   >r
-  r@  gzi>bis    bis-init
-  r@  gzi>state  nil!
-  r@  gzi>last   off
-  r@  gzi>length 0!
+  r@  gzi>bis          bis-init
+  r@  gzi>state        nil!
+  r@  gzi>last-block   off
+  r@  gzi>block-length 0!
 
   1 chars gzi.out-size 
-  r@ gzi>lbf    lbf-init
+  r@ gzi>lbf           lbf-init
 
   ['] c! ['] c@ 
-  r@ gzi>lbf    lbf-access!
+  r@ gzi>lbf           lbf-access!
   
-  r@ gzi>fixed-symbols   nil!
-  r@ gzi>fixed-distances nil!
+  r@ gzi>hfm-fixed-symbols   nil!
+  r@ gzi>hfm-fixed-distances nil!
   
-  r@ gzi>symbols   nil!
-  r@ gzi>distances nil!
+  r@ gzi>hfm-symbols   nil!
+  r@ gzi>hfm-distances nil!
   
   r@ gzi>code        0!
   r@ gzi>code-length 0!
@@ -308,7 +299,7 @@ end-structure
   r@ gzi>distance-codes  0!
   r@ gzi>code-codes      0!
 
-  19 r@ gzi>hfm-code-codes gzi-hfm-init
+  r@ gzi>hfm-code-codes  nil!
   
   rdrop
 \ ToDo
@@ -358,14 +349,14 @@ end-structure
 : gzi-do-copy      ( gzi -- ior = Copy uncompressed data )
   trace" do-copy"
   >r
-  r@ gzi>length @ ?dup IF
+  r@ gzi>block-length @ ?dup IF
     r@ bis-get                         \ Get byte data from input stream
     rot min                            \ Limit with requested length and stream length
     tuck r@ gzi>lbf lbf-set            \ Copy data to the output stream
-    dup  negate r@ gzi>length +!       \ Update the requested length
+    dup  negate r@ gzi>block-length +! \ Update the requested length
     r@ bis-get rot /string r@ bis-set  \ Update the input stream
   THEN
-  r@ gzi>length @ IF
+  r@ gzi>block-length @ IF
     gzi.more
   ELSE
     gzi.do-type r@ gzi-state!
@@ -383,7 +374,7 @@ end-structure
     swap 16 rshift [ hex ] FFFF [ decimal ] XOR
     over = IF
       trace" Length:"
-      over gzi>length !
+      over gzi>block-length !
       ['] gzi-do-copy swap gzi-state!
       gzi.ok
     ELSE
@@ -398,7 +389,7 @@ end-structure
 : gzi-start-codes  ( gzi -- = Start decoding codes )
     dup  gzi>code 0!
   1 over gzi>code-length !
-    dup  gzi>symbols @   gzi-hfm-start
+    dup  gzi>hfm-symbols @ gzi-hfm-start
   gzi.do-codes 
     swap gzi-state!
 ;
@@ -434,7 +425,7 @@ end-structure
     dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
       dup bis-get-bit IF                       \   if bit available in the input buffer
         over gzi>code @ 1 lshift OR            \     put the bit in the code
-        2dup swap gzi>distances @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
+        2dup swap gzi>hfm-distances @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
           nip                                  \       drop code, S:gzi symbol
           dup 30 < IF                          \       if valid distance code then
             dup gzi.distance-extras 0= IF      \         if no extra distance bits to read
@@ -476,7 +467,7 @@ end-structure
 : gzi-start-distance  ( gzi -- = Start decoding distance )
     dup  gzi>code 0!
   1 over gzi>code-length !
-    dup  gzi>distances @   gzi-hfm-start
+    dup  gzi>hfm-distances @ gzi-hfm-start
   ['] gzi-do-distance
     swap gzi-state!
 ;
@@ -507,7 +498,7 @@ end-structure
     dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
       dup bis-get-bit IF                       \   if bit available in the input buffer
         over gzi>code @ 1 lshift OR            \     put the bit in the code
-        2dup swap gzi>symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
+        2dup swap gzi>hfm-symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
           nip                                  \       drop code, S:gzi symbol
           dup 256 < IF                         \       if normal character then
             over gzi>lbf lbf-enqueue           \         put symbol in buffer
@@ -556,27 +547,25 @@ end-structure
 : gzi-do-fixed     ( gzi -- ior = Process data with a fixed table )
   trace" do-fixed"
   >r
-  r@ gzi>fixed-symbols @ nil= IF
-    288 gzi-hfm-new                            \ allocate the fixed symbols
-    dup r@ gzi>fixed-symbols !
+  r@ gzi>hfm-fixed-symbols @ nil= IF
+
+    r@ gzi>lengths
+    144 0   DO 8 over I cells + ! LOOP  \ fill the length for the fixed symbols
+    256 144 DO 9 over I cells + ! LOOP
+    280 256 DO 7 over I cells + ! LOOP
+    288 280 DO 8 over I cells + ! LOOP  \ S: lengths
     
-    144 0   DO 8 over I swap gzi-hfm-set LOOP  \ fill the fixed symbols with symbols
-    256 144 DO 9 over I swap gzi-hfm-set LOOP
-    280 256 DO 7 over I swap gzi-hfm-set LOOP
-    288 280 DO 8 over I swap gzi-hfm-set LOOP
+    288 gzi-hfm-new                     \ create the huffman table for the fixed symbols
+    r@ gzi>hfm-fixed-symbols ! drop
+
+    r@ gzi>lengths
+    30 0 DO 5 over I cells + ! LOOP     \ fill the fixed distances with symbols
     
-    gzi-hfm-construct drop                     \ construct the fixed symbols
-    
-    
-    30 gzi-hfm-new                             \ allocate the fixed distances
-    dup r@ gzi>fixed-distances !
-    
-    30 0 DO 5 over I swap gzi-hfm-set LOOP     \ fill the fixed distances with symbols
-    
-    gzi-hfm-construct drop                     \ construct the distances
+    30 gzi-hfm-new                      \ create the huffman table for fixed distances
+    r@ gzi>hfm-fixed-distances ! drop
   THEN
-  r@ gzi>fixed-symbols   @ r@ gzi>symbols   !  \ Use the fixed huffman tables
-  r@ gzi>fixed-distances @ r@ gzi>distances !
+  r@ gzi>hfm-fixed-symbols   @ r@ gzi>hfm-symbols   !  \ Use the fixed huffman tables
+  r@ gzi>hfm-fixed-distances @ r@ gzi>hfm-distances !
 
   r@ gzi-start-codes                           \ Setup for decode codes
 
@@ -585,13 +574,82 @@ end-structure
 ;
 
 
+: gzi-start-code-codes  ( gzi -- = Start using the code lengths codes table )
+    dup  gzi>code 0!
+  1 over gzi>code-length !
+         gzi>hfm-code-codes @ gzi-hfm-start
+;
+
+
+: gzi-do-code-table  ( gzi -- ior = Read the length/literal table )
+  trace" >do-code-table"
+  BEGIN
+    dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
+      dup bis-get-bit IF                       \   if bit available in the input buffer
+        over gzi>code @ 1 lshift OR            \     put the bit in the code
+        2dup swap gzi>hfm-code-codes @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
+          nip                                  \       drop code, S:gzi symbol
+          dup 16 < IF                         \       if normal character then
+            \ XXX put in symbols huffman table
+            drop
+            \ XXX increase index
+            \ XXX save as last symbol
+            \ XXX index++
+            \ XXX if index < length-codes then restart else move to next
+            dup gzi>index 1+!
+            dup gzi>index @ over gzi>length-codes @ < IF
+              dup gzi-start-code-codes
+              false
+            ELSE
+              \ XXX construct huffman table
+              
+            THEN
+          ELSE 
+            dup 256 = IF                       \       else if end-of-block then
+              drop
+              gzi.do-type over gzi-state!
+              gzi.ok true
+            ELSE                               \        else copy length code
+              257 -
+              dup 28 > IF
+                drop exp-wrong-file-data true
+              ELSE
+                dup gzi.length-extras 0= IF    \          if no extra length bits to read then
+                  gzi.length-offsets
+                  over gzi>copy-length !
+                  dup gzi-start-distance       \            start decoding distance
+                ELSE
+                  over gzi>code !              \          else save symbol for copy length
+                  ['] gzi-do-length-extra over gzi-state! \  and read the extra bits
+                THEN
+                gzi.ok true
+              THEN
+            THEN
+          THEN
+
+        ELSE                                   \    else code not in huffman structure
+          over gzi>code !
+          dup  gzi>code-length 1+!
+          false
+        THEN
+      ELSE                                     \   else bit not available
+        gzi.more true
+      THEN
+    ELSE                                       \ else all bits done
+      exp-wrong-file-data true
+    THEN
+  UNTIL
+  nip
+  trace" <do-code-table"
+;
+
 : gzi-do-code-codes ( gzi -- ior = Read the code length code lengths )
   trace" >do-code-codes"
   BEGIN
     dup gzi>index @ over gzi>code-codes @ < IF  \ if not all lengths read then
       3 over bis-need-bits IF
-        3 over bis-fetch-bits                   \   read the length and store in huffman
-        over dup gzi>index @ gzi.code-orders swap gzi>hfm-code-codes gzi-hfm-set
+        3 over bis-fetch-bits                   \   read the length and store in huffman table
+        over dup gzi>index @ gzi.code-orders cells swap gzi>lengths + !
         3 over bis-next-bits
         dup gzi>index 1+!
         false
@@ -599,12 +657,21 @@ end-structure
         gzi.more true
       THEN
     ELSE
-      19 over gzi>index @ ?DO                   \ if all lengths read than fill out with zero's and
-        0 over I gzi.code-orders swap gzi>hfm-code-codes gzi-hfm-set
+      dup gzi>lengths
+      over 19 swap gzi>index @ ?DO              \ if all lengths read than fill out with zero's and
+        dup I gzi.code-orders cells + 0!
       LOOP
-      dup gzi>hfm-code-codes gzi-hfm-construct IF \ construct the huffman table
+      19 gzi-hfm-new swap IF                    \ create the huffman table
+        gzi-hfm-free
         exp-wrong-file-data true
       ELSE
+        over gzi>hfm-code-codes !
+        dup gzi>index 0!                        \ Setup for next state
+        dup  gzi>code 0!
+        1 over gzi>code-length !
+        dup  gzi>hfm-code-codes @ gzi-hfm-start
+        \ XXX free symbols huffman table
+        \ XXX create symbols huffman table
         \ ['] gzi-do... over gzi-state!
         \ gzi.ok true
         gzi.done true
@@ -643,7 +710,6 @@ end-structure
         4 over bis-next-bits
     
         dup gzi>index 0!           \ Setup next step
-        dup gzi>hfm-code-codes gzi-hfm-reset
         ['] gzi-do-code-codes over gzi-state!
         gzi.ok
       THEN
@@ -658,13 +724,13 @@ end-structure
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
   trace" do-type"
   >r
-  r@ gzi>last @ IF
+  r@ gzi>last-block @ IF
     gzi.done                 \ Return to caller
   ELSE
     3 r@ bis-need-bits IF
       1 r@ bis-fetch-bits  \ Fetch last indicator and save it 
       trace" LastBlock"
-      0<> r@ gzi>last !
+      0<> r@ gzi>last-block !
       1 r@ bis-next-bits   \ Last indicator processed
 
       2 r@ bis-fetch-bits  \ Fetch block type
