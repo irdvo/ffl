@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-15 04:40:50 $ $Revision: 1.17 $
+\  $Date: 2009-05-15 05:27:58 $ $Revision: 1.18 $
 \
 \ ==============================================================================
 
@@ -339,6 +339,29 @@ end-structure
 
 ( Private inflate words )
 
+: gzi-decode       ( hfm gzi -- u gzi.ok | ior = Decode the current code to a symbol )
+  >r
+  BEGIN
+    r@ gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done then
+      r@ bis-get-bit IF                       \   get next bit, if available then
+        r@ gzi>code @ 1 lshift OR             \     put bit in code and ..
+        2dup swap gzi-hfm-code? IF            \     convert to the symbol, if success then
+          nip nip gzi.ok true                 \       done
+        ELSE                                  \     else
+          r@ gzi>code !                       \       save, try next bit
+          r@ gzi>code-length 1+!
+          false
+        THEN
+      ELSE
+        drop gzi.more true                    \   if no more bits available, return for more
+      THEN
+    ELSE
+      drop exp-wrong-file-data true           \ all bits tried, no symbol found, error
+    THEN
+  UNTIL
+  rdrop
+;
+
 
 ( Private inflate state words )
 
@@ -421,44 +444,29 @@ end-structure
 
 : gzi-do-distance  ( gzi -- ior = Decode the distance code )
   trace" >do-distance"
-  BEGIN
-    dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
-      dup bis-get-bit IF                       \   if bit available in the input buffer
-        over gzi>code @ 1 lshift OR            \     put the bit in the code
-        2dup swap gzi>hfm-distances @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
-          nip                                  \       drop code, S:gzi symbol
-          dup 30 < IF                          \       if valid distance code then
-            dup gzi.distance-extras 0= IF      \         if no extra distance bits to read
-              gzi.distance-offsets
-              over gzi>copy-distance !
-              
-              dup gzi>copy-length @
-              over dup gzi>copy-distance @
-              swap gzi>lbf lbf-copy            \           copy from output buffer
-  
-              dup gzi-start-codes              \           continu decoding codes
-              gzi.ok
-            ELSE
-              over gzi>code !                  \           save distance code for distance length
-              ['] gzi-do-distance-extra over gzi-state! \  and read the extra bits
-              gzi.ok
-            THEN
-            true
-          ELSE                                 \       else invalid file data
-            drop exp-wrong-file-data true
-          THEN
-        ELSE                                   \    else code not in huffman structure
-          over gzi>code !
-          dup  gzi>code-length 1+!
-          false
-        THEN
-      ELSE                                     \   else bit not available
-        gzi.more true
+  dup gzi>hfm-distances @ over gzi-decode
+  dup gzi.ok = IF
+    drop
+    dup 30 < IF                          \       if valid distance code then
+      dup gzi.distance-extras 0= IF      \         if no extra distance bits to read
+        gzi.distance-offsets
+        over gzi>copy-distance !
+        
+        dup gzi>copy-length @
+        over dup gzi>copy-distance @
+        swap gzi>lbf lbf-copy            \           copy from output buffer
+
+        dup gzi-start-codes              \           continu decoding codes
+        gzi.ok
+      ELSE
+        over gzi>code !                  \           save distance code for distance length
+        ['] gzi-do-distance-extra over gzi-state! \  and read the extra bits
+        gzi.ok
       THEN
-    ELSE                                       \ else all bits done
-      exp-wrong-file-data true
+    ELSE                                 \       else invalid file data
+      drop exp-wrong-file-data
     THEN
-  UNTIL
+  THEN
   nip
   trace" <do-distance"
 ;
@@ -495,47 +503,37 @@ end-structure
 : gzi-do-codes  ( gzi -- ior = Inflate the codes )
   trace" >do-codes"
   BEGIN
-    dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
-      dup bis-get-bit IF                       \   if bit available in the input buffer
-        over gzi>code @ 1 lshift OR            \     put the bit in the code
-        2dup swap gzi>hfm-symbols @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
-          nip                                  \       drop code, S:gzi symbol
-          dup 256 < IF                         \       if normal character then
-            over gzi>lbf lbf-enqueue           \         put symbol in buffer
-            dup gzi-start-codes                \         setup for next code
-            false
-          ELSE 
-            dup 256 = IF                       \       else if end-of-block then
-              drop
-              gzi.do-type over gzi-state!
-              gzi.ok true
-            ELSE                               \        else copy length code
-              257 -
-              dup 28 > IF
-                drop exp-wrong-file-data true
-              ELSE
-                dup gzi.length-extras 0= IF    \          if no extra length bits to read then
-                  gzi.length-offsets
-                  over gzi>copy-length !
-                  dup gzi-start-distance       \            start decoding distance
-                ELSE
-                  over gzi>code !              \          else save symbol for copy length
-                  ['] gzi-do-length-extra over gzi-state! \  and read the extra bits
-                THEN
-                gzi.ok true
-              THEN
+    dup gzi>hfm-symbols @ over gzi-decode
+    dup gzi.ok = IF
+      drop
+      dup 256 < IF                         \       if normal character then
+        over gzi>lbf lbf-enqueue           \         put symbol in buffer
+        dup gzi-start-codes                \         setup for next code
+        false
+      ELSE 
+        dup 256 = IF                       \       else if end-of-block then
+          drop
+          gzi.do-type over gzi-state!
+          gzi.ok true
+        ELSE                               \        else copy length code
+          257 -
+          dup 28 > IF
+            drop exp-wrong-file-data true
+          ELSE
+            dup gzi.length-extras 0= IF    \          if no extra length bits to read then
+              gzi.length-offsets
+              over gzi>copy-length !
+              dup gzi-start-distance       \            start decoding distance
+            ELSE
+              over gzi>code !              \          else save symbol for copy length
+              ['] gzi-do-length-extra over gzi-state! \  and read the extra bits
             THEN
+            gzi.ok true
           THEN
-        ELSE                                   \    else code not in huffman structure
-          over gzi>code !
-          dup  gzi>code-length 1+!
-          false
         THEN
-      ELSE                                     \   else bit not available
-        gzi.more true
       THEN
-    ELSE                                       \ else all bits done
-      exp-wrong-file-data true
+    ELSE
+      true
     THEN
   UNTIL
   nip
