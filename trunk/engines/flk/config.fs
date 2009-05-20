@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-11-23 06:48:53 $ $Revision: 1.4 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 \
@@ -234,11 +234,6 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
   ELSE
     drop
   THEN
-;
-
-
-: >,"              ( c-addr1 -- c-addr2 = Move to the next string, stored by ," )
-  count chars + aligned
 ;
 
 

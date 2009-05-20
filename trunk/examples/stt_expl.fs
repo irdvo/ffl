@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-11-21 18:29:11 $ $Revision: 1.1 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.2 $
 \
 \ ==============================================================================
 
@@ -33,18 +33,18 @@ include ffl/stt.fs
 \ Create the stringtable in the dictionary
 
 begin-stringtable months
-," January"
-," February"
-," March"
-," April"
-," May"
-," June"
-," July"
-," August"
-," September"
-," October"
-," November"
-," December"
++" January"
++" February"
++" March"
++" April"
++" May"
++" June"
++" July"
++" August"
++" September"
++" October"
++" November"
++" December"
 end-stringtable
 
 \ Fetch strings from the stringtable

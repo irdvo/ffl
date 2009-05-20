@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2007-12-24 19:32:12 $ $Revision: 1.2 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.3 $
 \
 \ ==============================================================================
 
@@ -31,9 +31,9 @@ include ffl/tst.fs
 .( Testing: stt) cr
 
 begin-stringtable stt1
-," Forth"
-," Foundation"
-," Library"
++" Forth"
++" Foundation"
++" Library"
 end-stringtable
 
 t{ 0 stt1 s" Forth"      ?str }t

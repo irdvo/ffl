@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-02-03 07:09:34 $ $Revision: 1.6 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -82,28 +82,28 @@ include ffl/stt.fs
 ( Private string tables )
 
 begin-stringtable dos.weekday-names   ( n -- c-addr u = Translate weekday to weekday name )
-," Sunday"
-," Monday"
-," Tuesday"
-," Wednesday"
-," Thursday"
-," Friday"
-," Saturday"
++" Sunday"
++" Monday"
++" Tuesday"
++" Wednesday"
++" Thursday"
++" Friday"
++" Saturday"
 end-stringtable
 
 begin-stringtable dos.month-names   ( n -- c-addr u = Translate month to month name )
-," Januari"
-," Februari"
-," March"
-," April"
-," May"
-," June"
-," July"
-," August"
-," September"
-," October"
-," November"
-," December"
++" Januari"
++" Februari"
++" March"
++" April"
++" May"
++" June"
++" July"
++" August"
++" September"
++" October"
++" November"
++" December"
 end-stringtable
 
 

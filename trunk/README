@@ -222,6 +222,20 @@ errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
 then all went well.
 
 
+Backwards compatible
+--------------------
+
+From version 0.6.0 to version 0.7.0 there is a backwards compatible problem 
+with the stringtable module (stt). In version 0.6.0 the strings were stored
+in the table with the ," word, but this word is not standard enough between
+forth engines. From version 0.7.0 on the word +" is used for storing strings
+in the stringtable.
+
+From version 0.5.0 to version 0.6.0 there is a backwards compatible problem
+for all the structures in the library. Till version 0.6.0 the library was
+using its own structure definition. From version 0.6.0 it uses the new ANS
+structures.
+
 Documentation
 -------------
 
