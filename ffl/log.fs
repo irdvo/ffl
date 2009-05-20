@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-10-26 06:50:20 $ $Revision: 1.4 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -94,12 +94,12 @@ str-create log.filename   ( -- str = the logging file name )
 
 
 begin-stringtable log.event>string
-," TRACE "
-," DEBUG "
-," INFO  "
-," WARN  "
-," ERROR "
-," FATAL "
++" TRACE "
++" DEBUG "
++" INFO  "
++" WARN  "
++" ERROR "
++" FATAL "
 end-stringtable
 
 

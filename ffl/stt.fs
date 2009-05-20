@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-02 15:03:03 $ $Revision: 1.3 $
+\  $Date: 2009-05-20 13:27:22 $ $Revision: 1.4 $
 \
 \ ==============================================================================
 
@@ -35,12 +35,12 @@ include ffl/config.fs
 ( inspired by Wil Badens stringtable.                                        )
 
 
-1 constant stt.version
+2 constant stt.version
 
 
 ( Stringtable syntax words )
 
-: begin-stringtable   ( "<spaces>name" -- stringtable-sys ; n -- c-addr u = Start a named stringtable definition; return the nth string )
+: begin-stringtable  ( "<spaces>name" -- stringtable-sys ; n -- c-addr u = Start a named stringtable definition; return the nth string )
   create
     here
     cell allot
@@ -52,33 +52,24 @@ include ffl/config.fs
 ;
 
 
-[UNDEFINED] place [IF]
-: place   ( c-addr1 u1 c-addr2 -- = Place the string c-addr1 u1 at address c-addr2 as counted string )
-  2dup c!
-  char+ swap cmove
-;
-[THEN]
-
-
-
-[UNDEFINED] ," [IF]
-: ,"   ( "ccc<quote>" -- = Parse ccc delimited by double quote and place the string as counted string in the dictionary )
+: +"               ( "ccc<quote>" -- = Parse ccc delimited by double quote and place the string as counted string in the stringtable )
   [char] " parse
   here 
   over char+ allot
-  place align
+  2dup c!
+  char+ swap cmove
+  align
 ;
-[THEN]
 
 
-: end-stringtable   ( stringtable-sys -- = End the stringtable definition )
+: end-stringtable  ( stringtable-sys -- = End the stringtable definition )
   here rot !                      \ Set the offset
   here swap
   BEGIN
     2dup <>
   WHILE
     dup ,                         \ Store the start of the strings
-    >,"                           \ Move to the next string
+    count chars + aligned         \ Move to the next string
   REPEAT
   2drop
 ;
