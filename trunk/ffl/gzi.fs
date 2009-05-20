@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-20 06:28:27 $ $Revision: 1.19 $
+\  $Date: 2009-05-20 10:22:35 $ $Revision: 1.20 $
 \
 \ ==============================================================================
 
@@ -625,6 +625,7 @@ end-structure
     cell +LOOP
     drop
     r>
+    trace" =do-repeat-times"
     
     dup gzi>index @  over gzi>repeat-times @ +
     2dup swap gzi>length+distance-codes @ < IF  \ If not all bit lengths decoded then
@@ -639,7 +640,6 @@ end-structure
         over gzi-start-codes           \    .. start decoding the data
       THEN
     THEN
-    gzi.ok
   ELSE
     2drop
     gzi.more
