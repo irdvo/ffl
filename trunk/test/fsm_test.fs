@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-03-25 06:56:00 $ $Revision: 1.6 $
+\  $Date: 2009-05-20 13:46:51 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -104,7 +104,7 @@ t{ 12 ' fsm-test-hit s" 0-9" fst7 fst7 fsm1 fsm-new-transition ftr-condition@ 10
 t{ 13 ' fsm-test-hit s" any" fst7 fst8 fsm1 fsm-any-transition drop }t
 t{ 99 ' fsm-test-hit s" x"   fst7 fst8 fsm1 fsm-new-transition ftr-condition@ char x swap bar-set-bit }t
 
-t{ s" +-" fst1 fst-find-transition fst-data@ 1 ?s  }t
+t{ s" +-" fst1 fst-find-transition ftr-data@ 1 ?s  }t
 t{ s" ."  fst1 fst-find-transition ?nil            }t
 t{ s" ?"  fst8 fst-find-transition ?nil            }t
 t{ s" x"  fst7 fst-find-transition value ftr1      }t
