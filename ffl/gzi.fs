@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-15 05:27:58 $ $Revision: 1.18 $
+\  $Date: 2009-05-20 06:28:27 $ $Revision: 1.19 $
 \
 \ ==============================================================================
 
@@ -121,15 +121,17 @@ end-structure
 
   r>
   dup gzi>hfm>lengths @ over gzi>hfm>number @ cells bounds DO
-    I @ cells
+    I @ ." Lengths:" dup . cr cells
     over gzi>hfm>counts + 1+!
   cell +LOOP
+  trace" >construct2"
   
   \ Check for no codes
   dup gzi>hfm>counts @ over gzi>hfm>number @ = IF \ counts[0] == n ?
     drop 0 EXIT
   THEN
   >r
+  trace" >construct3"
     
   \ Check for over-subscribed or incomplete set
   1                            \ left = 1
@@ -140,6 +142,7 @@ end-structure
       LEAVE
     THEN
   cell +LOOP                   \ S: n:left
+  trace" >construct4"
   
   dup 0< 0= IF                 \ if left >= 0
     \ Generate offsets for each bit length
@@ -152,6 +155,7 @@ end-structure
       over !
     cell +LOOP
     drop
+  trace" >construct5"
     
     \ Generate indices for each symbol, sorted within each bit length
     r@ gzi>hfm>number @  0
@@ -261,13 +265,15 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>length-codes     \ the number of literal/length codes
   field:  gzi>distance-codes   \ the number of distance codes
   field:  gzi>code-codes       \ the number of code length codes
+  field:  gzi>length+distance-codes \ the number of length and distance codes
   
   field:  gzi>hfm-code-codes   \ the code lengths for the code length huffman table
   
   field:  gzi>index            \ index during building lengths
-  
-  \ field:  gzi>result         \ the result of the conversion
-  \ crc?
+
+  field:  gzi>repeat-length    \ the bit length value to be repeated
+  field:  gzi>repeat-bits      \ the number of repeat bits to be read
+  field:  gzi>repeat-times     \ the number of times the bit length must be repeated
 end-structure
 
 
@@ -295,12 +301,17 @@ end-structure
   r@ gzi>code        0!
   r@ gzi>code-length 0!
 
-  r@ gzi>length-codes    0!
-  r@ gzi>distance-codes  0!
-  r@ gzi>code-codes      0!
+  r@ gzi>length-codes          0!
+  r@ gzi>distance-codes        0!
+  r@ gzi>code-codes            0!
+  r@ gzi>length+distance-codes 0!
 
   r@ gzi>hfm-code-codes  nil!
-  
+
+  r@ gzi>repeat-length 0!
+  r@ gzi>repeat-bits   0!
+  r@ gzi>repeat-times  0!
+
   rdrop
 \ ToDo
 ;
@@ -365,9 +376,9 @@ end-structure
 
 ( Private inflate state words )
 
-0 value gzi.do-type  ( -- xt = xt of gzi-do-type )
-0 value gzi.do-codes ( -- xt = xt of gzi-do-codes )
-
+0 value gzi.do-type       ( -- xt = xt of gzi-do-type )
+0 value gzi.do-codes      ( -- xt = xt of gzi-do-codes )
+0 value gzi.do-code-table ( -- xt = xt of gzi-do-code-table )
 
 : gzi-do-copy      ( gzi -- ior = Copy uncompressed data )
   trace" do-copy"
@@ -572,81 +583,138 @@ end-structure
 ;
 
 
-: gzi-start-code-codes  ( gzi -- = Start using the code lengths codes table )
+: gzi-start-code-table  ( gzi -- = Start using the code lengths codes table )
     dup  gzi>code 0!
   1 over gzi>code-length !
-         gzi>hfm-code-codes @ gzi-hfm-start
+    dup  gzi>hfm-code-codes @ gzi-hfm-start
+  gzi.do-code-table
+    swap gzi-state!
 ;
 
 
-: gzi-do-code-table  ( gzi -- ior = Read the length/literal table )
+: gzi-construct-dynamic  ( gzi -- ior = Construct the dynamic huffman tables )
+  trace" >construct-dynamic"
+  
+  dup gzi>lengths over gzi>length-codes @ trace" codes:" gzi-hfm-new swap ." Lit/Length codes:" .
+  over gzi>hfm-symbols !
+  
+  dup gzi>lengths over gzi>length-codes @ cells + over gzi>distance-codes @ trace" distances:" gzi-hfm-new swap ." Distance codes:" .
+  over gzi>hfm-distances !
+  
+  drop gzi.ok
+  
+  trace" <construct-dynamic"
+;
+
+
+: gzi-do-repeat-times  ( gzi -- ior = Read the repeat times and perform the bit length copy )
+  trace" >do-repeat-times"
+  dup gzi>repeat-bits @ over
+  2dup bis-need-bits IF             \ Read the extra repeat times bits
+    2dup bis-fetch-bits
+    ." CopyExtra:" .s cr
+    over gzi>repeat-times +!
+         bis-next-bits
+    
+    >r
+    r@ gzi>repeat-length @          \ Copy the repeat length, repeat times in the lengths array
+    r@ gzi>lengths
+    r@ gzi>index @ cells +
+    r@ gzi>repeat-times @ cells trace" do-repeat-copy" bounds ?DO
+      dup I !
+    cell +LOOP
+    drop
+    r>
+    
+    dup gzi>index @  over gzi>repeat-times @ +
+    2dup swap gzi>length+distance-codes @ < IF  \ If not all bit lengths decoded then
+      over gzi>index !
+      dup  gzi-start-code-table        \   Continue decoding
+      gzi.ok
+    ELSE                               \  Else
+      drop
+      ." Done.." cr
+      dup gzi-construct-dynamic        \    Construct the dynamic huffman tables and ..
+      dup gzi.ok = IF
+        over gzi-start-codes           \    .. start decoding the data
+      THEN
+    THEN
+    gzi.ok
+  ELSE
+    2drop
+    gzi.more
+  THEN
+  nip
+  trace" <do-repeat-times"
+;
+
+
+: gzi-do-code-table  ( gzi -- ior = Decode the length/literal table )
   trace" >do-code-table"
   BEGIN
-    dup gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done 
-      dup bis-get-bit IF                       \   if bit available in the input buffer
-        over gzi>code @ 1 lshift OR            \     put the bit in the code
-        2dup swap gzi>hfm-code-codes @ gzi-hfm-code? IF  \  if the code is in the huffman structure then
-          nip                                  \       drop code, S:gzi symbol
-          dup 16 < IF                         \       if normal character then
-            \ XXX put in symbols huffman table
-            drop
-            \ XXX increase index
-            \ XXX save as last symbol
-            \ XXX index++
-            \ XXX if index < length-codes then restart else move to next
-            dup gzi>index 1+!
-            dup gzi>index @ over gzi>length-codes @ < IF
-              dup gzi-start-code-codes
-              false
-            ELSE
-              \ XXX construct huffman table
-              
-            THEN
-          ELSE 
-            dup 256 = IF                       \       else if end-of-block then
-              drop
-              gzi.do-type over gzi-state!
-              gzi.ok true
-            ELSE                               \        else copy length code
-              257 -
-              dup 28 > IF
-                drop exp-wrong-file-data true
-              ELSE
-                dup gzi.length-extras 0= IF    \          if no extra length bits to read then
-                  gzi.length-offsets
-                  over gzi>copy-length !
-                  dup gzi-start-distance       \            start decoding distance
-                ELSE
-                  over gzi>code !              \          else save symbol for copy length
-                  ['] gzi-do-length-extra over gzi-state! \  and read the extra bits
-                THEN
-                gzi.ok true
-              THEN
-            THEN
-          THEN
-
-        ELSE                                   \    else code not in huffman structure
-          over gzi>code !
-          dup  gzi>code-length 1+!
+    dup gzi>hfm-code-codes @ over gzi-decode
+    dup gzi.ok = IF
+      drop
+      dup 16 < IF                           \ normal bit length 0..15: store in lengths array
+        ." Bitlength:" over gzi>index ? dup . cr
+        2dup swap gzi>repeat-length !
+        over 
+        dup  gzi>lengths
+        swap gzi>index @
+        dup 1+ >r
+        cells + !
+        r>
+        2dup swap gzi>length+distance-codes @ < IF  \ if not all codes read, then continu
+          over gzi>index  !
+          dup    gzi>code  0!
+          1 over gzi>code-length !
+          dup  gzi>hfm-code-codes @ gzi-hfm-start
           false
+        ELSE                               \ else construct the dynamic huffman tables and ..
+          drop
+          ." Done.." cr
+          dup gzi-construct-dynamic
+          dup gzi.ok = IF
+            over gzi-start-codes           \ .. start decoding the data
+          THEN
+          true
         THEN
-      ELSE                                     \   else bit not available
-        gzi.more true
+      ELSE                                 \ repeat length coding
+        ." BitCopy:" dup . cr
+        dup 16 = IF
+          drop
+          2 over gzi>repeat-bits  !
+          3 over gzi>repeat-times !
+        ELSE 
+          17 = IF
+            3 over gzi>repeat-bits  !
+            3 over gzi>repeat-times !
+              dup  gzi>repeat-length 0!
+          ELSE
+            7  over gzi>repeat-bits  !
+            11 over gzi>repeat-times !
+               dup  gzi>repeat-length 0!
+          THEN 
+        THEN
+        ['] gzi-do-repeat-times over gzi-state!
+        gzi.ok true
       THEN
-    ELSE                                       \ else all bits done
-      exp-wrong-file-data true
+    ELSE
+      true
     THEN
   UNTIL
   nip
   trace" <do-code-table"
 ;
+' gzi-do-code-table to gzi.do-code-table
+
 
 : gzi-do-code-codes ( gzi -- ior = Read the code length code lengths )
   trace" >do-code-codes"
   BEGIN
     dup gzi>index @ over gzi>code-codes @ < IF  \ if not all lengths read then
       3 over bis-need-bits IF
-        3 over bis-fetch-bits                   \   read the length and store in huffman table
+        3 over bis-fetch-bits                   \   read the length and store in lengths array
         over dup gzi>index @ gzi.code-orders cells swap gzi>lengths + !
         3 over bis-next-bits
         dup gzi>index 1+!
@@ -659,26 +727,22 @@ end-structure
       over 19 swap gzi>index @ ?DO              \ if all lengths read than fill out with zero's and
         dup I gzi.code-orders cells + 0!
       LOOP
-      19 gzi-hfm-new swap IF                    \ create the huffman table
+      19 gzi-hfm-new swap IF                    \ create the huffman table with the lengths
         gzi-hfm-free
         exp-wrong-file-data true
       ELSE
+        \ XXX Free previous table
         over gzi>hfm-code-codes !
-        dup gzi>index 0!                        \ Setup for next state
-        dup  gzi>code 0!
-        1 over gzi>code-length !
-        dup  gzi>hfm-code-codes @ gzi-hfm-start
-        \ XXX free symbols huffman table
-        \ XXX create symbols huffman table
-        \ ['] gzi-do... over gzi-state!
-        \ gzi.ok true
-        gzi.done true
+        dup  gzi>index 0!                       \ Setup for next state
+        dup  gzi-start-code-table
+        gzi.ok true
       THEN
     THEN
   UNTIL
   nip
   trace" <do-code-codes"
 ;
+
 
 : gzi-do-table     ( gzi -- ior = Start processing the dynamic table by reading the table lengths )
   trace" >do-table"
@@ -689,7 +753,8 @@ end-structure
     dup 286 > IF
       drop exp-wrong-file-data
     ELSE
-      over gzi>length-codes !
+      2dup swap gzi>length-codes !
+      over gzi>length+distance-codes !
       5 over bis-next-bits
     
       5 over bis-fetch-bits       \ Read number of distance codes
@@ -698,7 +763,8 @@ end-structure
       dup 30 > IF
         drop exp-wrong-file-data
       ELSE
-        over gzi>distance-codes !
+        2dup swap gzi>distance-codes !
+        over gzi>length+distance-codes +!
         5 over bis-next-bits
     
         4 over bis-fetch-bits     \ Read number of code length codes
@@ -718,6 +784,7 @@ end-structure
   nip
   trace" <do-table"
 ;
+
 
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
   trace" do-type"
