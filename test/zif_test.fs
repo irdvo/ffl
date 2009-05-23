@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-20 10:22:35 $ $Revision: 1.4 $
+\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.5 $
 \
 \ ==============================================================================
 
@@ -41,17 +41,17 @@ t{ s" unknown.gz" zif1 zif-open-file ?true }t
 
 t{ s" stored.gz"  zif1 zif-open-file ?0 }t
 
-t{ zif1 zif-read-header . }t
+t{ zif1 zif-read-header ?0 value zif1-header }t
 
-t{ zif1 zif>gzf gzf-text@ . }t
+t{ zif1-header gzf-text@ . }t
 
-t{ zif1 zif>gzf gzf-os@ . }t
+t{ zif1-header gzf-os@ . }t
 
-t{ zif1 zif>gzf gzf-mtime@ . }t
+t{ zif1-header gzf-mtime@ . }t
 
-t{ zif1 zif>gzf gzf-name@ type }t
+t{ zif1-header gzf-name@ type }t
 
-t{ zif1 zif>gzf gzf-comment@ type }t
+t{ zif1-header gzf-comment@ type }t
 
 \ t{ pad 80 zif1 zif-read-file . pad swap type }t
 
@@ -81,17 +81,17 @@ t{ zif-new value zif2 }t
 \ t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
 t{ s" comp.gz"  zif2 zif-open-file ?0 }t
 
-t{ zif2 zif-read-header . cr }t
+t{ zif2 zif-read-header ?0 value zif2-header }t
 
-t{ zif2 zif>gzf gzf-text@ . cr }t
+t{ zif2-header gzf-text@ . cr }t
 
-t{ zif2 zif>gzf gzf-os@ . cr }t
+t{ zif2-header gzf-os@ . cr }t
 
-t{ zif2 zif>gzf gzf-mtime@ . cr }t
+t{ zif2-header gzf-mtime@ . cr }t
 
-t{ zif2 zif>gzf gzf-name@ type cr }t
+t{ zif2-header gzf-name@ type cr }t
 
-t{ zif2 zif>gzf gzf-comment@ type cr }t
+t{ zif2-header gzf-comment@ type cr }t
 
 : zif-test-file  ( -- ior )
   s" temp.txt" r/w create-file throw

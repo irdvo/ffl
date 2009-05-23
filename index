@@ -72,6 +72,9 @@ Index of used prefices
 6 dom - XML-DOM module
 7 a32 - Adler32 Algorithm
 7 log - Logger module
+7 gzf - GZip file module
+7 gzi - GZip inflator
+7 zif - GZip input file
 ----- - ------------------------------------------------
       - Compound
 ----- - ------------------------------------------------
@@ -120,9 +123,7 @@ Index of used prefices
 a bzf - BZip2 file module
 a bzs - BZip2 module
 8 dbm - DBM module
-7 gzf - GZip file module
-7 gzs - GZip stream module
-7 gzp - GZip base module
+  gzs - GZip stream module
       - css module
       - url module
 a     - crypt: aes
@@ -160,7 +161,7 @@ ToDo
 [x] cfg: newline
 [x] cfg: sys.* -> *
 [ ] rgx: ^ en $
-[ ] rgx: []
+[x] rgx: []
 [ ] rgx: [[]]
 [x] cfg: nil<>? ( addr - false | addr true )
 [ ] col: execute?
@@ -168,4 +169,7 @@ ToDo
 [ ] ffl: dup nil<> en dup nil= check again
 [ ] spf: floats in conversion
 [ ] xis: stack clearer after xis-read for unused things -> rosetta
-[] rgx replace
+[ ] rgx replace
+[ ] basic algorithms like sort
+[ ] dump conditional
+[ ] dump in xml
