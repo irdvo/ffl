@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-11 04:42:13 $ $Revision: 1.8 $
+\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.9 $
 \
 \ ==============================================================================
 
@@ -34,8 +34,8 @@ include ffl/gzf.fs
 include ffl/gzi.fs
 
 ( zif = gzip file reader )
-( The zif module implements a gzip file reader. The header information from  )
-( the file can be accessed by the offset zif>gzp after zif-read-header.      )
+( The zif module implements a gzip file reader. See [gzf] for the header     )
+( information.                                                               )
 
 
 1 constant zif.version
@@ -359,7 +359,7 @@ end-structure
 ;
 
 
-: zif-read-header  ( zif -- ior = Read the [next] header from the gzip file )
+: zif-read-header  ( zif -- gzf 0 | ior = Read the &lb;next&rb; header gzf from the gzip file )
   >r
 
   r@ zif>gzf gzf-reset            \ Reset the header info
@@ -374,10 +374,11 @@ end-structure
     ?dup
   UNTIL                           \ Continue until done or error
   dup gzi.done = IF
+    drop
     r@ gzi-init-inflate           \ If done Then Start inflating and ..
     r@ zif>length 0!
     r@ zif>crc crc-reset      
-    drop 0                        \ .. return okee
+    r@ zif>gzf 0                  \ .. return header & okee
   THEN
   rdrop
 ;
@@ -453,6 +454,22 @@ end-structure
 [THEN]
 : zif-close-file   ( zif -- ior = Close the file )
   zif-file@ close-file 
+;
+
+
+( Inspection )
+
+: zif-dump         ( zif -- Dump the zif variable )
+  ." zif:" dup . cr
+    ."  gzi         : " dup zif>gzi gzi-dump
+    ."  gzf         : " dup zif>gzf gzf-dump
+    ."  file        : " dup zif>file ? cr
+    ."  eof?        : " dup zif>eof  ? cr
+    ."  buffer      : " dup zif>buffer @ zif.size dump
+    ."  result      : " dup zif>result ? cr
+    ."  length      : " dup zif>length ? cr
+    ."  file-length : " dup zif>file-len ? cr
+    ."  file-crc    : "     zif>file-crc ? cr
 ;
 
 [THEN]

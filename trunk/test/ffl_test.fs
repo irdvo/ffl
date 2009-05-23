@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2008-09-22 18:46:53 $ $Revision: 1.46 $
+\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.47 $
 \
 \ ==============================================================================
 
@@ -75,6 +75,7 @@ include tmr_test.fs
 include tos_test.fs
 include xis_test.fs
 include xos_test.fs
+include zif_test.fs
 
 .( Forth Foundation Library Test: ) tst-get-result .  .( errors in ) . .( tests took ) . .( ms.) cr
   

@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-20 10:22:35 $ $Revision: 1.20 $
+\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.21 $
 \
 \ ==============================================================================
 
@@ -61,13 +61,14 @@ begin-enumeration
 end-enumeration
 
 
+( private gzi constants and tables )
+
 65536 constant gzi.out-size   ( -- n = Output buffer size )
 320   constant gzi.max-codes  ( -- n = Maximum number of codes )
 15    constant gzi.max-bits   ( -- n = Maximum number of bits  )
 gzi.max-bits 1+
       constant gzi.max-bits+1 ( -- n = Maximum number of bits + 1 )
 
-( private gzi constants )
 
 : gzi.table        ( "<spaces>name" -- ; u1 -- u2 = Create a cell based lookup table )
   create
@@ -89,7 +90,8 @@ gzi.table gzi.distance-extras
     6 , 7 , 7 , 8 , 8 , 9 , 9 , 10 , 10 , 11 , 11 , 12 , 12 , 13 , 13 ,
 gzi.table gzi.code-orders
     16 , 17 , 18 , 0 , 8 , 7 , 9 , 6 , 10 , 5 , 11 , 4 , 12 , 3 , 13 , 2 , 14 , 1 , 15 ,
-  
+
+
 ( private huffman structure )
 
 begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structure )
@@ -121,7 +123,7 @@ end-structure
 
   r>
   dup gzi>hfm>lengths @ over gzi>hfm>number @ cells bounds DO
-    I @ ." Lengths:" dup . cr cells
+    I @ cells
     over gzi>hfm>counts + 1+!
   cell +LOOP
   trace" >construct2"
@@ -186,10 +188,7 @@ end-structure
 
 
 : gzi-hfm-(free)  ( hfm -- = Free the internal, private variables from the heap )
-  dup gzi>hfm>lengths @ 
-  free throw
-  gzi>hfm>symbols @
-  free throw
+  gzi>hfm>symbols @ free throw
 ;
 
 
@@ -232,6 +231,21 @@ end-structure
 ;
 
 
+( private huffman table dump )
+
+: gzi-hfm-dump     ( hfm -- = Dump the huffman structure )
+  ." gzi-hfm:" dup . cr
+    ."  number  :" dup gzi>hfm>number ? cr
+    ."  lengths :" dup gzi>hfm>lengths ? cr
+    ."  counts  :" dup gzi>hfm>counts  gzi.max-bits+1 cells bounds DO I ? cell +LOOP cr
+    ."  offsets :" dup gzi>hfm>offsets gzi.max-bits+1 cells bounds DO I ? cell +LOOP cr
+    ."  symbols :" dup gzi>hfm>symbols @ over gzi>hfm>number @ cells bounds ?DO I ? cell +LOOP cr
+    ."  index   :" dup gzi>hfm>index ? cr
+    ."  first   :" dup gzi>hfm>first ? cr
+    ."  count   :"     gzi>hfm>count ? cr
+;
+
+
 ( gzi structure )
 
 begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
@@ -250,8 +264,6 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
 
   field:  gzi>hfm-fixed-symbols    \ the fixed symbols huffman table
   field:  gzi>hfm-fixed-distances  \ the fixed distance huffman table
-  
-  field:  gzi>hfm-current          \ the current huffman table
   
   field:  gzi>hfm-symbols      \ the symbols huffman table
   field:  gzi>hfm-distances    \ the distance huffman table
@@ -276,6 +288,20 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>repeat-times     \ the number of times the bit length must be repeated
 end-structure
 
+
+( Private free words )
+
+: gzi-free-symbols?  ( gzi -- flag = Should the symbols huffman table be freed ? )
+  dup gzi>hfm-symbols @ dup
+  rot gzi>hfm-fixed-symbols @ <>   \ the symbols table should not be nil or equal to the fixed table
+  swap nil<> AND
+;
+
+: gzi-free-distances?  ( gzi -- flag = Should the distances huffman table be freed ? )
+  dup gzi>hfm-distances @ dup
+  rot gzi>hfm-fixed-distances @ <> \ the distances table should not be nil or equal to the fixed table
+  swap nil<> AND
+;
 
 ( GZip inflation variable creation, initialisation and destruction )
 
@@ -319,6 +345,14 @@ end-structure
 
 : gzi-(free)       ( gzi -- = Free the internal, private variables from the heap )
   dup gzi>lbf    lbf-(free)
+  
+  dup gzi-free-symbols?   IF dup gzi>hfm-symbols   @ gzi-hfm-free THEN
+  dup gzi-free-distances? IF dup gzi>hfm-distances @ gzi-hfm-free THEN
+  
+  dup gzi>hfm-fixed-symbols   @ nil<>? IF gzi-hfm-free THEN
+  dup gzi>hfm-fixed-distances @ nil<>? IF gzi-hfm-free THEN
+  dup gzi>hfm-code-codes      @ nil<>? IF gzi-hfm-free THEN
+
   drop
   \ ToDo
 ;
@@ -573,6 +607,9 @@ end-structure
     30 gzi-hfm-new                      \ create the huffman table for fixed distances
     r@ gzi>hfm-fixed-distances ! drop
   THEN
+  r@ gzi-free-symbols?   IF r@ gzi>hfm-symbols   @ gzi-hfm-free THEN
+  r@ gzi-free-distances? IF r@ gzi>hfm-distances @ gzi-hfm-free THEN
+  
   r@ gzi>hfm-fixed-symbols   @ r@ gzi>hfm-symbols   !  \ Use the fixed huffman tables
   r@ gzi>hfm-fixed-distances @ r@ gzi>hfm-distances !
 
@@ -595,8 +632,12 @@ end-structure
 : gzi-construct-dynamic  ( gzi -- ior = Construct the dynamic huffman tables )
   trace" >construct-dynamic"
   
+  dup gzi-free-symbols? IF dup gzi>hfm-symbols @ gzi-hfm-free THEN
+  
   dup gzi>lengths over gzi>length-codes @ trace" codes:" gzi-hfm-new swap ." Lit/Length codes:" .
   over gzi>hfm-symbols !
+  
+  dup gzi-free-distances? IF dup gzi>hfm-distances @ gzi-hfm-free THEN
   
   dup gzi>lengths over gzi>length-codes @ cells + over gzi>distance-codes @ trace" distances:" gzi-hfm-new swap ." Distance codes:" .
   over gzi>hfm-distances !
@@ -656,7 +697,6 @@ end-structure
     dup gzi.ok = IF
       drop
       dup 16 < IF                           \ normal bit length 0..15: store in lengths array
-        ." Bitlength:" over gzi>index ? dup . cr
         2dup swap gzi>repeat-length !
         over 
         dup  gzi>lengths
@@ -672,7 +712,6 @@ end-structure
           false
         ELSE                               \ else construct the dynamic huffman tables and ..
           drop
-          ." Done.." cr
           dup gzi-construct-dynamic
           dup gzi.ok = IF
             over gzi-start-codes           \ .. start decoding the data
@@ -680,7 +719,6 @@ end-structure
           true
         THEN
       ELSE                                 \ repeat length coding
-        ." BitCopy:" dup . cr
         dup 16 = IF
           drop
           2 over gzi>repeat-bits  !
@@ -731,8 +769,7 @@ end-structure
         gzi-hfm-free
         exp-wrong-file-data true
       ELSE
-        \ XXX Free previous table
-        over gzi>hfm-code-codes !
+        over gzi>hfm-code-codes @! nil<>? IF gzi-hfm-free THEN \ Free previous table
         dup  gzi>index 0!                       \ Setup for next state
         dup  gzi-start-code-table
         gzi.ok true
@@ -842,12 +879,31 @@ end-structure
 
 : gzi-dump   ( gzi - = Dump the gzi )
   ." gzi:" dup . cr
-    ."  bis   :" dup gzi>bis      bis-dump
-    ."  state :" dup gzi>state    ? cr
-    ."  lbf   :" dup gzi>lbf      lbf-dump
-  drop
+    ."  bis                   : " dup gzi>bis      bis-dump
+    ."  state                 : " dup gzi>state    ? cr
+    ."  lbf                   : " dup gzi>lbf      lbf-dump
+    ."  last-block            : " dup gzi>last-block ? cr
+    ."  block-length          : " dup gzi>block-length ? cr
+    ."  lengths               : " dup gzi>lengths gzi.max-codes cells bounds DO I ? cell +LOOP cr
+    ."  hfm-fixed-symbols     : "   dup gzi>hfm-fixed-symbols @   dup nil<> IF gzi-hfm-dump ELSE . cr THEN
+    ."  hfm-fixed-distances   : " dup gzi>hfm-fixed-distances @ dup nil<> IF gzi-hfm-dump ELSE . cr THEN
+    ."  hfm-symbols           : "   dup gzi>hfm-symbols @   dup nil<> IF gzi-hfm-dump ELSE . cr THEN
+    ."  hfm-distances         : " dup gzi>hfm-distances @ dup nil<> IF gzi-hfm-dump ELSE . cr THEN
+    ."  code                  : " dup gzi>code ? cr
+    ."  code-length           : " dup gzi>code-length ? cr
+    ."  copy-length           : " dup gzi>copy-length ? cr
+    ."  copy-distance         : " dup gzi>copy-distance ? cr
+    ."  length-codes          : " dup gzi>length-codes ? cr
+    ."  distance-codes        : " dup gzi>distance-codes ? cr
+    ."  code-codes            : " dup gzi>code-codes ? cr
+    ."  length+distance-codes : " dup gzi>length+distance-codes ? cr
+    ."  hfm-code-codes        : " dup gzi>hfm-code-codes @ dup nil<> IF gzi-hfm-dump ELSE . cr THEN
+    ."  index                 : " dup gzi>index ? cr
+    ."  repeat-length         : " dup gzi>repeat-length ? cr
+    ."  repeat-bits           : " dup gzi>repeat-bits ? cr
+    ."  repeat-times          : "     gzi>repeat-times ? cr
 ;
-  
+
 [THEN]
 
 \ ==============================================================================
