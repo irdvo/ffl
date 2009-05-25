@@ -170,6 +170,8 @@ ToDo
 [ ] spf: floats in conversion
 [ ] xis: stack clearer after xis-read for unused things -> rosetta
 [ ] rgx replace
-[ ] basic algorithms like sort
+[ ] basic algorithms like sort -> rosetta
 [ ] dump conditional
-[ ] dump in xml
+[ ] crc: dump
+[ ] dump xml format
+[ ] zif: readline

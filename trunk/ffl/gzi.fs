@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.21 $
+\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.22 $
 \
 \ ==============================================================================
 
@@ -63,7 +63,6 @@ end-enumeration
 
 ( private gzi constants and tables )
 
-65536 constant gzi.out-size   ( -- n = Output buffer size )
 320   constant gzi.max-codes  ( -- n = Maximum number of codes )
 15    constant gzi.max-bits   ( -- n = Maximum number of bits  )
 gzi.max-bits 1+
@@ -252,6 +251,7 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   bis%
   +field  gzi>bis              \ the inflator extends the input buffer
   field:  gzi>state            \ the current state (as xt)
+  field:  gzi>lbf-size         \ the initial size of the output buffer
   lbf%
   +field  gzi>lbf              \ the output buffer
 
@@ -305,14 +305,16 @@ end-structure
 
 ( GZip inflation variable creation, initialisation and destruction )
 
-: gzi-init         ( gzi -- = Initialise the GZip inflation variable )
+: gzi-init         ( u gzi -- = Initialise the GZip inflation variable with initial output buffer size u )
   >r
   r@  gzi>bis          bis-init
   r@  gzi>state        nil!
   r@  gzi>last-block   off
   r@  gzi>block-length 0!
+  69632 max dup
+  r@  gzi>lbf-size     !            \ output buffer size, minimal 64K + 4k
 
-  1 chars gzi.out-size 
+  1 chars swap
   r@ gzi>lbf           lbf-init
 
   ['] c! ['] c@ 
@@ -358,13 +360,13 @@ end-structure
 ;
 
 
-: gzi-create       ( "<spaces>name" -- ; -- gzi = Create a named GZip inflation variable in the dictionary )
+: gzi-create       ( "<spaces>name" u -- ; -- gzi = Create a named GZip inflation variable in the dictionary with output buffer size u )
   create   here   gzi% allot   gzi-init
 ;
 
 
 : gzi-new          ( -- gzi = Create a new GZip inflation variable on the heap )
-  gzi% allocate  throw  dup gzi-init
+  gzi% allocate  throw  tuck gzi-init
 ;
 
 
@@ -632,17 +634,42 @@ end-structure
 : gzi-construct-dynamic  ( gzi -- ior = Construct the dynamic huffman tables )
   trace" >construct-dynamic"
   
-  dup gzi-free-symbols? IF dup gzi>hfm-symbols @ gzi-hfm-free THEN
+  dup gzi>lengths over gzi>length-codes @ gzi-hfm-new swap
+  dup 0< IF
+    drop gzi-hfm-free drop
+    exp-wrong-file-data
+    EXIT
+  ELSE 0> IF
+    over gzi>length-codes @ over gzi>hfm>counts @ - 1- IF
+      gzi-hfm-free drop
+      exp-wrong-file-data
+      EXIT
+      THEN
+    THEN
+  THEN
   
-  dup gzi>lengths over gzi>length-codes @ trace" codes:" gzi-hfm-new swap ." Lit/Length codes:" .
+  over gzi-free-symbols? IF over gzi>hfm-symbols @ gzi-hfm-free THEN
+
   over gzi>hfm-symbols !
   
-  dup gzi-free-distances? IF dup gzi>hfm-distances @ gzi-hfm-free THEN
+  dup gzi>lengths over gzi>length-codes @ cells + over gzi>distance-codes @ gzi-hfm-new swap
+  dup 0< IF
+    drop gzi-hfm-free drop
+    exp-wrong-file-data
+    EXIT
+  ELSE 0> IF
+    over gzi>distance-codes @ over gzi>hfm>counts @ - 1- IF
+      gzi-hfm-free drop
+      exp-wrong-file-data
+      EXIT
+      THEN
+    THEN
+  THEN
   
-  dup gzi>lengths over gzi>length-codes @ cells + over gzi>distance-codes @ trace" distances:" gzi-hfm-new swap ." Distance codes:" .
-  over gzi>hfm-distances !
+  over gzi-free-distances? IF over gzi>hfm-distances @ gzi-hfm-free THEN
   
-  drop gzi.ok
+  swap gzi>hfm-distances !
+  gzi.ok
   
   trace" <construct-dynamic"
 ;
@@ -831,12 +858,10 @@ end-structure
   ELSE
     3 r@ bis-need-bits IF
       1 r@ bis-fetch-bits  \ Fetch last indicator and save it 
-      trace" LastBlock"
       0<> r@ gzi>last-block !
       1 r@ bis-next-bits   \ Last indicator processed
 
       2 r@ bis-fetch-bits  \ Fetch block type
-      trace" BlockType"
       CASE
         0 OF ['] gzi-do-stored r@ gzi-state!  gzi.ok ENDOF
         1 OF ['] gzi-do-fixed  r@ gzi-state!  gzi.ok ENDOF
@@ -870,6 +895,18 @@ end-structure
 ;
 
 
+: gzi-reduce-output ( gzi -- = Check if output buffered can be reduced )
+  dup  gzi>lbf-size @ 4096 -
+  swap gzi>lbf
+  dup lbf-gap@ rot over < IF    \ If gap between out and out' > initial-size - 4k Then
+    32768 -
+    swap 2dup lbf-skip drop lbf-reduce  \   Remove processed data and reduce buffer
+  ELSE
+    2drop
+  THEN
+;
+
+
 : gzi-end-inflate  ( gzi -- = Finish the inflation of data )
   drop \ ToDo
 ;
@@ -881,6 +918,7 @@ end-structure
   ." gzi:" dup . cr
     ."  bis                   : " dup gzi>bis      bis-dump
     ."  state                 : " dup gzi>state    ? cr
+    ."  lbf-size              : " dup gzi>lbf-size ? cr
     ."  lbf                   : " dup gzi>lbf      lbf-dump
     ."  last-block            : " dup gzi>last-block ? cr
     ."  block-length          : " dup gzi>block-length ? cr

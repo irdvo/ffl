@@ -44,11 +44,12 @@ cp      test/nl.mo            ${dest}/test
 cp      test/test.xml         ${dest}/test
 cp      test/stored.gz        ${dest}/stored.gz
 cp      test/fixed.gz         ${dest}/fixed.gz
-cp      test/compr.gz         ${dest}/compr.gz
+cp      test/gzipped.gz       ${dest}/gzipped.gz
 
 cp   examples/test.xml        ${dest}/examples
 cp   examples/nl.mo           ${dest}/examples
 cp   examples/index.html      ${dest}/examples
+cp   examples/gzipped.gz      ${dest}/examples
 
 tar cvzf ${package}-${version}.tar.gz ${dest} 
 

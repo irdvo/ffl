@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.5 $
+\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.6 $
 \
 \ ==============================================================================
 
@@ -41,17 +41,19 @@ t{ s" unknown.gz" zif1 zif-open-file ?true }t
 
 t{ s" stored.gz"  zif1 zif-open-file ?0 }t
 
-t{ zif1 zif-read-header ?0 value zif1-header }t
+t{ zif1 zif-read-header ?0 }t
 
-t{ zif1-header gzf-text@ . }t
+t{ zif1 zif-gzf@ value gzf1 }t
 
-t{ zif1-header gzf-os@ . }t
+t{ gzf1 gzf-text@ . }t
 
-t{ zif1-header gzf-mtime@ . }t
+t{ gzf1 gzf-os@ . }t
 
-t{ zif1-header gzf-name@ type }t
+t{ gzf1 gzf-mtime@ . }t
 
-t{ zif1-header gzf-comment@ type }t
+t{ gzf1 gzf-name@ type }t
+
+t{ gzf1 gzf-comment@ type }t
 
 \ t{ pad 80 zif1 zif-read-file . pad swap type }t
 
@@ -78,20 +80,23 @@ t{ gzf1 gzf-close-file ?0 }t
 
 t{ zif-new value zif2 }t
 
-\ t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
-t{ s" comp.gz"  zif2 zif-open-file ?0 }t
+t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
+t{ s" gzipped.gz"  zif2 zif-open-file ?0 }t
+\ t{ s" extra.gz"  zif2 zif-open-file ?0 }t
 
-t{ zif2 zif-read-header ?0 value zif2-header }t
+t{ zif2 zif-read-header ?0 }t
 
-t{ zif2-header gzf-text@ . cr }t
+t{ zif2 zif-gzf@ value gzf2 }t
 
-t{ zif2-header gzf-os@ . cr }t
+t{ gzf2 gzf-text@ . cr }t
 
-t{ zif2-header gzf-mtime@ . cr }t
+t{ gzf2 gzf-os@ . cr }t
 
-t{ zif2-header gzf-name@ type cr }t
+t{ gzf2 gzf-mtime@ . cr }t
 
-t{ zif2-header gzf-comment@ type cr }t
+t{ gzf2 gzf-name@ type cr }t
+
+t{ gzf2 gzf-comment@ type cr }t
 
 : zif-test-file  ( -- ior )
   s" temp.txt" r/w create-file throw
