@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-23 05:37:24 $ $Revision: 1.9 $
+\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -41,9 +41,10 @@ include ffl/gzi.fs
 1 constant zif.version
 
 
-( Default buffer size )
+( Private default buffer size )
 
-2048 value zif.size        ( -- n = Default input buffer size )
+ 2048 value zif.input-size  ( -- u = Default input buffer size )
+69632 value zif.output-size ( -- u = Default output buffer size )
 
 
 ( Private zif state )
@@ -60,6 +61,7 @@ begin-structure zif%       ( -- n = Get the required space for a zif variable )
   +field  zif>gzf            \ the gzip file header
   field:  zif>file           \ the current file
   field:  zif>eof            \ is the end of file reached for the current file ?
+  field:  zif>buffer-size    \ the size of the input buffer
   field:  zif>buffer         \ the input buffer
   field:  zif>result         \ the current result
   field:  zif>length         \ the total calculated length
@@ -73,11 +75,14 @@ end-structure
 ( GZip file reader variable creation, initialisation and destruction )
 
 : zif-init         ( zif -- = Initialise the GZip file reader variable )
-  dup  zif>gzi      gzi-init
+  zif.output-size
+  over zif>gzi      gzi-init
   dup  zif>gzf      gzf-init
   dup  zif>file     0!
   dup  zif>eof      off
-  zif.size allocate throw
+  zif.input-size
+  over zif>buffer-size !
+  zif.input-size allocate throw
   over zif>buffer   !
   dup  zif>result   0!
   dup  zif>length   0!
@@ -116,7 +121,36 @@ end-structure
 ;
 
 
-( Private words )
+( Module words )
+
+: zif+input-size! ( u -- = Set the default input buffer size &lb;default 2k, min. 1k&rb; )
+  1024 max to zif.input-size
+;
+
+
+: zif+input-size@ ( -- u = Get the default input buffer size )
+  zif.input-size
+;
+
+
+: zif+output-size! ( u -- = Set the default output buffer size &lb;default 64k+4k, min. 64k+4k&rb; )
+  69632 max to zif.output-size
+;
+
+
+: zif+output-size@ ( -- u = Get the default output buffer size )
+  zif.output-size
+;
+
+
+( Member words )
+
+: zif-gzf@         ( zif -- gzf = Get the reference to the gzip file header info after zif-read-header )
+  zif>gzf
+;
+
+
+( Private file words )
 
 : zif-file@           ( zif -- fileid = Get the file id of the gzip file )
   zif>file @
@@ -128,11 +162,11 @@ end-structure
   r@ zif>eof @ IF
     exp-no-data
   ELSE
-    r@ zif>buffer @  zif.size  r@ zif-file@  read-file ?dup IF \ XXX zif.size
+    r@ zif>buffer @  r@ zif>buffer-size @  r@ zif-file@  read-file ?dup IF
       nip
     ELSE
       ?dup IF                                    \ If data available Then
-        dup zif.size < r@ zif>eof !              \   Not all available -> eof
+        dup r@ zif>buffer-size @ < r@ zif>eof !  \   Not all available -> eof
         r@ zif>buffer @ swap r@ bis-set          \   Setup buffer in gzp module
         gzi.ok
       ELSE                                       \ Else end of file
@@ -359,7 +393,7 @@ end-structure
 ;
 
 
-: zif-read-header  ( zif -- gzf 0 | ior = Read the &lb;next&rb; header gzf from the gzip file )
+: zif-read-header  ( zif -- ior = Read the &lb;next&rb; header from the gzip file )
   >r
 
   r@ zif>gzf gzf-reset            \ Reset the header info
@@ -378,7 +412,7 @@ end-structure
     r@ gzi-init-inflate           \ If done Then Start inflating and ..
     r@ zif>length 0!
     r@ zif>crc crc-reset      
-    r@ zif>gzf 0                  \ .. return header & okee
+    0                             \ .. return okee
   THEN
   rdrop
 ;
@@ -404,6 +438,7 @@ end-structure
       drop gzi.ok
     ELSE dup gzi.more = IF        \ Read more data
       drop
+      r@ gzi-reduce-output
       r@ zif-read
     THEN THEN
   REPEAT
@@ -446,12 +481,7 @@ end-structure
   trace" <zif-read-file"
 ;
 
-0 [IF]
-: zif-read-line    ( c-addr1 u1 zif -- u2 ior = Read/decompress till end of line or maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
-\ ToDo
-;
 
-[THEN]
 : zif-close-file   ( zif -- ior = Close the file )
   zif-file@ close-file 
 ;
@@ -465,7 +495,8 @@ end-structure
     ."  gzf         : " dup zif>gzf gzf-dump
     ."  file        : " dup zif>file ? cr
     ."  eof?        : " dup zif>eof  ? cr
-    ."  buffer      : " dup zif>buffer @ zif.size dump
+    ."  buffer-size : " dup zif>buffer-size ? cr
+    ."  buffer      : " dup zif>buffer @ over zif>buffer-size @ dump
     ."  result      : " dup zif>result ? cr
     ."  length      : " dup zif>length ? cr
     ."  file-length : " dup zif>file-len ? cr

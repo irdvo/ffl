@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-10 14:36:26 $ $Revision: 1.9 $
+\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.10 $
 \
 \ ==============================================================================
 
@@ -164,9 +164,15 @@ end-structure
 ;
 
 
-: lbf-length'@     ( lbf -- u = Get the number of elements in the buffer based on the second out pointer )
+: lbf-length'@     ( lbf -- u = Get the number of elements in the buffer based on the secondary out pointer )
   dup  lbf-in@
   swap lbf-out'@ -
+;
+
+
+: lbf-gap@         ( lbf -- u = Get the number of elements between the out pointer and the secondary out pointer )
+  dup lbf-out'@
+  swap lbf-out@ -
 ;
 
 
