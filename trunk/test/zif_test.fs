@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.6 $
+\  $Date: 2009-05-28 17:40:17 $ $Revision: 1.7 $
 \
 \ ==============================================================================
 
@@ -35,73 +35,11 @@ include ffl/dtm.fs
 .( Testing: gzf gzi zif) cr 
 
 
-t{ zif-create zif1 }t
-
-t{ s" unknown.gz" zif1 zif-open-file ?true }t 
-
-t{ s" stored.gz"  zif1 zif-open-file ?0 }t
-
-t{ zif1 zif-read-header ?0 }t
-
-t{ zif1 zif-gzf@ value gzf1 }t
-
-t{ gzf1 gzf-text@ . }t
-
-t{ gzf1 gzf-os@ . }t
-
-t{ gzf1 gzf-mtime@ . }t
-
-t{ gzf1 gzf-name@ type }t
-
-t{ gzf1 gzf-comment@ type }t
-
-\ t{ pad 80 zif1 zif-read-file . pad swap type }t
-
-t{ zif1 zif-close-file ?0 }t
-
-t{ zif1 zif-(free) }t
-
-0 [IF]
-
-
-t{ pad 80 gzf1 gzf-read-file ?0 . }t
-
-gzf1 gzf-dump
-
-dtm-create gzfd
-
-gzf1 gzf-mtime@ 0  dtm.unix-epoch  gzfd  dtm-set-with-seconds 
-
-.( Mtime: ) gzfd dtm-get . . . . . . . cr
-
-t{ gzf1 gzf-close-file ?0 }t
-
-[THEN]
-
-t{ zif-new value zif2 }t
-
-t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
-t{ s" gzipped.gz"  zif2 zif-open-file ?0 }t
-\ t{ s" extra.gz"  zif2 zif-open-file ?0 }t
-
-t{ zif2 zif-read-header ?0 }t
-
-t{ zif2 zif-gzf@ value gzf2 }t
-
-t{ gzf2 gzf-text@ . cr }t
-
-t{ gzf2 gzf-os@ . cr }t
-
-t{ gzf2 gzf-mtime@ . cr }t
-
-t{ gzf2 gzf-name@ type cr }t
-
-t{ gzf2 gzf-comment@ type cr }t
-
-: zif-test-file  ( -- ior )
-  s" temp.txt" r/w create-file throw
+: zif-test-file  ( c-addr u zif -- ior )
+  >r
+  r/w create-file throw
   BEGIN
-    pad 80 zif2 zif-read-file
+    pad 80 r@ zif-read-file
     dup 0= IF
       over 0>
     ELSE
@@ -113,13 +51,63 @@ t{ gzf2 gzf-comment@ type cr }t
   REPEAT
   nip
   swap close-file throw
+  rdrop
 ;
 
-t{ zif-test-file ?0 }t
+
+t{ zif-create zif1 }t
+
+t{ s" unknown.gz" zif1 zif-open-file ?true }t 
+
+
+
+t{ s" stored.gz"  zif1 zif-open-file ?0 }t
+
+t{ zif1 zif-read-header ?0 }t
+
+t{ zif1 zif-gzf@ value gzf1 }t
+
+t{ gzf1 gzf-text@ ?0 }t
+
+t{ gzf1 gzf-os@ gzf.unix ?s }t
+
+t{ s" stored" zif1 zif-test-file ?0 }t
+
+t{ zif1 zif-close-file ?0 }t
+
+t{ zif1 zif-(free) }t
+
+
+
+t{ zif-new value zif2 }t
+
+t{ s" fixed.gz"  zif2 zif-open-file ?0 }t
+
+t{ zif2 zif-read-header ?0 }t
+
+t{ s" fixed" zif2 zif-test-file ?0 }t
 
 t{ zif2 zif-close-file ?0 }t
 
 t{ zif2 zif-free }t
+
+
+
+t{ zif-new value zif3 }t
+
+t{ s" gzipped.gz" zif3 zif-open-file ?0 }t
+
+t{ zif3 zif-read-header ?0 }t
+
+t{ zif3 zif-gzf@ value gzf3 }t
+
+t{ gzf3 gzf-name@ s" COPYING" ?str }t
+
+t{ s" gzipped" zif3 zif-test-file ?0 }t
+
+t{ zif3 zif-close-file ?0 }t
+
+t{ zif3 zif-free }t
 
 [THEN]
 

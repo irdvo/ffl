@@ -212,8 +212,8 @@ For running the tests the minForth engine is configured too small:
 5. Enter: ffl_test.fs
 
 ( for lxf )
-ToDo: test directory, installation ?
-1. Change the current directory to the 'test' directory
+1. Change the current directory to the 'test' directory.
+2. Make sure that in this directory the 'ffl' is installed.
 2. Enter: lxf include ffl_test.fs
 
 
@@ -244,10 +244,6 @@ file 'index.html' contains an overview of all the modules in the library. In
 the file 'words.html' all words of the libary are alphabetically listed. In
 the file 'manual.html' there is simple manual.
 
-On the site there is also a link to the manual. This is actually a wiki with 
-more information about the library.
-
-
 Porting to other forth systems
 ------------------------------
 
@@ -270,10 +266,9 @@ Bugs
 ----
 
 Because the library is still beta it is not impossible that you will find 
-bugs. You can send them or any suggestions to the email address which is 
-listed on the site: ffl.dvoudheusden.net.
+bugs. You can send them or any suggestions to dvoudheusden@gmail.com.
 
 
-Thanks.
+Enjoy,
 Dick van Oudheusden
 
