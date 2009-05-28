@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.22 $
+\  $Date: 2009-05-28 17:35:58 $ $Revision: 1.23 $
 \
 \ ==============================================================================
 
@@ -30,22 +30,15 @@ include ffl/config.fs
 
 [UNDEFINED] gzi.version [IF]
 
-\ -- ToDo Remove
-include ffl/log.fs
-
-log-to-console
-7 log-stack
-false log-time&date
-\ ----
-
 include ffl/bis.fs
 include ffl/lbf.fs
+include ffl/enm.fs
 
 
 ( gzi = GZip Input Base Module )
 ( The gzi module implements the base words for using the GZip inflate        )
-( algoritme. The module is used for reading from a gzip file [zif] and       )
-( stream [zis].                                                              )
+( algoritme. The module is used for reading from a gzip file [zif] and,      )
+( int the future, stream [zis].                                              )
 
 
 1 constant gzi.version
@@ -63,10 +56,10 @@ end-enumeration
 
 ( private gzi constants and tables )
 
-320   constant gzi.max-codes  ( -- n = Maximum number of codes )
-15    constant gzi.max-bits   ( -- n = Maximum number of bits  )
+320 constant gzi.max-codes  ( -- n = Maximum number of codes )
+15  constant gzi.max-bits   ( -- n = Maximum number of bits  )
 gzi.max-bits 1+
-      constant gzi.max-bits+1 ( -- n = Maximum number of bits + 1 )
+    constant gzi.max-bits+1 ( -- n = Maximum number of bits + 1 )
 
 
 : gzi.table        ( "<spaces>name" -- ; u1 -- u2 = Create a cell based lookup table )
@@ -78,15 +71,19 @@ gzi.max-bits 1+
 gzi.table gzi.length-offsets  ( u1 -- u2 = Table with the offsets for the length codes 257..285 )
     3 ,  4 ,  5 ,  6 ,  7 ,  8 ,  9 , 10 ,  11 ,  13 ,  15 ,  17 ,  19 ,  23 , 27 , 
    31 , 35 , 43 , 51 , 59 , 67 , 83 , 99 , 115 , 131 , 163 , 195 , 227 , 258 ,
+
 gzi.table gzi.length-extras   ( u1 -- u2 = Table with the extra bits for the length codes 257..185 )
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 2 , 2 , 2 , 
     2 , 3 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 5 , 5 , 5 , 5 , 0 , 
+
 gzi.table gzi.distance-offsets (  u1 -- u2 = Table with the offsets for the distance codes 0..29 )
       1 ,   2 ,   3 ,   4 ,   5 ,    7 ,    9 ,   13 ,   17 ,   25 ,   33 ,    49 ,    65 ,    97 ,   129 , 
     193 , 257 , 385 , 513 , 769 , 1025 , 1537 , 2049 , 3073 , 4097 , 6145 ,  8193 , 12289 , 16385 , 24577 ,
+
 gzi.table gzi.distance-extras
     0 , 0 , 0 , 0 , 1 , 1 , 2 ,  2 ,  3 ,  3 ,  4 ,  4 ,  5 ,  5 ,  6 , 
     6 , 7 , 7 , 8 , 8 , 9 , 9 , 10 , 10 , 11 , 11 , 12 , 12 , 13 , 13 ,
+
 gzi.table gzi.code-orders
     16 , 17 , 18 , 0 , 8 , 7 , 9 , 6 , 10 , 5 , 11 , 4 , 12 , 3 , 13 , 2 , 14 , 1 , 15 ,
 
@@ -118,24 +115,18 @@ end-structure
   r@ gzi>hfm>lengths !
   r@ gzi>hfm>counts gzi.max-bits+1 cells erase   \ erase the counts array
   
-  trace" >construct"
-
   r>
   dup gzi>hfm>lengths @ over gzi>hfm>number @ cells bounds DO
     I @ cells
-    over gzi>hfm>counts + 1+!
+    over gzi>hfm>counts + 1+!  \ count the bit lengths
   cell +LOOP
-  trace" >construct2"
   
-  \ Check for no codes
-  dup gzi>hfm>counts @ over gzi>hfm>number @ = IF \ counts[0] == n ?
+  dup gzi>hfm>counts @ over gzi>hfm>number @ = IF \ Check for no codes: counts[0] == n ?
     drop 0 EXIT
   THEN
   >r
-  trace" >construct3"
     
-  \ Check for over-subscribed or incomplete set
-  1                            \ left = 1
+  1                            \ Check for over-subscribed or incomplete set, left = 1
   r@ gzi>hfm>counts cell+ gzi.max-bits cells bounds DO \ For counts[1]..counts[maxbits]
     1 lshift                   \ left <<= 1
     I @ -                      \ left -= counts[i], if < 0, then over subscribed
@@ -143,11 +134,9 @@ end-structure
       LEAVE
     THEN
   cell +LOOP                   \ S: n:left
-  trace" >construct4"
   
   dup 0< 0= IF                 \ if left >= 0
-    \ Generate offsets for each bit length
-    r@ gzi>hfm>offsets cell+   \ offsets[1]
+    r@ gzi>hfm>offsets cell+   \ Generate offsets for each bit length, start with offsets[1]
     dup 0!
     r@ gzi>hfm>counts cell+ gzi.max-bits 1- cells bounds DO \ For counts[1]..counts[maxbits-1]
       dup cell+
@@ -156,33 +145,29 @@ end-structure
       over !
     cell +LOOP
     drop
-  trace" >construct5"
     
-    \ Generate indices for each symbol, sorted within each bit length
-    r@ gzi>hfm>number @  0
+    r@ gzi>hfm>number @  0     \ Generate indices for each symbol, sorted within each bit length
     BEGIN
       2dup >                   \ For symbol = 0 .. n-1
     WHILE
-      r@ gzi>hfm>lengths @ over cells + @ \ lengths[s]
+      r@ gzi>hfm>lengths @ over cells + @  \ lengths[s]
       ?dup IF
-       cells r@ gzi>hfm>offsets + \ offsets[lengths[s]]
-       dup @                  \ o = offsets[length[s]]
-       swap 1+!               \ offsets[length[s]]++
-       cells r@ gzi>hfm>symbols @ + \ symbols[o]
-       over swap !            \ symbols[o] = s
+       cells r@ gzi>hfm>offsets +  \ offsets[lengths[s]]
+       dup @                   \ o = offsets[length[s]]
+       swap 1+!                \ offsets[length[s]]++
+       cells r@ gzi>hfm>symbols @ +  \ symbols[o]
+       over swap !             \ symbols[o] = s
       THEN
       1+
     REPEAT
     2drop
   THEN
   r> gzi>hfm>lengths nil!
-  trace" <construct"
 ;
 
 
 : gzi-hfm-new  ( a-addr u -- n hfm = Create a new huffman structure on the heap with u symbols and bit lengths a-addr, return completness n )
-  gzi%hfm% allocate throw  
-  >r r@ gzi-hfm-init r>
+  gzi%hfm% allocate throw  >r r@ gzi-hfm-init r>
 ;
 
 
@@ -208,10 +193,10 @@ end-structure
 ;
 
 
-: gzi-hfm-code?    ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
+: gzi-hfm-code>symbol  ( u1 hfm -- false | u2 true = Check if code u1 is valid for current bit length, if so return the symbol, else move iterator to next bit length )
   >r
   r@ gzi>hfm>count @ @
-  2dup r@ gzi>hfm>first @ + < IF  \ if code < first + [count] then
+  2dup r@ gzi>hfm>first @ + < IF   \ if code < first + [count] then
     drop
     r@ gzi>hfm>first @ -
     r@ gzi>hfm>index @ + cells
@@ -254,7 +239,6 @@ begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   field:  gzi>lbf-size         \ the initial size of the output buffer
   lbf%
   +field  gzi>lbf              \ the output buffer
-
   
   field:  gzi>last-block       \ is this the last block ?
   field:  gzi>block-length     \ the length of a block
@@ -297,11 +281,13 @@ end-structure
   swap nil<> AND
 ;
 
+
 : gzi-free-distances?  ( gzi -- flag = Should the distances huffman table be freed ? )
   dup gzi>hfm-distances @ dup
   rot gzi>hfm-fixed-distances @ <> \ the distances table should not be nil or equal to the fixed table
   swap nil<> AND
 ;
+
 
 ( GZip inflation variable creation, initialisation and destruction )
 
@@ -341,7 +327,6 @@ end-structure
   r@ gzi>repeat-times  0!
 
   rdrop
-\ ToDo
 ;
 
 
@@ -353,10 +338,7 @@ end-structure
   
   dup gzi>hfm-fixed-symbols   @ nil<>? IF gzi-hfm-free THEN
   dup gzi>hfm-fixed-distances @ nil<>? IF gzi-hfm-free THEN
-  dup gzi>hfm-code-codes      @ nil<>? IF gzi-hfm-free THEN
-
-  drop
-  \ ToDo
+      gzi>hfm-code-codes      @ nil<>? IF gzi-hfm-free THEN
 ;
 
 
@@ -371,20 +353,25 @@ end-structure
 
 
 : gzi-free         ( gzi -- = Free the variable from the heap )
-  dup gzi-(free)             \ Free the internal, private variables from the heap
+  dup gzi-(free)        \ Free the internal, private variables from the heap
 
-  free throw                 \ Free the gzi
+  free throw            \ Free the variable
 ;
 
 
 ( Member words )
 
-: gzi-state!       ( xt gzi -- = Set the current state )
-  gzi>state !
+: gzi-lbf@         ( gzi -- lbf = Get the output buffer )
+  gzi>lbf
 ;
 
 
 ( Private inflate words )
+
+: gzi-state!       ( xt gzi -- = Set the current state )
+  gzi>state !
+;
+
 
 : gzi-decode       ( hfm gzi -- u gzi.ok | ior = Decode the current code to a symbol )
   >r
@@ -392,7 +379,7 @@ end-structure
     r@ gzi>code-length @ gzi.max-bits+1 < IF  \ if not all bits done then
       r@ bis-get-bit IF                       \   get next bit, if available then
         r@ gzi>code @ 1 lshift OR             \     put bit in code and ..
-        2dup swap gzi-hfm-code? IF            \     convert to the symbol, if success then
+        2dup swap gzi-hfm-code>symbol IF            \     convert to the symbol, if success then
           nip nip gzi.ok true                 \       done
         ELSE                                  \     else
           r@ gzi>code !                       \       save, try next bit
@@ -417,7 +404,6 @@ end-structure
 0 value gzi.do-code-table ( -- xt = xt of gzi-do-code-table )
 
 : gzi-do-copy      ( gzi -- ior = Copy uncompressed data )
-  trace" do-copy"
   >r
   r@ gzi>block-length @ ?dup IF
     r@ bis-get                         \ Get byte data from input stream
@@ -437,13 +423,11 @@ end-structure
 
 
 : gzi-do-stored    ( gzi -- ior = Process uncompressed data )
-  trace" do-stored"
   dup bis-bits>bytes
   4 over bis-read-bytes IF
     dup            [ hex ] FFFF [ decimal ] AND
     swap 16 rshift [ hex ] FFFF [ decimal ] XOR
     over = IF
-      trace" Length:"
       over gzi>block-length !
       ['] gzi-do-copy swap gzi-state!
       gzi.ok
@@ -466,7 +450,6 @@ end-structure
 
 
 : gzi-do-distance-extra  ( gzi -- ior = Read the extra copy distance bits )
-  trace" >do-distance-extra"
   dup gzi>code @ gzi.distance-extras      \ get extra length bits based on symbol
   over 2dup bis-need-bits IF              \ if extra bits in the buffer then
     2dup bis-fetch-bits
@@ -474,10 +457,9 @@ end-structure
     over gzi>copy-distance !
     bis-next-bits                         \   set bits processed
 
-    \ XXX Distance on stack
     dup gzi>copy-length @
     over dup gzi>copy-distance @
-    swap gzi>lbf lbf-copy            \           copy from output buffer
+    swap gzi>lbf lbf-copy                 \   copy from output buffer
 
     dup gzi-start-codes                   \   continue decoding the codes
     gzi.ok
@@ -485,12 +467,10 @@ end-structure
     2drop gzi.more
   THEN
   nip
-  trace" <do-distance-extra"
 ;
 
 
 : gzi-do-distance  ( gzi -- ior = Decode the distance code )
-  trace" >do-distance"
   dup gzi>hfm-distances @ over gzi-decode
   dup gzi.ok = IF
     drop
@@ -515,7 +495,6 @@ end-structure
     THEN
   THEN
   nip
-  trace" <do-distance"
 ;
 
 
@@ -529,7 +508,6 @@ end-structure
 
 
 : gzi-do-length-extra  ( gzi -- ior = Read the extra copy length bits )
-  trace" >do-length-extra"
   dup gzi>code @ gzi.length-extras        \ get extra length bits based on symbol
   over 2dup bis-need-bits IF              \ if extra bits in the buffer then
     2dup bis-fetch-bits
@@ -543,12 +521,10 @@ end-structure
     2drop gzi.more
   THEN
   nip
-  trace" <do-length-extra"
 ;
 
 
 : gzi-do-codes  ( gzi -- ior = Inflate the codes )
-  trace" >do-codes"
   BEGIN
     dup gzi>hfm-symbols @ over gzi-decode
     dup gzi.ok = IF
@@ -584,13 +560,11 @@ end-structure
     THEN
   UNTIL
   nip
-  trace" <do-codes"
 ;
 ' gzi-do-codes to gzi.do-codes
 
 
 : gzi-do-fixed     ( gzi -- ior = Process data with a fixed table )
-  trace" do-fixed"
   >r
   r@ gzi>hfm-fixed-symbols @ nil= IF
 
@@ -632,8 +606,6 @@ end-structure
 
 
 : gzi-construct-dynamic  ( gzi -- ior = Construct the dynamic huffman tables )
-  trace" >construct-dynamic"
-  
   dup gzi>lengths over gzi>length-codes @ gzi-hfm-new swap
   dup 0< IF
     drop gzi-hfm-free drop
@@ -670,17 +642,13 @@ end-structure
   
   swap gzi>hfm-distances !
   gzi.ok
-  
-  trace" <construct-dynamic"
 ;
 
 
 : gzi-do-repeat-times  ( gzi -- ior = Read the repeat times and perform the bit length copy )
-  trace" >do-repeat-times"
   dup gzi>repeat-bits @ over
   2dup bis-need-bits IF             \ Read the extra repeat times bits
     2dup bis-fetch-bits
-    ." CopyExtra:" .s cr
     over gzi>repeat-times +!
          bis-next-bits
     
@@ -688,12 +656,11 @@ end-structure
     r@ gzi>repeat-length @          \ Copy the repeat length, repeat times in the lengths array
     r@ gzi>lengths
     r@ gzi>index @ cells +
-    r@ gzi>repeat-times @ cells trace" do-repeat-copy" bounds ?DO
+    r@ gzi>repeat-times @ cells bounds ?DO
       dup I !
     cell +LOOP
     drop
     r>
-    trace" =do-repeat-times"
     
     dup gzi>index @  over gzi>repeat-times @ +
     2dup swap gzi>length+distance-codes @ < IF  \ If not all bit lengths decoded then
@@ -702,7 +669,6 @@ end-structure
       gzi.ok
     ELSE                               \  Else
       drop
-      ." Done.." cr
       dup gzi-construct-dynamic        \    Construct the dynamic huffman tables and ..
       dup gzi.ok = IF
         over gzi-start-codes           \    .. start decoding the data
@@ -713,12 +679,10 @@ end-structure
     gzi.more
   THEN
   nip
-  trace" <do-repeat-times"
 ;
 
 
 : gzi-do-code-table  ( gzi -- ior = Decode the length/literal table )
-  trace" >do-code-table"
   BEGIN
     dup gzi>hfm-code-codes @ over gzi-decode
     dup gzi.ok = IF
@@ -769,13 +733,11 @@ end-structure
     THEN
   UNTIL
   nip
-  trace" <do-code-table"
 ;
 ' gzi-do-code-table to gzi.do-code-table
 
 
 : gzi-do-code-codes ( gzi -- ior = Read the code length code lengths )
-  trace" >do-code-codes"
   BEGIN
     dup gzi>index @ over gzi>code-codes @ < IF  \ if not all lengths read then
       3 over bis-need-bits IF
@@ -804,16 +766,13 @@ end-structure
     THEN
   UNTIL
   nip
-  trace" <do-code-codes"
 ;
 
 
 : gzi-do-table     ( gzi -- ior = Start processing the dynamic table by reading the table lengths )
-  trace" >do-table"
   14 over bis-need-bits IF
     5 over bis-fetch-bits         \ Read number of literal/length codes
     257 +
-    ." length-codes:" dup . cr
     dup 286 > IF
       drop exp-wrong-file-data
     ELSE
@@ -823,7 +782,6 @@ end-structure
     
       5 over bis-fetch-bits       \ Read number of distance codes
       1+
-      ." distance-codes:" dup . cr
       dup 30 > IF
         drop exp-wrong-file-data
       ELSE
@@ -833,7 +791,6 @@ end-structure
     
         4 over bis-fetch-bits     \ Read number of code length codes
         4 +
-        ." code-codes:" dup . cr
         over gzi>code-codes !
         4 over bis-next-bits
     
@@ -846,12 +803,10 @@ end-structure
     gzi.more
   THEN
   nip
-  trace" <do-table"
 ;
 
 
 : gzi-do-type      ( gzi -- ior = Check last block and inflation type )
-  trace" do-type"
   >r
   r@ gzi>last-block @ IF
     gzi.done                 \ Return to caller
@@ -883,10 +838,7 @@ end-structure
 : gzi-init-inflate ( gzi -- = Start the inflation of data )
   ['] gzi-do-type over gzi-state!
  
-  dup bis-bytes>bits         \ Start reading bits
-
-  drop
-  \ ToDo
+  bis-bytes>bits       \ Start reading bits
 ;
 
 
@@ -908,7 +860,7 @@ end-structure
 
 
 : gzi-end-inflate  ( gzi -- = Finish the inflation of data )
-  drop \ ToDo
+  drop
 ;
 
 

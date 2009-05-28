@@ -20,7 +20,7 @@
 \
 \ ==============================================================================
 \ 
-\  $Date: 2009-05-25 19:13:34 $ $Revision: 1.10 $
+\  $Date: 2009-05-28 17:35:58 $ $Revision: 1.11 $
 \
 \ ==============================================================================
 
@@ -88,9 +88,7 @@ end-structure
   dup  zif>length   0!
   dup  zif>file-len 0!
   dup  zif>crc      crc-init
-  dup  zif>file-crc 0!
-  drop
-\ ToDo
+       zif>file-crc 0!
 ;
 
 
@@ -98,9 +96,7 @@ end-structure
   dup zif>buffer @ free throw
   dup zif>gzi      gzi-(free)
   dup zif>gzf      gzf-(free)
-  dup zif>crc      crc-(free)
-  drop
-  \ ToDo
+      zif>crc      crc-(free)
 ;
 
 
@@ -157,7 +153,7 @@ end-structure
 ;
 
 
-: zif-read            ( zif -- n = Read another block of data from the file )
+: zif-read            ( zif -- ior = Read another block of data from the file )
   >r
   r@ zif>eof @ IF
     exp-no-data
@@ -181,7 +177,7 @@ end-structure
 
 ( Private header words )
 
-: zif-do-crc       ( zif -- n = Skip CRC )
+: zif-do-crc       ( zif -- ior = Skip CRC )
   dup zif>gzf gzf-flags@ 2 AND IF
     2 swap bis-read-bytes IF 
       drop
@@ -195,7 +191,7 @@ end-structure
 ;
 
 
-: zif-do-comment   ( zif -- n = Read the comment )
+: zif-do-comment   ( zif -- ior = Read the comment )
   dup zif>gzf gzf-flags@ 16 AND IF
     BEGIN
       1 over bis-read-bytes IF
@@ -217,7 +213,7 @@ end-structure
 ;
 
  
-: zif-do-name      ( zif -- n = Read the filename )
+: zif-do-name      ( zif -- ior = Read the filename )
   dup zif>gzf gzf-flags@ 8 AND IF
     BEGIN
       1 over bis-read-bytes IF
@@ -239,7 +235,7 @@ end-structure
 ;
 
       
-: zif-do-extra     ( zif -- n = Skip the extra bytes )
+: zif-do-extra     ( zif -- ior = Skip the extra bytes )
   >r
   dup zif>gzf gzf>xlen @          \ Skip xlen byte
   BEGIN
@@ -263,7 +259,7 @@ end-structure
 ;
 
 
-: zif-do-xlen      ( zif -- n = Read the extra length )
+: zif-do-xlen      ( zif -- ior = Read the extra length )
   dup zif>gzf gzf-flags@ 4 AND IF
     2 over bis-read-bytes IF
       over zif>gzf gzf>xlen !
@@ -279,7 +275,7 @@ end-structure
 ;
 
 
-: zif-do-os        ( zif -- n = Save the Operating System )
+: zif-do-os        ( zif -- ior = Save the Operating System )
   1 over bis-read-bytes IF
     over zif>gzf gzf-os!
     ['] zif-do-xlen swap gzi-state!  \ Next: extra fields
@@ -290,9 +286,9 @@ end-structure
 ;
 
 
-: zif-do-xflags    ( zif -- n = Check and save the extra flags )
+: zif-do-xflags    ( zif -- ior = Check and save the extra flags )
   1 over bis-read-bytes IF
-    over zif>gzf gzf>xflags ! \ ToDo Check
+    over zif>gzf gzf>xflags !      \ XXX Check
     ['] zif-do-os swap gzi-state!  \ Next: os
     gzi.ok
   ELSE
@@ -301,7 +297,7 @@ end-structure
 ;
 
 
-: zif-do-mtime     ( zif -- n = Check and process the modification time )
+: zif-do-mtime     ( zif -- ior = Check and process the modification time )
   4 over bis-read-bytes IF
     over zif>gzf gzf-mtime!
     ['] zif-do-xflags swap gzi-state!  \ Next: extra flags
@@ -312,7 +308,7 @@ end-structure
 ;
 
 
-: zif-do-flags     ( zif -- n = Check and process the flags )
+: zif-do-flags     ( zif -- ior = Check and process the flags )
   1 over bis-read-bytes IF
     2dup 1 AND 0<> swap zif>gzf gzf-text!
     over zif>gzf gzf-flags!
@@ -324,7 +320,7 @@ end-structure
 ;
 
   
-: zif-do-cm        ( zif -- n = Check the Compression Mode )
+: zif-do-cm        ( zif -- ior = Check the Compression Mode )
   1 over bis-read-bytes IF
     gzf.deflate = IF         \ Only support deflate
       ['] zif-do-flags swap gzi-state!  \ Next: flags
@@ -338,7 +334,7 @@ end-structure
 ;
 
 
-: zif-do-id        ( zif -- n = Check the IDs from the gzip file )
+: zif-do-id        ( zif -- ior = Check the IDs from the gzip file )
   2 over bis-read-bytes IF
     35615 = IF
       ['] zif-do-cm swap gzi-state!   \ Next: check CM
@@ -352,21 +348,19 @@ end-structure
 ;
 
 
-: zif-do-length    ( zif -- n = Check the data length )
+: zif-do-length    ( zif -- ior = Check the data length )
   4 over bis-read-bytes IF
-    trace" zif-do-length¨
     swap zif>file-len !       \ Save the length for checking
-    zif.done                 \ All done
+    zif.done                  \ All done
   ELSE
     drop gzi.more
   THEN
 ;
 
 
-: zif-do-check     ( zif -- n = Check the data checksum )
+: zif-do-check     ( zif -- ior = Check the data checksum )
   4 over bis-read-bytes IF
-    trace" zif-do-check"
-    over zif>file-crc !          \ Save the crc for checking
+    over zif>file-crc !                \ Save the crc for checking
     ['] zif-do-length swap gzi-state!  \ Next: check data length
     gzi.ok
   ELSE
@@ -407,6 +401,7 @@ end-structure
     THEN
     ?dup
   UNTIL                           \ Continue until done or error
+  
   dup gzi.done = IF
     drop
     r@ gzi-init-inflate           \ If done Then Start inflating and ..
@@ -419,12 +414,11 @@ end-structure
 
 
 : zif-read-file    ( c-addr1 u1 zif -- u2 ior = Read/decompress maximum u1 bytes from the file and store those at c-addr1, return the actual read bytes )
-  trace" >zif-read-file"
   >r
   r@ zif>result @                 \ Inflate until u1 bytes and okee
   BEGIN
     dup gzi.ok = IF
-      over r@ gzi>lbf lbf-length'@ >
+      over r@ gzi-lbf@ lbf-length'@ >
     ELSE
       false
     THEN
@@ -444,10 +438,9 @@ end-structure
   REPEAT
   dup r@ zif>result !
 
-  trace" =zif-read-file"
   dup gzi.ok = over zif.done = OR IF  \ Copy the requested data
     drop
-    dup r@ gzi>lbf lbf-get' ?dup IF
+    dup r@ gzi-lbf@ lbf-get' ?dup IF
        dup r@ zif>length +!           \ Increase the calculated length
       2dup r@ zif>crc crc-update      \ Update the calculated crc
       2swap rot
@@ -477,8 +470,6 @@ end-structure
     0 swap                             \ Error during inflation
   THEN
   rdrop
-  
-  trace" <zif-read-file"
 ;
 
 
