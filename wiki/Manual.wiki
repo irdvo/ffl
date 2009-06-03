@@ -1,0 +1,334 @@
+#summary Getting started with the library
+#labels Featured
+
+== Getting started ==
+
+First you need to include the module you want to use. For example, to include the fraction module (and all modules which are needed by the fraction module), you would do:
+
+{{{include ffl/frc.fs}}}
+
+You can also include all modules at once with:
+
+{{{include ffl/ffl.fs}}}
+
+Many modules store state in a variables. These modules provide three ways to allocate and initialize the variable. For example, after including the dynamic string module, you could:
+
+1. Create a variable named var1 in the dictionary with:
+
+{{{str-create var1}}}
+
+2. Dynamically allocate and free an str variable with:
+
+{{{str-new}}}
+{{{str-free }}}
+
+3. If you prefer to allocate the variable yourself, you can get the necessary size with:
+
+{{{str%}}}
+
+After allocating the variable, you must initialize it with:
+
+{{{str-init}}}
+
+and when you are finished with the variable, free the internal, private variables with:
+
+{{{str-(free)}}}
+
+The documentation for all modules is listed on the [Modules] page. There is an alphabetical list of all the words on the [Words] page. For an increasing number of modules there are small code examples.
+
+== Hands on ==
+
+=== Modules ===
+
+If you want to use a module, you start with including the module in your forth engine. 
+For example if you want to do fraction calculations, you start with:
+
+{{{include ffl/frc.fs}}}
+
+This will include the fraction module and also all modules that are needed by the fraction 
+module. After including you can use the module. For example, if you want to multiply two 
+fractions, you can enter:
+
+{{{1 4 2 3 frc+multiply}}}
+
+This will multiply 1/4 times 2/3. By entering .s you will see the result: 2 12, which is 2/12. 
+You can then normalize, convert the fraction to a string and type it by entering:
+
+{{{frc+to-string type}}}
+
+This will show the result: 1/6
+
+=== Dictionary variables ===
+
+The following example shows the use of modules that store a state in a variable. This example uses the sha1 module in the ffl library. First include the module in your forth engine:
+
+{{{include ffl/sh1.fs}}}
+
+Then create a sha1 variable which will contain the state of the calculation. You can create the variable in the dictionary by entering:
+
+{{{sh1-create var1}}}
+
+This creates a new word, var1, which is a sha1 variable. Next you can start calculating the sha1 algorithm by feeding data to the variable:
+
+{{{s" ab" var1 sh1-update}}}
+{{{s" c"  var1 sh1-update}}}
+
+In this example the sha1 variable is fed with the string abc. The next step is finishing the calculation. This is done by:
+
+{{{var1 sh1-finish sh1+to-string type}}}
+
+So the sha1 calculation is finished and the resulting hash value is converted to a string, which is then typed. If all went well, it should show: A9993E364706816ABA3E25717850C26C9CD0D89D which is the secure hash1 result of the string "abc".
+
+=== Heap variables ===
+
+Besides creating a sha1 variable in the dictionary, you can also allocate a sha1 variable on the heap by entering:
+
+{{{sh1-new}}}
+
+Now there is a dynamically allocated sha1 variable on the stack. Feeding data to this variable can be done by:
+
+{{{dup s" ab" rot sh1-update}}}
+{{{dup s" c"   rot sh1-update}}}
+
+And finishing the calculation by:
+
+{{{dup sh1-finish sh1+to-string type}}}
+
+Which resulted in the same sha1 value. When you don't need the dynamic variable anymore you can free the memory used by the variable by entering:
+
+{{{sh1-free}}}
+
+== Index ==
+
+Some modules allow you to use an index to access members of a collection (an array, list, etc.). All indices are zero-based, so index 0 is the first element, index 1 is the second element, and so on.
+
+Negative indices can also be used, and index backward from the end of the collection. That is, index -1 is the last element in the collection, index -2 is the next-to-last element, and so on.
+
+If the value of an index is not valid in a collection, the exception exp-index-out-of-range is thrown.
+
+== Reader ==
+
+The tis, xis and dom modules use a reader word. This word makes it possible to feed these modules with data from different sources.
+
+For example for feeding data from a text file, the following reader can be used:
+
+{{{
+: file-reader  ( file-id -- c-addr u | 0 = Read data from a text file)
+  pad 80 rot read-file throw
+  dup IF
+    pad swap
+  THEN
+;
+}}}
+
+The stack notation for the reader is {{{( x -- c-addr u | 0)}}}, in which _x_ is the specific state for the reader and _c-addr u_ is the read data.
+
+To let the *tis* module use this reader word, use the following example code:
+
+{{{
+\ Open the 'file.txt' file and save the file-id in variable txt-file
+s" file.txt" r/o open-file throw   value txt-file
+
+\ Setup a file reader for tis1 variable
+txt-file  ' file-reader  tis1 tis-set-reader
+
+\ Close the file
+txt-file file-close throw
+}}}
+
+The stack notation for the _tis-set-reader_ word is {{{(x xt tis -- )}}}, in which _x_ is the specific state for the reader. This _x_ is fed to the reader (see above). _Xt_ is the reader word itself.
+
+The *xis* module can also use this reader word. See the following example code:
+
+{{{
+\ Open the 'file.xml' file and save the file-id in variable reader-file
+s" file.xml" r/o open-file throw   value xml-file
+
+\ Setup a file reader for xis1 variable
+xml-file  ' file-reader  xis1 xis-set-reader
+
+\ Close the file
+xml-file file-close throw
+}}}
+
+== Versions ==
+
+As soon as a module of the ffl is included, the library version constant ffl.version is created. This constant returns the version number of the library. For example for version 0.4.0 the constant returns 000400.
+
+When a module is included, it defines a constant with the version of that module. The name of this constant is the name of the module followed by '.version'. So the constant frc.version returns the version of the fraction module.
+
+The constant for the module version starts with number 1 after the initial creation of the module. Then every time the interface of the module changes or the functionality of the module increases, the version number is increased by 1. The version number is not changed if a small bug is fixed in the module.
+
+The version constants can be used to check if the library or module is present in the forth dictionary: {{{[DEFINED] frc.version}}}. It can also be used to check if the code in the dictionary is up to date: {{{frc.version 2 =}}}.
+
+
+== Collections ==
+
+There are two types of collections in the library: generic collections and cell based collections.
+
+=== Generic collections ===
+
+Generic collections implements data structures like linked lists, hash tables, trees. These collections do not store any data; they are the base code for implementing more specialised collections. Using a generic collection involves extending the generic code with code for the specific task.
+
+For example: using a single linked list for storing financial information about companies:
+
+First extend the generic single linked list node (invoice>node) with specific variables (invoice>company, invoice>year, invoice>value):
+
+{{{
+include ffl/snl.fs
+
+begin-structure invoice%
+  snn%
+  +field  invoice>node
+  field:  invoice>customer
+  field:  invoice>year
+  field:  invoice>month
+  ffield: invoice>value
+end-structure
+}}}
+
+After that make a word that allocates and initialises a new invoice node:
+
+{{{
+: invoice-new  ( F: r -- ; n1 n2 n3 -- invoice = Allocates and initialise an invoice node with r value, n1 customer, n2 year and n3 month )
+  invoice% allocate throw    \ Allocate the specific single list node
+  >r
+  r@ invoice>node snn-init   \ Initialise the single list node fields
+  r@ invoice>month !         \ Initialise the specific fields
+  r@ invoice>year !
+  r@ invoice>customer !
+  r@ invoice>value f!
+  r>
+;
+}}}
+
+Then create the single list where the new invoice nodes are stored:
+
+{{{
+snl-create invoices
+}}}
+
+Next is the allocation of some invoice nodes, these nodes are added to the invoices list:
+
+{{{
+10.00E+0 1 2008 02 invoice-new invoices snl-append
+25.00E+0 1 2008 03 invoice-new invoices snl-append
+12.75E+0 1 2008 04 invoice-new invoices snl-append
+}}}
+
+After that you can use the words from the generic single linked list. For example print all the invoices in the list with the {{{snl-execute}}} word:
+
+{{{
+: print-invoice ( invoice -- )
+  dup invoice>year @ 4 .r   
+  [char] / emit  
+  dup invoice>month @ 2 .r  
+  space [char] : emit space  
+  dup invoice>customer @ 8 .r space 
+  invoice>value f@ f. cr
+;
+
+." Date      Customer Value" cr
+' print-invoice invoices snl-execute
+}}}
+
+Also the words from the generic single linked list iterator can be used with the invoices list:
+
+{{{
+include ffl/sni.fs
+
+invoices sni-create invoices-iterator
+
+: print-invoices
+  ." Date      Customer Value" cr
+  invoices-iterator sni-first
+  BEGIN
+     nil<>?
+  WHILE
+    print-invoice
+    invoices-iterator sni-next
+  REPEAT
+;
+
+print-invoices
+}}}
+
+=== Cell based collections ===
+
+The cell based collections implements data structures like linked list, hash tables, trees, that can store a single cell value.
+
+For example: using a single linked list for storing temperatures.
+
+First create the single linked list:
+
+{{{
+include ffl/scl.fs
+
+scl-create temperatures
+}}}
+
+Then add the temperatures to the list:
+
+{{{
+23 temperatures scl-append
+27 temperatures scl-append
+26 temperatures scl-append
+22 temperatures scl-append
+}}}
+
+After that you can use the list. For example: print the contents of the list:
+
+{{{
+: print-temperature ( n1 n2 -- n3 = Print temperature n2 with ordered list number n1 )
+  over 2 .r space 4 .r cr
+  1+
+;
+
+1 ' print-temperature temperatures scl-execute drop
+}}}
+
+The list can also be iterated with the single linked cell based iterator:
+
+{{{
+include ffl/sci.fs
+
+temperatures sci-create temperatures-iterator
+
+: print-temperatures ( -- )
+  1
+  temperatures-iterator sci-first
+  BEGIN
+  WHILE
+    print-temperature
+    temperatures-iterator sci-next
+  REPEAT
+  drop
+;
+
+print-temperatures
+}}}
+
+== Inspection ==
+
+A number of modules in the ffl library store their state in variables. These variables are based on a structure with different fields. To inspect those fields the modules define a word for inspecting their variables. The name of the inspecting word ends with _-dump_. For example the sha1 module defines the word _sh1-dump_ for inspecting the sh1 variables. These words expect the variable that must be inspected on the stack. As a result they print the contents of all the fields of the variable on the console.
+
+== Exceptions ==
+
+At the moment the ffl library can raise 7 different exceptions. Exceptions are raised if an unexpected situation is detected that can not be resolved. The exception numbers can also be returned by words as io-results. The following exceptions are present:
+
+exp-index-out-of-range (-2050)
+ an index is used in a collection, array or string that is not within the range of valid  indices
+exp-invalid-state (-2051)
+ a word of the module is called that is not allowed in the current state of the variable  
+exp-no-data (-2052)
+ a word tries to fetch data, but unexpectly there is no data available  
+exp-invalid-parameters (-2053)
+ a parameter on the stack is invalid
+exp-wrong-file-type (-2054)
+ a file for which an import is attempted, is not of the correct type
+exp-wrong-file-version (-2055)
+ a file for which an import is attempted, has not the correct version
+exp-wrong-file-data (-2056)
+ a file for which an import is attempted, has data outside the expected ranges
+
+GForth (and FLK) report the exception with a message, all the other forth engines report the numerical value of the exception.
