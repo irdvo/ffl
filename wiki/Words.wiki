@@ -1,0 +1,1564 @@
+#summary Alphabetical overview of all the forth words in the library
+
+[config #bits/byte] (-- n )<br>
+[config #bits/cell] (-- n )<br>
+[config #bits/char] (-- n )<br>
+[stt +"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[stc +field] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[est ,\"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[config 0!] (a-addr -- )<br>
+[config 0e+0] (F: -- r )<br>
+[config 1+!] (a-addr -- )<br>
+[config 1-!] (a-addr -- )<br>
+[config 1e+0] (F: -- r )<br>
+[config 2e+0] (F: -- r )<br>
+[config <=>] (n1 n2 -- n )<br>
+[enm >enum:] (enum-sys n "{{{<}}}spaces{{{>}}}name" -- enum-sys ; -- n )<br>
+[tst ?0] (x -- )<br>
+[tst ?d] (d1 d2 -- )<br>
+[tst ?false] (flag -- )<br>
+[config ?free] (addr -- ior )<br>
+[tst ?nil] (addr -- )<br>
+[tst ?r] (r1 r2 -- )<br>
+[tst ?s] (n1 n2 -- )<br>
+[tst ?str] (c-addr1 u1 c-addr2 u2 -- )<br>
+[tst ?true] (flag -- )<br>
+[tst ?u] (u1 u2 -- )<br>
+[tst ?ud] (ud1 ud2 -- )<br>
+[config @!] (x1 a-addr -- x2 )<br>
+[a32 a32%] (-- n )<br>
+[a32 a32+to-string] (u -- c-addr u )<br>
+[a32 a32-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- a32 )<br>
+[a32 a32-dump] (a32 -- )<br>
+[a32 a32-finish] (a32 -- u )<br>
+[a32 a32-free] (a32 -- )<br>
+[a32 a32-init] (a32 -- )<br>
+[a32 a32-length@] (a32 -- u )<br>
+[a32 a32-new] (-- a32 )<br>
+[a32 a32-reset] (a32 -- )<br>
+[a32 a32-update] (c-addr u a32 -- )<br>
+[a32 a32^combine] (a32 a32 -- u )<br>
+[acn acn%] (-- n )<br>
+[acn acn-dump] (acn -- )<br>
+[acn acn-free] (acn -- )<br>
+[acn acn-init] (x1 x2 acn1 acn2 -- )<br>
+[acn acn-new] (x1 x2 acn1 -- acn2 )<br>
+[act act%] (-- n )<br>
+[act act-(free)] (act -- )<br>
+[act act-clear] (act -- )<br>
+[act act-compare!] (xt act -- )<br>
+[act act-compare@] (act -- xt )<br>
+[act act-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- act )<br>
+[act act-delete] (x1 act -- false | x2 true )<br>
+[act act-dump] (act -- )<br>
+[act act-empty?] (act -- flag )<br>
+[act act-execute] (i*x xt act -- i*x )<br>
+[act act-execute?] (i*x xt bct -- j*x flag )<br>
+[act act-free] (act -- )<br>
+[act act-get] (x1 act -- false | x2 true )<br>
+[act act-has?] (x1 act -- flag )<br>
+[act act-init] (act -- )<br>
+[act act-insert] (x1 x2 act -- )<br>
+[act act-length@] (act -- u )<br>
+[act act-new] (-- act )<br>
+[arg arg%] (-- n )<br>
+[arg arg-(free)] (arg -- )<br>
+[arg arg-add-help-option] (arg -- )<br>
+[arg arg-add-option] (char c-addr1 u1 c-addr2 u2 flag n arg -- )<br>
+[arg arg-add-version-option] (arg -- )<br>
+[arg arg-create] (c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 "{{{<}}}spaces{{{>}}}name" -- ; -- arg )<br>
+[arg arg-free] (arg -- )<br>
+[arg arg-init] (c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 arg -- )<br>
+[arg arg-new] (c-addr1 u1  c-addr2 u2 c-addr3 u3 c-addr4 u4 -- arg )<br>
+[arg arg-parse] (arg -- c-addr u n | n )<br>
+[arg arg-print-help] (arg -- )<br>
+[arg arg-print-version] (arg -- )<br>
+[arg arg.cols] (-- n )<br>
+[arg arg.done] (-- n )<br>
+[arg arg.error] (-- n )<br>
+[arg arg.help-option] (-- n )<br>
+[arg arg.non-option] (-- n )<br>
+[arg arg.version-option] (-- n )<br>
+[bar bar%] (-- n )<br>
+[bar bar-(free)] (bar -- )<br>
+[bar bar-count] (bar -- u )<br>
+[bar bar-count-bits] (+n1 n2 bar -- u )<br>
+[bar bar-create] (+n "{{{<}}}spaces{{{>}}}name" -- ; -- bar )<br>
+[bar bar-dump] (bar -- )<br>
+[bar bar-execute] (i*x xt bar -- j*x )<br>
+[bar bar-free] (bar -- )<br>
+[bar bar-get-bit] (n bar -- flag )<br>
+[bar bar-index?] (n bar -- flag )<br>
+[bar bar-init] (+n bar -- )<br>
+[bar bar-invert] (bar -- )<br>
+[bar bar-invert-bit] (n bar -- )<br>
+[bar bar-invert-bits] (u n bar -- )<br>
+[bar bar-length@] (bar -- +n )<br>
+[bar bar-new] (n -- bar )<br>
+[bar bar-reset] (bar -- )<br>
+[bar bar-reset-bit] (n bar -- )<br>
+[bar bar-reset-bits] (u n bar -- )<br>
+[bar bar-reset-list] (nu .. n1 u bar -- )<br>
+[bar bar-set] (bar -- )<br>
+[bar bar-set-bit] (n bar -- )<br>
+[bar bar-set-bits] (u n bar -- )<br>
+[bar bar-set-list] (nu .. n1 u bar -- )<br>
+[bar bar^and] (bar1 bar2 -- )<br>
+[bar bar^move] (bar1 bar2 -- )<br>
+[bar bar^or] (bar1 bar2 -- )<br>
+[bar bar^xor] (bar1 bar2 -- )<br>
+[bci bci%] (-- n )<br>
+[bci bci-create] (bct "{{{<}}}spaces{{{>}}}name" -- ; -- bci )<br>
+[bci bci-dump] (bci -- )<br>
+[bci bci-first] (bci -- x true | false )<br>
+[bci bci-first?] (bci -- flag )<br>
+[bci bci-free] (bci -- )<br>
+[bci bci-get] (bci -- false | x true )<br>
+[bci bci-init] (bct bci -- )<br>
+[bci bci-key] (bci -- false | x true )<br>
+[bci bci-last] (bci -- x true | false )<br>
+[bci bci-last?] (bci -- flag )<br>
+[bci bci-move] (x bci -- flag )<br>
+[bci bci-new] (bct -- bci )<br>
+[bci bci-next] (bci -- x true | false )<br>
+[bci bci-prev] (bci -- x true | false )<br>
+[bci bci-set] (x bci -- )<br>
+[bcn bcn%] (-- n )<br>
+[bcn bcn-cell!] (bcn1 -- bcn2 )<br>
+[bcn bcn-cell@] (bcn1 -- bcn2 )<br>
+[bcn bcn-dump] (bcn -- )<br>
+[bcn bcn-free] (bcn -- )<br>
+[bcn bcn-init] (x1 x2 bcn1 bcn2 -- )<br>
+[bcn bcn-new] (x1 x2 bcn1 -- bcn2 )<br>
+[bct bct%] (-- n )<br>
+[bct bct-(free)] (bct -- )<br>
+[bct bct-clear] (bct -- )<br>
+[bct bct-compare!] (xt bct -- )<br>
+[bct bct-compare@] (bct -- xt )<br>
+[bct bct-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- bct )<br>
+[bct bct-delete] (x1 bct -- false | x2 true )<br>
+[bct bct-dump] (bct -- )<br>
+[bct bct-empty?] (bct -- flag )<br>
+[bct bct-execute] (i*x xt bct -- j*x )<br>
+[bct bct-execute?] (i*x xt bct -- j*x flag )<br>
+[bct bct-free] (bct -- )<br>
+[bct bct-get] (x1 bct -- false | x2 true )<br>
+[bct bct-has?] (x1 bct -- flag )<br>
+[bct bct-init] (bct -- )<br>
+[bct bct-insert] (x1 x2 bct -- )<br>
+[bct bct-length@] (bct -- u )<br>
+[bct bct-new] (-- bct )<br>
+[enm begin-enumeration] (-- enum-sys )<br>
+[stt begin-stringtable] ("{{{<}}}spaces{{{>}}}name" -- stringtable-sys ; n -- c-addr u )<br>
+[stc begin-structure] ("{{{<}}}spaces{{{>}}}name" -- structure-sys ; -- n )<br>
+[config bigendian?] (-- flag )<br>
+[bis bis%] (-- n )<br>
+[bis bis-bits>bytes] (bis -- )<br>
+[bis bis-bytes>bits] (bis -- )<br>
+[bis bis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- bis )<br>
+[bis bis-dump] (bis -- )<br>
+[bis bis-fetch-bits] (u1 bis -- u2 )<br>
+[bis bis-free] (bis -- )<br>
+[bis bis-get] (bis -- c-addr u )<br>
+[bis bis-get-bit] (bis -- false | u true )<br>
+[bis bis-init] (bis -- )<br>
+[bis bis-need-bits] (n bis -- flag )<br>
+[bis bis-new] (-- bis )<br>
+[bis bis-next-bits] (n bis -- )<br>
+[bis bis-read-bytes] (n1 bis -- false | n2 true )<br>
+[bis bis-reset] (bis -- )<br>
+[bis bis-set] (c-addr u bis -- )<br>
+[bni bni%] (-- n )<br>
+[bni bni-create] (bnt "{{{<}}}spaces{{{>}}}name" -- ; -- bni )<br>
+[bni bni-dump] (bni -- )<br>
+[bni bni-first] (bni -- bnn | nil )<br>
+[bni bni-first?] (bni -- flag )<br>
+[bni bni-free] (bni -- )<br>
+[bni bni-get] (bni -- bnn | nil )<br>
+[bni bni-init] (bnt bni -- )<br>
+[bni bni-key] (bni -- false | x true )<br>
+[bni bni-last] (bni -- bnn | nil )<br>
+[bni bni-last?] (bni -- flag )<br>
+[bni bni-new] (bnt -- bni )<br>
+[bni bni-next] (bni -- bnn | nil )<br>
+[bni bni-prev] (bni -- bnn | nil )<br>
+[bnn bnn%] (-- n )<br>
+[bnn bnn-dump] (bnn -- )<br>
+[bnn bnn-free] (bnn -- )<br>
+[bnn bnn-init] (x bnn1 bnn2 -- )<br>
+[bnn bnn-key@] (bnn -- x )<br>
+[bnn bnn-new] (x bnn1 -- bnn2 )<br>
+[bnt bnt%] (-- n )<br>
+[bnt bnt-(free)] (xt bnt -- )<br>
+[bnt bnt-clear] (xt bnt -- )<br>
+[bnt bnt-compare!] (xt bnt -- )<br>
+[bnt bnt-compare@] (bnt -- xt )<br>
+[bnt bnt-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- bnt )<br>
+[bnt bnt-delete] (x bnt -- false | bnn true )<br>
+[bnt bnt-dump] (bnt -- )<br>
+[bnt bnt-empty?] (bnt -- flag )<br>
+[bnt bnt-execute] (i*x xt bnt -- j*x )<br>
+[bnt bnt-execute?] (i*x xt bnt -- j*x flag )<br>
+[bnt bnt-free] (bnt -- )<br>
+[bnt bnt-get] (x bnt -- false | bnn true )<br>
+[bnt bnt-has?] (x1 bnt -- flag )<br>
+[bnt bnt-init] (bnt -- )<br>
+[bnt bnt-insert] (i*x xt x bct -- bnn1 true | i*x bnn2 false )<br>
+[bnt bnt-length@] (bnt -- u )<br>
+[bnt bnt-new] (-- bnt )<br>
+[car car%] (-- n )<br>
+[car car+extra!] (u -- )<br>
+[car car+extra@] (-- u )<br>
+[car car-(free)] (car -- )<br>
+[car car-append] (x car -- )<br>
+[car car-clear] (car -- )<br>
+[car car-compare!] (xt car -- )<br>
+[car car-compare@] (car -- xt )<br>
+[car car-count] (x car -- u )<br>
+[car car-create] (n "{{{<}}}spaces{{{>}}}name" -- ; -- car )<br>
+[car car-delete] (n car -- x )<br>
+[car car-dequeue] (car -- x )<br>
+[car car-dump] (car -- )<br>
+[car car-enqueue] (x car -- )<br>
+[car car-execute] (i*x xt car -- j*x )<br>
+[car car-extra!] (u car -- )<br>
+[car car-extra@] (car -- u )<br>
+[car car-find] (x car -- n )<br>
+[car car-find-sorted] (x car -- n flag )<br>
+[car car-free] (car -- )<br>
+[car car-get] (n car -- x )<br>
+[car car-has-sorted?] (x car -- flag )<br>
+[car car-has?] (x car -- flag )<br>
+[car car-index?] (n car -- flag )<br>
+[car car-init] (+n car -- )<br>
+[car car-insert] (x n car -- )<br>
+[car car-insert-sorted] (x car -- )<br>
+[car car-length@] (car -- u )<br>
+[car car-new] (n -- car )<br>
+[car car-pop] (car -- x )<br>
+[car car-prepend] (x car -- )<br>
+[car car-push] (x car -- )<br>
+[car car-set] (x n car -- )<br>
+[car car-size!] (+n car -- )<br>
+[car car-sort] (car -- )<br>
+[car car-tos] (car -- x )<br>
+[cbf cbf%] (-- n )<br>
+[cbf cbf+extra!] (u -- )<br>
+[cbf cbf+extra@] (-- u )<br>
+[cbf cbf-(free)] (cbf -- )<br>
+[cbf cbf-access!] (xt1 xt2 cbf -- )<br>
+[cbf cbf-access@] (cbf -- xt1 xt2 )<br>
+[cbf cbf-clear] (cbf -- )<br>
+[cbf cbf-create] (+n1 +n2 "{{{<}}}spaces{{{>}}}name" -- ; -- cbf )<br>
+[cbf cbf-dequeue] (cbf -- i*x | addr true | false )<br>
+[cbf cbf-dump] (cbf -- )<br>
+[cbf cbf-enqueue] (i*x | addr cbf -- )<br>
+[cbf cbf-extra!] (u cbf -- )<br>
+[cbf cbf-extra@] (cbf -- u )<br>
+[cbf cbf-fetch] (addr u1 cbf -- u2 )<br>
+[cbf cbf-free] (cbf -- )<br>
+[cbf cbf-get] (addr u1 cbf -- u2 )<br>
+[cbf cbf-init] (+n1 +n2 cbf -- )<br>
+[cbf cbf-length@] (cbf -- u )<br>
+[cbf cbf-new] (+n1 +n2 -- cbf )<br>
+[cbf cbf-pop] (cbf -- i*x | addr true | false )<br>
+[cbf cbf-push] (i*x | addr cbf -- )<br>
+[cbf cbf-set] (addr u cbf -- )<br>
+[cbf cbf-size!] (+n cbf -- )<br>
+[cbf cbf-skip] (+n1 cbf -- +n2 )<br>
+[cbf cbf-tos] (cbf -- i*x | addr true | false )<br>
+[stc cfield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc cfields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[chr chr-alnum?] (char -- flag )<br>
+[chr chr-alpha?] (char -- flag )<br>
+[chr chr-ascii?] (char -- flag )<br>
+[chr chr-base] (char -- false | u true )<br>
+[chr chr-blank?] (char -- flag )<br>
+[chr chr-cntrl?] (char -- flag )<br>
+[chr chr-digit?] (char -- flag )<br>
+[chr chr-graph?] (char -- flag )<br>
+[chr chr-hexdigit?] (char -- flag )<br>
+[chr chr-lower] (char1 -- char2 )<br>
+[chr chr-lower?] (char -- flag )<br>
+[chr chr-octdigit?] (char -- flag )<br>
+[chr chr-print?] (char -- flag )<br>
+[chr chr-punct?] (char -- flag )<br>
+[chr chr-range?] (char1 char2 char3 -- flag )<br>
+[chr chr-space?] (char -- flag )<br>
+[chr chr-string?] (c-addr u char -- flag )<br>
+[chr chr-upper] (char1 -- char2 )<br>
+[chr chr-upper?] (char -- flag )<br>
+[chr chr.ack] (-- char )<br>
+[chr chr.bel] (-- char )<br>
+[chr chr.bs] (-- char )<br>
+[chr chr.can] (-- char )<br>
+[chr chr.cr] (-- char )<br>
+[chr chr.dc1] (-- char )<br>
+[chr chr.dc2] (-- char )<br>
+[chr chr.dc3] (-- char )<br>
+[chr chr.dc4] (-- char )<br>
+[chr chr.del] (-- char )<br>
+[chr chr.dle] (-- char )<br>
+[chr chr.em] (-- char )<br>
+[chr chr.enq] (-- char )<br>
+[chr chr.eot] (-- char )<br>
+[chr chr.esc] (-- char )<br>
+[chr chr.etb] (-- char )<br>
+[chr chr.etx] (-- char )<br>
+[chr chr.ff] (-- char )<br>
+[chr chr.fs] (-- char )<br>
+[chr chr.gs] (-- char )<br>
+[chr chr.ht] (-- char )<br>
+[chr chr.lf] (-- char )<br>
+[chr chr.nak] (-- char )<br>
+[chr chr.nul] (-- char )<br>
+[chr chr.rs] (-- char )<br>
+[chr chr.si] (-- char )<br>
+[chr chr.sm] (-- char )<br>
+[chr chr.soh] (-- char )<br>
+[chr chr.sp] (-- char )<br>
+[chr chr.stx] (-- char )<br>
+[chr chr.sub] (-- char )<br>
+[chr chr.syn] (-- char )<br>
+[chr chr.us] (-- char )<br>
+[chr chr.vt] (-- char )<br>
+[chs chs%] (-- n )<br>
+[chs chs-char?] (char chs -- flag )<br>
+[chs chs-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- chs )<br>
+[chs chs-dump] (chs -- )<br>
+[chs chs-execute] (i*x xt chs -- j*x )<br>
+[chs chs-free] (chs -- )<br>
+[chs chs-init] (chs -- )<br>
+[chs chs-invert] (chs -- )<br>
+[chs chs-new] (-- chs )<br>
+[chs chs-reset] (chs -- )<br>
+[chs chs-reset-alnum] (chs -- )<br>
+[chs chs-reset-alpha] (chs -- )<br>
+[chs chs-reset-blank] (chs -- )<br>
+[chs chs-reset-char] (char chs -- )<br>
+[chs chs-reset-chars] (char1 char2 chs -- )<br>
+[chs chs-reset-cntrl] (chs -- )<br>
+[chs chs-reset-digit] (chs -- )<br>
+[chs chs-reset-graph] (chs -- )<br>
+[chs chs-reset-list] (charu .. char1 u chs -- )<br>
+[chs chs-reset-lower] (chs -- )<br>
+[chs chs-reset-print] (chs -- )<br>
+[chs chs-reset-punct] (chs -- )<br>
+[chs chs-reset-space] (chs -- )<br>
+[chs chs-reset-string] (c-addr u chs -- )<br>
+[chs chs-reset-upper] (chs -- )<br>
+[chs chs-reset-word] (chs -- )<br>
+[chs chs-reset-xdigit] (chs -- )<br>
+[chs chs-set] (chs -- )<br>
+[chs chs-set-alnum] (chs -- )<br>
+[chs chs-set-alpha] (chs -- )<br>
+[chs chs-set-blank] (chs -- )<br>
+[chs chs-set-char] (char chs -- )<br>
+[chs chs-set-chars] (char1 char2 chs -- )<br>
+[chs chs-set-cntrl] (chs -- )<br>
+[chs chs-set-digit] (chs -- )<br>
+[chs chs-set-graph] (chs -- )<br>
+[chs chs-set-list] (charu .. char1 u chs -- )<br>
+[chs chs-set-lower] (chs -- )<br>
+[chs chs-set-print] (chs -- )<br>
+[chs chs-set-punct] (chs -- )<br>
+[chs chs-set-space] (chs -- )<br>
+[chs chs-set-string] (c-addr u chs -- )<br>
+[chs chs-set-upper] (chs -- )<br>
+[chs chs-set-word] (chs -- )<br>
+[chs chs-set-xdigit] (chs -- )<br>
+[chs chs^and] (chs1 chs2 -- )<br>
+[chs chs^move] (chs1 chs2 -- )<br>
+[chs chs^or] (chs1 chs2 -- )<br>
+[chs chs^xor] (chs1 chs2 -- )<br>
+[cpx cpx%] (-- n )<br>
+[cpx cpx+abs] (F: r1 r2 -- r3 )<br>
+[cpx cpx+acos] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+acosh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+add] (F: r1 r2 r3 r4 -- r5 r6 )<br>
+[cpx cpx+asin] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+asinh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+atan] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+atanh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+conj] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+cos] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+cosh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+div] (F: r1 r2 r3 r4 -- r5 r6 )<br>
+[cpx cpx+equal?] (F: r1 r2 r3 r4 -- ; -- flag )<br>
+[cpx cpx+exp] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+from-polar] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+imul] (F: r1 r2 r3 -- r4 r5 )<br>
+[cpx cpx+ln] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+mul] (F: r1 r2 r3 r4 -- r5 r6 )<br>
+[cpx cpx+nrm] (F: r1 r2 -- r3 )<br>
+[cpx cpx+rmul] (F: r1 r2 r3 -- r4 r5 )<br>
+[cpx cpx+sin] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+sinh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+sqrt] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+sub] (F: r1 r2 r3 r4 -- r5 r6 )<br>
+[cpx cpx+tan] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+tanh] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+to-polar] (F: r1 r2 -- r3 r4 )<br>
+[cpx cpx+to-string] (F: r1 r2 -- ; -- c-addr u )<br>
+[cpx cpx-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- cpx )<br>
+[cpx cpx-dump] (cpx -- )<br>
+[cpx cpx-free] (cpx -- )<br>
+[cpx cpx-get] (F: -- r1 r2 ; cpx -- )<br>
+[cpx cpx-im@] (F: -- r ; cpx -- )<br>
+[cpx cpx-init] (cpx -- )<br>
+[cpx cpx-new] (-- cpx )<br>
+[cpx cpx-re@] (F: -- r ; cpx -- )<br>
+[cpx cpx-set] (F: r1 r2 -- ; cpx -- )<br>
+[cpx cpx^equal?] (cpx2 cpx1 -- flag )<br>
+[cpx cpx^move] (cpx2 cpx1 -- )<br>
+[crc crc%] (-- n )<br>
+[crc crc+calc-crc32] (c-addr u -- u1 )<br>
+[crc crc+calc-poly] (u1 .. un n -- u )<br>
+[crc crc-(free)] (crc -- )<br>
+[crc crc-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- crc )<br>
+[crc crc-finish] (crc -- u )<br>
+[crc crc-free] (crc -- )<br>
+[crc crc-init] (crc -- )<br>
+[crc crc-new] (-- crc )<br>
+[crc crc-poly!] (u crc -- )<br>
+[crc crc-poly@] (crc -- u )<br>
+[crc crc-reset] (crc -- )<br>
+[crc crc-update] (c-addr u crc -- )<br>
+[dci dci%] (-- n )<br>
+[dci dci-create] (dcl "{{{<}}}spaces{{{>}}}name" -- ; -- dci )<br>
+[dci dci-dump] (dci -- )<br>
+[dci dci-first] (dci -- x true | false )<br>
+[dci dci-first?] (dci -- flag )<br>
+[dci dci-free] (dci -- )<br>
+[dci dci-get] (dci -- x true | false )<br>
+[dci dci-init] (dcl dci -- )<br>
+[dci dci-insert-after] (x dci -- )<br>
+[dci dci-last] (dci -- x true | false )<br>
+[dci dci-last?] (dci -- flag )<br>
+[dci dci-move] (x dci -- false )<br>
+[dci dci-new] (dcl -- dci )<br>
+[dci dci-next] (dci -- x true | false )<br>
+[dci dci-prev] (dci -- x true | false )<br>
+[dci dci-set] (x dci -- )<br>
+[dcl dcl%] (-- n )<br>
+[dcl dcl-(free)] (dnl -- )<br>
+[dcl dcl-append] (x dcl -- )<br>
+[dcl dcl-clear] (dnl -- )<br>
+[dcl dcl-compare!] (xt dcl -- )<br>
+[dcl dcl-compare@] (dcl -- xt )<br>
+[dcl dcl-count] (x dcl -- u )<br>
+[dcl dcl-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dcl )<br>
+[dcl dcl-delete] (n dcl -- x )<br>
+[dcl dcl-dump] (dcl -- )<br>
+[dcl dcl-empty?] (dcl -- flag )<br>
+[dcl dcl-execute] (i*x xt dcl -- j*x )<br>
+[dcl dcl-find] (x dcl -- n )<br>
+[dcl dcl-free] (dcl -- )<br>
+[dcl dcl-get] (n dcl -- x )<br>
+[dcl dcl-has?] (x dcl -- flag )<br>
+[dcl dcl-index?] (n dcl -- flag )<br>
+[dcl dcl-init] (dcl -- )<br>
+[dcl dcl-insert] (x n dcl -- )<br>
+[dcl dcl-insert-sorted] (x dcl -- )<br>
+[dcl dcl-length@] (dcl -- u )<br>
+[dcl dcl-new] (-- dcl )<br>
+[dcl dcl-prepend] (x dcl -- )<br>
+[dcl dcl-remove] (x dcl -- flag )<br>
+[dcl dcl-reverse] (dcl -- )<br>
+[dcl dcl-set] (x n dcl -- )<br>
+[dcn dcn%] (-- n )<br>
+[dcn dcn-cell!] (x dcn -- )<br>
+[dcn dcn-cell@] (dcn -- x )<br>
+[dcn dcn-dump] (dcn -- )<br>
+[dcn dcn-free] (dcn -- )<br>
+[dcn dcn-init] (x dcn -- )<br>
+[dcn dcn-new] (x -- dcn )<br>
+[log debug"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[stc dffield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc dfield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc dfields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[dni dni%] (-- n )<br>
+[dni dni-create] (dnl "{{{<}}}spaces{{{>}}}name" -- ; -- dni )<br>
+[dni dni-dump] (dni -- )<br>
+[dni dni-first] (dni -- dnn | nil )<br>
+[dni dni-first?] (dni -- flag )<br>
+[dni dni-free] (dni -- )<br>
+[dni dni-get] (dni -- dnn | nil )<br>
+[dni dni-init] (dnl dni -- )<br>
+[dni dni-last] (dni -- dnn | nil )<br>
+[dni dni-last?] (dni -- flag )<br>
+[dni dni-new] (dnl -- dni )<br>
+[dni dni-next] (dni -- dnn | nil )<br>
+[dni dni-prev] (dni -- dnn | nil )<br>
+[dnl dnl%] (-- n )<br>
+[dnl dnl-(free)] (xt dnl -- )<br>
+[dnl dnl-append] (dnn dnl -- )<br>
+[dnl dnl-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dnl )<br>
+[dnl dnl-delete] (n dnl -- dnn )<br>
+[dnl dnl-dequeue] (dnl -- dnn | nil )<br>
+[dnl dnl-dump] (dnl -- )<br>
+[dnl dnl-empty?] (dnl -- flag )<br>
+[dnl dnl-enqueue] (dnn dnl -- )<br>
+[dnl dnl-execute] (i*x xt dnl -- j*x )<br>
+[dnl dnl-first@] (dnl -- dnn | nil )<br>
+[dnl dnl-free] (dnl -- )<br>
+[dnl dnl-get] (n dnl -- dnn )<br>
+[dnl dnl-index?] (n dnl -- flag )<br>
+[dnl dnl-init] (dnl -- )<br>
+[dnl dnl-insert] (dnn n dnl -- )<br>
+[dnl dnl-insert-after] (dnn1 dnn2 dnl -- )<br>
+[dnl dnl-insert-before] (dnn1 dnn2 dnl -- )<br>
+[dnl dnl-last@] (dnl -- dnn | nil )<br>
+[dnl dnl-length@] (dnl -- u )<br>
+[dnl dnl-new] (-- dnl )<br>
+[dnl dnl-pop] (dnl -- dnn | nil )<br>
+[dnl dnl-prepend] (dnn dnl -- )<br>
+[dnl dnl-push] (dnn dnl -- )<br>
+[dnl dnl-remove] (dnn dnl -- )<br>
+[dnl dnl-reverse] (dnl -- )<br>
+[dnl dnl-tos] (dnl -- dnn | nil )<br>
+[dnn dnn%] (-- n )<br>
+[dnn dnn-dump] (dnn -- )<br>
+[dnn dnn-free] (dnn -- )<br>
+[dnn dnn-init] (dnn -- )<br>
+[dnn dnn-new] (-- dnn )<br>
+[dnn dnn-next!] (dnn1 dnn2 -- )<br>
+[dnn dnn-next@] (dnn1 -- dnn2 )<br>
+[dnn dnn-prev!] (dnn1 dnn2 -- )<br>
+[dnn dnn-prev@] (dnn1 -- dnn2 )<br>
+[log do-log] (c-addr u n -- )<br>
+[dom dom%] (-- n )<br>
+[dom dom-(free)] (dom -- )<br>
+[dom dom-append-node] (i*x n dom -- )<br>
+[dom dom-child] (dom -- n true | false )<br>
+[dom dom-children] (dom -- n )<br>
+[dom dom-children?] (dom -- flag )<br>
+[dom dom-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dom )<br>
+[dom dom-document] (dom -- true | false )<br>
+[dom dom-document?] (dom -- flag )<br>
+[dom dom-dump] (dom - )<br>
+[dom dom-first] (dom -- n true | false )<br>
+[dom dom-first?] (dom -- flag )<br>
+[dom dom-free] (dom -- )<br>
+[dom dom-get] (dom -- n true | false )<br>
+[dom dom-get-name] (dom -- c-addr u )<br>
+[dom dom-get-type] (dom -- n )<br>
+[dom dom-get-value] (dom -- c-addr u )<br>
+[dom dom-init] (dom -- )<br>
+[dom dom-insert-node-after] (i*x n -- )<br>
+[dom dom-insert-node-before] (i*x n dom -- )<br>
+[dom dom-last] (dom -- n true | false )<br>
+[dom dom-last?] (dom -- flag )<br>
+[dom dom-new] (-- dom )<br>
+[dom dom-next] (dom -- n true | false )<br>
+[dom dom-parent] (dom -- n true | false )<br>
+[dom dom-prev] (dom -- n true | false )<br>
+[dom dom-read-reader] (x xt flag1 dom -- flag2 )<br>
+[dom dom-read-string] (c-addr u flag1 dom -- flag2 )<br>
+[dom dom-remove] (dom -- flag )<br>
+[dom dom-set] (i*x dom -- )<br>
+[dom dom-write-string] (dom -- c-addr u true | false )<br>
+[dom dom-write-writer] (x xt dom -- flag )<br>
+[dom dom.attribute] (-- n )<br>
+[dom dom.cdata] (-- n )<br>
+[dom dom.comment] (-- n )<br>
+[dom dom.doc-fragment] (-- n )<br>
+[dom dom.doc-type] (-- n )<br>
+[dom dom.document] (-- n )<br>
+[dom dom.element] (-- n )<br>
+[dom dom.entity] (-- n )<br>
+[dom dom.entity-ref] (-- n )<br>
+[dom dom.not-used] (-- n )<br>
+[dom dom.notation] (-- n )<br>
+[dom dom.pi] (-- n )<br>
+[dom dom.text] (-- n )<br>
+[dos dos-write-12hour] (dtm tos -- )<br>
+[dos dos-write-24hour] (dtm tos -- )<br>
+[dos dos-write-2year] (dtm tos -- )<br>
+[dos dos-write-abbr-month-name] (dtm tos -- )<br>
+[dos dos-write-abbr-weekday-name] (dtm tos -- )<br>
+[dos dos-write-american-date] (dtm tos -- )<br>
+[dos dos-write-ampm] (dtm tos -- )<br>
+[dos dos-write-ampm-time] (dtm tos -- )<br>
+[dos dos-write-century] (dtm tos -- )<br>
+[dos dos-write-date] (dtm tos -- )<br>
+[dos dos-write-date-time] (dtm tos -- )<br>
+[dos dos-write-format] (dtm c-addr u tos -- )<br>
+[dos dos-write-hhmm-time] (dtm tos -- )<br>
+[dos dos-write-hhmmss-time] (dtm tos -- )<br>
+[dos dos-write-iso8601-date] (dtm tos -- )<br>
+[dos dos-write-minute] (dtm tos -- )<br>
+[dos dos-write-month] (dtm tos -- )<br>
+[dos dos-write-month-name] (dtm tos -- )<br>
+[dos dos-write-monthday] (dtm tos -- )<br>
+[dos dos-write-seconds] (dtm tos -- )<br>
+[dos dos-write-seconds-since-epoch] (dtm tos -- )<br>
+[dos dos-write-spaced-12hour] (dtm tos -- )<br>
+[dos dos-write-spaced-24hour] (dtm tos -- )<br>
+[dos dos-write-spaced-monthday] (dtm tos -- )<br>
+[dos dos-write-time] (dtm tos -- )<br>
+[dos dos-write-upper-ampm] (dtm tos -- )<br>
+[dos dos-write-week-number] (dtm tos -- )<br>
+[dos dos-write-weekday] (dtm tos -- )<br>
+[dos dos-write-weekday-name] (dtm tos -- )<br>
+[dos dos-write-year] (dtm tos -- )<br>
+[dos dos-write-yearday] (dtm tos -- )<br>
+[dti dti-day+] (dtm -- )<br>
+[dti dti-day-] (dtm -- )<br>
+[dti dti-days+] (d dtm -- )<br>
+[dti dti-days-] (d dtm -- )<br>
+[dti dti-hour+] (dtm -- )<br>
+[dti dti-hour-] (dtm -- )<br>
+[dti dti-milli+] (dtm -- )<br>
+[dti dti-milli-] (dtm -- )<br>
+[dti dti-minute+] (dtm -- )<br>
+[dti dti-minute-] (dtm -- )<br>
+[dti dti-month+] (dtm -- )<br>
+[dti dti-month-] (dtm -- )<br>
+[dti dti-second+] (dtm -- )<br>
+[dti dti-second-] (dtm -- )<br>
+[dti dti-seconds+] (d dtm -- )<br>
+[dti dti-seconds-] (d dtm -- )<br>
+[dti dti-year+] (dtm -- )<br>
+[dti dti-year-] (dtm -- )<br>
+[dtm dtm%] (-- n )<br>
+[dtm dtm+calc-leap-years] (n1 n2 -- n3 )<br>
+[dtm dtm+day?] (n1 n2 n3 -- flag )<br>
+[dtm dtm+days-in-month] (n1 n2 -- n3 )<br>
+[dtm dtm+days-in-year] (n1 -- n2 )<br>
+[dtm dtm+days-till-month] (n1 n2 -- n3 )<br>
+[dtm dtm+hour?] (n -- flag )<br>
+[dtm dtm+leap-year?] (n -- flag )<br>
+[dtm dtm+milli?] (n -- flag )<br>
+[dtm dtm+minute?] (n -- flag )<br>
+[dtm dtm+month?] (n -- flag )<br>
+[dtm dtm+second?] (n -- flag )<br>
+[dtm dtm+year?] (n -- flag )<br>
+[dtm dtm-calc-days-since-epoch] (n dtm -- d )<br>
+[dtm dtm-calc-seconds-since-epoch] (n dtm -- d )<br>
+[dtm dtm-compare] (n1 n2 n3 n4 n5 n6 n7 dtm -- n )<br>
+[dtm dtm-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dtm )<br>
+[dtm dtm-day!] (n dtm -- )<br>
+[dtm dtm-day@] (dtm -- n )<br>
+[dtm dtm-dump] (dtm -- )<br>
+[dtm dtm-free] (dtm -- )<br>
+[dtm dtm-get] (dtm -- n1 n2 n3 n4 n5 n6 n7 )<br>
+[dtm dtm-get-date] (dtm -- n1 n2 n3 )<br>
+[dtm dtm-get-time] (dtm -- n1 n2 n3 n4 )<br>
+[dtm dtm-hour!] (n dtm -- )<br>
+[dtm dtm-hour@] (dtm -- n )<br>
+[dtm dtm-init] (dtm -- )<br>
+[dtm dtm-iso-weeknumber] (dtm -- n1 n2 )<br>
+[dtm dtm-milli!] (n dtm -- )<br>
+[dtm dtm-milli@] (dtm -- n )<br>
+[dtm dtm-minute!] (n dtm -- )<br>
+[dtm dtm-minute@] (dtm -- n )<br>
+[dtm dtm-month!] (n dtm -- )<br>
+[dtm dtm-month@] (dtm -- n )<br>
+[dtm dtm-new] (-- dtm )<br>
+[dtm dtm-second!] (n dtm -- )<br>
+[dtm dtm-second@] (dtm -- n )<br>
+[dtm dtm-set] (n1 n2 n3 n4 n5 n6 n7 dtm -- )<br>
+[dtm dtm-set-date] (n1 n2 n3 dtm -- )<br>
+[dtm dtm-set-now] (dtm -- )<br>
+[dtm dtm-set-time] (n1 n2 n3 n4 dtm -- )<br>
+[dtm dtm-set-with-days] (d1 n2 dtm -- )<br>
+[dtm dtm-set-with-seconds] (d n dtm -- )<br>
+[dtm dtm-weekday] (dtm -- n )<br>
+[dtm dtm-year!] (n dtm -- )<br>
+[dtm dtm-year@] (dtm -- n )<br>
+[dtm dtm-yearday] (dtm -- n )<br>
+[dtm dtm.april] (-- n )<br>
+[dtm dtm.august] (-- n )<br>
+[dtm dtm.december] (-- n )<br>
+[dtm dtm.february] (-- n )<br>
+[dtm dtm.friday] (-- n )<br>
+[dtm dtm.january] (-- n )<br>
+[dtm dtm.july] (-- n )<br>
+[dtm dtm.june] (-- n )<br>
+[dtm dtm.march] (-- n )<br>
+[dtm dtm.may] (-- n )<br>
+[dtm dtm.monday] (-- n )<br>
+[dtm dtm.november] (-- n )<br>
+[dtm dtm.october] (-- n )<br>
+[dtm dtm.saturday] (-- n )<br>
+[dtm dtm.september] (-- n )<br>
+[dtm dtm.start-epoch] (-- n )<br>
+[dtm dtm.sunday] (-- n )<br>
+[dtm dtm.thursday] (-- n )<br>
+[dtm dtm.tuesday] (-- n )<br>
+[dtm dtm.unix-epoch] (-- n )<br>
+[dtm dtm.wednesday] (-- n )<br>
+[dtm dtm^compare] (dtm1 dtm2 -- n )<br>
+[enm end-enumeration] (enum-sys -- )<br>
+[config end-of-line] (-- c-addr )<br>
+[stt end-stringtable] (stringtable-sys -- )<br>
+[stc end-structure] (structure-sys -- )<br>
+[enm enum:] (enum-sys "{{{<}}}spaces{{{>}}}name" -- enum-sys ;  -- n )<br>
+[log error"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[config exp-index-out-of-range] (-- n )<br>
+[config exp-invalid-parameters] (-- n )<br>
+[config exp-invalid-state] (-- n )<br>
+[config exp-no-data] (-- n )<br>
+[config exp-wrong-checksum] (-- n )<br>
+[config exp-wrong-file-data] (-- n )<br>
+[config exp-wrong-file-type] (-- n )<br>
+[config exp-wrong-file-version] (-- n )<br>
+[config exp-wrong-length] (-- n )<br>
+[config f-rot] (F: r1 r2 r3 -- r3 r1 r2 )<br>
+[config f2dup] (F: r1 r2 -- r1 r2 r1 r2 )<br>
+[config f>r] (F: r -- ; R: -- r )<br>
+[log fatal"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[stc ffield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc ffields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc field:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[stc fields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[config fr>] (F: -- r ; R: r -- )<br>
+[config fr@] (F: -- r ; R: r -- r )<br>
+[frc frc%] (-- n )<br>
+[frc frc+abs] (n1 n2 -- n3 n4 )<br>
+[frc frc+add] (n1 n2 n3 n4 -- n5 n6 )<br>
+[frc frc+calc-gcd] (n1 n2 -- n )<br>
+[frc frc+calc-lcm] (n1 n2 -- n )<br>
+[frc frc+compare] (n1 n2 n3 n4 -- n )<br>
+[frc frc+divide] (n1 n2 n3 n4 -- n5 n6 )<br>
+[frc frc+invert] (n1 n2 -- n3 n4 )<br>
+[frc frc+multiply] (n1 n2 n3 n4 -- n5 n6 )<br>
+[frc frc+negate] (n1 n2 -- n3 n4 )<br>
+[frc frc+norm] (n1 n2 -- n3 n4 )<br>
+[frc frc+subtract] (n1 n2 n3 n4 -- n5 n6 )<br>
+[frc frc+to-float] (n1 n2 -- r )<br>
+[frc frc+to-string] (n1 n2 -- c-addr u )<br>
+[frc frc-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- frc )<br>
+[frc frc-denom@] (frc -- n )<br>
+[frc frc-dump] (frc -- )<br>
+[frc frc-free] (frc -- )<br>
+[frc frc-get] (frc -- n1 n2 )<br>
+[frc frc-init] (frc -- )<br>
+[frc frc-new] (-- frc )<br>
+[frc frc-num@] (frc -- n )<br>
+[frc frc-set] (n1 n2 frc )<br>
+[frc frc^compare] (frc2 frc1 -- n )<br>
+[frc frc^move] (frc2 frc1 -- )<br>
+[fsm fsm%] (-- n )<br>
+[fsm fsm-(free)] (fsm -- )<br>
+[fsm fsm-any-transition] (x xt c-addr1 u1 fst1 fst2 fsm -- ftr )<br>
+[fsm fsm-create] ("{{{<}}}spaces{{{>}}}name" +n -- ; -- fsm )<br>
+[fsm fsm-dump] (fsm -- )<br>
+[fsm fsm-feed] (n fsm -- fst | nil )<br>
+[fsm fsm-find-state] (c-addr u fsm -- fst | nil )<br>
+[fsm fsm-free] (fsm -- )<br>
+[fsm fsm-init] (+n fsm -- )<br>
+[fsm fsm-new] (+n -- fsm )<br>
+[fsm fsm-new-state] (x xt1 xt2 c-addr1 u1 fsm -- fst )<br>
+[fsm fsm-new-transition] (x xt c-addr1 u1 fst1 fst2 fsm -- ftr )<br>
+[fsm fsm-start] (fsm -- )<br>
+[fsm fsm-start!] (fst fsm -- )<br>
+[fsm fsm-start@] (fsm -- fst )<br>
+[fsm fsm-to-dot] (c-addr u tos fsm -- )<br>
+[fsm fsm-try] (n fsm -- fst | nil )<br>
+[fst fst%] (-- n )<br>
+[fst fst-(free)] (fst -- )<br>
+[fst fst-any-transition] (x xt c-addr u fst1 fst -- ftr )<br>
+[fst fst-attributes!] (c-addr u fst -- )<br>
+[fst fst-attributes@] (fst -- c-addr u )<br>
+[fst fst-data!] (x fst -- )<br>
+[fst fst-data@] (fst -- x )<br>
+[fst fst-dump] (fst -- )<br>
+[fst fst-entry@] (fst -- xt )<br>
+[fst fst-exit@] (fst -- xt )<br>
+[fst fst-feed] (n fst -- fst | nil )<br>
+[fst fst-find-transition] (c-addr u fst -- ftr | nil )<br>
+[fst fst-free] (fst -- )<br>
+[fst fst-id@] (fst -- n )<br>
+[fst fst-init] (x xt1 xt2 c-addr u n fst -- )<br>
+[fst fst-label?] (c-addr u fst -- c-addr u false | fst true )<br>
+[fst fst-label@] (fst -- c-addr u )<br>
+[fst fst-new] (x xt1 xt2 c-addr u n -- fst )<br>
+[fst fst-new-transition] (x xt c-addr u fst1 n fst -- ftr )<br>
+[fst fst-try] (n fst -- fst | nil )<br>
+[ftr ftr%] (-- n )<br>
+[ftr ftr-(free)] (ftr -- )<br>
+[ftr ftr-action@] (ftr -- xt )<br>
+[ftr ftr-attributes!] (c-addr u ftr -- )<br>
+[ftr ftr-attributes@] (ftr -- c-addr u )<br>
+[ftr ftr-condition@] (ftr -- bar )<br>
+[ftr ftr-data!] (x ftr -- )<br>
+[ftr ftr-data@] (ftr -- x )<br>
+[ftr ftr-dump] (ftr -- )<br>
+[ftr ftr-feed] (n ftr -- n false | fst true )<br>
+[ftr ftr-fire] (n ftr -- fst )<br>
+[ftr ftr-free] (ftr -- )<br>
+[ftr ftr-init] (x xt c-addr u fst +n ftr -- )<br>
+[ftr ftr-label?] (c-addr u ftr -- ftr true | c-addr u false )<br>
+[ftr ftr-label@] (ftr -- c-addr u )<br>
+[ftr ftr-new] (x xt c-addr u fst +n -- ftr )<br>
+[ftr ftr-try] (n ftr -- n false | fst true )<br>
+[gmo gmo-read] (c-addr u msc -- 0 | ior )<br>
+[gzf gzf%] (-- n )<br>
+[gzf gzf-(free)] (gzf -- )<br>
+[gzf gzf-comment!] (c-addr u gzf -- )<br>
+[gzf gzf-comment@] (gzf -- c-addr u )<br>
+[gzf gzf-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- gzf )<br>
+[gzf gzf-dump] (gzf -- )<br>
+[gzf gzf-flags!] (u gzf -- )<br>
+[gzf gzf-flags@] (gzf -- u )<br>
+[gzf gzf-free] (gzf -- )<br>
+[gzf gzf-init] (gzf -- )<br>
+[gzf gzf-mtime!] (u gzf -- )<br>
+[gzf gzf-mtime@] (gzf -- u )<br>
+[gzf gzf-name!] (c-addr u gzf -- )<br>
+[gzf gzf-name@] (gzf -- c-addr u )<br>
+[gzf gzf-new] (-- gzf )<br>
+[gzf gzf-os!] (n gzf -- )<br>
+[gzf gzf-os@] (gzf -- n )<br>
+[gzf gzf-reset] (gzf -- )<br>
+[gzf gzf-text!] (flag gzf -- )<br>
+[gzf gzf-text@] (gzf -- flag )<br>
+[gzf gzf.acorn] (-- n )<br>
+[gzf gzf.amiga] (-- n )<br>
+[gzf gzf.atari] (-- n )<br>
+[gzf gzf.cp/m] (-- n )<br>
+[gzf gzf.deflate] (-- n )<br>
+[gzf gzf.fat] (-- n )<br>
+[gzf gzf.hpfs] (-- n )<br>
+[gzf gzf.macintos] (-- n )<br>
+[gzf gzf.ntfs] (-- n )<br>
+[gzf gzf.qdos] (-- n )<br>
+[gzf gzf.tops-20] (-- n )<br>
+[gzf gzf.unix] (-- n )<br>
+[gzf gzf.unknown] (-- n )<br>
+[gzf gzf.vm/cms] (-- n )<br>
+[gzf gzf.vms] (-- n )<br>
+[gzf gzf.z-system] (-- n )<br>
+[gzi gzi%] (-- n )<br>
+[gzi gzi-(free)] (gzi -- )<br>
+[gzi gzi-create] ("{{{<}}}spaces{{{>}}}name" u -- ; -- gzi )<br>
+[gzi gzi-dump] (gzi -- )<br>
+[gzi gzi-end-inflate] (gzi -- )<br>
+[gzi gzi-free] (gzi -- )<br>
+[gzi gzi-inflate] (gzi -- ior )<br>
+[gzi gzi-init] (u gzi -- )<br>
+[gzi gzi-init-inflate] (gzi -- )<br>
+[gzi gzi-lbf@] (gzi -- lbf )<br>
+[gzi gzi-new] (-- gzi )<br>
+[gzi gzi-reduce-output] (gzi -- )<br>
+[gzi gzi.done] (-- n )<br>
+[gzi gzi.more] (-- n )<br>
+[gzi gzi.ok] (-- n )<br>
+[gzi gzi.states] (-- n )<br>
+[hci hci%] (-- n )<br>
+[hci hci-create] (hct "{{{<}}}spaces{{{>}}}name" -- ; -- hci )<br>
+[hci hci-dump] (hci -- )<br>
+[hci hci-first] (hci -- x true | false )<br>
+[hci hci-first?] (hci -- flag )<br>
+[hci hci-free] (hci -- )<br>
+[hci hci-get] (hci -- false | x true )<br>
+[hci hci-init] (hct hci -- )<br>
+[hci hci-key] (hci -- c-addr u )<br>
+[hci hci-last?] (hci -- flag )<br>
+[hci hci-move] (x hci -- flag )<br>
+[hci hci-new] (hct -- hci )<br>
+[hci hci-next] (hci -- x true | false )<br>
+[hci hci-set] (x hci -- )<br>
+[hcn hcn%] (- n )<br>
+[hcn hcn-(free)] (hcn -- )<br>
+[hcn hcn-dump] (hcn -- )<br>
+[hcn hcn-free] (hcn -- )<br>
+[hcn hcn-init] (x c-addr u u2 hcn -- )<br>
+[hcn hcn-new] (x c-addr u u2 -- hcn )<br>
+[hct hct%] (-- n )<br>
+[hct hct+hash] (c-addr1 u1 -- u2 )<br>
+[hct hct-(free)] (hct -- )<br>
+[hct hct-count] (x hct -- u )<br>
+[hct hct-create] (u "{{{<}}}spaces{{{>}}}name" -- ; -- hct )<br>
+[hct hct-delete] (c-addr u hct -- false | x true )<br>
+[hct hct-dump] (hct -- )<br>
+[hct hct-empty?] (hct -- flag )<br>
+[hct hct-execute] (i*x xt hct -- j*x )<br>
+[hct hct-free] (hct -- )<br>
+[hct hct-get] (c-addr u hct -- false | x true )<br>
+[hct hct-has?] (c-addr u hct -- flag )<br>
+[hct hct-init] (u hct -- )<br>
+[hct hct-insert] (x c-addr u hct -- )<br>
+[hct hct-length@] (hct -- u )<br>
+[hct hct-load!] (u hct -- )<br>
+[hct hct-load@] (hct -- u )<br>
+[hct hct-new] (u -- hct )<br>
+[hct hct-size!] (u hct -- )<br>
+[hni hni%] (-- n )<br>
+[hni hni-create] (hnt "{{{<}}}spaces{{{>}}}name" -- ; -- hni )<br>
+[hni hni-dump] (hni -- )<br>
+[hni hni-first] (hni -- hnn | nil )<br>
+[hni hni-first?] (hni -- flag )<br>
+[hni hni-free] (hni -- )<br>
+[hni hni-get] (hni -- hnn | nil )<br>
+[hni hni-init] (hnt hni -- )<br>
+[hni hni-key] (hni -- c-addr u )<br>
+[hni hni-last?] (hni -- flag )<br>
+[hni hni-new] (hnt -- hni )<br>
+[hni hni-next] (hni -- hnn | nil )<br>
+[hnn hnn%] (-- n )<br>
+[hnn hnn-(free)] (hnn -- )<br>
+[hnn hnn-dump] (hnn -- )<br>
+[hnn hnn-free] (hnn -- )<br>
+[hnn hnn-init] (c-addr u u2 hnn -- )<br>
+[hnn hnn-key@] (hnn -- c-addr u )<br>
+[hnn hnn-new] (c-addr u u2 -- hnn )<br>
+[hnt hnt%] (-- n )<br>
+[hnt hnt+hash] (c-addr1 u1 -- u2 )<br>
+[hnt hnt-(free)] (xt hnt -- )<br>
+[hnt hnt-create] (u "{{{<}}}spaces{{{>}}}name" -- ; -- hnt )<br>
+[hnt hnt-delete] (c-addr u hnt -- nil | hnn )<br>
+[hnt hnt-dump] (hnt -- )<br>
+[hnt hnt-empty?] (hnt -- flag )<br>
+[hnt hnt-execute] (i*x xt hnt -- j*x )<br>
+[hnt hnt-free] (hnt -- )<br>
+[hnt hnt-get] (c-addr u hnt -- nil | hnn )<br>
+[hnt hnt-has?] (c-addr u hnt -- flag )<br>
+[hnt hnt-init] (u hnt -- )<br>
+[hnt hnt-insert] (hnn hnt -- )<br>
+[hnt hnt-length@] (hnt -- u )<br>
+[hnt hnt-load!] (u hnt -- )<br>
+[hnt hnt-load@] (hnt -- u )<br>
+[hnt hnt-new] (u -- hnt )<br>
+[hnt hnt-search] (c-addr u hnt -- u hnn )<br>
+[hnt hnt-size!] (u hnt -- )<br>
+[config icompare] (c-addr1 u1 c-addr2 u2 -- n )<br>
+[config index2offset] (n1 n2 -- n3 )<br>
+[log info"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[lbf lbf%] (-- n )<br>
+[lbf lbf+extra!] (u -- )<br>
+[lbf lbf+extra@] (-- u )<br>
+[lbf lbf-(free)] (lbf -- )<br>
+[lbf lbf-access!] (xt1 xt2 lbf -- )<br>
+[lbf lbf-access@] (lbf -- xt1 xt2 )<br>
+[lbf lbf-clear] (lbf -- )<br>
+[lbf lbf-copy] (u1 u2 lbf -- )<br>
+[lbf lbf-create] (+n1 +n2 "{{{<}}}spaces{{{>}}}name" -- ; -- lbf )<br>
+[lbf lbf-dequeue] (lbf -- i*x true | addr true | false )<br>
+[lbf lbf-dump] (lbf -- )<br>
+[lbf lbf-enqueue] (i*x lbf | addr lbf -- )<br>
+[lbf lbf-extra!] (u lbf -- )<br>
+[lbf lbf-extra@] (lbf -- u )<br>
+[lbf lbf-fetch] (u1 lbf -- addr u2 | 0 )<br>
+[lbf lbf-free] (lbf -- )<br>
+[lbf lbf-gap@] (lbf -- u )<br>
+[lbf lbf-get] (u1 lbf -- addr u2 | 0 )<br>
+[lbf lbf-get'] (u1 lbf -- addr u2 | 0 )<br>
+[lbf lbf-init] (+n1 +n2 lbf -- )<br>
+[lbf lbf-length'@] (lbf -- u )<br>
+[lbf lbf-length@] (lbf -- u )<br>
+[lbf lbf-new] (+n1 +n2 -- lbf )<br>
+[lbf lbf-pop] (lbf -- i*x true | addr true | false )<br>
+[lbf lbf-push] (i*x lbf | addr lbf -- )<br>
+[lbf lbf-reduce] (u lbf -- )<br>
+[lbf lbf-set] (addr u lbf -- )<br>
+[lbf lbf-size!] (+n lbf -- )<br>
+[lbf lbf-skip] (u1 lbf -- u2 )<br>
+[lbf lbf-tos] (lbf -- i*x true | addr true | false )<br>
+[log log-from-level] (n -- )<br>
+[log log-stack-depth] (n -- )<br>
+[log log-to-callback] (xt -- )<br>
+[log log-to-console] (-- )<br>
+[log log-to-file] (fileid -- )<br>
+[log log-to-rolling] (c-addr u n1 n2 -- )<br>
+[log log-with-time&date] (flag -- )<br>
+[log log.debug] (-- n )<br>
+[log log.error] (-- n )<br>
+[log log.fatal] (-- n )<br>
+[log log.info] (-- n )<br>
+[log log.none] (-- n )<br>
+[log log.trace] (-- n )<br>
+[log log.warning] (-- n )<br>
+[config lroll] (u1 u2 -- u3 )<br>
+[config max-ms@] (-- u )<br>
+[md5 md5%] (-- n )<br>
+[md5 md5+to-string] (u1 u2 u3 u4 -- c-addr u )<br>
+[md5 md5-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- md5 )<br>
+[md5 md5-dump] (md5 -- )<br>
+[md5 md5-finish] (md5 -- u1 u2 u3 u4 )<br>
+[md5 md5-free] (md5 -- )<br>
+[md5 md5-init] (md5 -- )<br>
+[md5 md5-new] (-- md5 )<br>
+[md5 md5-reset] (md5 -- )<br>
+[md5 md5-update] (c-addr u md5 -- )<br>
+[config ms@] (-- u )<br>
+[msc msc%] (-- n )<br>
+[msc msc-(free)] (msc -- )<br>
+[msc msc-add] (c-addr1 u1 c-addr2 u2 msc -- )<br>
+[msc msc-create] ("{{{<}}}spaces{{{>}}}name" --  ; -- msc )<br>
+[msc msc-dump] (msc -- )<br>
+[msc msc-free] (msc -- )<br>
+[msc msc-init] (msc -- )<br>
+[msc msc-new] (-- msc )<br>
+[msc msc-remove] (c-addr u msc -- flag )<br>
+[msc msc-translate] (c-addr1 u1 msc -- c-addr2 u2 )<br>
+[msc msc-translate?] (c-addr1 u2 msc -- c-addr2 u2 true | false )<br>
+[nci nci%] (-- n )<br>
+[nci nci-append-child] (x nci -- )<br>
+[nci nci-child] (nci -- x true | false )<br>
+[nci nci-children] (nci -- n )<br>
+[nci nci-children?] (nci -- flag )<br>
+[nci nci-create] (nct "{{{<}}}spaces{{{>}}}name" -- ; -- nci )<br>
+[nci nci-dump] (nci -- )<br>
+[nci nci-first] (nci -- x true | false )<br>
+[nci nci-first?] (nci -- flag )<br>
+[nci nci-free] (nci -- )<br>
+[nci nci-get] (nci -- x true | false )<br>
+[nci nci-init] (nct nci -- )<br>
+[nci nci-insert-after] (x nci -- )<br>
+[nci nci-insert-before] (x nci -- )<br>
+[nci nci-last] (nci -- x true | false )<br>
+[nci nci-last?] (nci -- flag )<br>
+[nci nci-new] (nct -- nci )<br>
+[nci nci-next] (nci -- x true | false )<br>
+[nci nci-parent] (nci -- x true | false )<br>
+[nci nci-prepend-child] (x nci -- )<br>
+[nci nci-prev] (nci -- x true | false )<br>
+[nci nci-remove] (nci -- x true | false )<br>
+[nci nci-root] (nci -- x true | false )<br>
+[nci nci-root?] (nci -- flag )<br>
+[ncn ncn%] (-- n )<br>
+[ncn ncn-cell!] (x ncn -- )<br>
+[ncn ncn-cell@] (ncn -- x )<br>
+[ncn ncn-dump] (ncn -- )<br>
+[ncn ncn-free] (ncn -- )<br>
+[ncn ncn-init] (x ncn -- )<br>
+[ncn ncn-new] (x -- ncn )<br>
+[nct nct%] (-- n )<br>
+[nct nct-(free)] (nct -- )<br>
+[nct nct-clear] (nct -- )<br>
+[nct nct-count] (x nct -- u )<br>
+[nct nct-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- nct )<br>
+[nct nct-dump] (nct -- )<br>
+[nct nct-empty?] (nct -- flag )<br>
+[nct nct-execute] (i*x xt nct -- j*x )<br>
+[nct nct-execute?] (i*x xt nct -- j*x flag )<br>
+[nct nct-free] (nct -- )<br>
+[nct nct-has?] (x nct -- flag )<br>
+[nct nct-init] (nct -- )<br>
+[nct nct-length@] (nct -- u )<br>
+[nct nct-new] (-- nct )<br>
+[nfe nfe%] (-- n )<br>
+[nfe nfe+free-expression] (nfe -- )<br>
+[nfe nfe-(free)] (nfe -- )<br>
+[nfe nfe-alternation] (nfs1 nfs2 nfs3 nfs4 nfe -- nfs5 nfs6 )<br>
+[nfe nfe-clear] (nfe -- )<br>
+[nfe nfe-close] (nfs1 nfs2 nfe -- nfs3 )<br>
+[nfe nfe-concat] (nfs1 nfs2 nfs3 nfs4 nfe -- nfs5 nfs6 )<br>
+[nfe nfe-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- nfe )<br>
+[nfe nfe-dump] (nfe -- )<br>
+[nfe nfe-expression@] (nfe -- a-addr )<br>
+[nfe nfe-free] (nfe -- )<br>
+[nfe nfe-init] (nfe -- )<br>
+[nfe nfe-level+@] (nfe -- n )<br>
+[nfe nfe-match?] (c-addr u flag nfe -- flag )<br>
+[nfe nfe-new] (-- nfe )<br>
+[nfe nfe-one-or-more] (nfs1 nfs2 nfe -- nfs3 nfs4 )<br>
+[nfe nfe-paren] (nfs1 nfs2 n nfe -- nfs3 nfs4 )<br>
+[nfe nfe-parens@] (nfe -- n )<br>
+[nfe nfe-result] (n1 nfe -- n2 n3 )<br>
+[nfe nfe-search] (c-addr u flag nfe -- n )<br>
+[nfe nfe-single] (x n nfe -- nfs1 nfs2 )<br>
+[nfe nfe-states@] (nfe -- n )<br>
+[nfe nfe-visit++] (nfe -- n )<br>
+[nfe nfe-visit@] (nfe -- n )<br>
+[nfe nfe-zero-or-more] (nfs1 nfs2 nfe -- nfs3 nfs4 )<br>
+[nfe nfe-zero-or-one] (nfs1 nfs2 nfe -- nfs3 nfs4 )<br>
+[nfs nfs%] (-- n )<br>
+[nfs nfs-data@] (nfs -- x )<br>
+[nfs nfs-dump] (nfs -- )<br>
+[nfs nfs-free] (nfs -- )<br>
+[nfs nfs-id@] (nfs -- n )<br>
+[nfs nfs-init] (x n1 n2 nfs -- )<br>
+[nfs nfs-new] (x n1 n2 -- nfs )<br>
+[nfs nfs-out1!] (nfs1 nfs2 -- )<br>
+[nfs nfs-out1@] (nfs1 -- nfs2 )<br>
+[nfs nfs-out2!] (nfs1 nfs2 -- )<br>
+[nfs nfs-out2@] (nfs1 -- nfs2 )<br>
+[nfs nfs-type@] (nfs -- n )<br>
+[nfs nfs-visit!] (n nfs -- )<br>
+[nfs nfs-visit@] (nfs -- n )<br>
+[nfs nfs.any] (-- n )<br>
+[nfs nfs.char] (-- n )<br>
+[nfs nfs.class] (-- n )<br>
+[nfs nfs.lparen] (-- n )<br>
+[nfs nfs.match] (-- n )<br>
+[nfs nfs.rparen] (-- n )<br>
+[nfs nfs.split] (-- n )<br>
+[config nil!] (a-addr -- )<br>
+[config nil<>] (addr -- flag )<br>
+[config nil<>?] (addr -- false | addr true )<br>
+[config nil=] (addr -- flag )<br>
+[nni nni%] (-- n )<br>
+[nni nni-append-child] (nnn nni -- )<br>
+[nni nni-child] (nni -- nnn | nil )<br>
+[nni nni-children] (nni -- n )<br>
+[nni nni-children?] (nni -- flag )<br>
+[nni nni-create] (nnt "{{{<}}}spaces{{{>}}}name" -- ; -- nni )<br>
+[nni nni-dump] (nni -- )<br>
+[nni nni-first] (nni -- nnn )<br>
+[nni nni-first?] (nni -- flag )<br>
+[nni nni-free] (nni -- )<br>
+[nni nni-get] (nni -- nnn | nil )<br>
+[nni nni-init] (nnt nni -- )<br>
+[nni nni-insert-after] (nnn nni -- )<br>
+[nni nni-insert-before] (nnn nni -- )<br>
+[nni nni-last] (nni -- nnn )<br>
+[nni nni-last?] (nni -- flag )<br>
+[nni nni-new] (nnt -- nni )<br>
+[nni nni-next] (nni -- nnn | nil )<br>
+[nni nni-parent] (nni -- nnn | nil )<br>
+[nni nni-prepend-child] (nnn nni -- )<br>
+[nni nni-prev] (nni -- nnn | nil )<br>
+[nni nni-remove] (nni -- nnn )<br>
+[nni nni-root] (nni -- nnn | nil )<br>
+[nni nni-root?] (nni -- flag )<br>
+[nnn nnn%] (-- n )<br>
+[nnn nnn-dump] (nnn -- )<br>
+[nnn nnn-free] (nnn -- )<br>
+[nnn nnn-init] (nnn -- )<br>
+[nnn nnn-new] (-- nnn )<br>
+[nnn nnn-parent!] (nnn1 nnn2 -- )<br>
+[nnn nnn-parent@] (nnn1 -- nnn2 )<br>
+[nnt nnt%] (-- n )<br>
+[nnt nnt-(free)] (xt nnt -- )<br>
+[nnt nnt-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- nnt )<br>
+[nnt nnt-dump] (nnt -- )<br>
+[nnt nnt-empty?] (nnt -- flag )<br>
+[nnt nnt-execute] (i*x xt nnt -- j*x )<br>
+[nnt nnt-execute?] (i*x xt nnt -- j*x flag )<br>
+[nnt nnt-free] (nnt -- )<br>
+[nnt nnt-init] (nnt -- )<br>
+[nnt nnt-length@] (nnt -- u )<br>
+[nnt nnt-new] (-- nnt )<br>
+[nnt nnt-root@] (nnt -- nnn | nil )<br>
+[est parse-esc] (c-addr1 u1 c-addr2 -- c-addr3 u3 )<br>
+[est parse\"] ("ccc{{{<}}}quote{{{>}}}" -- c-addr u )<br>
+[rdg rdg%] (-- n )<br>
+[rdg rdg-beta] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rdg rdg-binomial] (F: r -- ; u1 rdg -- u2 )<br>
+[rdg rdg-create] (x xt "{{{<}}}spaces{{{>}}}name" -- ; -- rdg )<br>
+[rdg rdg-exponential] (F: r1 -- r2 ; rdg -- )<br>
+[rdg rdg-free] (rdg -- )<br>
+[rdg rdg-gamma] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rdg rdg-init] (x xt rdg -- )<br>
+[rdg rdg-new] (x xt -- rdg )<br>
+[rdg rdg-normal] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rdg rdg-pareto] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rdg rdg-poisson] (F: r -- ; rdg -- u )<br>
+[rdg rdg-uniform] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rdg rdg-weibull] (F: r1 r2 -- r3 ; rdg -- )<br>
+[rgx rgx%] (-- n )<br>
+[rgx rgx-cmatch?] (c-addr u rgx -- flag )<br>
+[rgx rgx-compile] (c-addr u rgx -- true | n false )<br>
+[rgx rgx-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- rgx )<br>
+[rgx rgx-csearch] (c-addr u rgx -- n )<br>
+[rgx rgx-dump] (rgx -- )<br>
+[rgx rgx-free] (rgx -- )<br>
+[rgx rgx-imatch?] (c-addr u rgx -- flag )<br>
+[rgx rgx-init] (rgx -- )<br>
+[rgx rgx-isearch] (c-addr u rgx -- n:index )<br>
+[rgx rgx-new] (-- rgx )<br>
+[rgx rgx-result] (n rgx -- n1 n2 )<br>
+[rng rng%] (-- n )<br>
+[rng rng-create] (u "{{{<}}}spaces{{{>}}}name" -- ; -- rng )<br>
+[rng rng-dump] (rng -- )<br>
+[rng rng-free] (rng -- )<br>
+[rng rng-init] (u rng -- )<br>
+[rng rng-new] (u -- rng )<br>
+[rng rng-next-float] (rng -- r )<br>
+[rng rng-next-number] (rng -- n )<br>
+[rng rng-seed] (u rng -- )<br>
+[config rroll] (u1 u2 -- u3 )<br>
+[est s\"] ("ccc{{{<}}}quote{{{>}}}" -- c-addr u )<br>
+[sci sci%] (-- n )<br>
+[sci sci-create] (scl "{{{<}}}spaces{{{>}}}name" -- ; -- sci )<br>
+[sci sci-dump] (sci -- )<br>
+[sci sci-first] (sci -- x true | false )<br>
+[sci sci-first?] (sci -- flag )<br>
+[sci sci-free] (sci -- )<br>
+[sci sci-get] (sci -- x true | false )<br>
+[sci sci-init] (scl sci -- )<br>
+[sci sci-insert-after] (x sci -- )<br>
+[sci sci-last?] (sci -- flag )<br>
+[sci sci-move] (x sci -- flag )<br>
+[sci sci-new] (scl -- sci )<br>
+[sci sci-next] (sci -- x true | false )<br>
+[sci sci-set] (x sci -- )<br>
+[scl scl%] (-- n )<br>
+[scl scl-(free)] (scl -- )<br>
+[scl scl-append] (x scl -- )<br>
+[scl scl-clear] (scl -- )<br>
+[scl scl-compare!] (xt scl -- )<br>
+[scl scl-compare@] (scl -- xt )<br>
+[scl scl-count] (x scl -- u )<br>
+[scl scl-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- scl )<br>
+[scl scl-delete] (n scl -- x )<br>
+[scl scl-dump] (scl -- )<br>
+[scl scl-empty?] (scl -- flag )<br>
+[scl scl-execute] (i*x xt scl -- j*x )<br>
+[scl scl-find] (x scl -- n )<br>
+[scl scl-free] (scl -- )<br>
+[scl scl-get] (n scl -- x )<br>
+[scl scl-has?] (x scl -- flag )<br>
+[scl scl-index?] (n scl -- flag )<br>
+[scl scl-init] (scl -- )<br>
+[scl scl-insert] (x n scl -- )<br>
+[scl scl-insert-sorted] (x scl -- )<br>
+[scl scl-length@] (scl -- u )<br>
+[scl scl-new] (-- scl )<br>
+[scl scl-prepend] (x scl -- )<br>
+[scl scl-remove] (x scl -- flag )<br>
+[scl scl-reverse] (scl -- )<br>
+[scl scl-set] (x n scl -- )<br>
+[scn scn%] (-- n )<br>
+[scn scn-cell!] (x scn -- )<br>
+[scn scn-cell@] (scn -- x )<br>
+[scn scn-dump] (scn -- )<br>
+[scn scn-free] (scn -- )<br>
+[scn scn-init] (x scn -- )<br>
+[scn scn-new] (x -- scn )<br>
+[stc sffield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[sh1 sh1%] (-- n )<br>
+[sh1 sh1+to-string] (u1 u2 u3 u4 u5 -- c-addr u )<br>
+[sh1 sh1-create] ("{{{<}}}spaces{{{>}}}name" --  ; -- sh1 )<br>
+[sh1 sh1-dump] (sh1 -- )<br>
+[sh1 sh1-finish] (sh1 -- u1 u2 u3 u4 u5 )<br>
+[sh1 sh1-free] (sh1 -- )<br>
+[sh1 sh1-init] (sh1 -- )<br>
+[sh1 sh1-new] (-- sh1 )<br>
+[sh1 sh1-reset] (sh1 -- )<br>
+[sh1 sh1-update] (c-addr u sh1 -- )<br>
+[sh2 sh2%] (-- n )<br>
+[sh2 sh2+to-string] (u1 u2 u3 u4 u5 u6 u7 u8 -- c-addr u )<br>
+[sh2 sh2-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- sh2 )<br>
+[sh2 sh2-dump] (sh2 -- )<br>
+[sh2 sh2-finish] (sh2 -- u1 u2 u3 u4 u5 u6 u7 u8 )<br>
+[sh2 sh2-free] (sh2 -- )<br>
+[sh2 sh2-init] (sh2 -- )<br>
+[sh2 sh2-new] (-- sh2 )<br>
+[sh2 sh2-reset] (sh2 -- )<br>
+[sh2 sh2-update] (c-addr u sh2 -- )<br>
+[sni sni%] (-- n )<br>
+[sni sni-create] (snl "{{{<}}}spaces{{{>}}}name" -- ; -- sni )<br>
+[sni sni-dump] (sni -- )<br>
+[sni sni-first] (sni -- snn | nil )<br>
+[sni sni-first?] (sni -- flag )<br>
+[sni sni-free] (sni -- )<br>
+[sni sni-get] (sni -- snn | nil )<br>
+[sni sni-init] (snl sni -- )<br>
+[sni sni-last?] (sni -- flag )<br>
+[sni sni-new] (snl -- sni )<br>
+[sni sni-next] (sni -- snn | nil )<br>
+[snl snl%] (-- n )<br>
+[snl snl-(free)] (xt scl -- )<br>
+[snl snl-append] (snn snl -- )<br>
+[snl snl-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- snl )<br>
+[snl snl-delete] (n snl -- snn )<br>
+[snl snl-dequeue] (snl -- snn | nil )<br>
+[snl snl-dump] (snl -- )<br>
+[snl snl-empty?] (snl -- flag )<br>
+[snl snl-enqueue] (snn snl -- )<br>
+[snl snl-execute] (i*x xt snl -- j*x )<br>
+[snl snl-execute?] (i*x xt snl -- j*x flag )<br>
+[snl snl-first@] (snl -- snn | nil )<br>
+[snl snl-free] (snl -- )<br>
+[snl snl-get] (n snl -- snn )<br>
+[snl snl-index?] (n snl -- flag )<br>
+[snl snl-init] (snl -- )<br>
+[snl snl-insert] (snn n snl -- )<br>
+[snl snl-insert-after] (snn1 snn2 snl -- )<br>
+[snl snl-last@] (snl -- snn | nil )<br>
+[snl snl-length@] (snl -- u )<br>
+[snl snl-new] (-- snl )<br>
+[snl snl-pop] (snl -- snn | nil )<br>
+[snl snl-prepend] (snn snl -- )<br>
+[snl snl-push] (snn snl -- )<br>
+[snl snl-remove-after] (snn1 snl -- snn2 | nil )<br>
+[snl snl-remove-first] (snl -- snn | nil )<br>
+[snl snl-reverse] (snl -- )<br>
+[snl snl-tos] (snl -- snn | nil )<br>
+[snn snn%] (- n )<br>
+[snn snn-dump] (snn -- )<br>
+[snn snn-free] (snn -- )<br>
+[snn snn-init] (snn -- )<br>
+[snn snn-new] (-- snn )<br>
+[snn snn-next!] (snn1 snn2 -- )<br>
+[snn snn-next@] (snn1 -- snn2 )<br>
+[spf spf"] ("ccc{{{<}}}quote{{{>}}}" i*x str -- )<br>
+[spf spf-append] (i*x c-addr u str -- )<br>
+[spf spf-set] (i*x c-addr u str -- )<br>
+[str str%] (-- n )<br>
+[str str+columns] (c-addr u n -- c-addrn un ... c-addr1 u1 n )<br>
+[str str+extra!] (u -- )<br>
+[str str+extra@] (-- u )<br>
+[str str+strip] (c-addr1 u1 -- c-addr2 u2 )<br>
+[str str+strip-leading] (c-addr1 u1 -- c-addr2 u2 )<br>
+[str str+strip-trailing] (c-addr u1 -- c-addr u2 )<br>
+[str str-(free)] (str -- )<br>
+[str str-align-left] (u str -- )<br>
+[str str-align-right] (u str -- )<br>
+[str str-append-char] (char str -- )<br>
+[str str-append-chars] (char u str -- )<br>
+[str str-append-string] (c-addr u str -- )<br>
+[str str-bounds] (str -- c-addr+u c-addr )<br>
+[str str-cap-words] (str -- )<br>
+[str str-capatilize] (str -- )<br>
+[str str-ccompare] (c-addr u str -- n )<br>
+[str str-center] (u str -- )<br>
+[str str-clear] (str -- )<br>
+[str str-count] (c-addr u str -- u )<br>
+[str str-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- str )<br>
+[str str-data@] (str -- c-addr )<br>
+[str str-delete] (u n str -- )<br>
+[str str-delete-char] (n str -- )<br>
+[str str-dequeue-char] (char str -- )<br>
+[str str-dump] (str -- )<br>
+[str str-empty?] (str -- flag )<br>
+[str str-enqueue-char] (char str -- )<br>
+[str str-execute] (i*x xt str -- j*x )<br>
+[str str-expand-tabs] (u str -- )<br>
+[str str-extra!] (u str -- )<br>
+[str str-extra@] (str -- u )<br>
+[str str-find] (c-addr u n1 str -- n2 )<br>
+[str str-free] (str -- )<br>
+[str str-get] (str -- c-addr u )<br>
+[str str-get-char] (n str -- char )<br>
+[str str-get-substring] (u n str -- c-addr u )<br>
+[str str-get-zstring] (str -- c-addr )<br>
+[str str-icompare] (c-addr u str -- n )<br>
+[str str-index?] (n str -- flag )<br>
+[str str-init] (str -- )<br>
+[str str-insert-char] (char n str -- )<br>
+[str str-insert-chars] (char u n str -- )<br>
+[str str-insert-string] (c-addr u n str -- )<br>
+[str str-length!] (u str -- )<br>
+[str str-length@] (str -- u )<br>
+[str str-lower] (str -- )<br>
+[str str-new] (-- str )<br>
+[str str-pop-char] (str -- char )<br>
+[str str-prepend-char] (char str -- )<br>
+[str str-prepend-chars] (char u str -- )<br>
+[str str-prepend-string] (c-addr u str -- )<br>
+[str str-push-char] (char str -- )<br>
+[str str-replace] (c-addr1 u1 c-addr2 u2 str -- )<br>
+[str str-set] (c-addr u str -- )<br>
+[str str-set-char] (char n str -- )<br>
+[str str-set-zstring] (c-addr str -- )<br>
+[str str-size!] (u str -- )<br>
+[str str-strip] (str -- )<br>
+[str str-strip-leading] (str -- )<br>
+[str str-strip-trailing] (str -- )<br>
+[str str-upper] (str -- )<br>
+[str str^ccompare] (str1 str2 -- n )<br>
+[str str^icompare] (str1 str2 -- n )<br>
+[tis tis%] (-- n )<br>
+[tis tis-(free)] (tis -- )<br>
+[tis tis-cmatch-char] (char tis -- flag )<br>
+[tis tis-cmatch-chars] (c-addr u tis -- false | char true )<br>
+[tis tis-cmatch-string] (c-addr u tis -- flag )<br>
+[tis tis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- tis )<br>
+[tis tis-dump] (tis -- )<br>
+[tis tis-eof?] (tis -- flag )<br>
+[tis tis-fetch-char] (tis -- false | char true )<br>
+[tis tis-fetch-chars] (n tis -- 0 | addr u )<br>
+[tis tis-free] (tis -- )<br>
+[tis tis-get] (tis -- 0 | addr u )<br>
+[tis tis-imatch-char] (char tis -- flag )<br>
+[tis tis-imatch-string] (c-addr u tis -- flag )<br>
+[tis tis-init] (tis -- )<br>
+[tis tis-iscan-string] (c-addr1 n1 tis -- false | c-addr2 u2 true )<br>
+[tis tis-match-set] (chs tis - false | char true )<br>
+[tis tis-new] (-- tis )<br>
+[tis tis-next-char] (tis -- )<br>
+[tis tis-next-chars] (n tis -- )<br>
+[tis tis-pntr!] (n tis -- flag )<br>
+[tis tis-pntr+!] (n tis -- flag )<br>
+[tis tis-pntr@] (tis -- u )<br>
+[tis tis-read-all] (tis -- 0 | c-addr u )<br>
+[tis tis-read-char] (tis -- false | char true )<br>
+[tis tis-read-double] (tis -- false | d true )<br>
+[tis tis-read-line] (tis -- 0 | c-addr u )<br>
+[tis tis-read-more] (tis -- flag )<br>
+[tis tis-read-number] (tis -- false | n true )<br>
+[tis tis-read-string] (n tis -- 0 | c-addr u )<br>
+[tis tis-reduce] (tis -- )<br>
+[tis tis-reset] (tis -- )<br>
+[tis tis-scan-char] (char tis -- false | c-addr u true )<br>
+[tis tis-scan-chars] (c-addr1 n1 tis -- false | c-addr2 u2 char true )<br>
+[tis tis-scan-set] (chs tis - false | c-addr u char true )<br>
+[tis tis-scan-string] (c-addr1 n2 tis -- false | c-addr1 u2 true )<br>
+[tis tis-set] (c-addr u tis -- )<br>
+[tis tis-set-reader] (x xt tis -- )<br>
+[tis tis-skip-spaces] (tis -- n )<br>
+[tmr tmr%] (- n )<br>
+[tmr tmr-create] (u "{{{<}}}spaces{{{>}}}name" -- ; -- tmr )<br>
+[tmr tmr-dump] (tmr -- )<br>
+[tmr tmr-expired?] (tmr -- flag )<br>
+[tmr tmr-free] (tmr -- )<br>
+[tmr tmr-init] (u tmr -- )<br>
+[tmr tmr-new] (u -- tmr )<br>
+[tmr tmr-restart] (tmr -- )<br>
+[tmr tmr-start] (u tmr -- )<br>
+[tmr tmr-timeout@] (tmr -- u )<br>
+[tmr tmr-timer@] (tmr -- u )<br>
+[tmr tmr-wait] (tmr -- )<br>
+[tos tos%] (-- n )<br>
+[tos tos-(free)] (tos -- )<br>
+[tos tos-align] (char u1 u2 tos -- )<br>
+[tos tos-align-left] (char u tos -- )<br>
+[tos tos-align-right] (char u tos -- )<br>
+[tos tos-center] (char u tos -- )<br>
+[tos tos-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- tos )<br>
+[tos tos-dump] (tos -- )<br>
+[tos tos-flush] (tos -- )<br>
+[tos tos-free] (tos -- )<br>
+[tos tos-init] (tos -- )<br>
+[tos tos-msc!] (msc tos -- )<br>
+[tos tos-msc@] (tos -- msc | nil )<br>
+[tos tos-new] (-- tos )<br>
+[tos tos-pntr!] (n tos -- flag )<br>
+[tos tos-pntr+!] (n tos -- flag )<br>
+[tos tos-pntr@] (tos -- u )<br>
+[tos tos-rewrite] (tos -- )<br>
+[tos tos-set-writer] (x xt tos -- )<br>
+[tos tos-write-char] (char tos -- )<br>
+[tos tos-write-chars] (char u tos -- )<br>
+[tos tos-write-double] (d tos -- )<br>
+[tos tos-write-line] (tos -- )<br>
+[tos tos-write-number] (n tos -- )<br>
+[tos tos-write-string] (c-addr u tos -- )<br>
+[log trace"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[trm trm+activate-console] (u -- )<br>
+[trm trm+clear-all-leds] (-- )<br>
+[trm trm+clear-all-tab-stops] (-- )<br>
+[trm trm+clear-tab-stop] (-- )<br>
+[trm trm+delete-chars] (u -- )<br>
+[trm trm+delete-lines] (u -- )<br>
+[trm trm+erase-chars] (u -- )<br>
+[trm trm+erase-display] (-- )<br>
+[trm trm+erase-display-down] (-- )<br>
+[trm trm+erase-display-up] (-- )<br>
+[trm trm+erase-end-of-line] (-- )<br>
+[trm trm+erase-line] (-- )<br>
+[trm trm+erase-start-of-line] (-- )<br>
+[trm trm+insert-lines] (u -- )<br>
+[trm trm+insert-spaces] (u -- )<br>
+[trm trm+move-cursor] (u1 u2 -- )<br>
+[trm trm+move-cursor-down] (u -- )<br>
+[trm trm+move-cursor-left] (u -- )<br>
+[trm trm+move-cursor-right] (u -- )<br>
+[trm trm+move-cursor-up] (u -- )<br>
+[trm trm+reset] (-- )<br>
+[trm trm+restore-current-state] (-- )<br>
+[trm trm+restore-cursor] (-- )<br>
+[trm trm+save-current-state] (-- )<br>
+[trm trm+save-cursor] (-- )<br>
+[trm trm+scroll-down] (-- )<br>
+[trm trm+scroll-up] (-- )<br>
+[trm trm+select-alternate-font] (-- )<br>
+[trm trm+select-default] (-- )<br>
+[trm trm+select-default-font] (-- )<br>
+[trm trm+select-graphics-font2] (-- )<br>
+[trm trm+select-UTF-8] (-- )<br>
+[trm trm+set-attributes] (u1 .. un n -- )<br>
+[trm trm+set-caps-led] (-- )<br>
+[trm trm+set-default-attributes] (-- )<br>
+[trm trm+set-num-led] (-- )<br>
+[trm trm+set-screen-blank-timeout] (u -- )<br>
+[trm trm+set-scroll-led] (-- )<br>
+[trm trm+set-scroll-region] (u1 u2 -- )<br>
+[trm trm+set-tab-stop] (-- )<br>
+[trm trm+unblank-screen] (-- )<br>
+[trm trm.background-black] (-- u )<br>
+[trm trm.background-blue] (-- u )<br>
+[trm trm.background-brown] (-- u )<br>
+[trm trm.background-cyan] (-- u )<br>
+[trm trm.background-default] (-- u )<br>
+[trm trm.background-green] (-- u )<br>
+[trm trm.background-magenta] (-- u )<br>
+[trm trm.background-red] (-- u )<br>
+[trm trm.background-white] (-- u )<br>
+[trm trm.blink-off] (-- u )<br>
+[trm trm.blink-on] (-- u )<br>
+[trm trm.bold] (-- u )<br>
+[trm trm.foreground-black] (-- u )<br>
+[trm trm.foreground-blue] (-- u )<br>
+[trm trm.foreground-brown] (-- u )<br>
+[trm trm.foreground-cyan] (-- u )<br>
+[trm trm.foreground-def-underline] (-- u )<br>
+[trm trm.foreground-default] (-- u )<br>
+[trm trm.foreground-green] (-- u )<br>
+[trm trm.foreground-magenta] (-- u )<br>
+[trm trm.foreground-red] (-- u )<br>
+[trm trm.foreground-white] (-- u )<br>
+[trm trm.half-bright] (-- u )<br>
+[trm trm.normal-intensity] (-- u )<br>
+[trm trm.reset] (-- u )<br>
+[trm trm.reverse-off] (-- u )<br>
+[trm trm.reverse-on] (-- u )<br>
+[trm trm.underline-off] (-- u )<br>
+[trm trm.underscore-on] (-- u )<br>
+[tst tst-get-result] (-- u1 u2 u3 )<br>
+[tst tst-reset-tests] (-- )<br>
+[tst t{] (-- )<br>
+[log warning"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[xis xis%] (-- n )<br>
+[xis xis-(free)] (xis -- )<br>
+[xis xis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- xis )<br>
+[xis xis-free] (xis -- )<br>
+[xis xis-init] (xis -- )<br>
+[xis xis-msc!] (msc xis -- )<br>
+[xis xis-msc@] (xis -- msc )<br>
+[xis xis-new] (-- xis )<br>
+[xis xis-read] (xis -- i*x n )<br>
+[xis xis-set-reader] (x xt xis -- )<br>
+[xis xis-set-string] (c-addr u xis -- )<br>
+[xis xis-strip!] (flag xis -- )<br>
+[xis xis-strip@] (xis -- flag )<br>
+[xis xis.cdata] (-- n )<br>
+[xis xis.comment] (-- n )<br>
+[xis xis.done] (-- n )<br>
+[xis xis.empty-element] (-- n )<br>
+[xis xis.end-tag] (-- n )<br>
+[xis xis.error] (-- n )<br>
+[xis xis.internal-dtd] (-- n )<br>
+[xis xis.proc-instr] (-- n )<br>
+[xis xis.public-dtd] (-- n )<br>
+[xis xis.start-tag] (-- n )<br>
+[xis xis.start-xml] (-- n )<br>
+[xis xis.system-dtd] (-- n )<br>
+[xis xis.text] (-- n )<br>
+[xos xos-write-cdata] (c-addr u tos -- )<br>
+[xos xos-write-comment] (c-addr u tos -- )<br>
+[xos xos-write-empty-element] (c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- )<br>
+[xos xos-write-end-tag] (c-addr u tos -- )<br>
+[xos xos-write-internal-dtd] (c-addr1 u1 c-addr2 u2 tos -- )<br>
+[xos xos-write-proc-instr] (c-addr1 u1 c-addr2n u2n n c-addr u tos -- )<br>
+[xos xos-write-public-dtd] (c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 tos -- )<br>
+[xos xos-write-raw-text] (c-addr u tos -- )<br>
+[xos xos-write-start-tag] (c-addr1 u1 ... c-addr2n u2n n c-addr u tos -- )<br>
+[xos xos-write-start-xml] (c-addr1 u1 ... c-addr2n u2n n tos -- )<br>
+[xos xos-write-system-dtd] (c-addr1 u1 c-addr2 u2 c-addr3 u3 tos -- )<br>
+[xos xos-write-text] (c-addr u tos -- )<br>
+[zif zif%] (-- n )<br>
+[zif zif+input-size!] (u -- )<br>
+[zif zif+input-size@] (-- u )<br>
+[zif zif+output-size!] (u -- )<br>
+[zif zif+output-size@] (-- u )<br>
+[zif zif-(free)] (zif -- )<br>
+[zif zif-close-file] (zif -- ior )<br>
+[zif zif-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- zif )<br>
+[zif zif-dump] (zif -- )<br>
+[zif zif-free] (zif -- )<br>
+[zif zif-gzf@] (zif -- gzf )<br>
+[zif zif-init] (zif -- )<br>
+[zif zif-new] (-- zif )<br>
+[zif zif-open-file] (c-addr u zif -- ior )<br>
+[zif zif-read-file] (c-addr1 u1 zif -- u2 ior )<br>
+[zif zif-read-header] (zif -- ior )<br>
+[tst }t] (i*x j*r -- )<br>
+----
+Generated by *ofcfrth-0.10.0*

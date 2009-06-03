@@ -1,0 +1,97 @@
+#summary Forth engines support in the FFL
+#labels Featured
+
+== Supported Forth engines ==
+
+FFL will run on and is tested with the following forth engines :
+
+|| *Engine* || *Since* ||
+|| [http://www.jwdt.com/~paysan/gforth.html GForth] || 0.1.0 ||
+|| [http://www.jwdt.com/~paysan/bigforth.html BigForth] || 0.2.0 ||
+|| [http://pfe.sourceforge.net PFE] || 0.3.0 ||
+|| [http://win32forth.sourceforge.net Win32Forth] || 0.4.0 ||
+|| [http://code.google.com/p/fina-forth fina] || 0.5.0 ||
+|| [http://home.arcor.de/a.s.kochenburger/minforth.html MinForth] || 0.5.0 ||
+|| [http://home.iae.nl/users/mhx iForth] || 0.6.0 ||
+|| [http://spf.sourceforge.net SP-Forth] || 0.7.0 ||
+|| [http://falth.homelinux.net/readme2.html lxf/ntf] || 0.7.0 ||
+
+For these forth engines there is a config file present in the distribution package.
+
+== Unsupported Forth Engines ==
+
+FFL will not run on the following forth engines :
+
+|| *Engine* || *Version* || *Reason* ||
+|| kForth  || || Missing ANS words ||
+|| ciforth || || Case sensitive ||
+|| pforth || || Missing ANS words ||
+|| isforth || || Missing ANS words ||
+||  4th || || Missing ANS words ||
+|| helforth || 2.51 || Missing ANS words ||
+
+== Not yet checked Forth Engines ==
+
+ * RetroForth
+ * ficl
+ * [http://code.google.com/p/forth4p/ forth4p]
+ * ...
+
+== Environmental dependencies ==
+
+A few modules have environmental dependencies. As a result they will not be present 
+for some forth engines. For these modules you should test the presence of the {{{version}}} 
+constant after loading the module (see [Using Getting started]).
+
+|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* || *iForth* || *SP-Forth* || *lxf/ntf* ||
+|| Argument Parser (arg) || No || No || Yes || No || No || No || No || No ||
+|| Distributed Random Number Generator (rdg) || Yes || No || Yes || Yes || Yes || Yes || No || No ||
+|| Timer (tmr) || Yes || Yes || Yes || Yes || Yes || Yes || Yes || Yes ||
+
+== Benchmarks ==
+
+=== Version 0.7.0 ===
+
+|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* || *SP-Forth* || *lxf* ||
+|| Compile Time (msec) || 1076 || 326 || 431  || 1248 || 3830 || 7500 || 472 ||
+|| Compile Size (bytes) || 225000 || 196033 || 209748 || 131040 || 143236 || 206585 || 206254 ||
+|| Test Time (sec) || 4.0 || 3.4 || 11.6 || 11.3 || 49.2 || 14.6 || 2.1 ||
+
+=== Version 0.6.0 ===
+
+|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* ||
+|| Compile Time (msec) || 1774 || 352 || 720 || 2630 || 9440 ||
+|| Compile Size (bytes) || 169560 || 146406 || 166704 || 97176 || 106600 ||
+|| Test Time (sec) || 7.9 || 8.2 || 24.1 || 15.3 || 140.2 ||
+
+=== Version 0.5.0 ===
+
+|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* ||
+|| Compile Time (msec) || 1020 || 220 || 374 || 1760 || 6100 ||
+|| Compile Size (bytes) || 132724 || 115090 || 133796 || 75696 || 83128 ||
+|| Test Time (sec) || 6.8 || 8.2 || 23.6 || 14.3 || 132.9 ||
+
+=== Version 0.4.0 ===
+
+|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* ||
+|| Compile Time (msec) || 690 || 158 || 255 || 1200 ||
+|| Compile Size (bytes) || 103132 || 89710 || 112628 || 59660 ||
+|| Test Time (sec) || 3.8 || 6.2 || 9.2 || 9.6 ||
+
+Legenda:
+
+ * The Compile Time is the time required to include all modules in the dictionary.
+ * The Compile Size is the space required in the dictionary to include all modules.
+ * The Test time is the time required to include and run all the test scripts.
+
+Notes:
+
+ * Benchmarks for versions 0.4.0 till 0.6.0 were done on a Celeron 700 MHZ.
+ * Benchmarks for version 0.7.0 were done on an Athlon 64 X2 1800MHZ
+
+== Porting ==
+
+As already stated the FFL is mostly written in ANS forth. If the forth engine you are using, is 
+not listed in the [Engines] page and it conforms to the ANS-standard, you can try porting ffl 
+to your forth engine by adding words to and removing words from the {{{ffl/config.fs}}} file. 
+If you succeed, you can send me the config.fs file so that I can add it to the distribution.

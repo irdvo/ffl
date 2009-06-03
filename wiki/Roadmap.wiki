@@ -1,0 +1,44 @@
+#labels Featured
+
+== 0.7.0: June 2009 ==
+Seventh delivery of the FFL library. The focus for this
+release will be on decompression of gzip files.
+<br>
+Status: under way
+
+== 0.6.0: February 2008 ==
+
+Sixth delivery of the FFL library. The following modules were
+planned: XML parser and the ANS structures.
+<br>
+Status: done
+
+== 0.5.0: June 2007 ==
+Fifth delivery of the FFL library. The following modules were
+planned: a n-tree collection and a SHA-2 module.
+<br>
+Status: done
+
+== 0.4.0: March 2007 ==
+Fourth delivery of the FFL library. The following modules were
+planned: a fraction data type, a binary tree collection, pseudo
+random generator, a timer and a sha1 module.
+<br>
+Status: done
+
+== 0.3.0: September 2006 ==
+
+Third delivery of the FFL library. It will extend the library with
+modules for the clusters DataTypes, Collections and Interfaces.
+<br>
+Status: done
+
+== 0.2.0: April 2006 ==
+Second delivery of the FFL library. It will extend the library with
+modules for the clusters DataTypes and Collections.
+<br>
+Status: done
+
+== 0.1.0: December 2005 ==
+First delivery of the FFL library.<br>
+Status: done

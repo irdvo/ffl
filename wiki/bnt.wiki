@@ -1,0 +1,207 @@
+#summary Generic binary tree
+=== Module Description ===
+The bnt module implements a generic unbalanced binary tree with the key
+cell based. The implementation is non-recursive. Pay special attention to
+the bnt-insert word. This word inserts new nodes in the tree. The input
+parameters are the tree itself, the key, the node creation word and any
+optional parameters for the node creation word. The bnt-insert word will
+only call the node creation word if the key is unique in the tree. If so
+the creation word is called and the resulting node is stored in the tree
+and returned as output parameter with the true flag. If the key is not
+unique the node creation word is not called and the current node with the
+key is returned with the false flag and the optional parameters. In that
+case the calling word can update this node with the optional parameters.
+The stack notation of the node creation word is: i*x x bnn1 -- bnn2.
+i*x are the optional parameters, x is the key, bnn1 is the parent node
+and bnn2 is the returned tree node. See also [bnn] and [bcn] for examples
+of node creation words.
+
+=== Module Words ===
+==== Generic binary tree structure ====
+*bnt%* ( -- n )
+ Get the required space for a bnt variable
+==== Tree creation, initialisation and destruction ====
+*bnt-init* ( bnt -- )
+ Initialise the tree
+*bnt-(free)* ( xt bnt -- )
+ Free the nodes from the heap using xt
+*bnt-create* ( "{{{<}}}spaces{{{>}}}name" -- ; -- bnt )
+ Create a named binary tree in the dictionary
+*bnt-new* ( -- bnt )
+ Create a new binary tree on the heap
+*bnt-free* ( bnt -- )
+ Free the tree node from the heap
+==== Member words ====
+*bnt-length@* ( bnt -- u )
+ Get the number of elements in the tree
+*bnt-empty?* ( bnt -- flag )
+ Check for an empty tree
+*bnt-compare@* ( bnt -- xt )
+ Get the compare execution token for comparing keys
+*bnt-compare!* ( xt bnt -- )
+ Set the compare execution token for comparing keys
+==== Tree words ====
+*bnt-clear* ( xt bnt -- )
+ Delete all nodes in the tree using word xt
+*bnt-insert* ( i*x xt x bct -- bnn1 true | i*x bnn2 false )
+ Insert a new unique node in the tree with key x, creation word xt and optional parameters
+*bnt-delete* ( x bnt -- false | bnn true )
+ Delete key x from the tree, return the deleted node
+*bnt-get* ( x bnt -- false | bnn true )
+ Get the node related to key x from the tree
+*bnt-has?* ( x1 bnt -- flag )
+ Check if the key x1 is present in the tree
+*bnt-execute* ( i*x xt bnt -- j*x )
+ Execute xt for every node in the tree
+*bnt-execute?* ( i*x xt bnt -- j*x flag )
+ Execute xt for every node in the tree until xt returns true
+==== Inspection ====
+*bnt-dump* ( bnt -- )
+ Dump the tree node structure
+=== Examples ===
+{{{
+include ffl/bnt.fs
+include ffl/bni.fs
+include ffl/str.fs
+
+
+\ Example: store mountain positions in a binary tree
+
+
+\ Create the generic binary tree in the dictionary
+
+bnt-create mountains
+
+
+\ Setup the compare word for comparing the mountain names
+
+: mount-compare  ( str str - n = Compare the two mountain names )
+  str^ccompare
+;
+
+' mount-compare mountains bnt-compare!
+
+
+\ Extend the generic binary tree node with mountain positions fields
+
+begin-structure mount%
+  bnn%
+  +field   mount>node        \ Mountain structure extends the bnn structure
+  ffield:  mount>lng         \ Longitude position
+  ffield:  mount>lat         \ Latitude position
+end-structure
+
+
+\ Create the allocation word for the extended structure
+
+: mount-new    ( F: r1 r2 -- ; x bnn1 -- bnn2 = Create a new mountain position variable with position r1 r2, name c-addr u and parent bnn1 )
+  mount% allocate throw             \ Allocate the mountain variable
+  >r
+  r@ mount>node bnn-init            \ Initialise the binary tree node
+  r@ mount>lng f!                   \ Save the longitude position
+  r@ mount>lat f!                   \ Save the latitude position
+  r>
+;
+
+ 
+  
+\ Add the mountain positions to the binary tree; the key is the mountain name in a (unique) dynamic string
+
+27.98E0 86.92E0  ' mount-new  str-new dup s" mount everest" rot str-set  mountains bnt-insert [IF]
+  .( Mountain:) bnn-key@ str-get type .(  added to the tree.) cr
+[ELSE]
+  .( Mountain was not unique in tree) cr drop fdrop fdrop 
+[THEN]
+
+45.92E0  6.92E0  ' mount-new  str-new dup s" mont blanc" rot str-set   mountains bnt-insert [IF]
+  .( Mountain:) bnn-key@ str-get type .(  added to the tree.) cr
+[ELSE]
+  .( Mountain was not unique in tree) cr drop fdrop fdrop
+[THEN]
+
+43.35E0 42.43E0 ' mount-new   str-new dup s" mount elbrus" rot str-set  mountains bnt-insert [IF]
+  .( Mountain:) bnn-key@ str-get type .(  added to the tree.) cr
+[ELSE]
+  .( Mountain was not unique in tree) cr drop fdrop fdrop
+[THEN]
+
+
+\ Find a mountain in the binary tree
+
+str-new value mount-name
+
+s" mont blanc" mount-name str-set
+
+mount-name mountains bnt-get [IF]
+  .( Mount:)      dup bnn-key@ str-get type 
+  .(  latitude:)  dup mount>lat f@ f. 
+  .(  longitude:)     mount>lng f@ f. cr
+[ELSE]
+  .( Mount:) mount-name str-get type .(  not in tree.) cr
+[THEN]
+
+
+s" vaalserberg" mount-name str-set
+
+mount-name mountains bnt-get [IF]
+  .( Mount:)      dup bnn-key@ str-get type 
+  .(  latitude:)  dup mount>lat f@ f. 
+  .(  longitude:)     mount>lng f@ f. cr
+[ELSE]
+  .( Mount:) mount-name str-get type .(  not in tree.) cr
+[THEN] 
+
+
+\ Word for printing the mountain positions
+
+: mount-emit ( mount -- = Print mountain )
+  dup bnn-key@ str-get type ."  --> "
+  dup mount>lat f@ f. ." - "
+      mount>lng f@ f. cr
+;
+
+
+\ Print all mountain positions
+
+' mount-emit mountains bnt-execute       \ Execute the word mount-emit for all entries in the tree
+
+
+\ Example mountains iterator
+
+\ Create the tree iterator in the dictionary
+
+mountains bni-create mount-iter          \ Create an iterator named mount-iter on the mountains tree
+
+\ Moving the iterator
+
+mount-iter bni-first nil<>? [IF]
+  .( First mount:) dup bnn-key@ str-get type 
+  .(  latitude:)   dup mount>lat f@ f. 
+  .(  longitude:)      mount>lng f@ f. cr
+[ELSE]
+  .( No first mountain.) cr
+[THEN]
+
+mount-iter bni-last nil<>? [IF]
+  .( Last mount:) dup bnn-key@ str-get type 
+  .(  latitude:)  dup mount>lat f@ f. 
+  .(  longitude:)     mount>lng f@ f. cr
+[ELSE]
+  .( No last mountain.) cr
+[THEN]
+
+
+\ Word for freeing the tree node 
+
+: mount-free     ( mount -- = Free the node in the tree )
+  dup bnn-key@ str-free
+  
+  free throw
+;
+
+\ Cleanup the tree
+
+' mount-free mountains bnt-clear
+}}}
+----
+Generated by *ofcfrth-0.10.0*

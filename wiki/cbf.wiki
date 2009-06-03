@@ -1,0 +1,154 @@
+#summary Circulair buffer module
+=== Module Description ===
+The cbf module implements a circulair buffer with variable elements.
+During adding of extra data, the buffer will be resized. The cbf-access!
+word expects two execution tokens on the stack: store with stack effect:
+i*x addr --  and fetch: addr -- i*x. Those two words are used to store
+data in the buffer and fetch data from the buffer. Their behaviour should
+match the size of the elements in the buffer.
+Important: the cbf-get and cbf-fetch copy data from the buffer to the
+destination address. This is different from the lineair buffer [lbf]
+implementation: the lbf-get and lbf-fetch return addresses located
+in the buffer.
+
+=== Module Words ===
+==== Circulair Buffer Structure ====
+*cbf%* ( -- n )
+ Get the required space for a cbf variable
+==== Buffer creation, initialisation and destruction ====
+*cbf-init* ( +n1 +n2 cbf -- )
+ Initialise the buffer with element size n1 and initial length n2
+*cbf-(free)* ( cbf -- )
+ Free the internal data from the heap
+*cbf-create* ( +n1 +n2 "{{{<}}}spaces{{{>}}}name" -- ; -- cbf )
+ Create a circulair buffer in the dictionary with element size n1 and initial length n2
+*cbf-new* ( +n1 +n2 -- cbf )
+ Create a circulair buffer with element size n1 and initial length n2 on the heap
+*cbf-free* ( cbf -- )
+ Free the circulair buffer from the heap
+==== Member words ====
+*cbf-length@* ( cbf -- u )
+ Get the number of elements in the buffer
+*cbf-extra@* ( cbf -- u )
+ Get the number of extra elements allocated during resizing of the buffer
+*cbf-extra!* ( u cbf -- )
+ Set the nmber of extra elements allocated during resizing of the buffer
+*cbf-size!* ( +n cbf -- )
+ Insure the size of the buffer
+*cbf+extra@* ( -- u )
+ Get the initial number of extra elements allocated during resizing of the buffer
+*cbf+extra!* ( u -- )
+ Set the initial number of extra elements allocated during resizing of the buffer
+*cbf-access@* ( cbf -- xt1 xt2 )
+ Get the store word xt1 and the fetch word xt2 for the buffer
+*cbf-access!* ( xt1 xt2 cbf -- )
+ Set the store word xt1 and the fetch word x2 for the buffer
+==== Lifo words ====
+*cbf-set* ( addr u cbf -- )
+ Set u elements, starting from addr in the buffer, resize if necessary
+*cbf-fetch* ( addr u1 cbf -- u2 )
+ Fetch maximum u1 elements from the buffer in addr, return the actual number of elements u2
+*cbf-get* ( addr u1 cbf -- u2 )
+ Get maximum u1 elements from the buffer in addr, return the actual number of elements u2
+*cbf-skip* ( +n1 cbf -- +n2 )
+ Skip maximum u1 elements from the buffer, return the actual skipped elements u2
+*cbf-enqueue* ( i*x | addr cbf -- )
+ Enqueue one element in the buffer, optional using the store word
+*cbf-dequeue* ( cbf -- i*x | addr true | false )
+ Dequeue one element from the buffer, optional using the fetch word
+==== Fifo words ====
+*cbf-tos* ( cbf -- i*x | addr true | false )
+ Fetch the top element, optional using the fetch word
+*cbf-push* ( i*x | addr cbf -- )
+ Push one element in the buffer, optional using the store word
+*cbf-pop* ( cbf -- i*x | addr true | false )
+ Pop one element from the buffer, optional using the fetch word
+==== Buffer words ====
+*cbf-clear* ( cbf -- )
+ Clear the buffer
+==== Inspection ====
+*cbf-dump* ( cbf -- )
+ Dump the circulair buffer variable
+=== Examples ===
+{{{
+include ffl/cbf.fs
+
+
+\ Example 1: buffering characters strings
+
+
+\ Create the circulair buffer in the dictionary with an initial size of 10 chars
+
+1 chars 10 cbf-create char-buf
+
+
+\ Put characters in the buffer
+
+s" Hello" char-buf cbf-set
+
+\ Get the length of the stored characters
+
+.( Number characters in buffer:) char-buf cbf-length@ . cr
+
+\ Put more characters in the buffer, resulting in a resize of the buffer
+
+s" , a nice morning to you." char-buf cbf-set
+
+
+\ Get characters from the buffer
+
+.( Read the buffer:) pad 29 char-buf cbf-get pad swap type cr
+
+
+
+\ Example 2: buffering compound data: pair of cells as element
+
+
+\ Create the circulair buffer on the heap with an initial size of 3 elements
+
+2 cells 3 cbf-new value xy-buf
+
+
+\ Set the store and fetch words for the buffer
+
+' 2! ' 2@ xy-buf cbf-access!
+
+
+\ Use the buffer as fifo buffer, using the store and fetch words
+
+1 2 xy-buf cbf-enqueue
+3 4 xy-buf cbf-enqueue
+5 6 xy-buf cbf-enqueue
+7 8 xy-buf cbf-enqueue       \ Buffer is resized
+
+\ Get the length of the stored elements in the buffer
+
+.( Number elements in buffer:) xy-buf cbf-length@ . cr
+
+\ Get first element from buffer
+
+.( First pair in buffer:) xy-buf cbf-dequeue [IF]
+  .  . cr
+[ELSE]
+  .(  nothing in buffer) cr
+[THEN]
+
+
+\ Use the buffer as lifo buffer, using the store and fetch words
+
+\ Get last pair from buffer
+
+.( Last pair in buffer:) xy-buf cbf-pop [IF]
+  . . cr
+[ELSE]
+  .(  nothing in buffer) cr
+[THEN]
+
+\ Free the buffer from the heap
+
+xy-buf cbf-free
+
+\ ==============================================================================
+}}}
+----
+Generated by *ofcfrth-0.10.0*

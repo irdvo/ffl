@@ -1,0 +1,88 @@
+#summary Modules in the library
+#labels Featured
+
+The following modules are present in the Forth Foundation Library:
+
+|| *Prefix* || *Description* || *Cluster* || *Since* || *Last Updated* || *Example* ||
+|| [a32 a32] || Adler32 Algorithm || Interface || 0.7.0 || 0.7.0 || Yes ||
+|| [acn acn] || AVL binary tree cell node || Collection || 0.4.0 || 0.4.0 || Yes ||
+|| [act act] || AVL binary tree || Collection || 0.4.0 || 0.7.0 || Yes ||
+|| [arg arg] || Argument parser || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [bar bar] || Bit array || DataType || 0.2.0 || 0.7.0 || Yes ||
+|| [bci bci] || Binary cell tree iterator || Collection || 0.4.0 || 0.7.0 || Yes ||
+|| [bcn bcn] || Binary cell tree node || Collection || 0.4.0 || 0.7.0 || Yes ||
+|| [bct bct] || Binary cell tree || Collection || 0.4.0 || 0.7.0 || Yes ||
+|| [bis bis] || Bit input stream || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [bni bni] || Generic binary tree iterator || Collection || 0.7.0 || 0.7.0 || Yes ||
+|| [bnn bnn] || Generic binary tree node || Collection || 0.7.0 || 0.7.0 || Yes ||
+|| [bnt bnt] || Generic binary tree || Collection || 0.7.0 || 0.7.0 || Yes ||
+|| [car car] || Cell array || Collection || 0.2.0 || 0.6.0 || Yes ||
+|| [cbf cbf] || Circulair buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
+|| [chr chr] || Character words || DataType || 0.1.0 || 0.2.0 || No ||
+|| [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes ||
+|| [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No ||
+|| [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No ||
+|| [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No ||
+|| [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.6.0 || No ||
+|| [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No ||
+|| [dni dni] || Generic double linked list iterator || Collection || 0.4.0 || 0.4.0 || No ||
+|| [dnl dnl] || Generic double linked list || Collection || 0.4.0 || 0.6.0 || No ||
+|| [dnn dnn] || Generic double linked list node || Collection || 0.4.0 || 0.4.0 || No ||
+|| [dom dom] || Document Object Model || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [dos dos] || Date Time output stream || Compound || 0.6.0 || 0.6.0 || Yes ||
+|| [dtm dtm] || Date Time module || DataType || 0.3.0 || 0.4.0 || No ||
+|| [dti dti] || Date Time iterator || DataType || 0.3.0 || 0.3.0 || No ||
+|| [enm enm] || Enumeration || Development || 0.6.0 || 0.6.0 || Yes ||
+|| [est est] || String with escaped characters || Development || 0.6.0 || 0.6.0 || No ||
+|| [frc frc] || Fraction number || DataType || 0.4.0 || 0.4.0 || No ||
+|| [fsm fsm] || Finite State Machine || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [fst fst] || FSM State || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [ftr ftr] || FSM Transition || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [gmo gmo] || Gettexts mo-file import || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [gzf gzf] || GZip file || Interface || 0.7.0 || 0.7.0 || No ||
+|| [gzi gzi] || GZip reader || Interface || 0.7.0 || 0.7.0 || No ||
+|| [hci hci] || Hash table cell iterator || Collection || 0.3.0 || 0.3.0 || Yes ||
+|| [hct hct] || Hash table cell module || Collection || 0.3.0 || 0.6.0 || Yes ||
+|| [hcn hcn] || Hash table cell node || Collection || 0.3.0 || 0.6.0 || Yes ||
+|| [hni hni] || Generic hash table iterator || Collection || 0.6.0 || 0.6.0 || Yes ||
+|| [hnt hnt] || Generic hash table || Collection || 0.6.0 || 0.6.0 || Yes ||
+|| [hnn hnn] || Generic hash table node || Collection || 0.6.0 || 0.6.0 || Yes ||
+|| [lbf lbf] || Lineair buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
+|| [log log] || Log module || Development || 0.7.0 || 0.7.0 || Yes ||
+|| [md5 md5] || MD5 Algorithm || Interface || 0.3.0 || 0.3.0 || Yes ||
+|| [msc msc] || Message Catalog || Compound || 0.6.0 || 0.6.0 || Yes ||
+|| [nci nci] || n-Tree cell iterator || Collection || 0.5.0 || 0.5.0 || No ||
+|| [nct nct] || n-Tree cell module || Collection || 0.5.0 || 0.6.0 || No ||
+|| [ncn ncn] || n-Tree cell node || Collection || 0.5.0 || 0.5.0 || No ||
+|| [nfe nfe] || Non-deterministic finite automata expression || Compound || 0.5.0 || 0.6.0 || No ||
+|| [nfs nfs] || Non-deterministic finite automata state || Compound || 0.5.0 || 0.5.0 || No ||
+|| [nni nni] || Generic n-Tree iterator || Collection || 0.5.0 || 0.5.0 || No ||
+|| [nnt nnt] || Generic n-Tree || Collection || 0.5.0 || 0.6.0 || No ||
+|| [nnn nnn] || Generic n-Tree node || Collection || 0.5.0 || 0.5.0 || No ||
+|| [rdg rdg] || Distributed Pseudo Random Number Generator || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [rgx rgx] || Regular Expressions || Compound || 0.5.0 || 0.7.0 || Yes ||
+|| [rng rng] || Pseudo Random Number Generator || Interface || 0.4.0 || 0.4.0 || No ||
+|| [sci sci] || Single linked cell list iterator || Collection || 0.1.0 || 0.5.0 || No ||
+|| [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.6.0 || No ||
+|| [scn scn] || Single linked cell list node || Collection || 0.1.0 || 0.5.0 || No ||
+|| [sh1 sh1] || SHA1 Algorithm || Interface || 0.4.0 || 0.4.0 || Yes ||
+|| [sh2 sh2] || SHA256 Algorithm || Interface || 0.5.0 || 0.5.0 || Yes ||
+|| [sni sni] || Generic single linked list iterator || Collection || 0.5.0 || 0.5.0 || No ||
+|| [snl snl] || Generic single linked list || Collection || 0.5.0 || 0.7.0 || No ||
+|| [snn snn] || Generic single linked node || Collection || 0.5.0 || 0.5.0 || No ||
+|| [spf spf] || Sprintf || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [stc stc] || Struct words || Development || 0.1.0 || 0.6.0 || No ||
+|| [str str] || Text string || DataType || 0.2.0 || 0.6.0 || No ||
+|| [stt stt] || Stringtable words || Development || 0.6.0 || 0.7.0 || Yes ||
+|| [tis tis] || Text input stream || Compound || 0.2.0 || 0.6.0 || Yes ||
+|| [tmr tmr] || Interval timer || Interface || 0.4.0 || 0.4.0 || No ||
+|| [tos tos] || Text output stream || Compound || 0.2.0 || 0.6.0 || No ||
+|| [trm trm] || Terminal escape sequences outputter || DataType || 0.4.0 || 0.4.0 || No ||
+|| [tst tst] || Unit test words || Development || 0.1.0 || 0.6.0 || No ||
+|| [xis xis] || XML/HTML reader || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [xos xos] || XML/HTML writer || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [zif zif] || GZip file reader || Interface || 0.7.0 || 0.7.0 || No ||
+
+In [Words] there is also an alphabetical overview of all the words in the library.
+
+Note: the documentation for the modules in version 0.7.0 is still preliminary.
