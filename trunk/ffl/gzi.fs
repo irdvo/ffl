@@ -35,10 +35,9 @@ include ffl/lbf.fs
 include ffl/enm.fs
 
 
-( gzi = GZip Input Base Module )
-( The gzi module implements the base words for using the GZip inflate        )
-( algoritme. The module is used for reading from a gzip file [zif] and,      )
-( int the future, stream [zis].                                              )
+( gzi = gzip Input Base Module )
+( The gzi module implements the gzip inflate algorithm. The module is used   )
+( for reading from a gzip file [zif] and, in a future version, stream [zis]. )
 
 
 1 constant gzi.version
@@ -289,9 +288,9 @@ end-structure
 ;
 
 
-( GZip inflation variable creation, initialisation and destruction )
+( gzip inflation variable creation, initialisation and destruction )
 
-: gzi-init         ( u gzi -- = Initialise the GZip inflation variable with initial output buffer size u )
+: gzi-init         ( u gzi -- = Initialise the gzip inflation variable with an initial output buffer size u )
   >r
   r@  gzi>bis          bis-init
   r@  gzi>state        nil!
@@ -342,12 +341,12 @@ end-structure
 ;
 
 
-: gzi-create       ( "<spaces>name" u -- ; -- gzi = Create a named GZip inflation variable in the dictionary with output buffer size u )
+: gzi-create       ( "<spaces>name" u -- ; -- gzi = Create a named gzip inflation variable in the dictionary with an initial output buffer size u )
   create   here   gzi% allot   gzi-init
 ;
 
 
-: gzi-new          ( -- gzi = Create a new GZip inflation variable on the heap )
+: gzi-new          ( -- gzi = Create a new gzip inflation variable on the heap )
   gzi% allocate  throw  tuck gzi-init
 ;
 
@@ -847,7 +846,7 @@ end-structure
 ;
 
 
-: gzi-reduce-output ( gzi -- = Check if output buffered can be reduced )
+: gzi-reduce-output ( gzi -- = Check if the output buffer can be reduced )
   dup  gzi>lbf-size @ 4096 -
   swap gzi>lbf
   dup lbf-gap@ rot over < IF    \ If gap between out and out' > initial-size - 4k Then
@@ -866,7 +865,7 @@ end-structure
 
 ( Inspection )
 
-: gzi-dump   ( gzi - = Dump the gzi )
+: gzi-dump   ( gzi -- = Dump the gzi )
   ." gzi:" dup . cr
     ."  bis                   : " dup gzi>bis      bis-dump
     ."  state                 : " dup gzi>state    ? cr

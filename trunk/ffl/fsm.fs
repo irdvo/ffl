@@ -41,26 +41,26 @@ include ffl/tos.fs
 ( states to the machine. Then use fsm-new-transition to add transitions      )
 ( between the states. fsm-new-transition returns the new transition. Use     )
 ( ftr-condition@ on this new transition to get a reference to the condition  )
-( in the transition. This is actually a bit array [see bar]. Use the words   )
+( in the transition. This is actually a bit array, see [bar]. Use the words  )
 ( of the bar module to set the condition. When the whole FSM is built, start )
 ( using the machine by calling fsm-start. By default the first created       )
-( state is the start state, but this can be changed by fsm-start!. After     )
+( state is the start state, but this can be changed by fsm-start! After      )
 ( starting the machine, feed events to the machine by fsm-feed. This word    )
 ( returns the new, current state or nil if no transition matched. The        )
 ( machine can be converted to graphviz's dot files by fsm-to-dot. This word  )
 ( uses the labels of the states and transitions to build the dot             )
-( representation. It also set the shape of the states [double circle for     )
-( start and end states, circles for the others]. Use fst-attributes! and     )
+( representation. It also set the shape of the states &lb;double circle for  )
+( start and end states, circles for the others&rb;. Use fst-attributes! and  )
 ( ftr-attributes! to set additional graphviz attributes.                     )
 ( During the feeding of events, the optional actions are called. When a      )
 ( state is left, the exit action is called, when a state is entered the      )
 ( entry state is called. If a transition matched, the action of this         )
 ( transition is also called. The stack usage for those actions:              )
-( <pre> )
+( {{{ )
 ( state entry action:  fst -- = State fst is entered                         )
 ( state exit action:   fst -- = State fst is left                            )
 ( transition action: n ftr -- = Transition fst matched for event n           )
-( </pre> )
+( }}} )
 
 
 1 constant fsm.version
@@ -200,7 +200,7 @@ end-structure
  
 ( Inspection )
 
-: fsm-dump   ( fsm - = Dump the FSM )
+: fsm-dump   ( fsm -- = Dump the fsm variable )
   ." fsm:" dup . cr
   ."  states  : " ['] fst-dump over fsm>states snl-execute cr
   ."  start   : " dup fsm>start ? cr

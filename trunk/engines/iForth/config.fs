@@ -37,7 +37,7 @@ ANEW -ffl
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )
@@ -56,9 +56,6 @@ s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN]
 #bits/byte 1 chars *
   constant #bits/char   ( -- n = Number of bits in a char )
   
-1 cells 
-  constant cell         ( -- n = number of bytes in a cell )
-
 #bits/byte cell *
   constant #bits/cell   ( -- n = Number of bits in a cell )  
 
@@ -166,6 +163,15 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
     drop
   THEN
 ;
+
+
+: IS  
+  STATE @ IF  
+    POSTPONE [IS]  
+  ELSE  
+    ['] IS EXECUTE  
+  THEN
+; IMMEDIATE
 
 
 [DEFINED] floats [IF]

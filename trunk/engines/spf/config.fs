@@ -57,7 +57,7 @@ CASE-INS ON
 ( config = Forth system specific words )
 ( The config module contains the extension and missing words for a forth system.)
 
-000600 constant ffl.version
+000700 constant ffl.version
 
 
 ( Private words )
@@ -326,6 +326,7 @@ s" No data available"  exception constant exp-no-data            ( -- n = No dat
 s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
 s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
 s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong file data )
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 

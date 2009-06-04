@@ -28,6 +28,8 @@ include ffl/md5.fs
 include ffl/tst.fs
 
 
+[DEFINED] md5.version [IF]
+
 .( Testing: md5) cr 
   
 md5-create m1
@@ -69,6 +71,8 @@ t{ m2 md5-finish 98C6453 ?u 1B79B042 ?u E7107684 ?u B270F28A ?u }t
 t{ m2 md5-free }t
 
 decimal
+
+[THEN]
 
 \ ==============================================================================
 

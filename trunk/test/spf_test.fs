@@ -52,7 +52,12 @@ t{ spf1 str-get s" =   " ?str }t
 t{ s" abc" s" String:%s" spf1 spf-set }t
 t{ spf1 str-get s" String:abc" ?str }t
 
-t{ s" def" s" abc" s" String:%5s %-5s" spf1 spf-set }t
+
+: spf-2string-test 
+  s" def" s" abc" s" String:%5s %-5s" 
+;
+
+t{ spf-2string-test spf1 spf-set }t
 t{ spf1 str-get s" String:  abc def  " ?str }t
 
 

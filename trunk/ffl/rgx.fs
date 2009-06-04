@@ -34,10 +34,10 @@ include ffl/nfe.fs
 
 
 ( rgx = Regular expressions )
-( The rgx module implements regular expressions. It supports words for      )
-( compiling and matching regular expressions. The module uses the nfe module )
-( for the actual expression building and matching.                           )
-( <pre>                                                                      )
+( The rgx module implements regular expressions. It supports words for       )
+( compiling and matching regular expressions. The module uses the [nfe]      )
+( module for the actual expression building and matching.                    )
+( {{{                                                                        )
 (                                                                            )
 (     This module uses the following syntax:                                 )
 (      .   Match any char [incl. newline]     *   Match zero or more         )
@@ -61,7 +61,7 @@ include ffl/nfe.fs
 (      All other backslash characters simply return the trailing character,  )
 (      but this can change in future versions.                               )
 (                                                                            )
-(      Classes:                                                         )
+(      Classes:                                                              )
 (       [abc]  - match a or b or c                                           )
 (       [^abc] - match everything except a or b or c                         )
 (       [a-z]  - match a or b or .. z                                        )
@@ -78,7 +78,7 @@ include ffl/nfe.fs
 (                                                                            )
 (      All other backslash characters simply return the trailing character,  )
 (      but this can change in future versions.                               )
-( </pre> )
+( }}} )
 
 
 2 constant rgx.version

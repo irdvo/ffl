@@ -35,11 +35,11 @@ include ffl/str.fs
 
 ( spf = Sprintf string formatter )
 ( The spf module implements a simplified version of C's sprintf function.    )
-( The words in this module expect a format string with specifiers [see below )
-( for the format]. For every specifier [except %% and %n] a stack item is    )
-( converted  to the character representation and added to the destination.   )
-( All other characters is simply copied to the destination.                  )
-( <pre>                                                                      )
+( The words in this module expect a format string with specifiers &lb;see    )
+( below for the format&rb;. For every specifier &lb;except %% and %n&rb; a   )
+( stack item is converted to the character representation and added to the   )
+( destination. All other characters are simply copied to the destination.    )
+( {{{                                                                        )
 ( Format: %[flags][width][length]specifier                                   )
 (     Flags: 0      = Left-pads the number with zeros instead of spaces      )
 (            -      = Left justify the number                                )
@@ -58,7 +58,7 @@ include ffl/str.fs
 (            p      = format a unsigned hexadecimal number [u or ud]         )
 (            n      = store the length of the string in [addr]               )
 (            %      = write a '%' []                                         )
-( </pre>                                                                     )
+( }}}                                                                        )
 
 
 1 constant spf.version

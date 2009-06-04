@@ -50,7 +50,7 @@ copied to your forth working directory.
 In case of iForth the 'ffl' directory (and its contents) should be copied to:
 $IFORTH/include  ( ending up as $IFORTH/include/ffl ).
 
-The ffl-0.6.0 directory, minus the subdirectory ffl, should be placed in 
+The ffl-x.y.z directory, minus the subdirectory ffl, should be placed in 
 $IFORTH/examples/ .
 
 

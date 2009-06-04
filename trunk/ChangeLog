@@ -11,13 +11,11 @@
 * spf: new module: Sprintf module (2008-09-13)
 * log: new module: Logging module (2008-09-09)
 * bis: new module: Bit input stream (2008-08-20)
-* gzp: new module: GZip base module (2008-06-28)
 * cbf: new module: circulair buffer (2008-06-02)
 * lbf: new module: lineair buffer (2008-05-29)
 * lxf: config.fs/make.fs/readme added (2008-05-23)
 * stc: bug fix in +field (2008-05-23)
 * gzf: new module: GZip file (2008-05-07)
-* gzs: new module: GZip stream (2008-05-07)
 * act: new words: act-clear, act-execute?
 * act,acn extends bct,bcn (2008-04-24)
 * bcn: new words: bcn-cell@,bcn-cell!
