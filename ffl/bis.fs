@@ -38,8 +38,8 @@ include ffl/stc.fs
 ( of bytes. The module uses a cell wide internal buffer to make it possible  )
 ( to keep reading from succeeding input streams. The maximum number of bits  )
 ( that can be read per call, is limited to the size of a cell minus one      )
-( byte. So if a cell is 4 bytes wide, this maximum is 24. Keep in mind that  )
-( the module does not copy the data for the stream, it only stores a         )
+( byte. So if a cell is 4 bytes wide, this maximum is 24 bit. Keep in mind   )
+( that the module does not copy the data for the stream, it only stores a    )
 ( reference to the data.                                                     )
 
 
@@ -114,7 +114,7 @@ end-structure
 
 ( Read byte words )
 
-: bis-bits>bytes   ( bis -- = Start reading bytes, dropping the not byte aligned bits )
+: bis-bits>bytes   ( bis -- = Start reading bytes, dropping the not-byte-aligned bits )
   >r
   r@ bis>hold @
   0 r@ bis>bits @!           \ bits = 0
@@ -170,7 +170,7 @@ end-structure
 ;
 
 
-: bis-need-bits    ( n bis -- flag = Make sure there are n bits from the stream available in the buffer )
+: bis-need-bits    ( n bis -- flag = Check if there are n bits from the stream available in the buffer )
   >r
   r@ bis>hold @ over
   r@ bis>bits @

@@ -105,7 +105,7 @@ end-structure
 ;
 
 
-: ftr-label?       ( c-addr u ftr -- ftr true | c-addr u false = Compare the label )
+: ftr-label?       ( c-addr u ftr -- ftr true | c-addr u false = Check the label c-addr u with the transition ftr )
   >r
   2dup r@ ftr>label str-ccompare 0= IF
     2drop r@ true
@@ -179,7 +179,7 @@ end-structure
 
 ( Inspection )
 
-: ftr-dump   ( ftr - = Dump the transition )
+: ftr-dump   ( ftr -- = Dump the transition )
   ." ftr:" dup . cr
   ."  condition : " dup ftr>condition bar-dump cr
   ."  label     : " dup ftr-label@ type cr

@@ -115,7 +115,7 @@ end-structure
 ;
 
 
-: fst-label?       ( c-addr u fst -- c-addr u false | fst true = Compare the label )
+: fst-label?       ( c-addr u fst -- c-addr u false | fst true = Check the label c-addr u with this state )
   >r
   2dup r@ fst>label str-ccompare 0= IF
     2drop r@ true
@@ -303,7 +303,7 @@ end-structure
 
 ( Inspection )
 
-: fst-dump   ( fst - = Dump the state )
+: fst-dump   ( fst -- = Dump the fst variable )
   ." fst:" dup . cr
   ."  transitions: " ['] ftr-dump over fst>transitions snl-execute cr
   ."  id         : " dup fst>id ? cr

@@ -166,9 +166,11 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
+[UNDEFINED] rdrop [IF]
 : rdrop            ( R: x -- )
   r> r> drop >r
 ;
+[THEN]
 
 
 : sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
@@ -179,7 +181,7 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 : icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings, return [-1,0,1] )
   rot swap 2swap 2over
   min 0 ?DO
-    over c@ toupper over c@ toupper - sgn ?dup IF
+    over c@ upc over c@ upc - sgn ?dup IF
       >r 2drop 2drop r>
       unloop 
       exit
@@ -220,12 +222,17 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-: fr>              ( F: -- r; R: r -- = Get float from return stack )
-  postpone r>f
-; immediate
+: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
+  r> rp@ b/float - rp! rp@ f! >r 
+;
 
 
-: fr@              ( F: -- r; R: r -- r = Fetch float of return stack )
+: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
+  r> rp@ f@ b/float rp@ + rp! >r
+;
+
+
+: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
   r> rp@ f@ >r
 ;
 

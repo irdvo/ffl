@@ -30,12 +30,16 @@ include ffl/config.fs
 
 [UNDEFINED] zif.version [IF]
 
+include ffl/crc.fs
+
+[DEFINED] crc.version [IF]
+
 include ffl/gzf.fs
 include ffl/gzi.fs
 
 ( zif = gzip file reader )
-( The zif module implements a gzip file reader. See [gzf] for the header     )
-( information.                                                               )
+( The zif module implements a gzip file reader. See [gzf] for the gzip       )
+( file header information.                                                    )
 
 
 1 constant zif.version
@@ -49,7 +53,7 @@ include ffl/gzi.fs
 
 ( Private zif state )
 
-gzi.states constant zif.done ( -- n = Gzip file reader decompression ready )
+gzi.states constant zif.done ( -- n = gzip file reader decompression ready )
 
 
 ( zif structure )
@@ -72,9 +76,9 @@ begin-structure zif%       ( -- n = Get the required space for a zif variable )
 end-structure
 
 
-( GZip file reader variable creation, initialisation and destruction )
+( gzip file reader variable creation, initialisation and destruction )
 
-: zif-init         ( zif -- = Initialise the GZip file reader variable )
+: zif-init         ( zif -- = Initialise the gzip file reader variable )
   zif.output-size
   over zif>gzi      gzi-init
   dup  zif>gzf      gzf-init
@@ -100,12 +104,12 @@ end-structure
 ;
 
 
-: zif-create       ( "<spaces>name" -- ; -- zif = Create a named GZip file reader variable in the dictionary )
+: zif-create       ( "<spaces>name" -- ; -- zif = Create a named gzip file reader variable in the dictionary )
   create   here   zif% allot   zif-init
 ;
 
 
-: zif-new          ( -- zif = Create a new GZip file reader variable on the heap )
+: zif-new          ( -- zif = Create a new gzip file reader variable on the heap )
   zif% allocate  throw  dup zif-init
 ;
 
@@ -119,7 +123,7 @@ end-structure
 
 ( Module words )
 
-: zif+input-size! ( u -- = Set the default input buffer size &lb;default 2k, min. 1k&rb; )
+: zif+input-size! ( u -- = Set the default input buffer size &lb;default 2kb, min. 1kb&rb; )
   1024 max to zif.input-size
 ;
 
@@ -129,7 +133,7 @@ end-structure
 ;
 
 
-: zif+output-size! ( u -- = Set the default output buffer size &lb;default 64k+4k, min. 64k+4k&rb; )
+: zif+output-size! ( u -- = Set the default output buffer size &lb;default 64kb+4kb, min. 64kb+4kb&rb; )
   69632 max to zif.output-size
 ;
 
@@ -480,7 +484,7 @@ end-structure
 
 ( Inspection )
 
-: zif-dump         ( zif -- Dump the zif variable )
+: zif-dump         ( zif -- = Dump the variable )
   ." zif:" dup . cr
     ."  gzi         : " dup zif>gzi gzi-dump
     ."  gzf         : " dup zif>gzf gzf-dump
@@ -493,6 +497,10 @@ end-structure
     ."  file-length : " dup zif>file-len ? cr
     ."  file-crc    : "     zif>file-crc ? cr
 ;
+
+[ELSE]
+.( Warning: zif requires crc ) cr
+[THEN]
 
 [THEN]
 

@@ -1,7 +1,7 @@
 #/bin/sh
 
 package=ffl
-version=0.6.1
+version=0.7.0
 
 dest=${package}-${version}
 
@@ -24,6 +24,7 @@ mkdir ${dest}/engines/lxf
 
 cp AUTHORS COPYING NEWS README ChangeLog ${dest}
 cp       ffl/*.fs             ${dest}/ffl
+cp       ffl/ffl.api          ${dest}/ffl
 cp      test/*.fs             ${dest}/test
 cp      html/*.html           ${dest}/html
 cp  examples/*.fs             ${dest}/examples
@@ -42,9 +43,9 @@ cp   engines/lxf/*.fs         ${dest}/engines/lxf
 cp      test/nl.po            ${dest}/test
 cp      test/nl.mo            ${dest}/test
 cp      test/test.xml         ${dest}/test
-cp      test/stored.gz        ${dest}/stored.gz
-cp      test/fixed.gz         ${dest}/fixed.gz
-cp      test/gzipped.gz       ${dest}/gzipped.gz
+cp      test/stored.gz        ${dest}/test
+cp      test/fixed.gz         ${dest}/test
+cp      test/gzipped.gz       ${dest}/test
 
 cp   examples/test.xml        ${dest}/examples
 cp   examples/nl.mo           ${dest}/examples

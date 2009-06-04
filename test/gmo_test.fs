@@ -28,6 +28,7 @@ include ffl/gmo.fs
 include ffl/tst.fs
 
 
+[DEFINED] gmo.version [IF]
 
 bigendian? [IF]
 
@@ -49,6 +50,8 @@ t{ s" Sunday" msc2 msc-translate s" zondag" ?str }t
 t{ s" Mar"    msc2 msc-translate s" maa"    ?str }t
 
 t{ msc2 msc-free }t
+
+[THEN]
 
 [THEN]
 

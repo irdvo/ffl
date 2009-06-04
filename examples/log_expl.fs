@@ -33,13 +33,13 @@ log-to-console
 
 warning" Warning message"
 
-log.error log-level          \ Log only errors and higher
+log.error log-from-level          \ Log only errors and higher
 
 warning" Skip warning message"
 
 error" Error message"
 
-log.trace log-level          \ Log all events
+log.trace log-from-level          \ Log all events
 
 
 .( Logging to file "log.tmp" ) cr
@@ -62,7 +62,7 @@ s" log.tmp" w/o create-file 0= [IF]
 
 s" log" 3 5 log-to-rolling
 
-3 log-stack                  \ Log also the stack contents, maximum 3 values
+3 log-stack-depth            \ Log also the stack contents, maximum 3 values
 
 : do-18logs
   18 0 DO
@@ -85,7 +85,7 @@ do-18logs                    \ Generate 18 log messages in the rolling files
 
 ' callback log-to-callback
 
-0 log-stack                  \ Stop logging the stack contents
+0 log-stack-depth            \ Stop logging the stack contents
 
 error" Error message via callback"
 

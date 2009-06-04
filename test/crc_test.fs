@@ -27,6 +27,7 @@
 include ffl/tst.fs
 include ffl/crc.fs
 
+[DEFINED] crc.version [IF]
 
 .( Testing: crc) cr 
   
@@ -49,5 +50,7 @@ t{ c1 crc-reset   s" ZYXWVUTSRQPONMLKJIHGFEDBCA" c1 crc-update c1 crc-finish  99
 
 t{ s" An Arbitrary String" crc+calc-crc32 6FBEAAE7 ?u }t
 decimal
+
+[THEN]
 
 \ ==============================================================================

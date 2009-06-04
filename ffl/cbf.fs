@@ -335,32 +335,6 @@ end-structure
 ;
 
 
-: cbf-fetch+       ( addr u1 n cbf -- u2 = Fetch maximum u1 elements from the buffer in addr, offsetted by n, return the actual number of elements u2 )
-  >r
-  dup 0< IF                  \ Check if offset inside length
-    dup abs 1-
-  ELSE
-    dup
-  THEN
-  r@ cbf-length@ >= exp-index-out-of-range AND throw
-  
-  dup 0< IF                  \ Convert offset to index
-    r@ cbf-in@ +
-    dup 0< IF
-      r@ cbf-size@ +
-    THEN
-  ELSE
-    r@ cbf-out@ +
-    dup r@ cbf-size@ >= IF
-      r@ cbf-size@ -
-    THEN
-  THEN
-
-  r@ cbf>start !             \ Fetch from index
-  r> cbf-do-fetch
-;
-
-
 : cbf-skip         ( +n1 cbf -- +n2 = Skip maximum u1 elements from the buffer, return the actual skipped elements u2 )
   swap
   over cbf-length@ min       \ Acutal elements to skip

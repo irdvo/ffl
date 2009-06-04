@@ -53,7 +53,7 @@ t{ s" Message 5" log.error do-log }t
 
 \ t{ fatal" Message 6" }t
 
-log.warning log-level
+log.warning log-from-level
 
 t{ trace" Message 7" }t
 
@@ -67,7 +67,7 @@ t{ error" Message 11" }t
 
 \ t{ fatal" Message 12" }t
 
-log.none log-level
+log.none log-from-level
 
 t{ trace" Message 13" }t
 
@@ -83,7 +83,7 @@ t{ error" Message 16" }t
 
 t{ log-count @ 7 ?s }t
 
-log.trace log-level
+log.trace log-from-level
 
 \ Test log-by-file
 
@@ -118,7 +118,7 @@ t{ s" log" 10 15 log-to-rolling }t
   LOOP
 ;
 
-t{ 3 log-stack }t
+t{ 3 log-stack-depth }t
 
 t{ log-test1 }t
 

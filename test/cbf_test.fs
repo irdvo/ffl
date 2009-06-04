@@ -74,12 +74,6 @@ t{ pad 4 cbf1 cbf-fetch pad swap s" Morn" compare ?0 }t
 
 t{ pad 15 cbf1 cbf-fetch pad swap s" MorningHaveANic" compare ?0 }t
 
-t{ pad 7 4 cbf1 cbf-fetch+ pad swap s" ingHave" compare ?0 }t
-
-t{ pad 4 -7 cbf1 cbf-fetch+ pad swap s" Nice" compare ?0 }t
-
-t{ pad 1 -1 cbf1 cbf-fetch+ pad swap s" y" compare ?0 }t
-
 t{ pad 15 cbf1 cbf-get pad swap s" MorningHaveANic" compare ?0 }t
 
 t{ cbf1 cbf-length@ 4 ?s }t

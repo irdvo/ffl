@@ -254,22 +254,24 @@ end-stringtable
 ;
 
 
-( Log words )
+( Log settings words )
 
-: log-level        ( n -- = Skip and suppress all events below level n )
+: log-from-level   ( n -- = Skip and suppress all events below level n )
   log.trace max log.none min to log.level
 ;
 
 
-: log-stack        ( n -- = Append max n top stack elements to the log message )
+: log-stack-depth  ( n -- = Append max n top stack elements to the log message )
   to log.stack
 ;
 
 
-: log-time&date    ( flag -- = Set if the time&date should start the log message )
+: log-with-time&date ( flag -- = Set if the time&date should start the log message )
   to log.time&date
 ;
 
+
+( Log word )
 
 : do-log           ( c-addr u n -- = Log the message c-addr u with event n )
   dup log.level < IF
@@ -295,7 +297,7 @@ end-stringtable
 ;
 
 
-( Log message words )
+( Parsing log words )
 
 : fatal"           ( "ccc<quote>" -- = Log a fatal message )
   log.fatal (log")

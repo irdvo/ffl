@@ -31,12 +31,11 @@ include ffl/config.fs
 [UNDEFINED] gzf.version [IF]
 
 include ffl/str.fs
-include ffl/crc.fs
 
 
-( gzf = GZip File )
-( The gzf module contains the base definitions for using a gzip file. It is  )
-( used by the [zif] and [zof] modules.                                       )
+( gzf = gzip File )
+( The gzf module implements the base definitions for using a gzip file. It   )
+( is  used by the [zif] and, in a future version, [zof] module.              )
 
 
 1 constant gzf.version
@@ -79,14 +78,12 @@ begin-structure gzf%       ( -- n = Get the required space for a gzf variable )
   +field  gzf>name           \ Name string
   str%
   +field  gzf>comment        \ Comment string
-  crc%
-  +field  gzf>crc            \ CRC
 end-structure
 
 
-( GZip file variable creation, initialisation and destruction )
+( gzip file variable creation, initialisation and destruction )
 
-: gzf-init         ( gzf -- = Initialise the GZip file variable )
+: gzf-init         ( gzf -- = Initialise the gzip file variable )
   dup  gzf>text   off
   dup  gzf>flags  0!
   dup  gzf>mtime  0!
@@ -95,27 +92,22 @@ end-structure
   dup  gzf>xflags 0!
   dup  gzf>xlen   0!
   dup  gzf>name    str-init
-  dup  gzf>comment str-init
-  dup  gzf>crc     crc-init
-  drop
-\ ToDo
+       gzf>comment str-init
 ;
 
 
 : gzf-(free)       ( gzf -- = Free the internal, private variables from the heap )
   dup gzf>name     str-(free)
-  dup gzf>comment  str-(free)
-  drop
-  \ ToDo
+      gzf>comment  str-(free)
 ;
 
 
-: gzf-create       ( "<spaces>name" -- ; -- gzf = Create a named GZip file variable in the dictionary )
+: gzf-create       ( "<spaces>name" -- ; -- gzf = Create a named gzip file variable in the dictionary )
   create   here   gzf% allot   gzf-init
 ;
 
 
-: gzf-new          ( -- gzf = Create a new GZip file variable on the heap )
+: gzf-new          ( -- gzf = Create a new gzip file variable on the heap )
   gzf% allocate  throw  dup gzf-init
 ;
 
@@ -200,14 +192,13 @@ end-structure
   dup  gzf>xflags 0!
   dup  gzf>xlen   0!
   dup  gzf>name    str-clear
-  dup  gzf>comment str-clear
-       gzf>crc     crc-reset
+       gzf>comment str-clear
 ;
 
 
 ( Inspection )
 
-: gzf-dump   ( gzf - = Dump the gzf )
+: gzf-dump   ( gzf -- = Dump the variable )
   ." gzf:" dup . cr
   ."  text?  :" dup gzf>text  ? cr
   ."  os     :" dup gzf>os    ? cr
