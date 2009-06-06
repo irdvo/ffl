@@ -27,15 +27,14 @@
 .( Forth Foundation Library: ) cr
 msecs
 
-unused
+unused unused-n
 
 include ffl/ffl.fs
 
-unused -
-
+unused-n - swap unused - +
 
 .( Compilation Size: ) . .( bytes) cr
-  
+
 msecs swap -
 
 .( Compilation Time: ) . .( msec) cr
