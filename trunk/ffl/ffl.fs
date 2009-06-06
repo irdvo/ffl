@@ -59,8 +59,8 @@ include ffl/fst.fs
 include ffl/ftr.fs
 include ffl/frc.fs
 include ffl/gmo.fs
-\ include ffl/gzf.fs
-\ include ffl/gzp.fs
+include ffl/gzf.fs
+include ffl/gzi.fs
 include ffl/hci.fs
 include ffl/hcn.fs
 include ffl/hct.fs

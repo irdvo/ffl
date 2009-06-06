@@ -28,14 +28,11 @@
 .( Forth Foundation Library: ) cr
 ms@
 
-unused
+.mem
 
 include ffl/ffl.fs
 
-unused -
-
-
-.( Compilation Size: ) . .( bytes) cr
+.mem
   
 ms@ swap -
 
