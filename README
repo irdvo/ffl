@@ -6,7 +6,7 @@
 The Forth Foundation Library is a general purpose forth library. It gives you
 a collection of words written in (ANS) Forth, in areas such as data types,
 collections, development support, interfaces and compound modules. The
-library is developped with gforth and pfe.
+library is developped with gforth.
 
 At the moment the library is still under development. The FFL library, the 
 example and test files are licensed under the GNU GPL.
@@ -15,8 +15,8 @@ example and test files are licensed under the GNU GPL.
 Installation
 ------------
 
-Copy the directory 'ffl' and its contents to directory where the forth
-system will look for sources. 
+Copy the directory 'ffl' and its contents to directory where 
+the forth engine will look for sources. 
 
 
 In case of gforth the 'ffl' directory (and its contents) should be copied to:
@@ -48,7 +48,7 @@ copied to your forth working directory.
 
 
 In case of iForth the 'ffl' directory (and its contents) should be copied to:
-$IFORTH/include  ( ending up as $IFORTH/include/ffl ).
+$IFORTH/include ( ending up as $IFORTH/include/ffl ).
 
 The ffl-x.y.z directory, minus the subdirectory ffl, should be placed in 
 $IFORTH/examples/ .
@@ -75,7 +75,8 @@ Configuration
 -------------
 
 The default config.fs and make.fs are for gforth. So no further copying is 
-necessary for gforth.
+necessary for gforth. For the other forth engines there is a config.fs and
+make.fs in the 'engines' directory.
 
 
 For bigforth the config.fs and make.fs files should be copied from the
@@ -151,7 +152,7 @@ purposes only and have no real meaning. Enter them in the correct case.)
 
 
 (for gforth):
-ToDo: test directory ?
+
 1. Change the current directory to the 'test' directory
 2. Enter: gforth ffl_test.fs
 
@@ -190,10 +191,11 @@ For running the tests the minForth engine is configured too small:
 
 (for iForth)
 
-1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file.
+1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the 
+   '$IFORTH/examples/ffl-0.6.0/test' directory.
 2. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
 3. Start iForth.
-4. Use the 'cd' word to move to the $IFORTH/examples/ffl-0.6.0/test directory 
+4. Use the 'cd' word to move to the '$IFORTH/examples/ffl-0.6.0/test' directory 
 5. Do 'include ffl_test.fs' to run the tests.
 
 
@@ -211,10 +213,20 @@ For running the tests the minForth engine is configured too small:
 4. Enter: ffl/config.fs
 5. Enter: ffl_test.fs
 
+
 ( for lxf )
+
 1. Change the current directory to the 'test' directory.
 2. Make sure that in this directory the 'ffl' is installed.
-2. Enter: lxf include ffl_test.fs
+3. Enter: lxf include ffl_test.fs
+
+( for ntf )
+
+1. Start a command or cmd window.
+2. Change the current directory to the 'test' directory
+3. Make sure that in this directory the 'ffl' is installed.
+4. Make sure that in this directory the 'ntf.exe' is installed.
+5. Enter: ntf include ffl_test.fs
 
 
 The program will tell you which modules are tested and if there were any
@@ -236,13 +248,16 @@ for all the structures in the library. Till version 0.6.0 the library was
 using its own structure definition. From version 0.6.0 it uses the new ANS
 structures.
 
+
 Documentation
 -------------
 
 In the directory 'html' there is the HTML documentation of the library. The
 file 'index.html' contains an overview of all the modules in the library. In 
 the file 'words.html' all words of the libary are alphabetically listed. In
-the file 'manual.html' there is simple manual.
+the file 'manual.html' there is small manual. More information can be found
+in the wiki on the website.
+
 
 Porting to other forth systems
 ------------------------------
