@@ -1,0 +1,289 @@
+
+                     The Forth Foundation Library (FFL)
+                     ----------------------------------
+
+
+The Forth Foundation Library is a general purpose forth library. It gives you
+a collection of words written in (ANS) Forth, in areas such as data types,
+collections, development support, interfaces and compound modules. The
+library is developped with gforth.
+
+At the moment the library is still under development. The FFL library, the 
+example and test files are licensed under the GNU GPL.
+
+
+Installation
+------------
+
+Copy the directory 'ffl' and its contents to directory where 
+the forth engine will look for sources. 
+
+
+In case of gforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/share/gforth/site-forth or /usr/local/share/gforth/site-forth
+
+
+In case of bigforth the 'ffl' directory (and its contents) should be copied to:
+
+/usr/lib/bigforth/src or /usr/local/lib/bigforth/src
+
+
+In case of pfe the 'ffl' directory (and its contents) should be copied to:
+
+/usr/share/pfe or /usr/local/share/pfe
+
+
+In case of Win32Forth the 'ffl' directory (and its contents) should be
+copied to:
+
+<drive>:\Program Files\Win32Forth
+
+(with <drive> the drive where Win32 is installed, normally this is 'C', or 
+in a directory that is in the search path of Win32Forth.)
+
+
+In case of minForth the 'ffl' directory (and its contents) should be 
+copied to your forth working directory.
+
+
+In case of iForth the 'ffl' directory (and its contents) should be copied to:
+$IFORTH/include ( ending up as $IFORTH/include/ffl ).
+
+The ffl-x.y.z directory, minus the subdirectory ffl, should be placed in 
+$IFORTH/examples/ .
+
+
+In case of SP-Forth the 'ffl' directory (and its contents) should be 
+copied to the installation directory of SP-Forth. Normally this will be: 
+C:\Program Files\SP-Forth (for windows).
+
+
+In case of lxf/ntf the 'ffl' directory (and its contents) should be 
+copied to your forth working directory.
+
+
+If your forth only looks in the current directory for forth sources, then copy 
+the directory 'ffl' and its contents to the current directory.
+
+Note: at this moment (2006-06-11) fina is not yet released, so any
+installation and configuration directives are not possible. The config.fs
+file for fina is also preliminary.
+
+
+Configuration
+-------------
+
+The default config.fs and make.fs are for gforth. So no further copying is 
+necessary for gforth. For the other forth engines there is a config.fs and
+make.fs in the 'engines' directory.
+
+
+For bigforth the config.fs and make.fs files should be copied from the
+'engines/bigforth' directory to the 'ffl' directory.
+
+For pfe the config.fs and make.fs files should be copied from the 
+'engines/pfe' directory to the 'ffl' directory.
+
+For Win32Forth the config.fs and make.fs files should be copied from the
+'engines/Win32Forth' directory to the 'ffl' directory.
+
+For minForth the config.fs and make.fs files should be copied from the
+'engines/minForth' directory to the 'ffl' directory.
+
+For iForth the config.fs and make.fs files should be copied from the
+'engines/iForth' directory to the 'ffl' directory.
+
+For SP-Forth the config.fs and make.fs files should be copied from the
+'engines/spf' directory to the 'ffl' directory.
+
+For lxf/ntf the config.fs and make.fs files shoud be copied from the 
+'engines/lxf' directory to the 'ffl' directory.
+
+
+The next step is editing the config.fs file for system settings.
+
+
+At the moment there are four system setting: 
+
+end-of-line
+
+This word defines the ascii end of line as a counted string. For unix this 
+is a linefeed, for windows/dos systems it is carriage return and linefeed. For
+gforth, fina, iForth, SP-Forth and lxf/nft the end of line is supplied by 
+the forth engine, so no manual configuration necessary. For bigforth, pfe 
+and minForth the default is the unix end of line, for Win32Forth the default
+is windows/dos.
+You should change the 'end-of-line' word if the default is not correct for you.
+
+Note: gforth returns for windows an incorrect value for end-of-line, so
+if you use gforth on windows, you should change the 'end-of-line' word.
+
+
+#bits/byte
+
+This word defines the number of bits in a byte. The library queries the
+forth environment for "address-unit-bits". If this is not present, the
+value defaults to 8. In the unlikely event that your system does not
+support the environment query and your system uses a different number of 
+bits in a byte, then you should change this word.
+
+
+#bits/cell
+
+This word defines the number of bits in a cell. The default is the number of
+bits in a byte multipied by the number of bytes in a cell.
+
+
+#bits/char
+
+This word defines the number of bits in a char. The default is the number of
+bits in a byte multipied by the number of bytes in a char.
+
+
+Testing
+-------
+
+After installing the source files the unit test sources in the 'test'
+directory can be run to test the library. The test can be started by:
+
+(for PFE and SP-Forth there are command line arguments. These are for test 
+purposes only and have no real meaning. Enter them in the correct case.)
+
+
+(for gforth):
+
+1. Change the current directory to the 'test' directory
+2. Enter: gforth ffl_test.fs
+
+
+(for bigforth):
+
+1. Change the current directory to the 'test' directory
+2. Enter: bigforth ffl_test.fs
+
+
+(for pfe)
+
+1. Change the current directory to the 'test' directory
+2. Enter: pfe ffl_test.fs -ab -c TEST --verbose --file=FILE input
+
+
+(for Win32Forth)
+
+1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file.
+2. Start Win32Forth.
+3. Use in the window the 'chdir' word to move to the 'test' directory.
+4. Use 'include ffl_test.fs' to run the tests.
+
+
+(for minForth)
+
+For running the tests the minForth engine is configured too small:
+1. Extend the engine by editing the kernel.mfc file from minForth. Change 
+   in this file the NAMES to 512000, the HEAP to 640000, the LIMIT to 1000000,
+   the SPMAX to 256 and the RPMAX to 256. Then rebuild the minForth engine.
+2. Copy this new engine (mf and mf.i) to the 'test' directory. Also make sure 
+   that in this directory the 'ffl' is installed.
+3. Start the minForth engine (mf).
+4. Enter: 'include ffl_test.fs'.
+
+
+(for iForth)
+
+1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the 
+   '$IFORTH/examples/ffl-0.6.0/test' directory.
+2. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
+3. Start iForth.
+4. Use the 'cd' word to move to the '$IFORTH/examples/ffl-0.6.0/test' directory 
+5. Do 'include ffl_test.fs' to run the tests.
+
+
+(for SP-Forth, windows)
+
+1. Start a command or cmd window.
+2. Change the current directory to the 'test' directory.
+3. Enter (including the quotes): "\Program Files\sp-forth\spf4" ffl\config.fs ffl_test.fs
+
+( for SP-Forth, linux)
+
+1. Change the current directory to the 'test' directory
+2. Enter: spf4 -ab -c TEST --verbose --file=FILE input
+3. Spf4 will report error #-2003, that is okee.
+4. Enter: ffl/config.fs
+5. Enter: ffl_test.fs
+
+
+( for lxf )
+
+1. Change the current directory to the 'test' directory.
+2. Make sure that in this directory the 'ffl' is installed.
+3. Enter: lxf include ffl_test.fs
+
+( for ntf )
+
+1. Start a command or cmd window.
+2. Change the current directory to the 'test' directory
+3. Make sure that in this directory the 'ffl' is installed.
+4. Make sure that in this directory the 'ntf.exe' is installed.
+5. Enter: ntf include ffl_test.fs
+
+
+The program will tell you which modules are tested and if there were any
+errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+then all went well.
+
+
+Backwards compatible
+--------------------
+
+From version 0.6.0 to version 0.7.0 there is a backwards compatible problem 
+with the stringtable module (stt). In version 0.6.0 the strings were stored
+in the table with the ," word, but this word is not standard enough between
+forth engines. From version 0.7.0 on the word +" is used for storing strings
+in the stringtable.
+
+From version 0.5.0 to version 0.6.0 there is a backwards compatible problem
+for all the structures in the library. Till version 0.6.0 the library was
+using its own structure definition. From version 0.6.0 it uses the new ANS
+structures.
+
+
+Documentation
+-------------
+
+In the directory 'html' there is the HTML documentation of the library. The
+file 'index.html' contains an overview of all the modules in the library. In 
+the file 'words.html' all words of the libary are alphabetically listed. In
+the file 'manual.html' there is small manual. More information can be found
+in the wiki on the website.
+
+
+Porting to other forth systems
+------------------------------
+
+The library is developped on gforth and pfe. The intention is that only two 
+files are dependant on the (ANS) forth system:
+
+ ./ffl/config.fs
+ ./ffl/make.fs
+
+All other source files should only use ANS words or extensions that are 
+present on the forth engine or are defined in the config.fs.
+
+If you change these files to make the library work on a particular forth 
+system, let me know, then I can add the changed files to the distribution. 
+Also if there are any specific details concerning installation or testing 
+for a particular forth system, let me know. I will add them to the README.
+
+
+Bugs
+----
+
+Because the library is still beta it is not impossible that you will find 
+bugs. You can send them or any suggestions to dvoudheusden[at]gmail[dot]com.
+
+
+Enjoy,
+Dick
+

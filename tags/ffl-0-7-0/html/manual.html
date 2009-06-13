@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><title>ForthFoundationLibrary Manual: Using the library</title>
+ 
+ 	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="content-language" content="en">
+
+	
+	<div id="container">
+		<div id="content-wrap">
+			<div id="main-content">
+				<div id="page-content">
+					
+
+<h1 id="toc0"><span>Getting started</span></h1>
+<p>First you need to include the module you want to use. For example,
+to include the fraction module (and all modules which are needed by the
+fraction module), you would do:</p>
+<p><tt>include ffl/frc.fs</tt></p>
+<p>You can also include all modules at once with:</p>
+<p><tt>include ffl/ffl.fs</tt></p>
+<hr>
+<p>Many modules store state in a variables. These modules provide three
+ways to allocate and initialize the variable. For example, after
+including the dynamic string module, you could:</p>
+<p>1. Create a variable named var1 in the dictionary with:</p>
+<p><tt>str-create var1</tt></p>
+<p>2. Dynamically allocate and free an sha1 variable with:</p>
+<p><tt>str-new</tt><br>
+<tt>str-free</tt></p>
+<p>3. If you prefer to allocate the variable yourself, you can get the necessary size with:</p>
+<p><tt>str%</tt></p>
+<p>After allocating the variable, you must initialize it with:</p>
+<p><tt>str-init</tt></p>
+<p>and when you are finished with the variable, free the internal, private variables with:</p>
+<p><tt>str-(free)</tt></p>
+<hr>
+<p>The documentation for all modules is listed on the <a href="http://code.google.com/p/ffl/wiki/Modules">documentation</a>
+page. The module documentation gives an overview of all the words in
+that module. Also there are for an increasing number of modules small
+code examples.</p>
+<h1 id="toc1"><span>Hands on</span></h1>
+<h2 id="toc2"><span>Modules</span></h2>
+<p>If you want to use a module, you start with including the module in
+your forth engine. For example if you want to do fraction calculations,
+you start with:</p>
+<p><tt>include ffl/frc.fs</tt></p>
+<p>This will include the fraction module and also all modules that are
+needed by the fraction module. After including you can use the module.
+For example, if you want to multiply two fractions, you can enter:</p>
+<p><tt>1&nbsp;4&nbsp;2&nbsp;3 frc+multiply</tt></p>
+<p>This will multiply 1/4 times 2/3. By entering .s you will see the
+result: 2&nbsp;12, which is 2/12. You can then normalize, convert the
+fraction to a string and type it by entering:</p>
+<p><tt>frc+to-string type</tt></p>
+<p>This will show the result: 1/6</p>
+<h2 id="toc3"><span>Dictionary variables</span></h2>
+<p>The following example shows the use of modules that store a state in
+a variable. This example uses the sha1 module in the ffl library. First
+include the module in your forth engine:</p>
+<p><tt>include ffl/sh1.fs</tt></p>
+<p>Then create a sha1 variable which will contain the state of the
+calculation. You can create the variable in the dictionary by entering:</p>
+<p><tt>sh1-create var1</tt></p>
+<p>This creates a new word, var1, which is a sha1 variable. Next you
+can start calculating the sha1 algorithm by feeding data to the
+variable:</p>
+<p><tt>s" ab" var1 sh1-update</tt><br>
+<tt>s" c" var1 sh1-update</tt></p>
+<p>In this example the sha1 variable is fed with the string abc. The next step is finishing the calculation. This is done by:</p>
+<p><tt>var1 sh1-finish sh1+to-string type</tt></p>
+<p>So the sha1 calculation is finished and the resulting hash value is
+converted to a string, which is then typed. If all went well, it should
+show: A9993E364706816ABA3E25717850C26C9CD0D89D which is the secure
+hash1 result of the string "abc".</p>
+<h2 id="toc4"><span>Heap variables</span></h2>
+<p>Besides creating a sha1 variable in the dictionary, you can also allocate a sha1 variable on the heap by entering:</p>
+<p><tt>sh1-new</tt></p>
+<p>Now there is a dynamic allocated sha1 variable on the stack. Feeding data to this variable can be done by:</p>
+<p><tt>dup s" ab" rot sh1-update</tt><br>
+<tt>dup s" c" rot sh1-update</tt></p>
+<p>And finishing the calculation by:</p>
+<p><tt>dup sh1-finish sh1+to-string type</tt></p>
+<p>Which resulted in the same sha1 value. When you don't need the
+dynamic variable anymore you can free the memory used by the variable
+by entering:</p>
+<p><tt>sh1-free</tt></p>
+<h1 id="toc5"><span>Index</span></h1>
+<p>Some modules allow you to use an index to access members of a
+collection (an array, list, etc.). All indices are zero-based, so index
+0 is the first element, index 1 is the second element, and so on.</p>
+<p>Negative indices can also be used, and index backward from the end
+of the collection. That is, index -1 is the last element in the
+collection, index -2 is the next-to-last element, and so on.</p>
+<p>If the value of an index is not valid in a collection, the exception exp-index-out-of-range is thrown.</p>
+<h1 id="toc6"><span>Reader</span></h1>
+<p>The tis, xis and dom modules use a reader word. This word makes it
+possible to feed these modules with data from different sources.</p>
+<p>For example for feeding data from a text file, the following reader can be used:</p>
+<div class="code">
+<pre><code>: file-reader  ( file-id -- c-addr u | 0 = Read data from a text file)
+  pad 80 rot read-file throw
+  dup IF
+    pad swap
+  THEN
+;</code>
+</pre></div>
+<p>The stack notation for the reader is <tt>( x — c-addr u | 0)</tt>, in which <em>x</em> is the specific state for the reader and <em>c-addr u</em> is the read data.</p>
+<p>To let the <strong>tis</strong> module use this reader word, use the following example code:</p>
+<div class="code">
+<pre><code>\ Open the 'file.txt' file and save the file-id in variable txt-file
+s" file.txt" r/o open-file throw   value txt-file
+
+\ Setup a file reader for tis1 variable
+txt-file  ' file-reader  tis1 tis-set-reader
+
+\ Close the file
+txt-file file-close throw</code>
+</pre></div>
+<p>The stack notation for the <em>tis-set-reader</em> word is <tt>(x xt tis — )</tt>, in which <em>x</em> is the specific state for the reader. This <em>x</em> is fed to the reader (see above). <em>Xt</em> is the reader word itself.</p>
+<p>The <strong>xis</strong> module can also use this reader word. See the following example code:</p>
+<div class="code">
+<pre><code>\ Open the 'file.xml' file and save the file-id in variable reader-file
+s" file.xml" r/o open-file throw   value xml-file
+
+\ Setup a file reader for xis1 variable
+xml-file  ' file-reader  xis1 xis-set-reader
+
+\ Close the file
+xml-file file-close throw</code>
+</pre></div>
+<p><a name="versions"></a></p>
+<h1 id="toc7"><span>Versions</span></h1>
+<p>As soon as a module of the ffl is included, the library version
+constant ffl.version is created. This constant returns the version
+number of the library. For example for version 0.4.0 the constant
+returns 000400.</p>
+<p>When a module is included, it defines a constant with the version of
+that module. The name of this constant is the name of the module
+followed by '.version'. So the constant frc.version returns the version
+of the fraction module.</p>
+<p>The constant for the module version starts with number 1 after the
+initial creation of the module. Then every time the interface of the
+module changes or the functionality of the module increases, the
+version number is increased by 1. The version number is not changed if
+a small bug is fixed in the module.</p>
+<p>The version constants can be used to check if the library or module
+is present in the forth dictionary: [DEFINED] frc.version. It can also
+be used to check if the code in the dictionary is up to date:
+frc.version 2 =.</p>
+
+				</div>
+			</div>
+		</div>
+		<hr>
+    </div>
+  </body></html>

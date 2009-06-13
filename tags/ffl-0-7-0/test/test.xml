@@ -1,0 +1,20 @@
+<?xml  version="1.0" standalone="no"?>
+
+<!-- This is a test file for the ffl-library -->
+
+<TEST>
+<BOOK>
+<TITLE>Starting Forth</TITLE>
+<AUTHOR>
+<NAME>Leo Brodie</NAME>
+<FIRSTBOOK/>
+</AUTHOR>
+<PUBLISHER>Prentice-Hall</PUBLISHER>
+<DATE>&quot;1981&quot;</DATE>
+<PAGES>235</PAGES>
+<REVIEW>This book is the best&#33;.</REVIEW>
+<AVAILABLE/>
+<![CDATA[Dutch: "Forth, een praktische introduktie"]]>
+</BOOK>
+</TEST>
+

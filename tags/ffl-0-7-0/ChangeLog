@@ -1,0 +1,169 @@
+0.7.0
+! stt: word for stringtable addition changed from ," to +" (2009-05-20)
+* dom: small bug fixes for processing instruction (2008-11-18)
+* zif: new module: GZip file reader  (2008-10-12)
+* gzi: new module: GZip reader (2008-10-11)
+* chs: new words: chs-set-list,chs-reset-list (2008-10-04)
+* bar: new words: bar-set-list,bar-reset-list (2008-10-04)
+* bar: new words: bar^or,bar^and,bar^xor,bar^move (2008-10-03)
+* chs: new words: chs^or,chs^and,chs^xor (2008-10-01)
+* rgx: classes added (2008-09-27)
+* spf: new module: Sprintf module (2008-09-13)
+* log: new module: Logging module (2008-09-09)
+* bis: new module: Bit input stream (2008-08-20)
+* cbf: new module: circulair buffer (2008-06-02)
+* lbf: new module: lineair buffer (2008-05-29)
+* lxf: config.fs/make.fs/readme added (2008-05-23)
+* stc: bug fix in +field (2008-05-23)
+* gzf: new module: GZip file (2008-05-07)
+* act: new words: act-clear, act-execute?
+* act,acn extends bct,bcn (2008-04-24)
+* bcn: new words: bcn-cell@,bcn-cell!
+* bct: new word: bct-execute?
+* bct,bcn,bci extends bnt,bnn,bni (2008-04-14)
+* bnt,bnn,bni: new modules: Generic binary tree (2008-04-06)
+* a32: new module: Adler32 algorithm (2008-04-03)
+* chs: chs-char? bug fixed
+* SP-Forth: config.fs/make.fs/readme added
+* dist: also zip file with cr/lf line-endings
+* iForth: config.fs/make.fs/readme added
+* fsm: new module: Finite State Machine (2008-03-05)
+* fst: new module: FSM State (2008-03-05)
+* ftr: new module: FSM Transition (2008-03-05)
+* snl: new word: snl-execute? (2008-03-05)
+0.6.0
+* tos: new word: tos-set-writer,tos-flush (2008-02-21)
+* bct: new word: bct-clear
+* nct: word nct-delete-all renamed to nct-clear
+* dcl: word dcl-delete-all renamed to dcl-clear
+* scl: word scl-delete-all renamed to scl-clear
+* nct,nnt,str,act,bct,arg,bar,car,crc,dcl,dnl,hnn,hnt,hcn,hct,msc,nfe,snl,
+  scl,tis,xis: new word: ...-(free)
+* dom: new module: Document Object Model (2008-01-06)
+* rdg: new module: Distributed Random Generator (2007-12-27)
+* tst: new word ?str for module testing strings (2007-12-24)
+* tis: new word tis-match-set
+* tis: new word tis-scan-set
+* chs: chs-char? return false in place of an exception if outside range
+* enm: new module: Enumeration (2007-12-12)
+* Stack notation changed to ANSish (2007-12-06)
+! stc: structures are changed to ANS structures (2007-12-04)
+* est: new module: String with escaped characters (2007-12-03)
+* xos: new module: XML/HTML writer (2007-11-22)
+* xis: new module: XML/HTML reader (2007-11-22)
+* tos: new words: tos-msc@,tos-msc! (2007-11-20)
+* stt: new module: Stringtable (2007-11-19)
+* dos: new module: DateTime output stream (2007-11-18)
+* hct: support for zero-length key
+* str: new words: str-data@,str-length!  (2007-11-14)
+* gmo: new module: Gettexts mo-file (2007-11-12)
+* hnt: bug fix (2007-11-11)
+* hci: extends hni
+* hni: new module: Hash table base iterator (2007-11-10)
+* hct: extends hnt
+* hnt: new module: Hash table base module (2007-11-09)
+* hcn: extends hnn
+* hnn: new module: Hash Table base node (2007-11-09)
+* msc: new module: Message Catalog (2007-11-09)
+* tis: new word: tis-iscan-string (2007-10-17)
+* tis: new word: tis-set-reader (2007-10-17)
+* tis: new word: tis-read-all (2007-10-08)
+* str: new word: str+columns (2007-07-17)
+* arg: new module: Arguments parser (2007-07-09)
+* config.fs: 0e0->0E+0, 1e0->1E+0, 2e0->2E+0 (2007-06-25)
+0.5.0
+* config.fs: #bits/byte uses environment (2007-06-07)
+* config.fs: sys.eol -> end-of-line, sys.bits-in-byte -> #bits/byte,
+  sys.bits-in-char -> #bits/char, sys.bits-in-cell -> #bits/cell
+* config.fs: new word char/ (2007-06-07)
+* config.fs: sys.bigendian -> bigendian? (2007-06-05)
+* sh2: new module (SHA-256) (2007-06-05)
+* config.fs: new word ?free for freeing memory blocks (2007-05-21)
+* rgx: new module (Regular Expression) (2007-05-10)
+* nfe: new module (Non-deterministic finite automata expression) (2007-05-08)
+* nfs: new module (Non-deterministic finite automata state) (2007-05-07)
+* minForth config.fs/make.fs added
+* nci: new module (n-Tree cell iterator) (2007-03-13)
+* nct: new module (n-Tree cell tree) (2007-03-13)
+* ncn: new module (n-Tree cell node) (2007-03-13)
+* nni: new module (n-Tree base iterator) (2007-03-05)
+* nnt: new module (n-Tree base module) (2007-03-04)
+* nnn: new module (n-Tree base node) (2007-03-04)
+* sci: extends sni
+* scl: extends snl
+* scn: new words scn-cell! scn-cell@
+* scn: extends snn
+* sni: new module (Single linked base iterator) (2007-02-27)
+* snl: new module (Single linked base list) (2007-02-26)
+* snn: new module (Single linked base node) (2007-02-19)
+* icompare from str.fs to config.fs (2007-02-06)
+* fina config.fs/make.fs added (thanks to Jorge Acereda Macia)
+* Manual added to the website
+0.4.0:
+* dtm: new words dtm-get-date and dtm-get-time
+* dtm: dtm-set-with-days bug fix 
+* tst: tst-get-result will now also return ms since tst-reset-tests (2007-01-07)
+* dci: new module (Double linked cell list iterator) (2007-01-07)
+* dni: new module (Double linked base list iterator) (2007-01-03)
+* dcl: new module (Double linked cell list) (2006-12-31)
+* dcn: new module (Double linked cell list node) (2006-12-31)
+* dnl: new module (Double linked base list) (2006-12-28)
+* dnn: new module (Double linked base node) (2006-12-28)
+* Win32Forth config.fs/make.fs added
+* config: new word <=> for comparing numbers (2006-12-12)
+* chs: new words chs-set-string,chs-reset-string (2006-12-11)
+* Comment cleanup (2006-12-10)
+* tmr: new module (Interval timer) (2006-12-8)
+* crc: word scr-free renamed to crc-free (bug)
+* crc: word crc-start renamed to crc-reset
+* sh1: new module (Secure Hash 1) (2006-12-04)
+* trm: new module (Terminal escape sequences outputter) (2006-11-17)
+* bci: new module (Binary cell tree iterator) (2006-10-03)
+* bct: new module (Binary cell tree) (2006-10-03)
+* bcn: new module (Binary cell tree node) (2006-10-03)
+* act: new module (AVL cell binary tree) (2006-09-24)
+* acn: new module (AVL cell tree node) (2006-09-23)
+* rng: new module (Pseudo Random Number Generator) (2006-09-15)
+* tst: partly rewritten: reporting more info; no change in interface (2006-09-12)
+* config: new words ftuck, fnip, f2dup, f-rot, 0e0, 1e0, 2e0 (2006-09-11)
+* config: new words: f>r fr> fr@ (2006-08-30)  
+* config: sys.cells-in-float added (2006-08-30)
+* cpx: new module (Complex number) (2006-08-28)
+* frc: new module (Fraction) (2006-08-26)
+0.3.0:
+* config: sys.bits-in-byte added
+* config: sys.bits-in-cell added
+* config: sys.bits-in-char added
+* chs: new module (Character Set)
+* crc: word crc-calc-crc32 renamed to crc+calc-crc32
+* crc: word crc-calc-poly renamed to crc+calc-poly
+* config: sys.bigendian added
+* md5: new module (MD5 Algorithm)
+* hci: new module (Hash cell table iterator)
+* hcn: new module (Hash cell table node)
+* hct: new module (Hash cell table)
+* float words optional
+* pfe config.fs/make.fs added
+* dti: new module (Date & Time iterator)
+* dtm: new module (Date & Time)
+0.2.0
+* car: new module (Cell array)
+* bar: new module (Bit array)
+* tst: new words: ?d and ?ud for tests on doubles
+* chr: new word: chr-string?
+* chr: new word: chr-base
+* tos: new module (Text output stream)
+* tis: new module (Text input stream)
+* chr: constants for ascii 0 till 31 and 127
+* str: new module (Text string)
+* scl: compare field for flexible sorting
+* scl: execute removes 'own' stack contents before executing xt
+* bigforth config.fs/make.fs added
+0.1.0
+* crc: new module (Cyclic Redundancy Check)
+* chr: new module (Char module)
+* tst: new module (Word test module)
+* stc: new module (Struct module)
+* sci: new module (Single linked cell list iterator)
+* scn: new module (Single linked cell list node)
+* scl: new module (Single linked cell list)
