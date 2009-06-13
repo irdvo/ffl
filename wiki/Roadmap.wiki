@@ -4,7 +4,7 @@
 Eighth delivery of the FFL library. The focus for this
 release will be on interfacing with the gtk-server.
 <br>
-Status: done
+Status: under way
 
 == 0.7.0: June 2009 ==
 Seventh delivery of the FFL library. The focus for this
