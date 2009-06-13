@@ -1,10 +1,16 @@
 #labels Featured
 
+== 0.8.0: December 2009 ==
+Eighth delivery of the FFL library. The focus for this
+release will be on interfacing with the gtk-server.
+<br>
+Status: done
+
 == 0.7.0: June 2009 ==
 Seventh delivery of the FFL library. The focus for this
 release will be on decompression of gzip files.
 <br>
-Status: under way
+Status: done
 
 == 0.6.0: February 2008 ==
 

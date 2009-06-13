@@ -1,5 +1,15 @@
 #labels Featured
 
+== 12 June 2009 ==
+
+Seventh release, version 0.7.0, of the Forth Foundation Library. The
+library is extended with a finite state machine, a generic binary tree, 
+a gzip file reader, a lineair and circulair buffer, a bit input stream, a 
+logger and a simple sprintf module. Five modules are extended with 
+new words. The regular expression module now also supports user 
+classes.  Also the library will now run on iForth32, SPF4 and lxf/ntf.
+For more details see the [ChangeLog].
+
 == 01 May 2009 ==
 
 Start of the migration of the Forth Foundation Library to Google Code.
