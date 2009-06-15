@@ -85,4 +85,6 @@ The following modules are present in the Forth Foundation Library:
 
 In [Words] there is also an alphabetical overview of all the words in the library.
 
-Note: the documentation for the modules in version 0.7.0 is still preliminary.
+Note: the documentation for the modules in version 0.8.0 is still preliminary.
+
+<img src="http://c14.statcounter.com/1434121/0/407ca2a5/0/stats.png" />
