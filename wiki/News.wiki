@@ -62,3 +62,5 @@ Initial release, version 0.1.0, of the Forth Foundation Library.
 == 17 December 2005 ==
 
 Today the web pages for the Forth Foundation Library went alive.
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]

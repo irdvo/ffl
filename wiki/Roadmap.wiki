@@ -48,3 +48,5 @@ Status: done
 == 0.1.0: December 2005 ==
 First delivery of the FFL library.<br>
 Status: done
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]

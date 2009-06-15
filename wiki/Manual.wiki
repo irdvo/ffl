@@ -332,3 +332,5 @@ exp-wrong-file-data (-2056)
  a file for which an import is attempted, has data outside the expected ranges
 
 GForth (and FLK) report the exception with a message, all the other forth engines report the numerical value of the exception.
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]

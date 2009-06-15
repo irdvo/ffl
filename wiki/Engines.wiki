@@ -95,3 +95,5 @@ As already stated the FFL is mostly written in ANS forth. If the forth engine yo
 not listed in the [Engines] page and it conforms to the ANS-standard, you can try porting ffl 
 to your forth engine by adding words to and removing words from the {{{ffl/config.fs}}} file. 
 If you succeed, you can send me the config.fs file so that I can add it to the distribution.
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
