@@ -57,7 +57,7 @@ CASE-INS ON
 ( config = Forth system specific words )
 ( The config module contains the extension and missing words for a forth system.)
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -261,6 +261,11 @@ MODULE: inner
     drop
   THEN
 ;
+
+
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  postpone 2r@ postpone drop
+; immediate
 
 
 \ size of float value in bytes

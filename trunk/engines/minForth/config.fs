@@ -36,7 +36,7 @@
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -79,9 +79,14 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value of the milliseconds timer )
 
 
-: rdrop            ( R: x -- ) 
-  r> r> drop >r
-;
+: rdrop            ( R: x -- = Drop the first cell on the return stack ) 
+  postpone r> postpone drop
+; immediate
+
+
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  postpone 2r@ postpone drop
+; immediate
 
 
 1 chars 1 = [IF]
