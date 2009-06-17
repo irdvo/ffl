@@ -24,7 +24,7 @@
 \
 \ ==============================================================================
 \
-\ This file is for gforth.
+\ This file is for alf.
 \
 \ ==============================================================================
 
@@ -36,7 +36,7 @@ c" ffl.version" find nip 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )

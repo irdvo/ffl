@@ -37,7 +37,7 @@ ANEW -ffl
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -78,6 +78,11 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 : rdrop            ( R: x -- )
   -R 
 ; \ relying on the fact that this word is inlined
+
+
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  postpone 2r@ postpone drop
+; immediate
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )

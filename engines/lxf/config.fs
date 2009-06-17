@@ -36,7 +36,7 @@
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -158,6 +158,12 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 :m rdrop            ( R: x -- )
   r>drop
 ;
+
+
+:m r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  2r@ drop
+;
+
 
 
 : sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )

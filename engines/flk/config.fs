@@ -36,7 +36,7 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -239,6 +239,11 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
 
 : is
   postpone to
+; immediate
+
+
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  postpone 2r@ postpone drop
 ; immediate
 
 

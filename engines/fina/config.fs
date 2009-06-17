@@ -63,7 +63,7 @@ require timer.fs
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000700 constant ffl.version
+000800 constant ffl.version
 
 
 ( Private words )
@@ -194,6 +194,11 @@ s" MAX-U" environment? drop constant max-ms@  ( -- u = Max val of the millisecon
    drop
  THEN
 ;
+
+
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  postpone 2r@ postpone drop
+; immediate
 
 
 ( Exceptions )
