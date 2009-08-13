@@ -41,13 +41,15 @@ include ffl/msc.fs
 ( done for the last written data. By using the start alignment pointers      )
 ( words the start of the alignment can be changed. The end of the alignment  )
 ( is always the end of the stream. The message catalog can be used for       )
-( localisation of strings                                                    )
+( localisation of strings. Note: the numerical words in this module use the  )
+( the numeric output string. The writer can be used to direct the result of  )
+( the formatter to a writer word by calling tos-flush:                       )
 ( <pre>                                                                      )
 (   Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success )
 ( </pre>                                                                     )
 
 
-2 constant tos.version
+3 constant tos.version
 
 
 ( Output stream structure )
@@ -236,6 +238,28 @@ end-structure
   <# #s rot sign #>
   rot str-append-string
 ;
+
+
+[DEFINED] represent [IF]
+: tos-write-float   ( r tos -- = Write the float r to the stream, using PAD and PRECISION )
+  >r
+  r@ tos-sync
+  r@ str-length@ precision + 7 + r@ str-size!
+  pad precision 80 min represent IF
+    IF s" -0." ELSE s" 0." THEN
+    r@ str-append-string
+    pad precision 80 min 
+    r@ str-append-string
+    s>d
+    swap over dabs
+    <# #s rot sign [char] E hold #>
+  ELSE
+    2drop
+    s" !err!"
+  THEN
+  r> str-append-string
+;
+[THEN]
 
 
 ( Alignment words )
