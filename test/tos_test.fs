@@ -71,6 +71,19 @@ t{ -100. t4 tos-write-double }t
 t{ chr.sp 5 t4 tos-align-right }t
 t{ t4 str-get s" -712 -100" ?str }t
 
+precision value save-precision
+
+3 to precision
+t{ -56E+2 t4 tos-write-float }t
+t{ bl 10 t4 tos-align-right  }t
+t{ t4 str-get s" -712 -100  -0.560E4" ?str }t
+
+t{ -14E-3 t4 tos-write-float }t
+t{ bl 10 t4 tos-align-right  }t
+t{ t4 str-get s" -712 -100  -0.560E4 -0.140E-1" ?str }t
+
+save-precision to precision
+
 variable p1
 
 t{ t4 tos-rewrite }t
