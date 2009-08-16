@@ -141,11 +141,46 @@ t{ spf1 str-get s" 25:+143 +130 +077 +102" ?str }t
 t{ -66 -63 -88 -99 s" 26:%4o %-4o %04o %-04o" spf1 spf-set }t
 t{ spf1 str-get s" 26:-143 -130 -077 -102" ?str }t
 
+precision value spf-save  4 to precision
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 27:%e % e %+e %-e" spf1 spf-set }t
+t{ spf1 str-get s" 27:8.900e+250  5.432e-19 +1.234e+00 1.000e+00" ?str }t
+
+t{ -1.0E+0 -1.2345E+0 -5.4321E-19 -8.9E+250 s" 28:%e % e %+e %-e" spf1 spf-set }t
+t{ spf1 str-get s" 28:-8.900e+250 -5.432e-19 -1.234e+00 -1.000e+00" ?str }t
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 29:%13e %-12e %012e %-012e" spf1 spf-set }t
+t{ spf1 str-get s" 29:   8.900e+250 5.432e-19    0001.234e+00 1.000e+00   " ?str }t
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 30:%+13e %+-12e %+012e %+-012e" spf1 spf-set }t
+t{ spf1 str-get s" 30:  +8.900e+250 +5.432e-19   +001.234e+00 +1.000e+00  " ?str }t
+
+t{ -1.0E+0 -1.2345E+0 -5.4321E-19 -8.9E+250 s" 31:%13e %-12e %012e %-012e" spf1 spf-set }t
+t{ spf1 str-get s" 31:  -8.900e+250 -5.432e-19   -001.234e+00 -1.000e+00  " ?str }t
+
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 32:%E % E %+E %-E" spf1 spf-set }t
+t{ spf1 str-get s" 32:8.900E+250  5.432E-19 +1.234E+00 1.000E+00" ?str }t
+
+t{ -1.0E+0 -1.2345E+0 -5.4321E-19 -8.9E+250 s" 33:%E % E %+E %-E" spf1 spf-set }t
+t{ spf1 str-get s" 33:-8.900E+250 -5.432E-19 -1.234E+00 -1.000E+00" ?str }t
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 34:%13E %-12E %012E %-012E" spf1 spf-set }t
+t{ spf1 str-get s" 34:   8.900E+250 5.432E-19    0001.234E+00 1.000E+00   " ?str }t
+
+t{ 1.0E+0 1.2345E+0 5.4321E-19 8.9E+250 s" 35:%+13E %+-12E %+012E %+-012E" spf1 spf-set }t
+t{ spf1 str-get s" 35:  +8.900E+250 +5.432E-19   +001.234E+00 +1.000E+00  " ?str }t
+
+t{ -1.0E+0 -1.2345E+0 -5.4321E-19 -8.9E+250 s" 36:%13E %-12E %012E %-012E" spf1 spf-set }t
+t{ spf1 str-get s" 36:  -8.900E+250 -5.432E-19   -001.234E+00 -1.000E+00  " ?str }t
+
+2 to precision
+
 variable spf-result
 
 t{ s" All:" spf1 str-set }t
-t{ spf-result 9 8 7 s" #" char * s" %c %s %d %i %u %n %%" spf1 spf-append }t
-t{ spf1 str-get s" All:* # 7 8 9  %" ?str }t
+t{ spf-result 1.0E+0 9 8 7 s" #" char * s" %c %s %d %i %u %n %% %E" spf1 spf-append }t
+t{ spf1 str-get s" All:* # 7 8 9  % 1.0E+00" ?str }t
 t{ spf-result @ 14 ?s }t
 
 t{ char ! s" hello" spf1 spf" %s !%c" }t
@@ -158,5 +193,6 @@ t{ spf1 str-get s" hello !!" ?str }t
 t{ spf-test }t
 t{ spf1 str-get s" bye ?!" ?str }t
 
+spf-save to precision
 
 \ ==============================================================================

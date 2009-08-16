@@ -39,6 +39,7 @@ include ffl/str.fs
 ( below for the format&rb;. For every specifier &lb;except %% and %n&rb; a   )
 ( stack item is converted to the character representation and added to the   )
 ( destination. All other characters are simply copied to the destination.    )
+( The float conversion uses the PRECISION value for precision.               )
 ( {{{                                                                        )
 ( Format: %[flags][width][length]specifier                                   )
 (     Flags: 0      = Left-pads the number with zeros instead of spaces      )
@@ -56,12 +57,14 @@ include ffl/str.fs
 (            x      = format a unsigned hexadecimal number [u or ud]         )
 (            X      = format a unsigned hexadecimal number, capital letters  )
 (            p      = format a unsigned hexadecimal number [u or ud]         )
+(            e      = format a float number in scientific notation [r]       )
+(            E      = format a float number in scientific notation [r]       )
 (            n      = store the length of the string in [addr]               )
 (            %      = write a '%' []                                         )
 ( }}}                                                                        )
 
 
-1 constant spf.version
+2 constant spf.version
 
 
 ( Private flags )
@@ -121,7 +124,50 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
-: spf-signed       ( i*x n1 n2 n3 str -- j*x = Convert i*x using flags n1, width n2, base n3 to a string )
+[DEFINED] represent [IF]
+: spf-scientific   ( F: r  n1 n2 char str -- = Convert r using flags n1 and width n2 using char to a string )
+  >r
+  precision 80 min 1 max >r
+  >r
+  r'@ 1+ -                           \ Width -= precision + 1 (dot)
+  pad r'@ represent IF
+    IF 
+      rot spf.minus-sign OR -rot     \ Remember the sign info
+    THEN
+    1- s>d                           \ Convert the exponent
+    swap over dabs
+    <# # #s rot 0< IF [char] - ELSE [char] + THEN hold r> hold #>
+    >r r@ 2swap r> -                 \ Width -= expoinent string length, min. 0
+    
+    over spf.signs AND IF            \ If sign active, then width--
+      1-
+    THEN
+    0 max
+
+    r'@ spf-leading-spaces           \ Add leading spaces, if requested
+    r'@ spf-sign                     \ Add sign, if requested
+    r'@ spf-leading-zeros            \ Add leading zeros, if requested
+    pad r>
+    over c@   r@ str-append-char     \ Add first converted character
+    [char] .  r@ str-append-char     \ Add decimal point
+    1 /string r@ str-append-string   \ Add remaining
+    2swap     r@ str-append-string   \ Add exponent
+    r@ spf-trailing-spaces           \ Add trailing spaces
+  ELSE
+    2rdrop
+    s" !err!" r@ str-append-string
+  THEN
+  rdrop
+;
+[ELSE]
+: spf-scientific   ( F: r  n1 n2 char str -- = Convert r using flags n1 and width n2 using char to a string )
+  ." spf: %e is not supported" cr
+  2drop 2drop
+;
+[THEN]
+
+
+: spf-signed       ( n1 n2 n3 n4 str -- = Convert n1 using flags n2, width n3, base n4 to a string )
   >r
   base @ >r                       \ Set the base
   base !
@@ -156,7 +202,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
-: spf+convert-unsigned  ( i*x n1 n2 n3 -- j*x c-addr u n1 n4 = Convert unsigned i*x using flags n1, width n2 and base n3 )
+: spf+convert-unsigned  ( u n1 n2 n3 -- c-addr u n1 n4 = Convert unsigned i*x using flags n1, width n2 and base n3 )
   base @ >r
   base !
 
@@ -173,7 +219,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
-: spf-lower-unsigned  ( i*x n1 n2 n3 str -- j*x = Convert unsigned i*x using flags n1, width n2 and base n3 to string )
+: spf-lower-unsigned  ( u n1 n2 n3 str -- = Convert unsigned i*x using flags n1, width n2 and base n3 to string )
   >r
   spf+convert-unsigned            \ Convert number to string using the base
 
@@ -190,7 +236,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
-: spf-upper-unsigned  ( i*x n1 n2 n3 str -- j*x = Convert unsigned i*x using flags n1, width n2 and base n3 to string )
+: spf-upper-unsigned  ( u n1 n2 n3 str -- = Convert unsigned i*x using flags n1, width n2 and base n3 to string )
   >r
   spf+convert-unsigned            \ Convert number to string using the base
 
@@ -250,6 +296,10 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
     [char] p OF 16 r@ spf-lower-unsigned ENDOF
 
     [char] % OF 2drop [char] % r@ str-append-char ENDOF
+    
+    [char] e OF [char] e r@ spf-scientific ENDOF
+    
+    [char] E OF [char] E r@ spf-scientific ENDOF
 
     [char] ? r@ str-append-char >r 2drop r>
   ENDCASE
