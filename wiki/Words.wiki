@@ -795,6 +795,10 @@
 [ftr ftr-new] (x xt c-addr u fst +n -- ftr )<br>
 [ftr ftr-try] (n ftr -- n false | fst true )<br>
 [gmo gmo-read] (c-addr u msc -- 0 | ior )<br>
+[gsv gsv+call] (c-addr1 u1 -- c-addr2 u2 )<br>
+[gsv gsv+close] (-- ior )<br>
+[gsv gsv+included] (c-addr u -- ior )<br>
+[gsv gsv+open] (c-addr u -- ior )<br>
 [gzf gzf%] (-- n )<br>
 [gzf gzf-(free)] (gzf -- )<br>
 [gzf gzf-comment!] (c-addr u gzf -- )<br>
@@ -1136,6 +1140,7 @@
 [nnt nnt-root@] (nnt -- nnn | nil )<br>
 [est parse-esc] (c-addr1 u1 c-addr2 -- c-addr3 u3 )<br>
 [est parse\"] ("ccc{{{<}}}quote{{{>}}}" -- c-addr u )<br>
+[config r'@] (R: x1 x2 -- x1 x2; -- x1 )<br>
 [rdg rdg%] (-- n )<br>
 [rdg rdg-beta] (F: r1 r2 -- r3 ; rdg -- )<br>
 [rdg rdg-binomial] (F: r -- ; u1 rdg -- u2 )<br>
@@ -1173,6 +1178,8 @@
 [rng rng-seed] (u rng -- )<br>
 [config rroll] (u1 u2 -- u3 )<br>
 [est s\"] ("ccc{{{<}}}quote{{{>}}}" -- c-addr u )<br>
+[scf scf"] ("ccc{{{<}}}quote{{{>}}}" c-addr u -- i*x j*r n )<br>
+[scf scf+scan] (c-addr1 u1 c-addr2 u2  -- i*x j*r n )<br>
 [sci sci%] (-- n )<br>
 [sci sci-create] (scl "{{{<}}}spaces{{{>}}}name" -- ; -- sci )<br>
 [sci sci-dump] (sci -- )<br>
@@ -1427,6 +1434,7 @@
 [tos tos-write-char] (char tos -- )<br>
 [tos tos-write-chars] (char u tos -- )<br>
 [tos tos-write-double] (d tos -- )<br>
+[tos tos-write-float] (r tos -- )<br>
 [tos tos-write-line] (tos -- )<br>
 [tos tos-write-number] (n tos -- )<br>
 [tos tos-write-string] (c-addr u tos -- )<br>

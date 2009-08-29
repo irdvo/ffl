@@ -62,6 +62,7 @@ The following modules are present in the Forth Foundation Library:
 || [rdg rdg] || Distributed Pseudo Random Number Generator || Interface || 0.6.0 || 0.6.0 || Yes ||
 || [rgx rgx] || Regular Expressions || Compound || 0.5.0 || 0.7.0 || Yes ||
 || [rng rng] || Pseudo Random Number Generator || Interface || 0.4.0 || 0.4.0 || No ||
+|| [scf scf] || Sscanf || Compound || 0.8.0 || 0.8.0 || Yes ||
 || [sci sci] || Single linked cell list iterator || Collection || 0.1.0 || 0.5.0 || No ||
 || [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.6.0 || No ||
 || [scn scn] || Single linked cell list node || Collection || 0.1.0 || 0.5.0 || No ||
@@ -70,7 +71,7 @@ The following modules are present in the Forth Foundation Library:
 || [sni sni] || Generic single linked list iterator || Collection || 0.5.0 || 0.5.0 || No ||
 || [snl snl] || Generic single linked list || Collection || 0.5.0 || 0.7.0 || No ||
 || [snn snn] || Generic single linked node || Collection || 0.5.0 || 0.5.0 || No ||
-|| [spf spf] || Sprintf || Compound || 0.7.0 || 0.7.0 || Yes ||
+|| [spf spf] || Sprintf || Compound || 0.7.0 || 0.8.0 || Yes ||
 || [stc stc] || Struct words || Development || 0.1.0 || 0.6.0 || No ||
 || [str str] || Text string || DataType || 0.2.0 || 0.6.0 || No ||
 || [stt stt] || Stringtable words || Development || 0.6.0 || 0.7.0 || Yes ||
