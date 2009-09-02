@@ -2,7 +2,9 @@
 
 {{{
 0.8.0
-* scf: new module: Scanf module (2009-08-19)
+* scf: %q for quoted string added (2009-09-02)
+* spf: %q for quoted string added (2009-09-02)
+* scf: new module: Sscanf module (2009-08-19)
 * spf: %e and %E for floats added (2009-08-16)
 * tos: new word: tos-write-float (2009-07-01)
 * gsv: new module: gtk-server interface (2009-06-20)
