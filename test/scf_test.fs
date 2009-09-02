@@ -30,19 +30,6 @@ include ffl/tst.fs
 
 .( Testing: scf) cr
 
-(    Double: l      = the argument is interpreted as a double                )
-( Specifier: c      = scan a character [char]                                )
-(            d      = scan a signed number [n or d]                          )
-(            o      = scan an unsigned octal [n or d]                        )
-(            s      = scan a string [c-addr u]                               )
-(            u      = scan an unsigned number [u or ud]                      )
-(            x      = scan an unsigned hexadecimal number [u or ud]          )
-(            X      = scan an unsigned hexadecimal number [u or ud]          )
-(            p      = scan an unsigned hexadecimal number [u or ud]          )
-(            e      = scan a float number [r]                                )
-(            E      = scan a float number [r]                                )
-(            %      = scan a '%' []                                          )
-
 \ c specifier
 t{ s" ab" s" %c" scf+scan 1 ?s char a ?s }t
 t{ s" ab" s" %c%c" scf+scan 2 ?s char b ?s char a ?s }t
@@ -76,8 +63,12 @@ t{ s" 15 23" s" %lo%lo" scf+scan 2 ?s 19. ?ud 13. ?ud }t
 t{ s" -15 -23" s" %lo" scf+scan 1 ?s -13. ?ud }t
 t{ s" -15 -23" s" %lo%lo" scf+scan 2 ?s -19. ?ud -13. ?ud }t
 
+\ s specifier
 t{ s" abc def" s" %s" scf+scan 1 ?s s" abc" ?str }t
 t{ s" abc def" s" %s %s" scf+scan 2 ?s s" def" ?str s" abc" ?str }t
+
+\ q specifier
+t{ s\" abc \"def\" \"g\\\"h\\\"i\"" s" %q %q %q" scf+scan 3 ?s s\" g\\\"h\\\"i" ?str s" def" ?str s" abc" ?str ) }t
 
 \ x specifier
 t{ s" 1C C3" s" %x" scf+scan 1 ?s 28 ?u }t

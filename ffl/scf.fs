@@ -51,6 +51,7 @@ include ffl/chr.fs
 (            X      = scan an unsigned hexadecimal number [u or ud]          )
 (            e      = scan a float number [r]                                )
 (            E      = scan a float number [r]                                )
+(            q      = scan a quoted string &lb;non sprintf&rb; [c-addr u]    )
 (            %      = match a '%' []                                         )
 ( }}}                                                                        )
 
@@ -221,23 +222,57 @@ include ffl/chr.fs
 
 
 : scf+scan-string  ( c-addr1 u1 -- c-addr2 u2 c-addr3 u3 scf.scanned | c-addr3 u3 scf.error = Scan the source string for a string c-addr2 u2 )
-  2dup
-  BEGIN
-    dup IF 
-      over c@ chr-space? 0=
-    ELSE 
-      false 
-    THEN
-  WHILE
-    1 /string
-  REPEAT
-  2swap 2over nip -
-  
-  ?dup IF
-    2swap
+  dup IF
+    2dup
+    BEGIN
+      dup IF 
+        over c@ chr-space? 0=
+      ELSE 
+        false 
+      THEN
+    WHILE
+      1 /string
+    REPEAT
+    tuck 2>r - 2r>
     scf.scanned
   ELSE
-    drop
+    scf.error
+  THEN
+;
+
+
+: scf+scan-quoted ( c-addr1 u1 -- c-addr2 u2 c-addr3 u3 scf.scanned | c-addr1 u1 scf.error = Scan the source string for a quoted string c-addr2 u2 )
+  dup IF
+    over c@ [char] " = IF         \ Starts with quote ?
+      1 /string                   \ Skip starting quote
+      2dup
+      false >r                    \ Escape
+      BEGIN
+        dup IF
+          over c@ [char] " <> r@ OR \ Loop until non escaped quote
+        ELSE
+          false
+        THEN
+      WHILE
+        r> IF
+          false
+        ELSE
+          over c@ [char] \ =      \  Check for escape
+        THEN
+        >r
+        1 /string
+      REPEAT
+      rdrop
+      tuck
+      dup IF
+        1 /string                 \ Skip trailing quote
+      THEN
+      2>r - 2r>
+      scf.scanned
+    ELSE
+      scf+scan-string
+    THEN
+  ELSE
     scf.error
   THEN
 ;
@@ -265,6 +300,7 @@ include ffl/chr.fs
         [char] c OF drop               scf+scan-char   ENDOF
         [char] e OF drop               scf+scan-float  ENDOF
         [char] E OF drop               scf+scan-float  ENDOF
+        [char] q OF drop               scf+scan-quoted ENDOF
         >r drop scf.error r>
       ENDCASE
     ELSE
