@@ -60,6 +60,7 @@ include ffl/str.fs
 (            e      = format a float number in scientific notation [r]       )
 (            E      = format a float number in scientific notation [r]       )
 (            n      = store the length of the string in [addr]               )
+(            q      = format a quoted string &lb;non sprintf&rb; [c-addr u]  )
 (            %      = write a '%' []                                         )
 ( }}}                                                                        )
 
@@ -263,6 +264,17 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
+: spf-quoted-string  ( c-addr u n1 n2 str -- = Convert a string using flags n1, width n2 to a quoted string )
+  >r
+  >r over r> swap - 2 - 0 max     \ reserve two positions for the quotes
+  r@ spf-leading-spaces 
+  [char] " r@ str-append-char     \ prepend quote
+  2swap    r@ str-append-string 
+  [char] " r@ str-append-char     \ append quote
+  r> spf-trailing-spaces
+;
+
+
 ( Private state words )
 
 0 value spf.check-format
@@ -272,7 +284,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 0 value spf.check-specifier
 
 
-: spf-check-specifier ( i*x n1 n2 char str -- j*x str xt = Check for specifier, next state = check-format )
+: spf-check-specifier ( i*x j*r n1 n2 char str -- k*x l*r str xt = Check for specifier, next state = check-format )
   >r
   CASE
     [char] d OF 10 r@ spf-signed ENDOF
@@ -288,6 +300,8 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
     [char] c OF spf+convert-char   r@ spf-leading-spaces rot   r@ str-append-char   r@ spf-trailing-spaces ENDOF
 
     [char] s OF spf+convert-string r@ spf-leading-spaces 2swap r@ str-append-string r@ spf-trailing-spaces ENDOF
+    
+    [char] q OF r@ spf-quoted-string ENDOF
 
     [char] n OF 2drop  r@ str-length@ swap ! ENDOF
 
@@ -365,7 +379,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ( Sprintf words )
 
 
-: spf-append       ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and append the result to str )
+: spf-append       ( i*x j*r c-addr u str -- k*x l*r = Convert the arguments i*x with the format string c-addr u and append the result to str )
   spf.check-format 2swap
   bounds ?DO
     I c@ -rot execute
@@ -374,12 +388,12 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 ;
 
 
-: spf-set          ( i*x c-addr u str -- = Convert the arguments i*x with the format string c-addr u and set the result in str)
+: spf-set          ( i*x j*r c-addr u str -- = Convert the arguments i*x with the format string c-addr u and set the result in str)
   dup str-clear spf-append
 ;
 
 
-: spf"             ( "ccc<quote>" i*x str -- = Convert the arguments i*x with the format string and set the result in str )
+: spf"             ( "ccc<quote>" i*x j*r str -- = Convert the arguments i*x with the format string and set the result in str )
   [char] " parse
   state @ IF
     postpone    sliteral

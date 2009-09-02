@@ -60,6 +60,12 @@ t{ spf1 str-get s" String:abc" ?str }t
 t{ spf-2string-test spf1 spf-set }t
 t{ spf1 str-get s" String:  abc def  " ?str }t
 
+: spf-qstring-test
+  s" def" s" abc" s" String:%7q %-7q"
+;
+
+t{ spf-qstring-test spf1 spf-set }t
+t{ spf1 str-get s\" String:  \"abc\" \"def\"  " ?str }t
 
 t{ 77 88 99 s" 1:%d % d %+d" spf1 spf-set }t
 t{ spf1 str-get s" 1:99  88 +77" ?str }t
