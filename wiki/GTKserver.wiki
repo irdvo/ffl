@@ -1,0 +1,7 @@
+#summary Getting started with the GTKserver
+
+Under construction
+
+[http://ffl.googlecode.com/svn/wiki/mandelbrot.png]
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
