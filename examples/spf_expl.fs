@@ -32,7 +32,7 @@ str-new value spf1                                     \ Create string as destin
 [DEFINED] represent [IF]
 18E+0 15 15 10 8 1 s" %d %u %o %x %X %E" spf1 spf-set  \ Format the numbers
 [ELSE]
-18E+0 15 15 10 8 1 s" %d %u %o %x %X %E" spf1 spf-set  \ Format the numbers
+      15 15 10 8 1 s" %d %u %o %x %X"    spf1 spf-set  \ Format the numbers
 [THEN]
 
 spf1 str-get type cr                                   \ Print the result
