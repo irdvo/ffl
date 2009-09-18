@@ -76,27 +76,21 @@ end-structure
 
 ( General module words )
 
-: frc+calc-gcd     ( n1 n2 -- n = Calculate the Greatest Common Divider )
-  abs swap abs          \ both positive
-  
-  2dup < IF             \ smallest on top
-    swap
-  THEN
-  
+: frc+calc-gcd     ( n1 n2 -- +n = Calculate the Greatest Common Divider )
   BEGIN                 \ BEGIN
-    2dup mod            \   r = a % b
+    over mod            \   r = a % b
     ?dup
   WHILE                 \ WHILE r>0
-    rot drop            \  a=b b=r
+    swap                \  a=b b=r
   REPEAT                \ REPEAT
-  nip                   \ return b
+  abs                   \ return b
 ;
 
 
-: frc+calc-lcm     ( n1 n2 -- n = Calculate the Least Common Multiplier )
-  abs swap abs          \ both positive
+: frc+calc-lcm     ( n1 n2 -- +n = Calculate the Least Common Multiplier )
   2dup frc+calc-gcd
-  >r * r> /             \ a * b / gcd(a,b)
+  */                    \ a * b / gcd(a,b)
+  abs
 ;
 
 

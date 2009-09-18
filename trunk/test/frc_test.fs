@@ -37,6 +37,10 @@ t{ 2 -10 frc+calc-gcd 2 ?s }t
 t{ 5  15 frc+calc-lcm 15 ?s }t
 t{ 10 15 frc+calc-lcm 30 ?s }t
 
+cell 4 = [IF]
+t{ 2000000000 dup dup frc+calc-lcm ?s }t
+[THEN]
+
 
 \ Calculations
 
