@@ -33,6 +33,7 @@ tst-reset-tests
 \ the test sources
 
 include a32_test.fs
+include b64_test.fs
 include act_test.fs
 include arg_test.fs
 include bar_test.fs
