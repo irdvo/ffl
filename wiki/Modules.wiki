@@ -8,6 +8,7 @@ The following modules are present in the Forth Foundation Library:
 || [acn acn] || AVL binary tree cell node || Collection || 0.4.0 || 0.4.0 || Yes ||
 || [act act] || AVL binary tree || Collection || 0.4.0 || 0.7.0 || Yes ||
 || [arg arg] || Argument parser || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [b64 b64] || Base64 || Interface || 0.8.0 || 0.8.0 || Yes ||
 || [bar bar] || Bit array || DataType || 0.2.0 || 0.7.0 || Yes ||
 || [bci bci] || Binary cell tree iterator || Collection || 0.4.0 || 0.7.0 || Yes ||
 || [bcn bcn] || Binary cell tree node || Collection || 0.4.0 || 0.7.0 || Yes ||
@@ -22,6 +23,7 @@ The following modules are present in the Forth Foundation Library:
 || [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes ||
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No ||
 || [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No ||
+|| [dbm dbm] || GDBM interface module || Interface || 0.8.0 || 0.8.0 || Yes ||
 || [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No ||
 || [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.6.0 || No ||
 || [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No ||
@@ -39,6 +41,7 @@ The following modules are present in the Forth Foundation Library:
 || [fst fst] || FSM State || Compound || 0.7.0 || 0.7.0 || Yes ||
 || [ftr ftr] || FSM Transition || Compound || 0.7.0 || 0.7.0 || Yes ||
 || [gmo gmo] || Gettexts mo-file import || Interface || 0.6.0 || 0.6.0 || Yes ||
+|| [gsv gsv] || GTK-server interface || Interface || 0.8.0 || 0.8.0 || Yes ||
 || [gzf gzf] || GZip file || Interface || 0.7.0 || 0.7.0 || No ||
 || [gzi gzi] || GZip reader || Interface || 0.7.0 || 0.7.0 || No ||
 || [hci hci] || Hash table cell iterator || Collection || 0.3.0 || 0.3.0 || Yes ||
