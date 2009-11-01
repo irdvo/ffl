@@ -235,10 +235,17 @@ variable exp-next  -2050 exp-next !
 ;
 
 
-s" Index out of range" exception constant exp-index-out-of-range ( - n = Index out of range exception number )
-s" Invalid state"      exception constant exp-invalid-state      ( - n = Invalid state exception number )
-s" No data available"  exception constant exp-no-data            ( - n = No data available exception number )
-s" Invalid parameters" exception constant exp-invalid-parameters ( - n = Invalid parameters on stack )
+s" Index out of range" exception constant exp-index-out-of-range ( -- n = Index out of range exception number )
+s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invalid state exception number )
+s" No data available"  exception constant exp-no-data            ( -- n = No data available exception number )
+s" Invalid parameters" exception constant exp-invalid-parameters ( -- n = Invalid parameters on stack )
+s" Wrong file type"    exception constant exp-wrong-file-type    ( -- n = Wrong file type )
+s" Wrong file version" exception constant exp-wrong-file-version ( -- n = Wrong file version )
+s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong file data )
+s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
+s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
+s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
 
 [ELSE]
   drop
