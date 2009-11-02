@@ -75,7 +75,7 @@ nil value b64.decodes
 
 ( Base64 conversion words )
 
-: b64-encode       ( c-addr1 u1 str -- c-addr u = Encode the string c-addr u with str, resulting in c-addr2 u2 in str )
+: b64-encode       ( c-addr1 u1 str -- c-addr2 u2 = Encode the string c-addr u with str, resulting in c-addr2 u2 in str )
   >r
   r@ str-clear
   tuck 3 /                   \ the number of full sets
