@@ -79,6 +79,8 @@
 [arg arg.help-option] (-- n )<br>
 [arg arg.non-option] (-- n )<br>
 [arg arg.version-option] (-- n )<br>
+[b64 b64-decode] (c-addr1 u1 str -- c-addr2 u2 )<br>
+[b64 b64-encode] (c-addr1 u1 str -- c-addr2 u2 )<br>
 [bar bar%] (-- n )<br>
 [bar bar-(free)] (bar -- )<br>
 [bar bar-count] (bar -- u )<br>
@@ -424,6 +426,31 @@
 [crc crc-poly@] (crc -- u )<br>
 [crc crc-reset] (crc -- )<br>
 [crc crc-update] (c-addr u crc -- )<br>
+[dbm dbm%] (-- n )<br>
+[dbm dbm+hash] (c-addr u -- +n )<br>
+[dbm dbm-(free)] (dbm -- )<br>
+[dbm dbm-close] (dbm -- ior )<br>
+[dbm dbm-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dbm )<br>
+[dbm dbm-delete] (c-addr u dbm -- flag ior )<br>
+[dbm dbm-dump] (dbm -- )<br>
+[dbm dbm-exist] (c-addr u dbm -- flag ior )<br>
+[dbm dbm-fetch] (c-addr u dbm -- c-addr u ior )<br>
+[dbm dbm-first-key] (dmb -- c-addr u ior )<br>
+[dbm dbm-free] (dbm -- )<br>
+[dbm dbm-init] (dbm -- )<br>
+[dbm dbm-new] (-- dbm )<br>
+[dbm dbm-next-key] (dbm -- c-addr u ior )<br>
+[dbm dbm-open] (c-addr u +n1 n2 dbm -- ior )<br>
+[dbm dbm-reorganize] (dbm -- ior )<br>
+[dbm dbm-store] (c-addr1 u1 c-addr2 u2 n dbm -- ior )<br>
+[dbm dbm-sync] (dbm -- ior )<br>
+[dbm dbm.insert] (-- n )<br>
+[dbm dbm.newdb] (-- n )<br>
+[dbm dbm.reader] (-- n )<br>
+[dbm dbm.replace] (-- n )<br>
+[dbm dbm.sync] (-- n )<br>
+[dbm dbm.wrcreat] (-- n )<br>
+[dbm dbm.writer] (-- n )<br>
 [dci dci%] (-- n )<br>
 [dci dci-create] (dcl "{{{<}}}spaces{{{>}}}name" -- ; -- dci )<br>
 [dci dci-dump] (dci -- )<br>
@@ -697,6 +724,7 @@
 [enm enum:] (enum-sys "{{{<}}}spaces{{{>}}}name" -- enum-sys ;  -- n )<br>
 [log error"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
 [config exp-index-out-of-range] (-- n )<br>
+[config exp-invalid-data] (-- n )<br>
 [config exp-invalid-parameters] (-- n )<br>
 [config exp-invalid-state] (-- n )<br>
 [config exp-no-data] (-- n )<br>
@@ -718,8 +746,8 @@
 [frc frc%] (-- n )<br>
 [frc frc+abs] (n1 n2 -- n3 n4 )<br>
 [frc frc+add] (n1 n2 n3 n4 -- n5 n6 )<br>
-[frc frc+calc-gcd] (n1 n2 -- n )<br>
-[frc frc+calc-lcm] (n1 n2 -- n )<br>
+[frc frc+calc-gcd] (n1 n2 -- +n )<br>
+[frc frc+calc-lcm] (n1 n2 -- +n )<br>
 [frc frc+compare] (n1 n2 n3 n4 -- n )<br>
 [frc frc+divide] (n1 n2 n3 n4 -- n5 n6 )<br>
 [frc frc+invert] (n1 n2 -- n3 n4 )<br>
@@ -797,8 +825,11 @@
 [gmo gmo-read] (c-addr u msc -- 0 | ior )<br>
 [gsv gsv+call] (c-addr1 u1 -- c-addr2 u2 )<br>
 [gsv gsv+close] (-- ior )<br>
-[gsv gsv+included] (c-addr u -- ior )<br>
-[gsv gsv+open] (c-addr u -- ior )<br>
+[gsv gsv+connect] (c-addr u -- ior )<br>
+[gsv gsv+disconnect] (-- ior )<br>
+[gsv gsv+open] (c-addr1 u1 c-addr2 u2 -- ior )<br>
+[gsv gsv+server-connect] (n1 c-addr1 u1 n2 -- c-addr2 u2 )<br>
+[gsv gsv+server-connect-after] (n1 c-addr1 u1 n2 -- c-addr2 u2 )<br>
 [gzf gzf%] (-- n )<br>
 [gzf gzf-(free)] (gzf -- )<br>
 [gzf gzf-comment!] (c-addr u gzf -- )<br>
@@ -1294,9 +1325,9 @@
 [snn snn-new] (-- snn )<br>
 [snn snn-next!] (snn1 snn2 -- )<br>
 [snn snn-next@] (snn1 -- snn2 )<br>
-[spf spf"] ("ccc{{{<}}}quote{{{>}}}" i*x str -- )<br>
-[spf spf-append] (i*x c-addr u str -- )<br>
-[spf spf-set] (i*x c-addr u str -- )<br>
+[spf spf"] ("ccc{{{<}}}quote{{{>}}}" i*x j*r str -- )<br>
+[spf spf-append] (i*x j*r c-addr u str -- k*x l*r )<br>
+[spf spf-set] (i*x j*r c-addr u str -- )<br>
 [str str%] (-- n )<br>
 [str str+columns] (c-addr u n -- c-addrn un ... c-addr1 u1 n )<br>
 [str str+extra!] (u -- )<br>
