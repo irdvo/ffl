@@ -2,6 +2,7 @@
 
 {{{
 0.8.0
+* VFXForth: config.fs/make.fs added (2009-12-21, thanks to Stephen)
 * dbm: new module: gdbm interface (2009-10-03)
 * b64: new module: Base64 module (2009-09-24)
 * frc: frc+calc-gcd,frc+calc-lcm simplified (2009-09-18, thanks to Albert)

@@ -1,4 +1,4 @@
-#summary Forth engines support in the FFL
+﻿#summary Forth engines support in the FFL
 #labels Featured
 
 == Supported Forth engines ==
@@ -15,6 +15,7 @@ FFL will run on and is tested with the following forth engines :
 || [http://home.iae.nl/users/mhx iForth] || 0.6.0 ||
 || [http://spf.sourceforge.net SP-Forth] || 0.7.0 ||
 || [http://falth.homelinux.net/readme2.html lxf/ntf] || 0.7.0 ||
+|| [http://www.mpeforth.com VFXForth] || 0.8.0 ||
 
 For these forth engines there is a config file present in the distribution package.
 
