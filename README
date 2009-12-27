@@ -1,108 +1,472 @@
 
                      The Forth Foundation Library (FFL)
-                     ----------------------------------
+                     ==================================
 
 
-The Forth Foundation Library is a general purpose forth library. It gives you
-a collection of words written in (ANS) Forth, in areas such as data types,
-collections, development support, interfaces and compound modules. The
-library is developped with gforth.
+The Forth Foundation Library is a general purpose forth library. It gives you a
+collection of words written in (ANS) Forth, in areas such as data types,
+collections, development support, interfaces and compound modules. The library
+is developed with gforth.
 
 At the moment the library is still under development. The FFL library, the 
 example and test files are licensed under the GNU GPL.
 
 
-Installation
-------------
 
-Copy the directory 'ffl' and its contents to directory where 
-the forth engine will look for sources. 
+Installation, Configuration And Testing
+=======================================
 
+gforth (non-windows)
+---------------------
 
-In case of gforth the 'ffl' directory (and its contents) should be copied to:
+Gforth uses a search path to find sources. If you install the ffl library
+in this search path, gforth can find the library.
 
-/usr/share/gforth/site-forth or /usr/local/share/gforth/site-forth
+Step 1: install the library in the search path:
+a. Start gforth
+b. Enter: fpath .fpath
+c. Gforth will show all the directories where sources are searched
+d. Select a search directory that ends with 'site-forth' and exists
+e. Copy the 'ffl' directory (and its contents) from the package to
+   the selected directory 
+f. Start gforth again
+g. Enter: include ffl/frc.fs
+h. If gforth doesn't report an error, the library is correctly installed,
+   else repeat the steps, but select a different directory
 
+Step 2: Configuration of the library
+For gforth no futher configuration is necessary.
 
-In case of bigforth the 'ffl' directory (and its contents) should be copied to:
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Enter: gforth ffl_test.fs
+c. The test script will tell you which modules are tested and if there 
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
 
-/usr/lib/bigforth/src or /usr/local/lib/bigforth/src
-
-
-In case of pfe the 'ffl' directory (and its contents) should be copied to:
-
-/usr/share/pfe or /usr/local/share/pfe
-
-
-In case of Win32Forth the 'ffl' directory (and its contents) should be
-copied to:
-
-<drive>:\Program Files\Win32Forth
-
-(with <drive> the drive where Win32 is installed, normally this is 'C', or 
-in a directory that is in the search path of Win32Forth.)
-
-
-In case of minForth the 'ffl' directory (and its contents) should be 
-copied to your forth working directory.
-
-
-In case of iForth the 'ffl' directory (and its contents) should be copied to:
-$IFORTH/include ( ending up as $IFORTH/include/ffl ).
-
-The ffl-x.y.z directory, minus the subdirectory ffl, should be placed in 
-$IFORTH/examples/ .
+Tested with gforth-0.7.0.
 
 
-In case of SP-Forth the 'ffl' directory (and its contents) should be 
-copied to the installation directory of SP-Forth. Normally this will be: 
-C:\Program Files\SP-Forth (for windows).
+gforth (windows)
+----------------
+
+Gforth uses a search path to find sources. If you install the ffl library
+in this search path, gforth can find the library.
+
+Step 1: Install the library in the search path:
+a. Start gforth
+b. Enter fpath .fpath
+c. Gforth will show all the directories where sources are searched
+d. If all shown directories start with '/usr', then gforths search 
+   path is incorrect, else continue with j.
+e. Determine where gforth is installed, this will normally be 
+   '<drive>:\Program Files\gforth'
+f. Add the environment variable: 'GFORTHPATH' with the value
+   '\Program Files\gforth:.'
+   (Environment variables can be added by: My Computer - Properties 
+    - Advanced - Environment Variables)
+g. Start gforth again
+h. Enter fpath .fpath
+i. Gforth should show '\Program Files\gforth' and '.'
+j. Copy the 'ffl' directory (and its contents) from the package to
+   a search directory (except '.').
+k. Start gforth again
+l. Enter: include ffl/frc.fs
+m. If gforth doesn't report an error, the library is correctly 
+   installed, else repeat the steps but select a different directory
+
+Step 2: Configuration of the library
+For windows the 'end-of-line' word should be changed in the ffl/config.fs file,
+so that it will return cr-lf. See the configuration chapter for more info about
+the configuration items.
+
+Step 3: Test the library
+a. Start cmd
+b. Change the current directory to the 'test' directory in the package
+c. Enter: gforth ffl_test.fs
+d. The test script will tell you which modules are tested and if there 
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with gforth-0.7.0.
 
 
-In case of lxf/ntf the 'ffl' directory (and its contents) should be 
-copied to your forth working directory.
+bigforth
+--------
+
+Bigforth uses a search path to find sources. If you install the ffl library
+in this search path, bigforth can always find the library.
+
+Step 1: Install the library in the search path:
+a. Start bigforth
+b. Enter: path
+c. Bigforth will show all the directories where sources are searched, separated
+   by a ';'
+d. Select one of the search directories that exists, but not the '.'
+   directory
+e. Copy the 'ffl' directory (and its contents) from the package to
+   the selected directory 
+f. Copy from the 'engines/bigforth' directory in the package the files 
+   'config.fs' and 'make.fs' to the 'ffl' directory in the selected
+   directory, resulting in 'ffl/config.fs' and 'ffl/make.fs'.
+g. Start bigforth again
+h. Enter: include ffl/frc.fs
+i. If bigforth doesn't report an error, (exists warnings are okee), 
+   the library is correctly installed, else repeat the steps, but 
+   select a different directory
+
+Step 2: Configuration of the library:
+For bigforth the 'end-of-line' configuration in the ffl/config.fs file 
+is set for Unix/Linux. If you install bigforth for an different OS, you 
+should change the 'end-of-line' word. See the configuration chapter for 
+more info about the configuration items.
+
+Step 3: Test the library:
+a. Change the current directory to the 'test' directory in the package 
+b. Enter: bigforth ffl_test.fs
+c. The test script will tell you which modules are tested and if there 
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with bigforth 2.3.1
 
 
-If your forth only looks in the current directory for forth sources, then copy 
-the directory 'ffl' and its contents to the current directory.
+pfe
+---
+
+PFE uses a search path to find sources. If you install the ffl library
+in this search path, pfe can find the library.
+
+Step 1: Install the library in the search path:
+a. Start pfe
+b. Enter: .status
+c. After the item 'search path for source files' pfe lists the directories,
+   separated by ':', that are used as search path.
+d. Select one of the search directories, but not the '.pfe' directory
+e. Copy the 'ffl' directory (and its contents) from the package to the
+   selected directory
+f. Copy from the 'engines/pfe' directory in the package the files
+   'config.fs' and 'make.fs' to the 'ffl' directory in the selected
+    directory, resulting in 'ffl/config.fs' and 'ffl/make.fs'.
+g. Start pfe again
+h. Enter: include ffl/frc.fs
+i. If pfe doesn't report an error, the library is correctly installed, 
+   else repeat the steps, with a different directory.
+
+Step 2: Configuration of the library:
+For pfe the 'end-of-line' configuration in the ffl/config.fs file 
+is set for Unix/Linux. If you install pfe for an different OS, you 
+should change the 'end-of-line' word. See the configuration chapter for 
+more info about the configuration items.
+
+Step 3: Test the library:
+a. Change the current directory to the 'test' directory in the package 
+b. Enter: pfe ffl_test.fs -ab -c TEST --verbose --file=FILE input
+   (the command line arguments are for test purposes and have no real meaning,
+   enter them in the correct case)
+c. The test script will tell you which modules are tested and if there 
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with pfe 0.33.70
+
+
+Win32Forth
+-----------
+
+Win32Forth uses a search path to find sources. If you install the ffl
+library in this search path, Win32Forth can find the library.
+
+Step 1: Install the library in the search path:
+a. Start Win32Forth
+b. Enter: .fpath
+c. This word shows first the 'Base paths' and after that the 'Search
+   paths'. 
+d. First select one directory of the 'base paths' and combine that
+   with one of the 'search paths'. 
+e. For example if you select 'c:\program files\win32forth' as base 
+   path and 'SRC\LIB' as 'search path', you should copy the 'ffl'
+   directory (and its contents) from the package to the directory
+   'c:\program files\win32forth'.
+f. Copy from the 'engines/Win32Forth' directory in the package
+   the files 'config.fs' and 'make.fs' to the 'ffl' directory in
+   the selected directory, resulting in 'ffl/config.fs' and
+   'ffl/make.fs'.
+g. Start Win32Forth again
+h. Enter: include ffl/frc.fs
+i. If Win32Forth doesn't report an error (warnings are okee),
+   the library is correctly installed, else repeat the steps with
+   a different directory.
+
+Step 2: Configuration of the library:
+For Win32Forth no further configuration is necessary.
+
+Step 3: Test the library:
+a. Change the current directory to the 'test' directory in the package
+b. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in this
+   directory
+c. Start Win32Forth.
+d. Use in the window the 'chdir' word to move to the 'test' directory.
+e. Use 'include ffl_test.fs' to run the tests.
+f. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+   
+Tested with Win32Forth 6.12.0
+
+
+minForth
+--------
+
+minForth doesn't use a search path, so you should copy the library or
+create a link to the library in your forth working directory.
+
+Step 1a: Install the library by creating a link to the library 
+(UNIX and friends):
+a. Copy the 'ffl' directory (and its contents) from the package to
+   a freely chosen directory. For example '~/lib', '/usr/lib' or 
+   '/usr/local/lib' resulting in '~/lib/ffl', '/usr/lib/ffl' or 
+   '/usr/local/lib/ffl'.
+b. Copy from the 'engines/minForth' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   chosen directory, resulting in '~/lib/ffl/config.fs' and 
+   '~/lib/ffl/make.fs', etc.
+c. Create in your forth working directory a symbolic link to the
+   chosen directory. The name of this link should be 'ffl' and the
+   target the chosen directory. For example: 'ln -s ~/lib/ffl ffl' 
+   or 'ln -s /usr/lib/ffl ffl' or 'ln -s /usr/local/lib/ffl ffl'.
+d. Start minForth
+e. Enter: include ffl/frc.fs
+f. If all is well, minForth should include the file.
+
+Step 1b: Install the library by coping the library:
+a. Copy the  'ffl' directory (and its contents) from the package to
+   your working forth directory.
+b. Copy from the 'engines/minForth' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   forth working directory, resulting in 'ffl/config.fs' and 
+   'ffl/make.fs'.
+c. Start minForth
+d. Enter: 'include ffl/frc.fs'
+e. If all is well, minForth should include the file.
+
+Step 2: Configuration of the library:
+For minForth the 'end-of-line' configuration in the ffl/config.fs file 
+is set for Unix/Linux. If you install minForth for an different OS, you 
+should change the 'end-of-line' word. See the configuration chapter for 
+more info about the configuration items.
+
+Step 3: Test the library:
+a. For running the tests the minForth engine is configured too small. So
+   extend the engine by editing the kernel.mfc file from minForth. Change 
+   in this file the NAMES to 512000, the HEAP to 640000, the LIMIT to 1000000,
+   the SPMAX to 256 and the RPMAX to 256. 
+b. Rebuild the minForth engine.
+c. Copy this new engine (mf and mf.i) to the 'test' directory of the package. 
+   Also make sure that in this directory the library is present by coping the 
+   ffl or by creating a link to the library. (see above).
+d. Start minForth
+e. Enter: 'include ffl_test.fs'.
+f. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with minForth 1.5
+
+
+iForth
+------
+
+iForth uses a search path to find sources. If you install the ffl library
+in this search path, iForth can find the library.
+
+Step 1: Install the library in the search path
+a. Copy the 'ffl' directory (and its contents) to $IFORTH/include 
+   ( ending up as $IFORTH/include/ffl ).
+b. Copy the 'ffl-x.y.z' directory, minus the subdirectory ffl to 
+   $IFORTH/examples/
+c. Copy from the 'engines/iForth' directory in the package the files
+   'config.fs' and 'make.fs' to the $IFORTH/include/ffl directory.
+d. Start iForth
+e. Enter: include ffl/frc.fs
+f. If iForth doesn't report an error, the library is correctly 
+   installed.
+
+Step 2: Configuration of the library
+For iForth no further configuration is necessary.
+
+Step 3: Test the library
+a. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the 
+   '$IFORTH/examples/ffl-0.6.0/test' directory.
+b. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
+c. Start iForth.
+d. Use the 'cd' word to move to the '$IFORTH/examples/ffl-0.6.0/test' directory 
+e. Do 'include ffl_test.fs' to run the tests.
+f. The test script will tell you which modules are tested and if there
+   were any errors.
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+
+SP-Forth (windows)
+------------------
+
+SP-Forth uses a search path to find sources. If you install the ffl
+library in this search path, SP-Forth can find the library.
+
+Step 1: Install the library in the search path
+a. Determine where the executable of SP-Forth is located on your system.
+   Normally this will be: x:\Program Files\SP-Forth with x the drive
+   letter where windows is installed.
+b. Copy the 'ffl' directory (and its contents) to this directory, ending
+   up as: x:\Program Files\SP-Forth\ffl
+c. Copy from the 'engines\spf' directory in the package the files 'config.fs'
+   and 'make.fs' to the x:\Program Files\SP-Forth\ffl directory.
+d. Start spf4
+e. Enter: include ffl/frc.fs
+f. If SP-Forth is able to include the file, the library is correctly installed.
+
+Step 2: Configuration of the library
+For SP-Forth no further configuration is necessary.
+
+Step 3: Test the library
+a. Start a command or cmd window
+b. Change the current directory to the 'test' directory in the package
+c. Enter (including the quotes): 
+   "\Program Files\sp-forth\spf4" ffl\config.fs ffl_test.fs
+d. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with SP-Forth 4.20
+
+
+SP-Forth (linux)
+------------------
+
+SP-Forth uses a search path to find sources. If you install the ffl
+library in this search path, SP-Forth can find the library.
+
+Step 1: Install the library in the search path
+a. Determine where the SP-Forth sources are located on your system.
+   For example: /usr/spforth4
+b. Copy the 'ffl' directory (and its contents) to this directory, ending up
+   as /usr/spforth4/ffl
+c. Copy from the 'engines\spf' directory in the package the files 'config.fs'
+   and 'make.fs' to the /usr/spforth4/ffl directory.
+d. Start spf4
+e. Enter: include ffl/frc.fs
+f. If SP-Forth is able to include the file, the library is correctly installed.
+
+Step 2: Configuration of the library
+For SP-Forth no further configuration is necessary.
+
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Enter: spf4 -ab -c TEST --verbose --file=FILE input
+   (the command line arguments are for test purposes and have no real meaning,
+   enter them in the correct case)
+c. Spf4 will report error #-2003, that is okee.
+d. Enter: ffl/config.fs
+e. Enter: ffl_test.fs
+f. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with SP-Forth 4.20
+
+
+lxf
+---
+
+lxf doesn't use a search path, so you should create a link to the library
+in your forth working directory
+
+Step 1: Install the library by creating a link to the library 
+a. Copy the 'ffl' directory (and its contents) from the package to
+   a freely chosen directory. For example '~/lib', '/usr/lib' or 
+   '/usr/local/lib' resulting in '~/lib/ffl', '/usr/lib/ffl' or 
+   '/usr/local/lib/ffl'.
+b. Copy from the 'engines/lxf' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   chosen directory, resulting in '~/lib/ffl/config.fs' and 
+   '~/lib/ffl/make.fs', etc.
+c. Create in your forth working directory a symbolic link to the
+   chosen directory. The name of this link should be 'ffl' and the
+   target the chosen directory. For example: 'ln -s ~/lib/ffl ffl' 
+   or 'ln -s /usr/lib/ffl ffl' or 'ln -s /usr/local/lib/ffl ffl'.
+d. Start lxf
+e. Enter: include ffl/frc.fs
+f. If all is well, lxf should include the file.
+
+Step 2: Configuration of the library
+For lxf no further configuration is necessary.
+
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Make sure that in this directory the library is present by creating a link 
+   to the library. (see Step 1).
+c. Enter: lxf include ffl_test.fs
+d. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with lxf 1.6
+
+
+ntf
+---
+
+ntf doesn't use a search path, so you should copy the library to your forth
+working directory.
+
+Step 1: Install the library by copying the library 
+a. Copy the 'ffl' directory (and its contents) from the package to
+   your forth working directory.
+b. Copy from the 'engines/ntf' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   working directory.
+c. Start ntf
+d. Enter: include ffl/frc.fs
+e. If all is well, lxf should include the file.
+
+Step 2: Configuration of the library
+For ntf no further configuration is necessary.
+
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Make sure that in this directory the library is present by copying the
+   library to this directory (See step 1).
+c. Copy the ntf.exe to the test directory.
+d. Enter: ntf include ffl_test.fs
+e. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with ntf 1.6
+
+
+fina
+----
 
 Note: at this moment (2006-06-11) fina is not yet released, so any
 installation and configuration directives are not possible. The config.fs
 file for fina is also preliminary.
 
 
+
 Configuration
--------------
-
-The default config.fs and make.fs are for gforth. So no further copying is 
-necessary for gforth. For the other forth engines there is a config.fs and
-make.fs in the 'engines' directory.
-
-
-For bigforth the config.fs and make.fs files should be copied from the
-'engines/bigforth' directory to the 'ffl' directory.
-
-For pfe the config.fs and make.fs files should be copied from the 
-'engines/pfe' directory to the 'ffl' directory.
-
-For Win32Forth the config.fs and make.fs files should be copied from the
-'engines/Win32Forth' directory to the 'ffl' directory.
-
-For minForth the config.fs and make.fs files should be copied from the
-'engines/minForth' directory to the 'ffl' directory.
-
-For iForth the config.fs and make.fs files should be copied from the
-'engines/iForth' directory to the 'ffl' directory.
-
-For SP-Forth the config.fs and make.fs files should be copied from the
-'engines/spf' directory to the 'ffl' directory.
-
-For lxf/ntf the config.fs and make.fs files shoud be copied from the 
-'engines/lxf' directory to the 'ffl' directory.
-
-
-The next step is editing the config.fs file for system settings.
-
+=============
 
 At the moment there are four system setting: 
 
@@ -132,110 +496,18 @@ bits in a byte, then you should change this word.
 #bits/cell
 
 This word defines the number of bits in a cell. The default is the number of
-bits in a byte multipied by the number of bytes in a cell.
+bits in a byte multiplied by the number of bytes in a cell.
 
 
 #bits/char
 
 This word defines the number of bits in a char. The default is the number of
-bits in a byte multipied by the number of bytes in a char.
+bits in a byte multiplied by the number of bytes in a char.
 
 
-Testing
--------
 
-After installing the source files the unit test sources in the 'test'
-directory can be run to test the library. The test can be started by:
-
-(for PFE and SP-Forth there are command line arguments. These are for test 
-purposes only and have no real meaning. Enter them in the correct case.)
-
-
-(for gforth):
-
-1. Change the current directory to the 'test' directory
-2. Enter: gforth ffl_test.fs
-
-
-(for bigforth):
-
-1. Change the current directory to the 'test' directory
-2. Enter: bigforth ffl_test.fs
-
-
-(for pfe)
-
-1. Change the current directory to the 'test' directory
-2. Enter: pfe ffl_test.fs -ab -c TEST --verbose --file=FILE input
-
-
-(for Win32Forth)
-
-1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file.
-2. Start Win32Forth.
-3. Use in the window the 'chdir' word to move to the 'test' directory.
-4. Use 'include ffl_test.fs' to run the tests.
-
-
-(for minForth)
-
-For running the tests the minForth engine is configured too small:
-1. Extend the engine by editing the kernel.mfc file from minForth. Change 
-   in this file the NAMES to 512000, the HEAP to 640000, the LIMIT to 1000000,
-   the SPMAX to 256 and the RPMAX to 256. Then rebuild the minForth engine.
-2. Copy this new engine (mf and mf.i) to the 'test' directory. Also make sure 
-   that in this directory the 'ffl' is installed.
-3. Start the minForth engine (mf).
-4. Enter: 'include ffl_test.fs'.
-
-
-(for iForth)
-
-1. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the 
-   '$IFORTH/examples/ffl-0.6.0/test' directory.
-2. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
-3. Start iForth.
-4. Use the 'cd' word to move to the '$IFORTH/examples/ffl-0.6.0/test' directory 
-5. Do 'include ffl_test.fs' to run the tests.
-
-
-(for SP-Forth, windows)
-
-1. Start a command or cmd window.
-2. Change the current directory to the 'test' directory.
-3. Enter (including the quotes): "\Program Files\sp-forth\spf4" ffl\config.fs ffl_test.fs
-
-( for SP-Forth, linux)
-
-1. Change the current directory to the 'test' directory
-2. Enter: spf4 -ab -c TEST --verbose --file=FILE input
-3. Spf4 will report error #-2003, that is okee.
-4. Enter: ffl/config.fs
-5. Enter: ffl_test.fs
-
-
-( for lxf )
-
-1. Change the current directory to the 'test' directory.
-2. Make sure that in this directory the 'ffl' is installed.
-3. Enter: lxf include ffl_test.fs
-
-( for ntf )
-
-1. Start a command or cmd window.
-2. Change the current directory to the 'test' directory
-3. Make sure that in this directory the 'ffl' is installed.
-4. Make sure that in this directory the 'ntf.exe' is installed.
-5. Enter: ntf include ffl_test.fs
-
-
-The program will tell you which modules are tested and if there were any
-errors. If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
-then all went well.
-
-
-Backwards compatible
---------------------
+Backwards compatibility
+=======================
 
 From version 0.6.0 to version 0.7.0 there is a backwards compatible problem 
 with the stringtable module (stt). In version 0.6.0 the strings were stored
@@ -249,21 +521,23 @@ using its own structure definition. From version 0.6.0 it uses the new ANS
 structures.
 
 
+
 Documentation
--------------
+=============
 
 In the directory 'html' there is the HTML documentation of the library. The
 file 'index.html' contains an overview of all the modules in the library. In 
-the file 'words.html' all words of the libary are alphabetically listed. In
+the file 'words.html' all words of the library are alphabetically listed. In
 the file 'manual.html' there is small manual. More information can be found
 in the wiki on the website.
 
 
-Porting to other forth systems
-------------------------------
 
-The library is developped on gforth and pfe. The intention is that only two 
-files are dependant on the (ANS) forth system:
+Porting to other forth systems
+==============================
+
+The library is developed on gforth and pfe. The intention is that only two 
+files are depending on the (ANS) forth system:
 
  ./ffl/config.fs
  ./ffl/make.fs
@@ -278,7 +552,7 @@ for a particular forth system, let me know. I will add them to the README.
 
 
 Bugs
-----
+====
 
 Because the library is still beta it is not impossible that you will find 
 bugs. You can send them or any suggestions to dvoudheusden[at]gmail[dot]com.
