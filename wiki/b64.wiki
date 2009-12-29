@@ -4,7 +4,7 @@ The b64 module implements the encoding to and decoding from base64.
 
 === Module Words ===
 ==== Base64 conversion words ====
-*b64-encode* ( c-addr1 u1 str -- c-addr u )
+*b64-encode* ( c-addr1 u1 str -- c-addr2 u2 )
  Encode the string c-addr u with str, resulting in c-addr2 u2 in str
 *b64-decode* ( c-addr1 u1 str -- c-addr2 u2 )
  Decode the string c-addr1 u1 using str, resulting in c-addr2 u2 in str, throws exp-invalid-data for characters out of range

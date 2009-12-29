@@ -109,10 +109,10 @@ dom.document:  --                       = Document root
 *dom-read-string* ( c-addr u flag1 dom -- flag2 )
  Read xml source from the string c-addr u into the dom tree, flag1 indicates whitespace stripping, throw exception if tree is not empty, return success in flag2
 *dom-read-reader* ( x xt flag1 dom -- flag2 )
- Read xml source with the reader xt with its state x into the dom tree, flag1 inidicates whitespace stripping, throw exception if tree is not empty, return success in flag2
+ Read xml source with the reader xt with its state x into the dom tree, flag1 indicates whitespace stripping, throw exception if tree is not empty, return success in flag2
 ==== Writing the DOM tree ====
 *dom-write-string* ( dom -- c-addr u true | false )
- Write the tree to xml returning a string c-addr u if succesfull
+ Write the tree to xml returning a string c-addr u if successful
 *dom-write-writer* ( x xt dom -- flag )
  Write the tree to xml using writer xt and its data x, flag indicate success
 ==== Inspection ====

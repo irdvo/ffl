@@ -1,4 +1,4 @@
-#summary Modules in the library
+﻿#summary Modules in the library
 #labels Featured
 
 The following modules are present in the Forth Foundation Library:
@@ -18,7 +18,7 @@ The following modules are present in the Forth Foundation Library:
 || [bnn bnn] || Generic binary tree node || Collection || 0.7.0 || 0.7.0 || Yes ||
 || [bnt bnt] || Generic binary tree || Collection || 0.7.0 || 0.7.0 || Yes ||
 || [car car] || Cell array || Collection || 0.2.0 || 0.6.0 || Yes ||
-|| [cbf cbf] || Circulair buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
+|| [cbf cbf] || Circular buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
 || [chr chr] || Character words || DataType || 0.1.0 || 0.2.0 || No ||
 || [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes ||
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No ||
@@ -50,7 +50,7 @@ The following modules are present in the Forth Foundation Library:
 || [hni hni] || Generic hash table iterator || Collection || 0.6.0 || 0.6.0 || Yes ||
 || [hnt hnt] || Generic hash table || Collection || 0.6.0 || 0.6.0 || Yes ||
 || [hnn hnn] || Generic hash table node || Collection || 0.6.0 || 0.6.0 || Yes ||
-|| [lbf lbf] || Lineair buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
+|| [lbf lbf] || Linear buffer || DataType || 0.7.0 || 0.7.0 || Yes ||
 || [log log] || Log module || Development || 0.7.0 || 0.7.0 || Yes ||
 || [md5 md5] || MD5 Algorithm || Interface || 0.3.0 || 0.3.0 || Yes ||
 || [msc msc] || Message Catalog || Compound || 0.6.0 || 0.6.0 || Yes ||
@@ -85,7 +85,7 @@ The following modules are present in the Forth Foundation Library:
 || [tst tst] || Unit test words || Development || 0.1.0 || 0.6.0 || No ||
 || [xis xis] || XML/HTML reader || Interface || 0.6.0 || 0.6.0 || Yes ||
 || [xos xos] || XML/HTML writer || Interface || 0.6.0 || 0.6.0 || Yes ||
-|| [zif zif] || GZip file reader || Interface || 0.7.0 || 0.7.0 || No ||
+|| [zif zif] || GZip file reader || Interface || 0.7.0 || 0.7.0 || Yes ||
 
 In [Words] there is also an alphabetical overview of all the words in the library.
 

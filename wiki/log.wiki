@@ -2,8 +2,8 @@
 === Module Description ===
 The log module implements a software logging and tracing module.
 The module uses 6 different log events, from low to high: trace, debug,
-info, warning, error and fatal. All log events will generate a log
-mesage. Only the fatal log event will do an abort. A log message shows the
+info, warning, error and fatal. All log events will generate a log message.
+Only the fatal log event will do an abort. A log message shows the
 date and time, the log event and the actual message. The log events can be
 skipped during compilation and suppressed during execution. This is done
 by setting the log level with the log-level word. All log events that are
