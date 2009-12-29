@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\             cbf - the circulair buffer module in the ffl
+\             cbf - the circular buffer module in the ffl
 \
 \               Copyright (C) 2008  Dick van Oudheusden
 \  
@@ -34,15 +34,15 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( cbf = Circulair buffer module )
-( The cbf module implements a circulair buffer with variable elements.       )
+( cbf = Circular buffer module )
+( The cbf module implements a circular buffer with variable elements.        )
 ( During adding of extra data, the buffer will be resized. The cbf-access!   )
 ( word expects two execution tokens on the stack: store with stack effect:   )
 ( i*x addr --  and fetch: addr -- i*x. Those two words are used to store     )
-( data in the buffer and fetch data from the buffer. Their behaviour should  )
+( data in the buffer and fetch data from the buffer. Their behavior should   )
 ( match the size of the elements in the buffer.                              )
 ( Important: the cbf-get and cbf-fetch copy data from the buffer to the      )
-( destination address. This is different from the lineair buffer [lbf]       )
+( destination address. This is different from the linear buffer [lbf]        )
 ( implementation: the lbf-get and lbf-fetch return addresses located         )
 ( in the buffer.                                                             )
 
@@ -56,7 +56,7 @@ include ffl/stc.fs
 \         +------------------+
 
 
-( Circulair Buffer Structure )
+( Circular Buffer Structure )
 
 begin-structure cbf%       ( -- n = Get the required space for a cbf variable )
   field: cbf>record        \ the element size
@@ -105,17 +105,17 @@ end-structure
 ;
 
 
-: cbf-create       ( +n1 +n2 "<spaces>name" -- ; -- cbf = Create a circulair buffer in the dictionary with element size n1 and initial length n2 )
+: cbf-create       ( +n1 +n2 "<spaces>name" -- ; -- cbf = Create a circular buffer in the dictionary with element size n1 and initial length n2 )
   create  here  cbf% allot  cbf-init
 ;
 
 
-: cbf-new          ( +n1 +n2 -- cbf = Create a circulair buffer with element size n1 and initial length n2 on the heap )
+: cbf-new          ( +n1 +n2 -- cbf = Create a circular buffer with element size n1 and initial length n2 on the heap )
   cbf% allocate throw  dup >r cbf-init r> 
 ;
 
 
-: cbf-free         ( cbf -- = Free the circulair buffer from the heap )
+: cbf-free         ( cbf -- = Free the circular buffer from the heap )
   dup cbf-(free)
    
   free throw
@@ -178,7 +178,7 @@ end-structure
 : cbf-in+!         ( n cbf -- = Add n elements to the in index )
   tuck
   cbf-in@ +
-  2dup swap cbf-size@ >= IF   \ Circulair buffer
+  2dup swap cbf-size@ >= IF   \ Circular buffer
     over cbf-size@ -
   THEN
   swap cbf>in !
@@ -188,7 +188,7 @@ end-structure
 : cbf-out+!        ( n cbf -- = Add n elements to the out index )
   tuck
   cbf-out@ +
-  2dup swap cbf-size@ >= IF   \ Circulair buffer
+  2dup swap cbf-size@ >= IF   \ Circular buffer
     over cbf-size@ -
   THEN
   swap cbf>out !
@@ -213,7 +213,7 @@ end-structure
 ;
 
 
-: cbf-extra!       ( u cbf -- = Set the nmber of extra elements allocated during resizing of the buffer )
+: cbf-extra!       ( u cbf -- = Set the number of extra elements allocated during resizing of the buffer )
   swap 1 max swap cbf>extra !
 ;
 
@@ -337,7 +337,7 @@ end-structure
 
 : cbf-skip         ( +n1 cbf -- +n2 = Skip maximum u1 elements from the buffer, return the actual skipped elements u2 )
   swap
-  over cbf-length@ min       \ Acutal elements to skip
+  over cbf-length@ min       \ Actual elements to skip
   tuck swap cbf-out+!        \ Update out pointer
 ;
 
@@ -426,7 +426,7 @@ end-structure
 
 ( Inspection )
 
-: cbf-dump         ( cbf -- = Dump the circulair buffer variable )
+: cbf-dump         ( cbf -- = Dump the circular buffer variable )
   ." cbf:" dup . cr
   ."   record:" dup cbf>record ? cr
   ."   in    :" dup cbf>in     ? cr

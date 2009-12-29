@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\              lbf - the lineair buffer module in the ffl
+\              lbf - the linear buffer module in the ffl
 \
 \               Copyright (C) 2008  Dick van Oudheusden
 \  
@@ -34,8 +34,8 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( lbf = Lineair buffer module )
-( The lbf module implements a lineair buffer with variable elements. During  )
+( lbf = Lineaxir buffer module )
+( The lbf module implements a linear buffer with variable elements. During   )
 ( adding of extra data, the buffer will be resized. This type of buffer is   )
 ( most efficient if the buffer is empty on a regular bases: the unused space )
 ( in the buffer is then automatically reduced. If the buffer is not          )
@@ -43,13 +43,13 @@ include ffl/stc.fs
 ( buffer. The lbf-access! word expects two execution tokens on the stack:    )
 ( store with stack effect:  i*x addr --  and fetch: addr -- i*x. Those two   )
 ( words are used to store data in the buffer and fetch data from the buffer. )
-( Their behaviour should match the size of the elements in the buffer.       )
+( Their behavior should match the size of the elements in the buffer.        )
 ( Besides the normal out pointer there is a secondary out pointer. This      )
 ( pointer will always stay between the normal out pointer and the in         )
 ( pointer. The words lbf-get' and lbf-length' use the secondary out pointer. )
 ( Important: the lbf-get and lbf-fetch returning addresses are located       )
 ( in the buffer so the contents of these addresses can change with the next  )
-( call to the buffer. This is different from the circulair buffer [cbf]      )
+( call to the buffer. This is different from the circular buffer [cbf]       )
 ( implementation: the cbf-get and cbf-fetch words copy data from the buffer  )
 ( to the destination addresses. )
 
@@ -63,7 +63,7 @@ include ffl/stc.fs
 \         +------------------+
 
 
-( Lineair Buffer Structure )
+( Linear Buffer Structure )
 
 begin-structure lbf%       ( -- n = Get the required space for a lbf variable )
   field: lbf>record        \ the element size
@@ -112,17 +112,17 @@ end-structure
 ;
 
 
-: lbf-create       ( +n1 +n2 "<spaces>name" -- ; -- lbf = Create a lineair buffer in the dictionary with element size n1 and initial length n2 )
+: lbf-create       ( +n1 +n2 "<spaces>name" -- ; -- lbf = Create a linear buffer in the dictionary with element size n1 and initial length n2 )
   create  here  lbf% allot  lbf-init
 ;
 
 
-: lbf-new          ( +n1 +n2 -- lbf = Create a lineair buffer with element size n1 and initial length n2 on the heap )
+: lbf-new          ( +n1 +n2 -- lbf = Create a linear buffer with element size n1 and initial length n2 on the heap )
   lbf% allocate throw  dup >r lbf-init r> 
 ;
 
 
-: lbf-free         ( lbf -- = Free the lineair buffer from the heap )
+: lbf-free         ( lbf -- = Free the linear buffer from the heap )
   dup lbf-(free)
    
   free throw
@@ -447,7 +447,7 @@ end-structure
 
 ( Inspection )
 
-: lbf-dump         ( lbf -- = Dump the lineair buffer variable )
+: lbf-dump         ( lbf -- = Dump the linear buffer variable )
   ." lbf:" dup . cr
   ."   record:" dup lbf>record ? cr
   ."   in    :" dup lbf>in     ? cr

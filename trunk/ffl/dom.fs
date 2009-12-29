@@ -453,7 +453,7 @@ end-structure
 ;
 
 
-: dom-read-reader   ( x xt flag1 dom -- flag2 = Read xml source with the reader xt with its state x into the dom tree, flag1 inidicates whitespace stripping, throw exception if tree is not empty, return success in flag2 )
+: dom-read-reader   ( x xt flag1 dom -- flag2 = Read xml source with the reader xt with its state x into the dom tree, flag1 indicates whitespace stripping, throw exception if tree is not empty, return success in flag2 )
   >r
   xis-new
   >r
@@ -568,7 +568,7 @@ defer dom.write-nodes
 
 ( Writing the DOM tree )
 
-: dom-write-string   ( dom -- c-addr u true | false = Write the tree to xml returning a string c-addr u if succesfull )
+: dom-write-string   ( dom -- c-addr u true | false = Write the tree to xml returning a string c-addr u if successful )
   >r
   r@ dom-write IF
     r@ dom>xos str-get
@@ -613,3 +613,4 @@ defer dom.write-nodes
 [THEN]
 
 \ ==============================================================================
+
