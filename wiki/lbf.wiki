@@ -1,4 +1,4 @@
-#summary Lineaxir buffer module
+#summary Linear buffer module
 === Module Description ===
 The lbf module implements a linear buffer with variable elements. During
 adding of extra data, the buffer will be resized. This type of buffer is
