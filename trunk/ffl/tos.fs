@@ -41,12 +41,10 @@ include ffl/msc.fs
 ( done for the last written data. By using the start alignment pointers      )
 ( words the start of the alignment can be changed. The end of the alignment  )
 ( is always the end of the stream. The message catalog can be used for       )
-( localisation of strings. Note: the numerical words in this module use the  )
+( localization of strings. Note: the numerical words in this module use the  )
 ( the numeric output string. The writer can be used to direct the result of  )
 ( the formatter to a writer word by calling tos-flush:                       )
-( <pre>                                                                      )
-(   Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success )
-( </pre>                                                                     )
+(  {{{Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success}}} )
 
 
 3 constant tos.version
@@ -163,7 +161,7 @@ end-structure
   >r
   r@ tos>writer @ nil<>? IF       \ If writer present Then
     r@ tos>data @ swap            \   Get data
-    r@ str-get dup IF             \   Get string, If lenght > 0 Then
+    r@ str-get dup IF             \   Get string, If length > 0 Then
       2swap execute IF            \     Do writer, If processed Then
         r@ str-clear              \       Clear string
         r@ tos>pntr 0!            \       Reset stream pointer
@@ -214,7 +212,7 @@ end-structure
 ;
 
 
-: tos-write-line    ( tos -- = Write end-of-line from config to the stream, not alignable )
+: tos-write-line    ( tos -- = Write end-of-line from config to the stream, not align able )
   end-of-line
   count bounds ?DO
     I c@ over tos-write-char

@@ -109,7 +109,7 @@ end-structure
     ?dup
   WHILE                           \ while length > 0
     2>r
-    2r@ a32.nmax min bounds DO    \ Update in blocks of nmax charactes
+    2r@ a32.nmax min bounds DO    \ Update in blocks of nmax characters
       I c@ +
       tuck +
       swap
@@ -184,3 +184,4 @@ end-structure
 [THEN]
 
 \ ==============================================================================
+

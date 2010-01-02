@@ -185,7 +185,7 @@ end-structure
   dup zif>gzf gzf-flags@ 2 AND IF
     2 swap bis-read-bytes IF 
       drop
-      gzi.done                         \ Header is succesfull processed
+      gzi.done                         \ Header is successful processed
     ELSE
       gzi.more
     THEN
@@ -256,7 +256,7 @@ end-structure
     r@ zif>gzf gzf>xlen !
     gzi.more                      \  No, need more data
   ELSE
-    ['] zif-do-name r@ gzi-state! \  Yes, continu with next field
+    ['] zif-do-name r@ gzi-state! \  Yes, continue with next field
     gzi.ok
   THEN
   rdrop

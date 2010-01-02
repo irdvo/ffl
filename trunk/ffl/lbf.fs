@@ -34,7 +34,7 @@ include ffl/config.fs
 include ffl/stc.fs
 
 
-( lbf = Lineaxir buffer module )
+( lbf = Linear buffer module )
 ( The lbf module implements a linear buffer with variable elements. During   )
 ( adding of extra data, the buffer will be resized. This type of buffer is   )
 ( most efficient if the buffer is empty on a regular bases: the unused space )

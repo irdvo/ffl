@@ -50,7 +50,7 @@ variable tst-timer
 : tst-empty-data-stack  ( i*x -- = Empty the data stack )
   depth dup 0> IF            \ if stack-depth > 0 then
     0 DO
-      drop                   \    remove the extra's
+      drop                   \    remove the extras
     LOOP
   ELSE
     drop
@@ -61,7 +61,7 @@ variable tst-timer
 : tst-empty-float-stack  ( i*r -- = Empty the float stack )
   fdepth dup 0> IF           \ if fstack-depth > 0 then
     0 DO
-      fdrop                  \  remove extra's
+      fdrop                  \  remove extras
     LOOP
   ELSE
     drop
