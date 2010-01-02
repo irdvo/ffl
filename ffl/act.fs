@@ -38,7 +38,7 @@ include ffl/bct.fs
 
 ( act = AVL binary tree cell module )
 ( The act module implements an AVL binary tree with the key and data cell      )
-( based. The act module is a specialisation of the bct module. As a result the )
+( based. The act module is a specialization of the bct module. As a result the )
 ( bci iterator can be used as iterator on the act tree. The implementation is  )
 ( non-recursive.                                                               )
 

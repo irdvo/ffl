@@ -148,7 +148,7 @@ nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 ;
   
 
-: nct-count      ( x nct -- u = Count the number of the occurences of the cell data x in the tree )
+: nct-count      ( x nct -- u = Count the number of the occurrences of the cell data x in the tree )
   0 -rot
   ['] nct+count  swap nct-execute drop
 ;

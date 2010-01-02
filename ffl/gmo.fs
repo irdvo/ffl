@@ -226,7 +226,7 @@ end-structure
 
 ( Import )
 
-: gmo-read  ( c-addr u msc -- 0 | ior = Read the mo-file c-addr u and store the contents in the message catalog msc )
+: gmo-read  ( c-addr u msc -- 0 | ior = Read a mo-file named c-addr u and store the contents in the message catalog msc )
   -rot
   
   r/o bin open-file ?dup 0= IF
