@@ -364,7 +364,7 @@ str-create gsv.cmd
 ;
 
 
-: gsv+close        ( -- ior = Close the connnection to the gtk-server, the gtk-server is *NOT* closed )
+: gsv+close        ( -- ior = Close the connection to the gtk-server, the gtk-server is *NOT* closed )
   gsv+disconnect
 ;
 

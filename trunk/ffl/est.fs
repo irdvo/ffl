@@ -34,7 +34,7 @@ include ffl/config.fs
 ( The est module implements a string with escaped characters. The code is    )
 ( inspired by the proposal for escaped strings by Stephen Pelc and Peter     )
 ( Knaggs. The following conversion characters are translated:                )
-( <pre>                                                                      )
+( {{{                                                                        )
 ( \a  - bel = ascii 7                                                        )
 ( \b  - backspace = ascii 8                                                  )
 ( \e  - escape = ascii 27                                                    )
@@ -50,7 +50,7 @@ include ffl/config.fs
 ( \"  - quote = ascii 34                                                     )
 ( xhh - hex digit                                                            )
 ( \\  - backslash                                                            )
-( </pre>                                                                     )
+( }}}                                                                        )
 
 
 1 constant est.version

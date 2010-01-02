@@ -335,7 +335,7 @@ end-structure
 ;
 
 
-: car-find-sorted  ( x car -- n flag = Find the cell value x in the already sorted array using binary search, return offset and succes )
+: car-find-sorted  ( x car -- n flag = Find the cell value x in the already sorted array using binary search, return offset and success )
   swap >r >r
   r@ car-length@ 1- 0
   BEGIN
@@ -417,7 +417,7 @@ end-structure
 
 ( Special words )
 
-: car-count        ( x car -- u = Count the number of occurences of a cell value x in the array )
+: car-count        ( x car -- u = Count the number of occurrences of a cell value x in the array )
   0 -rot
   dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
     2dup @ = IF                             \ If the contents is the cell Then
@@ -430,7 +430,7 @@ end-structure
 ;
 
 
-: car-find         ( x car -- n = Find the offset first occurence of the cell value x in the array, -1 if not found )
+: car-find         ( x car -- n = Find the offset first occurrence of the cell value x in the array, -1 if not found )
   dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
     2dup @ = IF                             \ If contents is the cell Then
       2drop                                 \   Return index and exit

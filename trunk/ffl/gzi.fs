@@ -106,7 +106,7 @@ begin-structure gzi%hfm%  ( -- n = Get the required space for a huffman structur
 end-structure
 
 
-: gzi-hfm-init  ( a-addr u hfm -- n = Initialise the huffman structure for u symbols and bit lengths a-addr, return completness n )
+: gzi-hfm-init  ( a-addr u hfm -- n = Initialise the huffman structure for u symbols and bit lengths a-addr, return completeness n )
   >r
   dup r@ gzi>hfm>number !      \ save the number of symbols
   cells allocate throw
@@ -165,7 +165,7 @@ end-structure
 ;
 
 
-: gzi-hfm-new  ( a-addr u -- n hfm = Create a new huffman structure on the heap with u symbols and bit lengths a-addr, return completness n )
+: gzi-hfm-new  ( a-addr u -- n hfm = Create a new huffman structure on the heap with u symbols and bit lengths a-addr, return completeness n )
   gzi%hfm% allocate throw  >r r@ gzi-hfm-init r>
 ;
 
@@ -233,7 +233,7 @@ end-structure
 
 begin-structure gzi%  ( -- n = Get the required space for a gzi variable )
   bis%
-  +field  gzi>bis              \ the inflator extends the input buffer
+  +field  gzi>bis              \ the inflater extends the input buffer
   field:  gzi>state            \ the current state (as xt)
   field:  gzi>lbf-size         \ the initial size of the output buffer
   lbf%
@@ -482,7 +482,7 @@ end-structure
         over dup gzi>copy-distance @
         swap gzi>lbf lbf-copy            \           copy from output buffer
 
-        dup gzi-start-codes              \           continu decoding codes
+        dup gzi-start-codes              \           continue decoding codes
         gzi.ok
       ELSE
         over gzi>code !                  \           save distance code for distance length
@@ -694,7 +694,7 @@ end-structure
         dup 1+ >r
         cells + !
         r>
-        2dup swap gzi>length+distance-codes @ < IF  \ if not all codes read, then continu
+        2dup swap gzi>length+distance-codes @ < IF  \ if not all codes read, then continue
           over gzi>index  !
           dup    gzi>code  0!
           1 over gzi>code-length !

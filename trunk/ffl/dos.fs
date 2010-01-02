@@ -38,10 +38,10 @@ include ffl/stt.fs
 ( dos = Datetime output stream )
 ( The dos module implements a date and time formatter. It is built upon the  )
 ( tos structure, so all words write to the tos stream. If the tos structure  )
-( contains a message catalog, it is used for localisation of times, dates    )
+( contains a message catalog, it is used for localization of times, dates    )
 ( and names. The format word uses most of the same conversion characters as  )
 ( the strftime c-function:                                                   )
-( <pre>                                                                      )
+( {{{                                                                        )
 ( %a - the abbreviated weekday name using the streams catalog for locale     )
 ( %A - the full weekday name using the streams catalog for locale            )
 ( %b - the abbreviated month name using the streams catalog for locale       )
@@ -74,7 +74,7 @@ include ffl/stt.fs
 ( %y - the year as a decimal number without a century: 00..99                )
 ( %Y - the year as a decimal number including the century                    )
 ( %% - the character %                                                       )
-( </pre> )
+( }}} )
 
 1 constant dos.version
 
@@ -92,8 +92,8 @@ begin-stringtable dos.weekday-names   ( n -- c-addr u = Translate weekday to wee
 end-stringtable
 
 begin-stringtable dos.month-names   ( n -- c-addr u = Translate month to month name )
-+" Januari"
-+" Februari"
++" January"
++" February"
 +" March"
 +" April"
 +" May"

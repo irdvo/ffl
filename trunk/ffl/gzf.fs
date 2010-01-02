@@ -141,7 +141,7 @@ end-structure
 ;
 
 
-: gzf-os@          ( gzf -- n = Get the operting system of the current file in the gzip file )
+: gzf-os@          ( gzf -- n = Get the operating system of the current file in the gzip file )
   gzf>os @
 ;
 

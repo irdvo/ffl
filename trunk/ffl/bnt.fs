@@ -316,7 +316,7 @@ end-structure
             dup r> bnn>left !
             true true             \ Done, insertion
           ELSE
-            bnn-left@ false       \ continu searching to the left
+            bnn-left@ false       \ continue searching to the left
           THEN
         ELSE
           dup bnn-right@ nil= IF  \ No right node present -> insert
@@ -326,7 +326,7 @@ end-structure
             dup r> bnn>right !
             true true             \ Done, insertion
           ELSE
-            bnn-right@ false      \ continu searching to the right
+            bnn-right@ false      \ continue searching to the right
           THEN
         THEN
       THEN
@@ -372,7 +372,7 @@ end-structure
   BEGIN                           \ While not all nodes done Do
     dup nil<>
   WHILE
-    2>r                           \   Cclear the stack
+    2>r                           \   Clear the stack
     2r@
     swap execute                  \   Execute with node
     2r>

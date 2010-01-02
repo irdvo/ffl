@@ -515,7 +515,7 @@ dtm.create-month-table dtm.month-offsets    ( n1 -- n2 = Get the offset for mont
 
 ( Compare words )
 
-: dtm-compare      ( n1 n2 n3 n4 n5 n6 n7 dtm -- n = Compare the date/time with millisconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 )
+: dtm-compare      ( n1 n2 n3 n4 n5 n6 n7 dtm -- n = Compare the date/time with milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 )
   >r
   r@ dtm-year@ - sgn
   

@@ -36,7 +36,7 @@ include ffl/dnn.fs
 
 ( dnl = Generic Double Linked List )
 ( The dnl module implements a double linked list that can handle variable size )
-( nodes. It is the base module for more specialised modules, for example the   )
+( nodes. It is the base module for more specialized modules, for example the   )
 ( double linked cell list [dcl] module. )
   
 
