@@ -35,7 +35,7 @@ include ffl/nnn.fs
 
 ( nnt = Generic n-Tree )
 ( The nnt module implements a n-Tree that can store variable size nodes. It   )
-( is the base module for more specialised trees, for example the cel n-tree   )
+( is the base module for more specialized trees, for example the cel n-tree   )
 ( [nct]. Due to the structure of a n-tree the words for changing the tree,    )
 ( adding and removing children, are part of the iterator [nni].               )
 

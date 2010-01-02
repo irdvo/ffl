@@ -38,7 +38,7 @@ include ffl/stc.fs
 
 
 ( tmr = Timer module )
-( The tmr module implements a pollable interval timer. Due to the fact that   )
+( The tmr module implements a poll able interval timer. Due to the fact that  )
 ( the ANS standard does not define a way to fetch milliseconds, this module   )
 ( has a environmental dependency.                                             )
 

@@ -412,7 +412,7 @@ end-structure
 
 ( Special words )
 
-: str-count        ( c-addr u str -- u = Count the number of occurences of the string c-addr u in the string )
+: str-count        ( c-addr u str -- u = Count the number of occurrences of the string c-addr u in the string )
   >r 0 -rot 
   r> str-get
   rot
@@ -444,7 +444,7 @@ end-structure
 
 ( Special manipulation words )
 
-: str-capatilize   ( str -- = Capatilize the first word in the string )
+: str-capatilize   ( str -- = Capitalize the first word in the string )
   str-bounds ?DO             \ Do for the string
     I c@
     chr-alpha? IF            \   If alpha character then
@@ -456,7 +456,7 @@ end-structure
 ;
 
   
-: str-cap-words    ( str -- = Capatilize all words in the string )
+: str-cap-words    ( str -- = Capitalize all words in the string )
   false swap str-bounds ?DO  \ Do for the string
     I c@ 
     chr-alpha? tuck IF       \   If alpha character then
@@ -520,7 +520,7 @@ end-structure
 ;
 
 
-: str+strip-leading   ( c-addr1 u1 -- c-addr2 u2 = Strip leading whitespaces in the string c-addr1 u1 )
+: str+strip-leading   ( c-addr1 u1 -- c-addr2 u2 = Strip leading whitespace in the string c-addr1 u1 )
   BEGIN
     dup 0> IF
       over c@ chr-space?
@@ -552,7 +552,7 @@ end-structure
 ;
 
 
-: str+strip-trailing  ( c-addr u1 -- c-addr u2 = Strip trailing whitespaces in the string c-addr u1 )
+: str+strip-trailing  ( c-addr u1 -- c-addr u2 = Strip trailing whitespace in the string c-addr u1 )
   BEGIN
     dup IF
       2dup 1- chars +
@@ -644,10 +644,10 @@ end-structure
 
 ( Search and replace words )
 
-: str-find         ( c-addr u n1 str -- n2 = Find the first occurence of the string c-addr u starting from index n1 in the string, return -1 if not found )
+: str-find         ( c-addr u n1 str -- n2 = Find the first occurrence of the string c-addr u starting from index n1 in the string, return -1 if not found )
   dup >r str-offset                    \ Index -> offset
   over r@ str-length@ swap -
-  over - 1+                            \ Determine the remaing length
+  over - 1+                            \ Determine the remaining length
   over r> str-data@ swap chars +       \ Determine the start of data with the offset
   -rot dup 0<= IF                      \ Check for sufficient remaining length
     2drop

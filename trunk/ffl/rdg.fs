@@ -118,7 +118,7 @@ end-structure
 \ With Leva's modifications to the original K+M method; see:
 \ J. L. Leva, ACM Trans Math Software 18 (1992) 449-453 and 454-455.
 
-: rdg-normal   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a normal or gaussian distribution with mu or mean r1 and sigma or standard deviation r2 )
+: rdg-normal   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a normal or Gaussian distribution with mu or mean r1 and sigma or standard deviation r2 )
   BEGIN
     1E+0 dup rdg-gen-[0,1> f-               \ u = 1.0 - rng
     dup rdg-gen-[0,1> 0.5E+0 f-             \ v = rng - 0.5
@@ -132,12 +132,12 @@ end-structure
     fdup 0.27597E+0 f< IF                   \ Done if Q < 0.27597
       fdrop false
     ELSE
-      0.27846E+0 fswap f< IF                \ Continu if Q > 0.27846
+      0.27846E+0 fswap f< IF                \ Continue if Q > 0.27846
         true
       ELSE
         fover fdup fdup f* fswap fln f* -4E+0 f*   \ -4 * u^2 * ln(u)
         fover fdup f*                               \ v^2
-        f<                                  \ Continu if v^2 > -4 * u^2 * ln(u) 
+        f<                                  \ Continue if v^2 > -4 * u^2 * ln(u) 
       THEN
     THEN
    WHILE
@@ -250,7 +250,7 @@ end-structure
 ;
 
 
-: rdg-poisson ( F: r -- ; rdg -- u = Generate a random number with a poisson distribution with mean r [>=0] )
+: rdg-poisson ( F: r -- ; rdg -- u = Generate a random number with a Poisson distribution with mean r [>=0] )
   >r
   0                               \ k = 0 mu = r
   BEGIN
@@ -280,7 +280,7 @@ end-structure
 ;
 
 
-: rdg-pareto   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a pareto distribution with alpha r1 [>0] the scale parameter and r2 [>0] the shape parameter )
+: rdg-pareto   ( F: r1 r2 -- r3 ; rdg -- = Generate a random number with a Pareto distribution with alpha r1 [>0] the scale parameter and r2 [>0] the shape parameter )
   rdg-gen-<0,1>                  \ x = rng
   fswap -1E+0 fswap f/ f**       \ z = x ^ (-1/beta)
   f*                             \ r1 * z

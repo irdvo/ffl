@@ -157,7 +157,7 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
 
 ( Special words )
 
-: hct-count    ( x hct -- u = Count the number of occurences of the cell data x in the table )
+: hct-count    ( x hct -- u = Count the number of occurrences of the cell data x in the table )
   0 -rot                     \ counter = 0
   0 swap hnt-table-bounds DO \ Do for the table
     I @

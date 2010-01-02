@@ -33,7 +33,7 @@ include ffl/config.fs
 
 cell 4 =  1 chars 1 =  AND [IF]
 
-\ Based on the algoritms published in FIPS 180-1 and Wikipedia
+\ Based on the algorithms published in FIPS 180-1 and Wikipedia
 
 include ffl/stc.fs
 
@@ -267,7 +267,7 @@ end-structure
   
   dup [ sh1.b% 2 cells - 1 chars - ] literal > IF
     r@ sh1>b sh1+pad                        \ If buffer is too full Then
-    r@ sh1-transform                        \   Pad buffer and tranform
+    r@ sh1-transform                        \   Pad buffer and transform
     r@ sh1>b sh1.b% chars erase             \   Pad next buffer
   ELSE                                      \ Else
     r@ sh1>b sh1+pad                        \   Pad buffer

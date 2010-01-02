@@ -36,7 +36,7 @@ include ffl/chs.fs
 
 ( nfe = Non-deterministic finite automata expression )
 ( The nfe module implements an expression in a non-deterministic finite      )
-( automata. An expression is a concatenation, repeation or alteration of     )
+( automata. An expression is a concatenation, repetition or alteration of     )
 ( non-deterministic finite automata states [nfs]. An not yet fully built     )
 ( expression consists of two cells on the stack: a list with the non resolved)
 ( out states and a list of [nfs] states.<br>                                 )
@@ -550,7 +550,7 @@ end-structure
     r@ nfe-current-length@         0> AND   \ .. and states in the current thread Do
   WHILE
     r@ nfe-setup-char                       \   Read a character
-    r@ nfe-step                             \   Check the current thread agains the char
+    r@ nfe-step                             \   Check the current thread against the char
     r@ nfe-switch-threads                   \   Switch the threads
   REPEAT
   rdrop
@@ -602,7 +602,7 @@ end-structure
 ;
 
 
-: nfe+dump   ( n nfs -- = Dump the expression starting from nfs, use visit nummer n for visit check [recursive] )
+: nfe+dump   ( n nfs -- = Dump the expression starting from nfs, use visit number n for visit check [recursive] )
   dup nil<> IF
     2dup nfs-visit@ <> IF         \ If start <> nil and not yet visited Then
       2dup nfs-visit!             \   Set visited
