@@ -217,7 +217,7 @@ end-structure
 ;
 
 
-: cpx+tan          ( F: r1 r2 -- r3 r4 = Calculate the trigonometric functions trangent for the complex number r1+jr2 )
+: cpx+tan          ( F: r1 r2 -- r3 r4 = Calculate the trigonometric functions tangent for the complex number r1+jr2 )
   fexp fswap fsincos                   \ u = exp(im) sin(re) cos(re) 
   frot fdup 1E+0 fswap f/              \ v = 1/u
   ftuck f+ 2E+0 f/                     \ u = (u+v)/2

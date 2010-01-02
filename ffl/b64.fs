@@ -33,7 +33,7 @@ include ffl/config.fs
 
 1 chars 1 = [IF]
 
-\ Based on the algoritms published in FIPS 180-2 and Wikipedia
+\ Based on the algorithms published in FIPS 180-2 and Wikipedia
 
 include ffl/str.fs
 

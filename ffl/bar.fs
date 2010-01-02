@@ -256,7 +256,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
     rot r@ bar-address
     
-    BEGIN                         \ Loop throught the addresses
+    BEGIN                         \ Loop through the addresses
       2dup 
       tuck c@ OR
       swap c!
@@ -304,7 +304,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
     rot r@ bar-address
     
-    BEGIN                         \ Loop throught the addresses
+    BEGIN                         \ Loop through the addresses
       2dup 
       swap invert over c@ AND
       swap c!
@@ -351,7 +351,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     tuck + 1- r@ bar-address      \ Determine end and start address and mask
     rot r@ bar-address
     
-    BEGIN                         \ Loop throught the addresses
+    BEGIN                         \ Loop through the addresses
       2dup 
       tuck c@ XOR
       swap c!
