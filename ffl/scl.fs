@@ -158,7 +158,7 @@ end-structure
 
 ( Special words )
 
-: scl-count    ( x scl -- u = Count the number of occurences of the cell data x in the list )
+: scl-count    ( x scl -- u = Count the number of occurrences of the cell data x in the list )
   0 >r                       \ count = 0
   snl-first@                 \ walk = first
   BEGIN

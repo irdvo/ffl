@@ -45,7 +45,7 @@ include ffl/hnn.fs
 ( Iterator structure )
 
 begin-structure hni%       ( -- n = Get the required space for a hash table base iterator variable )
-  field: hni>table      \ Refernce to the hash table
+  field: hni>table      \ Reference to the hash table
   field: hni>index      \ Index in the table
   field: hni>walk       \ Current node in the table
 end-structure
@@ -53,7 +53,7 @@ end-structure
 
 ( Private words )
 
-: hni-search-table ( u1 hni -- nil | u2 hnn = Search in the tabel for a node from start u, resulting in index u2 )
+: hni-search-table ( u1 hni -- nil | u2 hnn = Search in the table for a node from start u, resulting in index u2 )
   >r dup r>
   hni>table @
   hnt-table-bounds ?DO                \ end and start of table for DO; S: index

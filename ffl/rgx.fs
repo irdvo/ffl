@@ -358,7 +358,7 @@ defer rgx.parse-alternation
         rgx.zero-or-one OF        \   If the token is ? Then
           r@ nfe-zero-or-one      \     Change the expression 
           r@ rgx-scan-next        \     Move to the next token
-          false                   \     Continu scanning
+          false                   \     Continue scanning
           ENDOF
         rgx.zero-or-more OF
           r@ nfe-zero-or-more 

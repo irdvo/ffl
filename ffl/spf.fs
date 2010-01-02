@@ -138,7 +138,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
     1- s>d                           \ Convert the exponent
     swap over dabs
     <# # #s rot 0< IF [char] - ELSE [char] + THEN hold r> hold #>
-    >r r@ 2swap r> -                 \ Width -= expoinent string length, min. 0
+    >r r@ 2swap r> -                 \ Width -= exponent string length, min. 0
     
     over spf.signs AND IF            \ If sign active, then width--
       1-

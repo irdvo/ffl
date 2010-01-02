@@ -36,7 +36,7 @@ include ffl/snn.fs
 
 ( snl = Generic Single Linked List )
 ( The snl module implements a single linked list that can store variable size  )
-( nodes. It is the base module for more specialised modules, for example the   )
+( nodes. It is the base module for more specialized modules, for example the   )
 ( single linked cell list [scl] module. )
 
 
