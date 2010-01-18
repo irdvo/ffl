@@ -192,6 +192,11 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ; immediate
 
 
+' sw@ alias <w@   ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+
+' sl@ alias <l@   ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
+
+
 [DEFINED] float [IF]
 
 ( Float extension constants )

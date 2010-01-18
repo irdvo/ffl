@@ -69,6 +69,7 @@ ffl.endian c@ 0=
   constant bigendian?   ( -- flag = Check for bigendian hardware )
 
 create overrule:+field  ( -- = PFE ships with incompatible +field )
+create overrule:w@      ( -- = PFE ships with incompatible w@     )
 
 
 ( Extension words )
@@ -226,6 +227,15 @@ s" MAX-U" environment? drop constant max-ms@    ( -- ud = Maximum value of the m
     drop
   THEN
 ;
+
+
+: <w@        ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+  state @ IF
+    postpone w@    \ PFE's w@ is sign extend
+  ELSE
+    w@
+  THEN
+; immediate
 
 
 [DEFINED] floats [IF]
