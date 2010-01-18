@@ -1,0 +1,178 @@
+\ ==============================================================================
+\
+\            fwt - the fixed width types module in the ffl
+\
+\               Copyright (C) 2010  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2007-12-09 07:23:15 $ $Revision: 1.6 $
+\
+\ ==============================================================================
+
+include ffl/config.fs
+
+
+[UNDEFINED] fwt.version [IF]
+
+
+include ffl/stc.fs
+
+
+( fwt = Fixed Width Types module )
+( The fwt module implements types that have a fixed bit width. They are mainly )
+( used in interfaces. The words are defined for 32- and 64-bit forth engines.  )
+
+
+1 constant fwt.version
+
+  
+( Fixed width structure fields )
+
+[UNDEFINED] wfield: [IF]
+: wfield:    ( structure-sys "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for a word, 2 bytes, not aligned, return the field address ) 
+  2 +field
+;
+[THEN]
+
+
+[UNDEFINED] lfield [IF]
+: lfield:    ( structure-sys "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for a long word, 4 bytes, not aligned, return the field address )
+  4 +field
+;
+[THEN]
+
+
+[UNDEFINED] wfields [IF]
+: wfields:   ( structure-sys n "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for n words, not aligned, return the field address ) 
+  2* +field
+;
+[THEN]
+
+
+[UNDEFINED] lfields [IF]
+: lfields:    ( structure-sys n "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for n long words, not aligned, return the field address )
+  4 * +field
+;
+[THEN]
+
+
+( Fixed width store and fetch )
+
+[UNDEFINED] w@ [DEFINED] overrule:w@ OR [IF]
+: w@         ( w-addr -- n = Fetch a word, 16 bit, zero extend )
+  @ [ hex ] FFFF [ decimal ] AND
+;
+[THEN]
+
+
+[UNDEFINED] <w@ [IF]
+: <w@        ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+  w@ DUP [ hex ] 8000 [ decimal ] AND negate OR
+;
+[THEN]
+
+
+[UNDEFINED] w! [IF]
+bigendian? [IF]
+: w!         ( n w-addr -- = Store a word, 16 bit )
+  over 8 rshift over c!
+  char+ c!
+;
+[ELSE]
+: w!
+  over 8 rshift over char+ c!
+  c!
+;
+[THEN]
+[THEN]
+
+
+[UNDEFINED] l@ [IF]
+cell 4 = [IF]
+: l@         ( l-addr -- n = Fetch a long word, 32 bit, zero extend )
+  state @ IF
+    postpone @
+  ELSE
+    @
+  THEN
+; immediate
+[THEN]
+cell 8 = [IF]
+: l@
+  @ [ hex ] FFFFFFFF [ decimal ] AND
+;
+[THEN]
+[THEN]
+
+
+[UNDEFINED] <l@ [IF]
+cell 4 = [IF]
+: <l@        ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
+  state @ IF
+    postpone @
+  ELSE
+    @
+  THEN
+; immediate
+[THEN]
+cell 8 = [IF]
+: <l@
+  l@ DUP [ hex ] 80000000 [ decimal ] AND negate OR
+;
+[THEN]
+[THEN]
+
+
+[UNDEFINED] l! [IF]
+cell 4 = [IF]
+: l!         ( n l-addr -- = Store a long word, 32 bit )
+  state @ IF
+    postpone !
+  ELSE
+    !
+  THEN
+; immediate
+[THEN]
+cell 8 = [IF]
+bigendian? [IF]
+: l!
+  over 24 rshift over c!
+  char+
+  over 16 rshift over c!
+  char+
+  over 8  rshift over c!
+  char+
+  c!
+;
+[ELSE]
+: l!
+  2dup c!
+  char+
+  over 8  rshift over c!
+  char+
+  over 16 rshift over c!
+  char+
+  swap 24 rshift swap c!
+;
+[THEN]
+[THEN]
+[THEN]
+
+[THEN]
+
+\ ==============================================================================

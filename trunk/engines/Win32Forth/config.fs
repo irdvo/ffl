@@ -215,6 +215,9 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ; immediate
 
 
+' sw@ alias <w@    ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+
+
 ( Float extension words )
 
 0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
