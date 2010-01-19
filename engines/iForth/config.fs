@@ -2,7 +2,7 @@
 \
 \                  config - the config in the ffl
 \
-\             Copyright (C) 2005-2007  Dick van Oudheusden
+\             Copyright (C) 2005-2010  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -176,6 +176,31 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
   ELSE  
     ['] IS EXECUTE  
   THEN
+; IMMEDIATE
+
+
+: w@         ( w-addr -- n = Fetch a word, 16 bit, zero extend )
+  STATE @ IF POSTPONE 16B@ ELSE 16B@ THEN
+; IMMEDIATE
+
+: <w@        ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+  STATE @ IF POSTPONE S16B@ ELSE S16B@ THEN
+; IMMEDIATE
+
+: w!         ( n w-addr -- = Store a word, 16 bit )
+  STATE @ IF POSTPONE 16B! ELSE 16B! THEN
+; IMMEDIATE
+
+: l@         ( l-addr -- n = Fetch a long word, 32 bit, zero extend )
+  STATE @ IF POSTPONE 32B@ ELSE 32B@ THEN
+; IMMEDIATE
+
+: <l@        ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
+  STATE @ IF POSTPONE S32B@ ELSE S32B@ THEN
+; IMMEDIATE
+
+: l!         ( n l-addr -- = Store a long word, 32 bit )
+  STATE @ IF POSTPONE 32B! ELSE 32B! THEN
 ; IMMEDIATE
 
 
