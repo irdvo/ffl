@@ -1,9 +1,10 @@
-#labels Featured
+﻿#labels Featured
 
 {{{
 0.8.0
+* fwt: new module: fixed width types (2010-01-16)
 * VFXForth: config.fs/make.fs added (2009-12-21, thanks to Stephen)
-* dbm: new module: gdbm interface (2009-10-03)
+* dbm: new module: dbm interface (2009-10-03)
 * b64: new module: Base64 module (2009-09-24)
 * frc: frc+calc-gcd,frc+calc-lcm simplified (2009-09-18, thanks to Albert)
 * scf: %q for quoted string added (2009-09-02)

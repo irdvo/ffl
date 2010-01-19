@@ -23,7 +23,7 @@ The following modules are present in the Forth Foundation Library:
 || [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes || Both ||
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No || Both ||
 || [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No || 32 ||
-|| [dbm dbm] || GDBM interface module || Interface || 0.8.0 || 0.8.0 || Yes || Both ||
+|| [dbm dbm] || DBM interface module || Interface || 0.8.0 || 0.8.0 || Yes || Both ||
 || [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.6.0 || No || Both ||
 || [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
