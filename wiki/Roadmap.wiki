@@ -1,6 +1,6 @@
 ﻿#labels Featured
 
-== 0.8.0: March 2010 ==
+== 0.8.0: May 2010 ==
 Eighth delivery of the FFL library. The focus for this
 release will be on interfacing with the gtk-server.
 <br>
