@@ -13,6 +13,10 @@
 [config 1e+0] (F: -- r )<br>
 [config 2e+0] (F: -- r )<br>
 [config <=>] (n1 n2 -- n )<br>
+[config <l@] (l-addr -- n )<br>
+[fwt <l@] (l-addr -- n )<br>
+[config <w@] (w-addr -- n )<br>
+[fwt <w@] (w-addr -- n )<br>
 [enm >enum:] (enum-sys n "{{{<}}}spaces{{{>}}}name" -- enum-sys ; -- n )<br>
 [tst ?0] (x -- )<br>
 [tst ?d] (d1 d2 -- )<br>
@@ -433,24 +437,22 @@
 [dbm dbm-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- dbm )<br>
 [dbm dbm-delete] (c-addr u dbm -- flag ior )<br>
 [dbm dbm-dump] (dbm -- )<br>
+[dbm dbm-dump-freelist] (dbm -- )<br>
 [dbm dbm-exist] (c-addr u dbm -- flag ior )<br>
 [dbm dbm-fetch] (c-addr u dbm -- c-addr u ior )<br>
 [dbm dbm-first-key] (dmb -- c-addr u ior )<br>
-[dbm dbm-free] (dbm -- )<br>
+[dbm dbm-free] (car -- )<br>
 [dbm dbm-init] (dbm -- )<br>
-[dbm dbm-new] (-- dbm )<br>
+[dbm dbm-new] (n -- car )<br>
 [dbm dbm-next-key] (dbm -- c-addr u ior )<br>
 [dbm dbm-open] (c-addr u +n1 n2 dbm -- ior )<br>
-[dbm dbm-reorganize] (dbm -- ior )<br>
 [dbm dbm-store] (c-addr1 u1 c-addr2 u2 n dbm -- ior )<br>
-[dbm dbm-sync] (dbm -- ior )<br>
+[dbm dbm.clear] (-- n )<br>
+[dbm dbm.default] (-- n )<br>
 [dbm dbm.insert] (-- n )<br>
-[dbm dbm.newdb] (-- n )<br>
-[dbm dbm.reader] (-- n )<br>
+[dbm dbm.internal] (-- n )<br>
+[dbm dbm.modify] (-- n )<br>
 [dbm dbm.replace] (-- n )<br>
-[dbm dbm.sync] (-- n )<br>
-[dbm dbm.wrcreat] (-- n )<br>
-[dbm dbm.writer] (-- n )<br>
 [dci dci%] (-- n )<br>
 [dci dci-create] (dcl "{{{<}}}spaces{{{>}}}name" -- ; -- dci )<br>
 [dci dci-dump] (dci -- )<br>
@@ -962,6 +964,8 @@
 [config icompare] (c-addr1 u1 c-addr2 u2 -- n )<br>
 [config index2offset] (n1 n2 -- n3 )<br>
 [log info"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[fwt l!] (n l-addr -- )<br>
+[fwt l@] (l-addr -- n )<br>
 [lbf lbf%] (-- n )<br>
 [lbf lbf+extra!] (u -- )<br>
 [lbf lbf+extra@] (-- u )<br>
@@ -992,6 +996,8 @@
 [lbf lbf-size!] (+n lbf -- )<br>
 [lbf lbf-skip] (u1 lbf -- u2 )<br>
 [lbf lbf-tos] (lbf -- i*x true | addr true | false )<br>
+[fwt lfield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[fwt lfields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
 [log log-from-level] (n -- )<br>
 [log log-stack-depth] (n -- )<br>
 [log log-to-callback] (xt -- )<br>
@@ -1543,8 +1549,13 @@
 [tst tst-get-result] (-- u1 u2 u3 )<br>
 [tst tst-reset-tests] (-- )<br>
 [tst t{] (-- )<br>
+[fwt w!] (n w-addr -- )<br>
+[fwt w@] (w-addr -- n )<br>
 [log warning"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[fwt wfield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
+[fwt wfields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
 [xis xis%] (-- n )<br>
+[xis xis+remove-parameters] (i*x n -- )<br>
 [xis xis-(free)] (xis -- )<br>
 [xis xis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- xis )<br>
 [xis xis-free] (xis -- )<br>
