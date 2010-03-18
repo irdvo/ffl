@@ -54,20 +54,20 @@ include ffl/chs.fs
 ( {{{                                                                        )
 ( xis.error          --                                                      )
 ( xis.done           --                                                      )
-( xis.start-xml      -- c-addrn un c-addr un .. n           = Return n attribute names with their value                )
+( xis.start-xml      -- c-addr1 u1 .. c-addrn un n          = Return n attribute names with their value                )
 ( xis.comment        -- c-addr u                            = Return the comment                                       )
 ( xis.text           -- c-addr u                            = Return the normal text                                   )
-( xis.start-tag      -- c-addrn un c-addrn un .. n c-addr u = Return the tag name and n attributes with their value    )
+( xis.start-tag      -- c-addr1 u1 .. c-addrn un n c-addr u = Return the tag name and n attributes with their value    )
 ( xis.end-tag        -- c-addr u                            = Return the tag name                                      )
-( xis.empty-element  -- c-addrn un c-addrn un .. n c-addr u = Return the tag name and n attributes with their value    )
+( xis.empty-element  -- c-addr1 u1 .. c-addrn un n c-addr u = Return the tag name and n attributes with their value    )
 ( xis.cdata          -- c-addr u                            = Return the CDATA section text                            )
-( xis.proc-instr     -- c-addrn un c-addrn un .. n c-addr u = Return the target name and n attributes with their value )
+( xis.proc-instr     -- c-addr1 u1 .. c-addrn un n c-addr u = Return the target name and n attributes with their value )
 ( xis.internal-dtd   -- c-addr1 u1 c-addr2 u2               = Return the DTD name c-addr2 u2 and markup c-addr1 u1     )
 ( xis.public-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 = Return the DTD name, the markup, the system-id and public-id )
-( xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u4    = Return the DTD name, the markup and the system-id        )
+( xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3    = Return the DTD name, the markup and the system-id        )
 ( }}}                                                                        )
 
-1 constant xis.version
+2 constant xis.version
 
 
 ( private constants )
@@ -599,6 +599,13 @@ end-structure
 ;
 
 
+: xis+remove-attributes  ( c-addrn un c-addr1 u1 n -- = Remove the attributes parameters )
+  0 ?DO
+    2drop 2drop
+  LOOP
+;
+
+
 ( xml reader word )
 
 : xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source [see xml reader constants] )
@@ -616,6 +623,25 @@ end-structure
     drop 2drop
   REPEAT
   rdrop
+;
+
+
+: xis+remove-parameters  ( i*x n -- = Remove the various parameters of a xml token after calling xis-read [see xml reader constants] )
+  CASE
+    xis.error         OF                              ENDOF
+    xis.done          OF                              ENDOF
+    xis.start-xml     OF        xis+remove-attributes ENDOF
+    xis.comment       OF  2drop                       ENDOF
+    xis.text          OF  2drop                       ENDOF
+    xis.start-tag     OF  2drop xis+remove-attributes ENDOF
+    xis.end-tag       OF  2drop                       ENDOF
+    xis.empty-element OF  2drop xis+remove-attributes ENDOF
+    xis.cdata         OF  2drop                       ENDOF
+    xis.proc-instr    OF  2drop xis+remove-attributes ENDOF
+    xis.internal-dtd  OF  2drop 2drop                 ENDOF
+    xis.public-dtd    OF  2drop 2drop 2drop 2drop     ENDOF
+    xis.system-dtd    OF  2drop 2drop 2drop           ENDOF
+  ENDCASE
 ;
 
 [THEN]

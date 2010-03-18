@@ -291,4 +291,52 @@ xis.file close-file throw
 
 t{ xis2 xis-free }t
 
+
+\ Reading from a file
+
+t{ xis-new value xis3 }t
+
+t{ s" test.xml" r/o open-file throw to xis.file }t
+
+t{ xis.file ' xis-test-reader xis3 xis-set-reader }t
+
+t{ true xis3 xis-strip!  }t
+
+t{ xis3 xis-read xis+remove-parameters }t
+
+t{ xis3 xis-read xis+remove-parameters }t
+
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis.done      ?s }t
+
+xis.file close-file throw
+
+t{ xis3 xis-free }t
+
 \ ==============================================================================

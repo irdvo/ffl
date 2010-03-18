@@ -1,4 +1,6 @@
 0.8.0
+* xis: new word: xis+remove-parameters (2010-03-18)
+* fwt: new module: fixed width types (2010-01-16)
 * VFXForth: config.fs/make.fs added (2009-12-21, thanks to Stephen)
 * dbm: new module: gdbm interface (2009-10-03)
 * b64: new module: Base64 module (2009-09-24)
