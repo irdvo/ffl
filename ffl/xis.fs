@@ -599,7 +599,7 @@ end-structure
 ;
 
 
-: xis+remove-attributes  ( c-addrn un c-addr1 u1 n -- = Remove the attributes parameters )
+: xis+remove-attribute-parameters  ( c-addr1 u1 .. c-addrn un n -- = Remove the attributes parameters )
   0 ?DO
     2drop 2drop
   LOOP
@@ -608,7 +608,7 @@ end-structure
 
 ( xml reader word )
 
-: xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source [see xml reader constants] )
+: xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source &lb;see xml reader constants&rb; )
   >r
   r@ tis-reduce                   \ Keep the stream compact
   BEGIN
@@ -626,21 +626,21 @@ end-structure
 ;
 
 
-: xis+remove-parameters  ( i*x n -- = Remove the various parameters of a xml token after calling xis-read [see xml reader constants] )
+: xis+remove-read-parameters  ( i*x n -- = Remove the various parameters of a xml token after calling xis-read &lb;see xml reader constants&rb; )
   CASE
-    xis.error         OF                              ENDOF
-    xis.done          OF                              ENDOF
-    xis.start-xml     OF        xis+remove-attributes ENDOF
-    xis.comment       OF  2drop                       ENDOF
-    xis.text          OF  2drop                       ENDOF
-    xis.start-tag     OF  2drop xis+remove-attributes ENDOF
-    xis.end-tag       OF  2drop                       ENDOF
-    xis.empty-element OF  2drop xis+remove-attributes ENDOF
-    xis.cdata         OF  2drop                       ENDOF
-    xis.proc-instr    OF  2drop xis+remove-attributes ENDOF
-    xis.internal-dtd  OF  2drop 2drop                 ENDOF
-    xis.public-dtd    OF  2drop 2drop 2drop 2drop     ENDOF
-    xis.system-dtd    OF  2drop 2drop 2drop           ENDOF
+    xis.error         OF                                        ENDOF
+    xis.done          OF                                        ENDOF
+    xis.start-xml     OF        xis+remove-attribute-parameters ENDOF
+    xis.comment       OF  2drop                                 ENDOF
+    xis.text          OF  2drop                                 ENDOF
+    xis.start-tag     OF  2drop xis+remove-attribute-parameters ENDOF
+    xis.end-tag       OF  2drop                                 ENDOF
+    xis.empty-element OF  2drop xis+remove-attribute-parameters ENDOF
+    xis.cdata         OF  2drop                                 ENDOF
+    xis.proc-instr    OF  2drop xis+remove-attribute-parameters ENDOF
+    xis.internal-dtd  OF  2drop 2drop                           ENDOF
+    xis.public-dtd    OF  2drop 2drop 2drop 2drop               ENDOF
+    xis.system-dtd    OF  2drop 2drop 2drop                     ENDOF
   ENDCASE
 ;
 

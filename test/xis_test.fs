@@ -302,37 +302,37 @@ t{ xis.file ' xis-test-reader xis3 xis-set-reader }t
 
 t{ true xis3 xis-strip!  }t
 
-t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
 
-t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
 
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
-t{ xis3 xis-read xis+remove-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
+t{ xis3 xis-read xis+remove-read-parameters }t
 t{ xis3 xis-read xis.done      ?s }t
 
 xis.file close-file throw
