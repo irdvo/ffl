@@ -1555,7 +1555,7 @@
 [fwt wfield:] (structure-sys "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
 [fwt wfields:] (structure-sys n "{{{<}}}spaces{{{>}}}name" -- structure-sys ; addr1 -- addr2 )<br>
 [xis xis%] (-- n )<br>
-[xis xis+remove-parameters] (i*x n -- )<br>
+[xis xis+remove-read-parameters] (i*x n -- )<br>
 [xis xis-(free)] (xis -- )<br>
 [xis xis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- xis )<br>
 [xis xis-free] (xis -- )<br>

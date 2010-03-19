@@ -88,9 +88,9 @@ xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3    = Return the DTD name,
  Set the flag indicating the stripping of leaading and trailing whitespace in normal text
 ==== xml reader word ====
 *xis-read* ( xis -- i*x n )
- Read the next xml token n with various parameters from the source [see xml reader constants]
-*xis+remove-parameters* ( i*x n -- )
- Remove the various parameters of a xml token after calling xis-read [see xml reader constants]
+ Read the next xml token n with various parameters from the source (see xml reader constants)
+*xis+remove-read-parameters* ( i*x n -- )
+ Remove the various parameters of a xml token after calling xis-read (see xml reader constants)
 === Examples ===
 {{{
 include ffl/xis.fs
