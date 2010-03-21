@@ -559,6 +559,7 @@ end-structure
   rdrop
 ;
 
+
 : xis-read-token   ( xis -- i*x n = Read the next xml token )
   >r
   
@@ -606,6 +607,25 @@ end-structure
 ;
 
 
+: xis+?type ( c-addr u - = Print the string with zero length check )
+  dup IF
+    type
+  ELSE
+    2drop
+    ." <empty>"
+  THEN
+;
+
+
+: xis+print-attributes ( c-addr1 u1 .. c-addrn un n  -- Print all attributes )
+  0 ?DO                                 \ Do for all attributes
+    2swap
+    ."  Attribute: " type               \   Print attribute name
+    ."  Value: " xis+?type cr           \   Print attribute value
+  LOOP
+;
+
+
 ( xml reader word )
 
 : xis-read ( xis -- i*x n = Read the next xml token n with various parameters from the source &lb;see xml reader constants&rb; )
@@ -643,6 +663,26 @@ end-structure
     xis.system-dtd    OF  2drop 2drop 2drop                     ENDOF
   ENDCASE
 ;
+
+
+: xis+dump-read-parameters  ( i*x n -- = Dump the various parameters of a xml token after calling xis-read &lb;see xml reader constants&rb; )
+  CASE
+    xis.error         OF ." XML syntax error" cr                                                                              ENDOF
+    xis.done          OF ." XML processing done" cr                                                                           ENDOF
+    xis.start-xml     OF ." Start XML document:" cr xis+print-attributes                                                      ENDOF
+    xis.comment       OF ." Comment: " type cr                                                                                ENDOF
+    xis.text          OF ." Text: " type cr                                                                                   ENDOF
+    xis.start-tag     OF ." Start tag: " type cr xis+print-attributes                                                         ENDOF
+    xis.end-tag       OF ." End tag: " type cr                                                                                ENDOF
+    xis.empty-element OF ." Empty element: " type cr xis+print-attributes                                                     ENDOF
+    xis.cdata         OF ." CDATA section: " type cr                                                                          ENDOF
+    xis.proc-instr    OF ." Proc. Instr.: " type cr xis+print-attributes                                                      ENDOF
+    xis.internal-dtd  OF ." Internal DTD: " type ."  Markup: " type cr                                                        ENDOF
+    xis.public-dtd    OF ." Public DTD: " type ."  Markup: " xis+?type ."  SystemID: " xis+?type ."  PublicID: " xis+?type cr ENDOF
+    xis.system-dtd    OF ." System DTD: " type ."  Markup: " xis+?type ."  SystemID: " xis+?type cr                           ENDOF
+  ENDCASE
+;
+
 
 [THEN]
 
