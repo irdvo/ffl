@@ -33,7 +33,7 @@ rgx-create rgx1
 \ Compile a regular expression and check the result
 
 s" ((a*)b)*" rgx1 rgx-compile [IF] 
-  .( Expression succesfull compiled) cr
+  .( Expression successful compiled) cr
 [ELSE]
   .( Compilation failed on position:) . cr
 [THEN]
@@ -55,7 +55,7 @@ rgx-new value rgx2
 \ Compile a regular expression for matching a float number
 
 s" [-+\s]?\d+(\.\d+)?" rgx2 rgx-compile [IF]
-  .( Expression succesfull compiled) cr
+  .( Expression successful compiled) cr
 [ELSE]
   .( Compilation failed on position:) . cr
 [THEN]
