@@ -2,7 +2,7 @@
 \
 \              tos - the text output stream module in the ffl
 \
-\               Copyright (C) 2005-2006  Dick van Oudheusden
+\               Copyright (C) 2005-2010  Dick van Oudheusden
 \  
 \ This library is free software; you can redistribute it and/or
 \ modify it under the terms of the GNU General Public
@@ -47,7 +47,7 @@ include ffl/msc.fs
 (  {{{Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success}}} )
 
 
-3 constant tos.version
+4 constant tos.version
 
 
 ( Output stream structure )
@@ -239,7 +239,7 @@ end-structure
 
 
 [DEFINED] represent [IF]
-: tos-write-float   ( r tos -- = Write the float r to the stream, using PAD and PRECISION )
+: tos-write-float   ( r tos -- = Write the float r to the stream in notation: [-]0.digitsE[-]digits, using PAD and PRECISION )
   >r
   r@ tos-sync
   r@ str-length@ precision + 7 + r@ str-size!
@@ -256,6 +256,36 @@ end-structure
     s" !err!"
   THEN
   r> str-append-string
+;
+
+: tos-write-fixed-point  ( r tos -- = Write the float r to the stream in fixed-point notation: [-]digits.digits0, using PAD and PRECISION )
+  >r
+  r@ tos-sync
+  precision 80 min                                       \ Limit precision
+  pad over represent IF
+    IF [char] - r@ str-append-char THEN                  \ Add the sign
+    dup 0<= IF                                           \ If exponent is negative
+      abs
+      2dup + 1+ 1+ r@ str-length@ + r@ str-size!         \   Insure the size for the float
+      s" 0." r@ str-append-string                        \   Start with 0.
+      [char] 0 swap r@ str-append-chars                  \   Append exponent zero's
+      pad swap r@ str-append-string                      \   Append the string
+    ELSE 2dup < IF                                       \ ElseIf exponent is smaller than the precision
+      over 1+ r@ str-length@ + r@ str-size!              \   Insure the size for the float
+      over pad swap r@ str-append-string                 \   Append the float
+      swap - [char] 0 swap r@ str-append-chars           \   Fill out with zero's
+      [char] .  r@ str-append-char                       \   Add the dot
+    ELSE                                                 \ Else
+      dup 1+ r@ str-length@ + r@ str-size!               \   Insure the size for the float
+      pad over r@ str-append-string                      \   Append the digits for the exponent
+      [char] . r@ str-append-char                        \   Add the dot
+      pad -rot /string r@ str-append-string              \   Append the remaining
+    THEN THEN
+  ELSE
+    drop 2drop
+    s" !err!" r@ str-append-string
+  THEN
+  rdrop
 ;
 [THEN]
 
