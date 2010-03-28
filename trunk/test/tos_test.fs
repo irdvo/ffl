@@ -82,6 +82,40 @@ t{ -14E-3 t4 tos-write-float }t
 t{ bl 10 t4 tos-align-right  }t
 t{ t4 str-get s" -712 -100  -0.560E4 -0.140E-1" ?str }t
 
+4 to precision
+
+t{ t4 tos-rewrite }t
+t{ 57.21E-3 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E-2 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E-1 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E+0 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E+1 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E+2 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ 57.21E+3 t4 tos-write-fixed-point }t
+t{ t4 str-get s" 0.05721 0.5721 5.721 57.21 572.1 5721. 57210." ?str }t
+
+t{ t4 tos-rewrite }t
+t{ -57.21E-3 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E-2 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E-1 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E+0 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E+1 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E+2 t4 tos-write-fixed-point }t
+t{ bl t4 tos-write-char }t
+t{ -57.21E+3 t4 tos-write-fixed-point }t
+t{ t4 str-get s" -0.05721 -0.5721 -5.721 -57.21 -572.1 -5721. -57210." ?str }t
+
 save-precision to precision
 
 variable p1
