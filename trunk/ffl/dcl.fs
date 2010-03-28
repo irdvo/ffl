@@ -156,7 +156,7 @@ end-structure
 
 ( Special words )
 
-: dcl-count    ( x dcl -- u = Count the number of occurences of the cell data x in the list )
+: dcl-count    ( x dcl -- u = Count the number of occurrences of the cell data x in the list )
   0 >r                       \ count = 0
   dnl-first@                 \ walk = first
   BEGIN
@@ -228,7 +228,7 @@ end-structure
 ;
 
 
-: dcl-remove   ( x dcl -- flag = Remove the first occurence of the cell data x from the list, return success )
+: dcl-remove   ( x dcl -- flag = Remove the first occurrence of the cell data x from the list, return success )
   tuck dcl-search nip        \ Search the cell data
   nil<>? IF                  \ If dcn <> nil then
     dup rot dnl-remove       \  Remove from list

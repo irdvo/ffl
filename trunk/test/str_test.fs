@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\          chr_test - the test words for the chr module in ffl
+\          str_test - the test words for the str module in ffl
 \
 \             Copyright (C) 2005-2007  Dick van Oudheusden
 \  
