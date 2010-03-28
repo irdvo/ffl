@@ -81,7 +81,7 @@ The following modules are present in the Forth Foundation Library:
 || [stt stt] || Stringtable words || Development || 0.6.0 || 0.7.0 || Yes || Both ||
 || [tis tis] || Text input stream || Compound || 0.2.0 || 0.6.0 || Yes || Both ||
 || [tmr tmr] || Interval timer || Interface || 0.4.0 || 0.4.0 || No || Both ||
-|| [tos tos] || Text output stream || Compound || 0.2.0 || 0.6.0 || No || Both ||
+|| [tos tos] || Text output stream || Compound || 0.2.0 || 0.8.0 || No || Both ||
 || [trm trm] || Terminal escape sequences outputter || DataType || 0.4.0 || 0.4.0 || No || Both ||
 || [tst tst] || Unit test words || Development || 0.1.0 || 0.6.0 || No || Both ||
 || [xis xis] || XML/HTML reader || Interface || 0.6.0 || 0.8.0 || Yes || Both ||

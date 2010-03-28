@@ -1471,6 +1471,7 @@
 [tos tos-write-char] (char tos -- )<br>
 [tos tos-write-chars] (char u tos -- )<br>
 [tos tos-write-double] (d tos -- )<br>
+[tos tos-write-fixed-point] (r tos -- )<br>
 [tos tos-write-float] (r tos -- )<br>
 [tos tos-write-line] (tos -- )<br>
 [tos tos-write-number] (n tos -- )<br>

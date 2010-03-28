@@ -1,17 +1,17 @@
 #summary Text output stream
 === Module Description ===
-The tos module implements a text output stream. It extends the str module,
-so all words from the str module, can be used on a tos variable.
-The data written to the stream is always appended. Alignment is normally
-done for the last written data. By using the start alignment pointers
-words the start of the alignment can be changed. The end of the alignment
-is always the end of the stream. The message catalog can be used for
-localisation of strings
-{{{<}}}pre{{{>}}}
-  Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success
-{{{<}}}/pre{{{>}}}
 
 === Module Words ===
+==== The tos module implements a text output stream. It extends the str module, ====
+==== so all words from the str module, can be used on a tos variable. ====
+==== The data written to the stream is always appended. Alignment is normally ====
+==== done for the last written data. By using the start alignment pointers ====
+==== words the start of the alignment can be changed. The end of the alignment ====
+==== is always the end of the stream. The message catalog can be used for ====
+==== localization of strings. Note: the numerical words in this module use the ====
+==== the numeric output string. The writer can be used to direct the result of ====
+==== the formatter to a writer word by calling tos-flush: ====
+==== {{{Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success}}} ====
 ==== Output stream structure ====
 *tos%* ( -- n )
  Get the required space for a tos variable
@@ -54,11 +54,15 @@ localisation of strings
 *tos-write-string* ( c-addr u tos -- )
  Write the string c-addr u to the stream, using the message catalog if present
 *tos-write-line* ( tos -- )
- Write end-of-line from config to the stream, not alignable
+ Write end-of-line from config to the stream, not align able
 *tos-write-number* ( n tos -- )
  Write the number n in the current base to the stream
 *tos-write-double* ( d tos -- )
  Write the double d in the current base to the stream
+*tos-write-float* ( r tos -- )
+ Write the float r to the stream in notation: [-]0.digitsE[-]digits, using PAD and PRECISION
+*tos-write-fixed-point* ( r tos -- )
+ Write the float r to the stream in fixed-point notation: [-]digits.digits0, using PAD and PRECISION
 ==== Alignment words ====
 *tos-align* ( char u1 u2 tos -- )
  Align the previous written data with padding character char, u1 trailing chars and u2 leading chars

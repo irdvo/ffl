@@ -2,6 +2,7 @@
 
 {{{
 0.8.0
+* tos: new word: tos-write-fixed-point (2010-03-28)
 * xis: new word: xis+dump-read-parameters (2010-03-21)
 * xis: new word: xis+remove-read-parameters (2010-03-18)
 * fwt: new module: fixed width types (2010-01-16)
