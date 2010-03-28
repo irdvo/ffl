@@ -51,26 +51,6 @@ xis.file  ' file-reader   xis1 xis-set-reader     \ Use the xml reader with a fi
 
 true xis1 xis-strip!                              \ Strip leading and trailing whitespace in the text
 
-
-: ?type ( c-addr u - = Print the string with zero length check )
-  dup IF
-    type
-  ELSE
-    2drop
-    ." <empty>"
-  THEN
-;
-
-
-: print-attributes ( c-addrn un c-addr un .. n  -- Print all attributes )
-  0 ?DO                                 \ Do for all attributes
-    2swap
-    ."  Attribute: " type               \   Print attribute name
-    ."  Value: " ?type                  \   Print attribute value
-  LOOP
-;
-
-
 : file-parse  ( -- = Parse the xml file )
   BEGIN
     xis1 xis-read                           \ Read the next token from the file
