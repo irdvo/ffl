@@ -1,0 +1,31 @@
+#summary Real life examples using the FFL library
+
+
+== Introduction ==
+
+A number of modules are accompanied by small examples. These examples focus
+mainly on the module itself. The examples on this page use several modules
+and are more 'real life' examples.
+
+
+== trk2rte ==
+
+The purpose of the [http://ffl.googlecode.com/svn/trunk/examples/trk2rte.fs trk2rte] 
+example is to accept multiple GPX files with track information, optional optimize
+these tracks to reduce the number of points in the track and then export all tracks
+as waypoints and routes in one GPX file or in a OZI waypoint and OZI route file.
+
+For reducing the number of points the trk2rte example uses the angle method:
+if the bearing of the next segment in comparison with the bearing of the current
+segment is smaller than the threshold, the intermediate track point is removed.
+
+The trk2rte example uses the following modules:
+* [snl Generic Single Linked List]
+* [str Dynamic Strings]
+* [tos Text Formatter]
+* [xis XML Parser]
+* [xos XML Writer]
+
+trk2rte requires ffl 0.8.0
+
+[http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
