@@ -20,12 +20,12 @@ if the bearing of the next segment in comparison with the bearing of the current
 segment is smaller than the threshold, the intermediate track point is removed.
 
 The trk2rte example uses the following modules:
-* [snl Generic Single Linked List]
-* [str Dynamic Strings]
-* [tos Text Formatter]
-* [xis XML Parser]
-* [xos XML Writer]
+ * [snl snl - Generic Single Linked List]
+ * [str str - Dynamic Strings]
+ * [tos tos - Text Formatter]
+ * [xis xis - XML Parser]
+ * [xos xos - XML Writer]
 
-trk2rte requires ffl 0.8.0
+trk2rte requires FFL version 0.8.0.
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
