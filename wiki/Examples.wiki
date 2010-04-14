@@ -1,4 +1,5 @@
 #summary Real life examples using the FFL library
+#labels Featured
 
 
 == Introduction ==
