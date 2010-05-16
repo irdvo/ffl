@@ -30,7 +30,7 @@ include ffl/config.fs
 [UNDEFINED] crc.version [IF]
 
 
-cell 4 = [IF]
+cell 4 >= [IF]
 
 
 include ffl/stc.fs
@@ -204,7 +204,7 @@ decimal
     over I c@                     
     xor 255 and cells
     over  crc>table @  + @   
-    rot 8 rshift xor
+    rot u>l 8 rshift xor
     swap
   LOOP
   crc>value !
@@ -212,7 +212,7 @@ decimal
 
 
 : crc-finish   ( crc -- u = Finish the calculation, return the CRC32 result )
-  crc>value @ invert
+  crc>value @ invert u>l
 ;
 
 
@@ -225,6 +225,7 @@ decimal
     1 swap
     lshift or
   LOOP
+  u>l
 ;
 
 
@@ -234,14 +235,14 @@ decimal
     I c@
     over   xor 255 and
     cells  crc.table  + @    \  use default table
-    swap 8 rshift xor
+    swap u>l 8 rshift xor
   LOOP
-  invert
+  invert u>l
 ;
 
          
 [ELSE]
-.( Warning: crc requires 4 byte cells ) cr
+.( Warning: crc requires at least 4 byte cells ) cr
 [THEN]
 
 
