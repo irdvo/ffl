@@ -74,7 +74,18 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
 
-\ No usable command line arguments in gforth
+\ Command line arguments in gforth
+argc @ 1- constant #args  ( -- n = Get the number of command line arguments )
+
+0 argc !            \ tell gforth not to process any more arguments
+
+: arg@  ( n -- c-addr u = Get the nth command line argument )
+  dup #args u< IF
+    1+ cells argv @ + @ cstring>sstring
+  ELSE
+    drop 0 0 
+  THEN
+;
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
@@ -190,6 +201,11 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 : r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
   postpone 2r@ postpone drop
 ; immediate
+
+
+' sw@ alias <w@   ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+
+' sl@ alias <l@   ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
 
 
 [DEFINED] float [IF]
