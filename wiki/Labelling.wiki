@@ -24,3 +24,6 @@ FFL is labelled as follows in accordance with the ANS standard:
  * Requiring the Programming-Tools word set.
  * Requiring names from the Programming-Tools Extensions word set.
  * Requiring the String word set.
+ 
+ [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
+ 
