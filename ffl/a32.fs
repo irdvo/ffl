@@ -31,7 +31,7 @@ include ffl/config.fs
 [UNDEFINED] a32.version [IF]
 
 
-cell 4 =  1 chars 1 =  AND [IF]
+cell 4 >=  1 chars 1 =  AND [IF]
 
 include ffl/stc.fs
 
@@ -46,7 +46,7 @@ include ffl/stc.fs
 ( Private constants )
 
 65521 constant a32.base     ( -- u = Adler32 base )
-5552  constant a32.nmax     ( -- n = Adler32 nmax )
+2776  constant a32.nmax     ( -- n = Adler32 nmax )
 hex
 FFFF  constant a32.mask     ( -- u = 16 bit mask )
 decimal
@@ -178,7 +178,7 @@ end-structure
 ;
 
 [ELSE]
-.( Warning: a32 requires 4 byte cells and 1 byte chars ) cr
+.( Warning: a32 requires at least 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]

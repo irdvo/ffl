@@ -75,6 +75,16 @@ t{ ad2 a32-length@ 1000000 ?s }t
 
 t{ ad2 ad1 a32^combine hex CE9E87F1 ?u decimal }t
 
+t{ ad2 a32-reset }t
+
+10000 chars allocate throw value a32-buf    \ 10000 times highest byte 
+a32-buf 10000 255 fill
+
+t{ a32-buf 10000 ad2 a32-update }t
+t{ ad2 a32-finish hex B623EB2B ?u decimal }t
+
+a32-buf free throw
+
 t{ ad2 a32-free }t
 
 [THEN]
