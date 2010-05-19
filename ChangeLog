@@ -1,4 +1,5 @@
 0.8.0
+* gmo: 64bit ready (2010-05-19)
 * a32: bug fix and 64bit ready (2010-05-18)
 * crc: 64bit ready (2010-05-16)
 * gforth: support for command line arguments (2010-05-16, thanks to Josh)
