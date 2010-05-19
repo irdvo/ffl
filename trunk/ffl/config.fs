@@ -203,18 +203,12 @@ argc @ 1- constant #args  ( -- n = Get the number of command line arguments )
 ; immediate
 
 
+[DEFINED] sw@ [IF]
 ' sw@ alias <w@   ( w-addr -- n = Fetch a word, 16 bit, sign extend )
+[THEN]
 
+[DEFINED] sl@ [IF]
 ' sl@ alias <l@   ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
-
-
-cell 4 > [IF]
-: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
-  [ hex ] FFFFFFFF [ decimal ] AND
-;
-[ELSE]
-: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
-; immediate
 [THEN]
 
 

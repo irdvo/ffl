@@ -30,10 +30,11 @@ include ffl/config.fs
 
 [UNDEFINED] gmo.version [IF]
 
-cell 4 =  1 chars 1 =  AND [IF]
+cell 4 >=  1 chars 1 =  AND [IF]
 
 include ffl/msc.fs
 include ffl/str.fs
+include ffl/fwt.fs
 
 
 ( gmo = Gettexts mo-file import )
@@ -48,16 +49,16 @@ include ffl/str.fs
 ( Private structures )
 
 begin-structure gmo%hdr%
-  field:    gmo>hdr>magic         \ Magic number 
-  field:    gmo>hdr>version       \ File version
-  field:    gmo>hdr>number        \ Number of entries
-  field:    gmo>hdr>msg-off       \ Offset for first message
-  field:    gmo>hdr>trn-off       \ Offset for first translation
+  lfield:   gmo>hdr>magic         \ Magic number 
+  lfield:   gmo>hdr>version       \ File version
+  lfield:   gmo>hdr>number        \ Number of entries
+  lfield:   gmo>hdr>msg-off       \ Offset for first message
+  lfield:   gmo>hdr>trn-off       \ Offset for first translation
 end-structure
  
 begin-structure gmo%pair%
-  field:    gmo>pair>len          \ Message length
-  field:    gmo>pair>off          \ Message offset
+  lfield:   gmo>pair>len          \ Message length
+  lfield:   gmo>pair>off          \ Message offset
 end-structure
 
 begin-structure gmo%
@@ -84,11 +85,11 @@ end-structure
   dup  gmo>msgs nil!
   dup  gmo>trns nil!
   
-  dup  gmo>hdr>magic   0!
-  dup  gmo>hdr>version 0!
-  dup  gmo>hdr>number  0!
-  dup  gmo>hdr>msg-off 0!
-  dup  gmo>hdr>trn-off 0!
+  0 over gmo>hdr>magic   l!
+  0 over gmo>hdr>version l!
+  0 over gmo>hdr>number  l!
+  0 over gmo>hdr>msg-off l!
+  0 over gmo>hdr>trn-off l!
   
   str-new 
   256 over str-size!              \ Start with reasonable size
@@ -124,19 +125,19 @@ end-structure
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>magic @ [ hex ] 950412de [ decimal ] <> exp-wrong-file-type AND
+    r@ gmo>hdr>magic l@ [ hex ] 950412DE [ decimal ] <> exp-wrong-file-type AND
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>version @ 0 <> exp-wrong-file-version AND
+    r@ gmo>hdr>version l@ 0 <> exp-wrong-file-version AND
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>msg-off @ 0  r@ gmo>file @  reposition-file
+    r@ gmo>hdr>msg-off l@ 0  r@ gmo>file @  reposition-file
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>number @ gmo%pair% *
+    r@ gmo>hdr>number l@ gmo%pair% *
     
     dup allocate throw
     dup r@ gmo>msgs !
@@ -147,11 +148,11 @@ end-structure
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>trn-off @ 0  r@ gmo>file @  reposition-file
+    r@ gmo>hdr>trn-off l@ 0  r@ gmo>file @  reposition-file
   THEN
   
   ?dup 0= IF
-    r@ gmo>hdr>number @ gmo%pair% *
+    r@ gmo>hdr>number l@ gmo%pair% *
     
     dup allocate throw
     dup r@ gmo>trns !
@@ -166,14 +167,14 @@ end-structure
 
 : gmo-read-msg    ( pair str fileid -- 0 | ior = Read one message from the mo-file into the string )
   rot 
-  dup gmo>pair>len @ >r                     \ Save length of message
+  dup gmo>pair>len l@ >r                    \ Save length of message
   
   r@ 0= IF                                  \ If length = 0 Then
     2drop
     str-clear                               \   Clear string and okee
     0
   ELSE                                      \ Else move the file pointer to the offset
-    gmo>pair>off @  over  0 swap  reposition-file ?dup IF
+    gmo>pair>off l@  over  0 swap  reposition-file ?dup IF
       nip nip                               \   No success, return ior
     ELSE
       over  r@  swap  str-size!             \ Else insure size of string and read the message
@@ -200,7 +201,7 @@ end-structure
   
   r@ gmo>trns @                   \ Translation pointer
   r@ gmo>msgs @                   \ Message pointer
-  r@ gmo>hdr>number @             \ count
+  r@ gmo>hdr>number l@            \ count
   0                               \ ior
   BEGIN
     2dup 0= swap 0> AND           \ While ior=0 AND count > 0 Do
@@ -244,7 +245,7 @@ end-structure
 ;
 
 [ELSE]
-.( Warning: gmo requires 4 byte cells and 1 byte chars ) cr
+.( Warning: gmo requires at least 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]

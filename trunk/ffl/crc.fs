@@ -34,6 +34,7 @@ cell 4 >= [IF]
 
 
 include ffl/stc.fs
+include ffl/fwt.fs
 
 
 ( crc = 32-bit Cyclic Redundancy Check )
