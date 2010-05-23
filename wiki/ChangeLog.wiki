@@ -2,6 +2,7 @@
 
 {{{
 0.8.0
+* sh1: 64bit ready (2010-05-23)
 * gmo: 64bit ready (2010-05-19)
 * a32: bug fix and 64bit ready (2010-05-18)
 * crc: 64bit ready (2010-05-16)
