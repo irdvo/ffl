@@ -31,12 +31,12 @@ include ffl/config.fs
 [UNDEFINED] sh1.version [IF]
 
 
-cell 4 =  1 chars 1 =  AND [IF]
+cell 4 >=  1 chars 1 =  AND [IF]
 
 \ Based on the algorithms published in FIPS 180-1 and Wikipedia
 
 include ffl/stc.fs
-
+include ffl/fwt.fs
 
 ( sh1 = SHA-1 module )
 ( The sh1 module implements the SHA-1 algorithm.                             )
@@ -47,9 +47,9 @@ include ffl/stc.fs
 
 ( Private constants )
 
-80       constant sh1.w%    \ Size of work buffer in cells
+80       constant sh1.w%    \ Size of work buffer in longs 
 
-16 cells char/
+16 #bytes/long * char/
          constant sh1.b%    \ Size of input buffer in chars
          
 hex
@@ -63,13 +63,13 @@ decimal
 ( SHA-1 structure )
 
 begin-structure sh1%       ( -- n = Get the required space for a sha1 variable )
-  field:   sh1>h0
-  field:   sh1>h1
-  field:   sh1>h2
-  field:   sh1>h3
-  field:   sh1>h4
+  lfield:   sh1>h0
+  lfield:   sh1>h1
+  lfield:   sh1>h2
+  lfield:   sh1>h3
+  lfield:   sh1>h4
   sh1.w%
-  fields:  sh1>w
+  lfields: sh1>w
   sh1.b%
   cfields: sh1>b             \ input buffer with data
   field:   sh1>length        \ total length of processed data
@@ -80,11 +80,11 @@ end-structure
 
 : sh1-init         ( sh1 -- = Initialise the sh1 )
   [ hex ]
-  67452301 over sh1>h0 !
-  EFCDAB89 over sh1>h1 !
-  98BADCFE over sh1>h2 !
-  10325476 over sh1>h3 !
-  C3D2E1F0 over sh1>h4 !
+  67452301 over sh1>h0 l!
+  EFCDAB89 over sh1>h1 l!
+  98BADCFE over sh1>h2 l!
+  10325476 over sh1>h3 l!
+  C3D2E1F0 over sh1>h4 l!
   [ decimal ]
   
   sh1>length 0!
@@ -111,10 +111,10 @@ end-structure
 [UNDEFINED] sha! [IF]
   bigendian? [IF]
 : sha!             ( x addr -- = Store cell on address, SHA1 order )
-  postpone !
+  postpone l!
 ; immediate
 : sha@             ( addr -- x = Fetch cell on address, SHA1 order )
-  postpone @
+  postpone l@
 ; immediate
   [ELSE]
 : sha!
@@ -135,16 +135,17 @@ end-structure
 
 : sh1-w-bounds     ( u1 u2 sh1 -- a-addr1 a-addr2 = Bounds work buffer a-addr2..a-addr1 from offsets u2..u1 )
   sh1>w >r
-  swap cells r@ + 
-  swap cells r> +
+  swap #bytes/long * r@ + 
+  swap #bytes/long * r> +
 ;
 
 
+  
 : sh1+rotate       ( e d c b a f k w -- d c b a t = Rotate the sha-1 state )
-  + +                        \ t = f + k + w
-  over 5 lroll +             \ t += a lroll 5
-  >r swap 30 lroll swap      \ b lroll 30
-  4 roll r> +                \ rotate the state t += e
+  + +                         \ t = f + k + w
+  over u>l 5 llroll  +        \ t += a lroll 5
+  >r swap u>l 30 llroll swap  \ b lroll 30
+  4 roll r> +                 \ rotate the state t += e
 ;
 
 
@@ -152,9 +153,9 @@ end-structure
   2dup sh1>length @ sh1.b% mod    \ index = sh1>length mod buf-size
   tuck + sh1.b% >= >r >r          \ full  = (index + str-len >= buf-size )
   swap sh1.b% r@ - min            \ copy-len = min(buf-size -- index, str-len)
-  2dup swap sh1>length +!              \ sh1>length += copy-len
+  2dup swap sh1>length +!         \ sh1>length += copy-len
   r> swap >r
-  chars swap sh1>b + r@ cmove          \ copy(str->buf,copy-len)
+  chars swap sh1>b + r@ cmove     \ copy(str->buf,copy-len)
   r> r>
 ;
 
@@ -164,41 +165,41 @@ end-structure
   
   r@ sh1>b
   16 0 r@ sh1-w-bounds DO       \ Move chunk in work buffer
-    dup sha@ I !
-    cell+
-  cell +LOOP
+    dup sha@ I l!
+    #bytes/long +
+  #bytes/long +LOOP
   drop
     
   80 16 r@ sh1-w-bounds DO      \ Extend 16  words in work buffer to 80 words in work buffer
-    I 3  cells - @
-    I 8  cells - @ xor
-    I 14 cells - @ xor
-    I 16 cells - @ xor
-      1 lroll
-    I ! 
-  cell +LOOP
+    I 3  #bytes/long * - l@
+    I 8  #bytes/long * - l@ xor
+    I 14 #bytes/long * - l@ xor
+    I 16 #bytes/long * - l@ xor
+      u>l 1 llroll 
+    I l! 
+  #bytes/long +LOOP
   
-  r@ sh1>h4 @                  \ Initialise hash values
-  r@ sh1>h3 @  
-  r@ sh1>h2 @ 
-  r@ sh1>h1 @ 
-  r@ sh1>h0 @                  \ S: e d c b a
+  r@ sh1>h4 l@                  \ Initialise hash values
+  r@ sh1>h3 l@  
+  r@ sh1>h2 l@ 
+  r@ sh1>h1 l@ 
+  r@ sh1>h0 l@                  \ S: e d c b a
   
   20 0 r@ sh1-w-bounds DO      \ Transform 0..19
     >r >r
     over r@ invert and         \ S: e d c d&~b
     over r@ and or             \ S: e d c f = d & ~b | c & b
     r> swap r> swap            \ S: e d c b a f
-    sh1.k0 I @ sh1+rotate 
-  cell +LOOP
-  
+    sh1.k0 I l@ sh1+rotate 
+  #bytes/long +LOOP
+
   40 20 r@ sh1-w-bounds DO     \ Transform 20..39
     >r >r
     2dup xor                   \ S: e d c f = c ^ d
     r> tuck xor                \ S: e d c b f = b ^ c ^ d
     r> swap                    \ S: e d c b a f
-    sh1.k1 I @ sh1+rotate 
-  cell +LOOP
+    sh1.k1 I l@ sh1+rotate 
+  #bytes/long +LOOP
 
   60 40 r@ sh1-w-bounds DO     \ Transform 40..59
     >r >r
@@ -206,22 +207,22 @@ end-structure
     and r> or                  \ S: e d c f = b & d | c & d
     over r@ and or             \ S: e d c f = b & d | c & d | b & c  
     r> swap r> swap            \ S: e d c b a f
-    sh1.k2 I @ sh1+rotate
-  cell +LOOP
+    sh1.k2 I l@ sh1+rotate
+  #bytes/long +LOOP
   
   80 60 r@ sh1-w-bounds DO     \ Transform 60..79
     >r >r
     2dup xor
     r> tuck xor
     r> swap 
-    sh1.k3 I @ sh1+rotate
-  cell +LOOP
+    sh1.k3 I l@ sh1+rotate
+  #bytes/long +LOOP
   
-  r@ sh1>h0 +!                 \ Add hash values to current results
-  r@ sh1>h1 +!
-  r@ sh1>h2 +!
-  r@ sh1>h3 +!
-  r> sh1>h4 +!
+  r@ sh1>h0 l+!                 \ Add hash values to current results
+  r@ sh1>h1 l+!
+  r@ sh1>h2 l+!
+  r@ sh1>h3 l+!
+  r> sh1>h4 l+!
 ;
 
 
@@ -232,6 +233,31 @@ end-structure
   swap 1+ sh1.b% swap - chars  \ Pad remaining with zero's
   erase
 ;
+
+
+cell 4 = [IF]
+: sh1-length!  ( sh1 -- = Store the length as bit length in sha order )
+  >r
+  r@ sh1>length @ #bits/char m*                              \ Calculate bit length
+  
+  [ sh1.b% 2 #bytes/long * - ] literal chars                 \ Index for bit length
+  r> sh1>b +                                                 \ Buffer location for bit length
+  
+  tuck sha! #bytes/long + sha!                               \ Store the length
+;
+[ELSE]
+: sh1-length!  ( sh1 -- = Store the length as bit length in sha order )
+  >r
+  r@ sh1>length @ #bits/char *                               \ Calculate bit length
+
+  dup u>l swap [ #bytes/long #bits/byte * ] literal rshift   \ Split in lsl msl
+  
+  [ sh1.b% 2 #bytes/long * - ] literal chars                 \ Index for bit length
+  r> sh1>b +                                                 \ Buffer location for bit length
+
+  tuck sha! #bytes/long + sha!                               \ Store the length
+;
+[THEN]
 
 
 [UNDEFINED] sha+#s [IF]
@@ -265,28 +291,23 @@ end-structure
   
   r@ sh1>length @ sh1.b% mod                \ index = sh1>length mod buf-size
   
-  dup [ sh1.b% 2 cells - 1 chars - ] literal > IF
+  dup [ sh1.b% 2 #bytes/long * - 1 chars - ] literal > IF
     r@ sh1>b sh1+pad                        \ If buffer is too full Then
     r@ sh1-transform                        \   Pad buffer and transform
     r@ sh1>b sh1.b% chars erase             \   Pad next buffer
   ELSE                                      \ Else
     r@ sh1>b sh1+pad                        \   Pad buffer
   THEN
-  
-  r@ sh1>length @ #bits/char m*             \ Calculate bit length
-  
-  [ sh1.b% 2 cells - ] literal chars        \ Index for bit length
-  r@ sh1>b +                                \ Buffer location for bit length
-  
-  tuck sha! cell+ sha!                      \ Store the length
+
+  r@ sh1-length!
   
   r@ sh1-transform                          \ Transform last buffer
   
-  r@ sh1>h0 @
-  r@ sh1>h1 @
-  r@ sh1>h2 @
-  r@ sh1>h3 @
-  r> sh1>h4 @
+  r@ sh1>h0 l@
+  r@ sh1>h1 l@
+  r@ sh1>h2 l@
+  r@ sh1>h3 l@
+  r> sh1>h4 l@
 ;
 
 
@@ -302,14 +323,14 @@ end-structure
 : sh1-dump         ( sh1 -- = Dump the sh1 variable )
   >r
   ." sh1:" r@ . cr
-  ."  result :" r@ sh1>h0 @ r@ sh1>h1 @ r@ sh1>h2 @ r@ sh1>h3 @ r@ sh1>h4 @ sh1+to-string type cr
+  ."  result :" r@ sh1>h0 l@ r@ sh1>h1 l@ r@ sh1>h2 l@ r@ sh1>h3 l@ r@ sh1>h4 l@ sh1+to-string type cr
   ."  length :" r@ sh1>length ? cr
   ."  buffer :" r@ sh1>b sh1.b% chars dump
-  ."  work   :" r> sh1>w sh1.w%  cells dump
+  ."  work   :" r> sh1>w sh1.w%  #bytes/long * dump
 ;
 
 [ELSE]
-.( Warning: sh1 requires 4 byte cells and 1 byte chars ) cr
+.( Warning: sh1 requires at least 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]

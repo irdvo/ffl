@@ -40,38 +40,49 @@ include ffl/stc.fs
 
 1 constant fwt.version
 
-  
+( Fixed width constants )
+
+[UNDEFINED] #bytes/word [IF]
+2 constant #bytes/word
+[THEN]
+
+[UNDEFINED] #bytes/long [IF]
+4 constant #bytes/long
+[THEN]
+
+
 ( Fixed width structure fields )
 
 [UNDEFINED] wfield: [IF]
 : wfield:    ( structure-sys "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for a word, 2 bytes, not aligned, return the field address ) 
-  2 +field
+  #bytes/word +field
 ;
 [THEN]
 
 
-[UNDEFINED] lfield [IF]
+[UNDEFINED] lfield: [IF]
 : lfield:    ( structure-sys "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for a long word, 4 bytes, not aligned, return the field address )
-  4 +field
+  #bytes/long +field
 ;
 [THEN]
 
 
-[UNDEFINED] wfields [IF]
+[UNDEFINED] wfields: [IF]
 : wfields:   ( structure-sys n "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for n words, not aligned, return the field address ) 
-  2* +field
+  #bytes/word * +field
 ;
 [THEN]
 
 
-[UNDEFINED] lfields [IF]
+[UNDEFINED] lfields: [IF]
 : lfields:    ( structure-sys n "<spaces>name" -- structure-sys ; addr1 -- addr2 = Create a structure field for n long words, not aligned, return the field address )
-  4 * +field
+  #bytes/long * +field
 ;
 [THEN]
 
 
 ( Fixed width store and fetch )
+
 
 [UNDEFINED] w@ [DEFINED] overrule:w@ OR [IF]
 : w@         ( w-addr -- n = Fetch a word, 16 bit, zero extend )
@@ -102,6 +113,16 @@ bigendian? [IF]
 [THEN]
 
 
+cell 4 > [IF]
+: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
+  [ hex ] FFFFFFFF [ decimal ] AND
+;
+[ELSE]
+: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
+; immediate
+[THEN]
+
+
 [UNDEFINED] l@ [IF]
 cell 4 = [IF]
 : l@         ( l-addr -- n = Fetch a long word, 32 bit, zero extend )
@@ -111,10 +132,9 @@ cell 4 = [IF]
     @
   THEN
 ; immediate
-[THEN]
-cell 8 = [IF]
+[ELSE]
 : l@
-  @ [ hex ] FFFFFFFF [ decimal ] AND
+  @ u>l
 ;
 [THEN]
 [THEN]
@@ -129,8 +149,7 @@ cell 4 = [IF]
     @
   THEN
 ; immediate
-[THEN]
-cell 8 = [IF]
+[ELSE]
 : <l@
   l@ DUP [ hex ] 80000000 [ decimal ] AND negate OR
 ;
@@ -147,8 +166,7 @@ cell 4 = [IF]
     !
   THEN
 ; immediate
-[THEN]
-cell 8 = [IF]
+[ELSE]
 bigendian? [IF]
 : l!
   over 24 rshift over c!
@@ -171,6 +189,40 @@ bigendian? [IF]
 ;
 [THEN]
 [THEN]
+[THEN]
+
+[UNDEFINED] l+! [IF]
+cell 4 = [IF]
+: l+!  ( l l-addr -- = Add l to l-addr )
+  state @ IF
+    postpone +!
+  ELSE
+    +!
+  THEN
+; immediate
+[ELSE]
+: l+!  ( l l-addr -- = Add l to l-addr )
+  tuck l@ + swap l!
+; 
+[THEN]
+
+
+[UNDEFINED] llroll [IF]
+cell 4 = [IF]
+: llroll  ( l1 u2 -- l3 = Rotate l1 u2 bits to the left )
+  state @ IF
+    postpone lroll
+  ELSE
+    lroll
+  THEN
+; immediate
+[ELSE]
+: llroll  ( l1 u2 -- l3 = Rotate l1 u2 bits to the left )
+  2dup lshift >r
+  32 swap - rshift r>
+  or
+  u>l
+;
 [THEN]
 
 [THEN]
