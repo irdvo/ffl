@@ -83,9 +83,8 @@ include ffl/stc.fs
 
 ( Fixed width store and fetch )
 
-
 [UNDEFINED] w@ [DEFINED] overrule:w@ OR [IF]
-: w@         ( w-addr -- n = Fetch a word, 16 bit, zero extend )
+: w@         ( w-addr -- u = Fetch a word, 16 bit, zero extend )
   @ [ hex ] FFFF [ decimal ] AND
 ;
 [THEN]
@@ -113,13 +112,22 @@ bigendian? [IF]
 [THEN]
 
 
-cell 4 > [IF]
+[UNDEFINED] w, [IF]
+: w,  ( x -- = Store 16 bits of data in the data storage )
+  here #bytes/word allot w!
+;
+[THEN]
+
+
+[UNDEFINED] u>l [IF]
+cell 4 = [IF]
+: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
+; immediate
+[ELSE]
 : u>l  ( u -- l = Convert a unsigned number to 32 bit number )
   [ hex ] FFFFFFFF [ decimal ] AND
 ;
-[ELSE]
-: u>l  ( u -- l = Convert a unsigned number to 32 bit number )
-; immediate
+[THEN]
 [THEN]
 
 
@@ -191,6 +199,7 @@ bigendian? [IF]
 [THEN]
 [THEN]
 
+
 [UNDEFINED] l+! [IF]
 cell 4 = [IF]
 : l+!  ( l l-addr -- = Add l to l-addr )
@@ -204,6 +213,24 @@ cell 4 = [IF]
 : l+!  ( l l-addr -- = Add l to l-addr )
   tuck l@ + swap l!
 ; 
+[THEN]
+[THEN]
+
+
+[UNDEFINED] l, [IF]
+cell 4 = [IF]
+: l,  ( x -- = Store 32 bits of data in the data storage )
+  state @ IF
+    postpone ,
+  ELSE
+    ,
+  THEN
+; immediate
+[ELSE]
+: l,  ( x -- = Store 32 bits of data in the data storage )
+  here #bytes/long allot l!
+;
+[THEN]
 [THEN]
 
 
@@ -223,6 +250,44 @@ cell 4 = [IF]
   or
   u>l
 ;
+[THEN]
+[THEN]
+
+
+[UNDEFINED] lrroll [IF]
+cell 4 = [IF]
+: lrroll  ( l1 u2 -- l3 = Rotate l1 u2 bits to the right )
+  state @ IF
+    postpone rroll
+  ELSE
+    rroll
+  THEN
+; immediate
+[ELSE]
+: lrroll  ( l1 u2 -- l3 = Rotate l1 u2 bits to the left )
+  2dup rshift >r
+  32 swap - lshift r>
+  or
+  u>l
+;
+[THEN]
+[THEN]
+
+
+[UNDEFINED] l@! [IF]
+cell 4 = [IF]
+: l@!  ( l1 l-addr -- l2 = Fetch l2 from l-addr and then store l1 at l-addr )
+  state @ IF
+    postpone @!
+  ELSE
+    @!
+  THEN
+; immediate
+[ELSE]
+: l@!  ( l1 l-addr -- l2 = Fetch l2 from l-addr and then store l1 at l-addr )
+  dup l@ -rot l!
+;
+[THEN]
 [THEN]
 
 [THEN]
