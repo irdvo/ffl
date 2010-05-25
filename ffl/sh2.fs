@@ -31,12 +31,12 @@ include ffl/config.fs
 [UNDEFINED] sh2.version [IF]
 
 
-cell 4 =  1 chars 1 =  AND [IF]
+cell 4 >=  1 chars 1 =  AND [IF]
 
 \ Based on the algorithms published in FIPS 180-2 and Wikipedia
 
 include ffl/stc.fs
-
+include ffl/fwt.fs
 
 ( sh2 = SHA-256 module )
 ( The sh2 module implements the SHA-256 algorithm.                           )
@@ -47,45 +47,45 @@ include ffl/stc.fs
 
 ( Private constants )
 
-64 constant sh2.work%        \ Size of work buffer in cells
+64 constant sh2.work%        \ Size of work buffer in longs
 
-16 cells char/
+16 #bytes/long * char/
    constant sh2.input%       \ Size of input buffer in chars
          
 create sh2.k
 hex
-   428A2F98 , 71374491 , B5C0FBCF , E9B5DBA5 , 3956C25B , 59F111F1 , 923F82A4 , AB1C5ED5 ,
-   D807AA98 , 12835B01 , 243185BE , 550C7DC3 , 72BE5D74 , 80DEB1FE , 9BDC06A7 , C19BF174 ,
-   E49B69C1 , EFBE4786 , 0FC19DC6 , 240CA1CC , 2DE92C6F , 4A7484AA , 5CB0A9DC , 76F988DA ,
-   983E5152 , A831C66D , B00327C8 , BF597FC7 , C6E00BF3 , D5A79147 , 06CA6351 , 14292967 ,
-   27B70A85 , 2E1B2138 , 4D2C6DFC , 53380D13 , 650A7354 , 766A0ABB , 81C2C92E , 92722C85 ,
-   A2BFE8A1 , A81A664B , C24B8B70 , C76C51A3 , D192E819 , D6990624 , F40E3585 , 106AA070 ,
-   19A4C116 , 1E376C08 , 2748774C , 34B0BCB5 , 391C0CB3 , 4ED8AA4A , 5B9CCA4F , 682E6FF3 ,
-   748F82EE , 78A5636F , 84C87814 , 8CC70208 , 90BEFFFA , A4506CEB , BEF9A3F7 , C67178F2 ,
+   428A2F98 l, 71374491 l, B5C0FBCF l, E9B5DBA5 l, 3956C25B l, 59F111F1 l, 923F82A4 l, AB1C5ED5 l,
+   D807AA98 l, 12835B01 l, 243185BE l, 550C7DC3 l, 72BE5D74 l, 80DEB1FE l, 9BDC06A7 l, C19BF174 l,
+   E49B69C1 l, EFBE4786 l, 0FC19DC6 l, 240CA1CC l, 2DE92C6F l, 4A7484AA l, 5CB0A9DC l, 76F988DA l,
+   983E5152 l, A831C66D l, B00327C8 l, BF597FC7 l, C6E00BF3 l, D5A79147 l, 06CA6351 l, 14292967 l,
+   27B70A85 l, 2E1B2138 l, 4D2C6DFC l, 53380D13 l, 650A7354 l, 766A0ABB l, 81C2C92E l, 92722C85 l,
+   A2BFE8A1 l, A81A664B l, C24B8B70 l, C76C51A3 l, D192E819 l, D6990624 l, F40E3585 l, 106AA070 l,
+   19A4C116 l, 1E376C08 l, 2748774C l, 34B0BCB5 l, 391C0CB3 l, 4ED8AA4A l, 5B9CCA4F l, 682E6FF3 l,
+   748F82EE l, 78A5636F l, 84C87814 l, 8CC70208 l, 90BEFFFA l, A4506CEB l, BEF9A3F7 l, C67178F2 l,
 decimal
 
 
 ( SHA-256 structure )
 
 begin-structure sh2%   ( -- n = Get the required space for a sha2 variable )
-  field:   sh2>h0
-  field:   sh2>h1
-  field:   sh2>h2
-  field:   sh2>h3
-  field:   sh2>h4
-  field:   sh2>h5
-  field:   sh2>h6
-  field:   sh2>h7
-  field:   sh2>a
-  field:   sh2>b
-  field:   sh2>c
-  field:   sh2>d
-  field:   sh2>e
-  field:   sh2>f
-  field:   sh2>g
-  field:   sh2>h
+  lfield:   sh2>h0
+  lfield:   sh2>h1
+  lfield:   sh2>h2
+  lfield:   sh2>h3
+  lfield:   sh2>h4
+  lfield:   sh2>h5
+  lfield:   sh2>h6
+  lfield:   sh2>h7
+  lfield:   sh2>a
+  lfield:   sh2>b
+  lfield:   sh2>c
+  lfield:   sh2>d
+  lfield:   sh2>e
+  lfield:   sh2>f
+  lfield:   sh2>g
+  lfield:   sh2>h
   sh2.work%
-  fields:  sh2>work          \ work buffer
+  lfields:  sh2>work          \ work buffer
   sh2.input%
   cfields: sh2>input         \ input buffer with data
   field:   sh2>length        \ total length of processed data
@@ -96,14 +96,14 @@ end-structure
 
 : sh2-init   ( sh2 -- = Initialise the sh2 variable )
   [ hex ]
-  6A09E667 over sh2>h0 !
-  BB67AE85 over sh2>h1 !
-  3C6EF372 over sh2>h2 !
-  A54FF53A over sh2>h3 !
-  510E527F over sh2>h4 !
-  9B05688C over sh2>h5 !
-  1F83D9AB over sh2>h6 !
-  5BE0CD19 over sh2>h7 !
+  6A09E667 over sh2>h0 l!
+  BB67AE85 over sh2>h1 l!
+  3C6EF372 over sh2>h2 l!
+  A54FF53A over sh2>h3 l!
+  510E527F over sh2>h4 l!
+  9B05688C over sh2>h5 l!
+  1F83D9AB over sh2>h6 l!
+  5BE0CD19 over sh2>h7 l!
   [ decimal ]
   
   sh2>length 0!
@@ -129,11 +129,11 @@ end-structure
 
 [UNDEFINED] sha! [IF]
   bigendian? [IF]
-: sha!             ( x addr -- = Store cell on address, SHA order )
-  postpone !
+: sha!             ( x addr -- = Store long on address, SHA order )
+  postpone l!
 ; immediate
-: sha@             ( addr -- x = Fetch cell on address, SHA order )
-  postpone @
+: sha@             ( addr -- x = Fetch long on address, SHA order )
+  postpone l@
 ; immediate
   [ELSE]
 : sha!
@@ -167,77 +167,77 @@ end-structure
   >r
   
   r@ sh2>work
-  r@ sh2>input 16 cells bounds DO      \ Move input (bigendian) in work buffer
-    I sha@ over !
-    cell+
-  cell +LOOP                           \ S: sh2>work + 16 cells
+  r@ sh2>input 16 #bytes/long * bounds DO   \ Move input (bigendian) in work buffer
+    I sha@ over l!
+    #bytes/long +
+  #bytes/long +LOOP                         \ S: sh2>work + 16 longs
      
-  48 cells bounds DO                   \ Extend 16 words in work buffer to 64 words in work buffer
-    I 16 cells - @                     \ w[i] = w[i-16] + ..
-    I 15 cells - @
-    dup   7 rroll
-    over 18 rroll  xor
-    swap 3  rshift xor +               \ .. + (w[i-15] rotr 7) xor (w[i-15] rotr 18) xor (w[i-15] rshift 3) + ..
-    I 7  cells - @ +                   \ .. + w[i-7] + ..
-    I 2  cells - @
-    dup  17 rroll
-    over 19 rroll  xor
-    swap 10 rshift xor +               \ .. + (w[i-2] rotr 17) xor (w[i-2] rotr 19) xor (w[i-2] rshift 10)
-    I !
-  cell +LOOP
+  48 #bytes/long * bounds DO                \ Extend 16 words in work buffer to 64 words in work buffer
+    I 16 #bytes/long * - l@                 \ w[i] = w[i-16] + ..
+    I 15 #bytes/long * - l@
+    dup   7 lrroll
+    over 18 lrroll xor
+    swap 3  rshift xor +                    \ .. + (w[i-15] rotr 7) xor (w[i-15] rotr 18) xor (w[i-15] rshift 3) + ..
+    I 7  #bytes/long * - l@ +               \ .. + w[i-7] + ..
+    I 2  #bytes/long * - l@
+    dup  17 lrroll
+    over 19 lrroll xor
+    swap 10 rshift xor +                    \ .. + (w[i-2] rotr 17) xor (w[i-2] rotr 19) xor (w[i-2] rshift 10)
+    I l!
+  #bytes/long +LOOP
     
   r@ sh2>h0 r@ sh2>a 
-  8 cells char/ move                   \ Initialise hash values: h0..h7 -> a..h
+  8 #bytes/long * char/ move                \ Initialise hash values: h0..h7 -> a..h
   
   r>
-  sh2.work% cells 0 DO
-    sh2.k I + @                        \ k[i] + ..
-    over sh2>work I + @ +              \ .. + w[i] + ..
-    over sh2>h @ +                     \ w[i] + k[i] + h
+  sh2.work% #bytes/long * 0 DO
+    sh2.k I + l@                            \ k[i] + ..
+    over sh2>work I + l@ +                  \ .. + w[i] + ..
+    over sh2>h l@ +                         \ w[i] + k[i] + h
     
-    swap >r                            \ done with I, save sh2
+    swap >r                                 \ done with I, save sh2
+  
+    r@ sh2>e l@                             \ s1 = (e rotr 6) xor (e rotr 11) xor (e rotr 25)
+    dup   6 lrroll
+    over 11 lrroll xor
+    over 25 lrroll xor
     
-    r@ sh2>e @                         \ s1 = (e rotr 6) xor (e rotr 11) xor (e rotr 25)
-    dup   6 rroll
-    over 11 rroll xor
-    over 25 rroll xor
-    
-    swap                               \ ch = (e and f) xor ((not e) and g)
-    dup r@ sh2>f @ and
-    swap invert r@ sh2>g @ and xor
-    + +                                \ t1 = w[i] + k[i] + h + s1 + ch
+    swap                                    \ ch = (e and f) xor ((not e) and g)
+    dup r@ sh2>f l@ and
+    swap invert r@ sh2>g l@ and xor
+    + +                                     \ t1 = w[i] + k[i] + h + s1 + ch
 
-    r@ sh2>a @                         \ s0 = (a rotr 2) xor (a rotr 12) xor (a rotr 22)
-    dup   2 rroll
-    over 13 rroll xor
-    over 22 rroll xor
+    r@ sh2>a l@                             \ s0 = (a rotr 2) xor (a rotr 12) xor (a rotr 22)
+    dup   2 lrroll
+    over 13 lrroll xor
+    over 22 lrroll xor
     swap
     
-    r@ sh2>b @                         \ maj = (a and b) xor (a and c) xor (b and c)
+    r@ sh2>b l@                             \ maj = (a and b) xor (a and c) xor (b and c)
     2dup
-    r@ sh2>c @
+    r@ sh2>c l@
     tuck
     and >r and >r and r> xor r> xor
-    +                                  \ t2 = s0 + maj
+    +                                       \ t2 = s0 + maj
     
     over + r@ sh2>a
-    tuck @! swap cell+                 \ a = t1 + t2
-    tuck @! swap cell+                 \ b = a
-    tuck @! swap cell+                 \ c = b
-    tuck @! rot + swap cell+           \ d = c
-    tuck @! swap cell+                 \ e = d + t1
-    tuck @! swap cell+                 \ f = e
-    tuck @! swap cell+                 \ g = f
-    !                                  \ h = g
+    tuck l@! swap #bytes/long +             \ a = t1 + t2
+    tuck l@! swap #bytes/long +             \ b = a
+    tuck l@! swap #bytes/long +             \ c = b
+    tuck l@! rot + swap #bytes/long +       \ d = c
+    tuck l@! swap #bytes/long +             \ e = d + t1
+    tuck l@! swap #bytes/long +             \ f = e
+    tuck l@! swap #bytes/long +             \ g = f
+    l!                                      \ h = g
     
     r>
-  cell +LOOP
+  #bytes/long +LOOP
   
   dup sh2>h0
-  swap sh2>a 8 cells bounds DO              \ Add hash values to current results
-    I @ over +!
-    cell+
-  cell +LOOP
+  swap sh2>a 8 #bytes/long * bounds DO     \ Add hash values to current results
+    I l@ over l+!
+    #bytes/long +
+  #bytes/long +LOOP
   drop
 ;
 
@@ -250,6 +250,29 @@ end-structure
   erase
 ;
 
+cell 4 = [IF]
+: sh2-length!  ( sh2 -- = Store the length as bit length in sha order )
+  >r
+  r@ sh2>length @ #bits/char m*                     \ Calculate bit length
+  
+  [ sh2.input% 2 #bytes/long * - ] literal chars    \ Index for bit length
+  r> sh2>input +                                    \ Buffer location for bit length
+  
+  tuck sha! #bytes/long + sha!                      \ Store the length
+;
+[ELSE]
+: sh2-length!  ( sh2 -- = Store the length as bit length in sha order )
+  >r
+  r@ sh2>length @ #bits/char *                      \ Calculate bit length
+  
+  dup u>l swap [ #bytes/long #bits/byte * ] literal rshift   \ Split in lsl msl
+
+  [ sh2.input% 2 #bytes/long * - ] literal chars    \ Index for bit length
+  r> sh2>input +                                    \ Buffer location for bit length
+  
+  tuck sha! #bytes/long + sha!                      \ Store the length
+;
+[THEN]
 
 [UNDEFINED] sha+#s [IF]
 : sha+#s   ( u -- Put a single SHA result in the hold area )
@@ -282,7 +305,7 @@ end-structure
   
   r@ sh2>length @ sh2.input% mod            \ index = sh2>length mod buf-size
   
-  dup [ sh2.input% 2 cells - 1 chars - ] literal > IF
+  dup [ sh2.input% 2 #bytes/long * - 1 chars - ] literal > IF
     r@ sh2>input sh2+pad                    \ If buffer is too full Then
     r@ sh2-transform                        \   Pad buffer and transform
     r@ sh2>input sh2.input% chars erase     \   Pad next buffer
@@ -290,23 +313,18 @@ end-structure
     r@ sh2>input sh2+pad                    \   Pad buffer
   THEN
   
-  r@ sh2>length @ #bits/char m*             \ Calculate bit length
-  
-  [ sh2.input% 2 cells - ] literal chars    \ Index for bit length
-  r@ sh2>input +                            \ Buffer location for bit length
-  
-  tuck sha! cell+ sha!                      \ Store the length
+  r@ sh2-length!
   
   r@ sh2-transform                          \ Transform last buffer
   
-  r@ sh2>h0 @
-  r@ sh2>h1 @
-  r@ sh2>h2 @
-  r@ sh2>h3 @
-  r@ sh2>h4 @
-  r@ sh2>h5 @
-  r@ sh2>h6 @
-  r> sh2>h7 @
+  r@ sh2>h0 l@
+  r@ sh2>h1 l@
+  r@ sh2>h2 l@
+  r@ sh2>h3 l@
+  r@ sh2>h4 l@
+  r@ sh2>h5 l@
+  r@ sh2>h6 l@
+  r> sh2>h7 l@
 ;
 
 
@@ -322,14 +340,14 @@ end-structure
 : sh2-dump   ( sh2 -- = Dump the sh2 variable )
   >r
   ." sh2:" r@ . cr
-  ."  result :" r@ sh2>h0 @ r@ sh2>h1 @ r@ sh2>h2 @ r@ sh2>h3 @ r@ sh2>h4 @ r@ sh2>h5 @ r@ sh2>h6 @ r@ sh2>h7 @ sh2+to-string type cr
+  ."  result :" r@ sh2>h0 l@ r@ sh2>h1 l@ r@ sh2>h2 l@ r@ sh2>h3 l@ r@ sh2>h4 l@ r@ sh2>h5 l@ r@ sh2>h6 l@ r@ sh2>h7 l@ sh2+to-string type cr
   ."  length :" r@ sh2>length ? cr
   ."  buffer :" r@ sh2>input sh2.input% chars dump
-  ."  work   :" r> sh2>work sh2.work% cells dump
+  ."  work   :" r> sh2>work sh2.work% #bytes/long * dump
 ;
 
 [ELSE]
-.( Warning: sh2 requires 4 byte cells and 1 byte chars ) cr
+.( Warning: sh2 requires at least 4 byte cells and 1 byte chars ) cr
 [THEN]
 
 [THEN]
