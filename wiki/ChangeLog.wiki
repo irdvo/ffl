@@ -2,6 +2,7 @@
 
 {{{
 0.8.0
+* md5: 64bit ready (2010-05-26)
 * sh2: 64bit ready (2010-05-25)
 * sh1: 64bit ready (2010-05-23)
 * gmo: 64bit ready (2010-05-19)
