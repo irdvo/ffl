@@ -44,8 +44,9 @@ include ffl/msc.fs
 ( localization of strings. Note: the numerical words in this module use the  )
 ( the numeric output string. The writer can be used to direct the result of  )
 ( the formatter to a writer word by calling tos-flush:                       )
-(  {{{Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success}}} )
-
+( <pre> )
+(  Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success )
+( </pre> )
 
 4 constant tos.version
 
@@ -270,7 +271,7 @@ end-structure
       s" 0." r@ str-append-string                        \   Start with 0.
       [char] 0 swap r@ str-append-chars                  \   Append exponent zero's
       pad swap r@ str-append-string                      \   Append the string
-    ELSE 2dup < IF                                       \ ElseIf exponent is smaller than the precision
+    ELSE 2dup < IF                                       \ Else If exponent is smaller than the precision
       over 1+ r@ str-length@ + r@ str-size!              \   Insure the size for the float
       over pad swap r@ str-append-string                 \   Append the float
       swap - [char] 0 swap r@ str-append-chars           \   Fill out with zero's

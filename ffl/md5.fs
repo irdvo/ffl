@@ -304,7 +304,7 @@ decimal
 ;
 
 
-: md5-create   ( "<spaces>name" -- ; -- md5 = Create a named MD5 variable ein the dictionary )
+: md5-create   ( "<spaces>name" -- ; -- md5 = Create a named MD5 variable in the dictionary )
   create   here   md5% allot   md5-init
 ;
 
