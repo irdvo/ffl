@@ -46,7 +46,7 @@ The scl module implements a single linked list that can store cell wide data.
  Delete the nth node from the list, return the cell data from the deleted node
 ==== Special words ====
 *scl-count* ( x scl -- u )
- Count the number of occurences of the cell data x in the list
+ Count the number of occurrences of the cell data x in the list
 *scl-execute* ( i*x xt scl -- j*x )
  Execute xt for every cell data in list
 *scl-reverse* ( scl -- )

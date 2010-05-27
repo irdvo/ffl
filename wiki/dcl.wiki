@@ -46,7 +46,7 @@ The dcl module implements a double linked list that can store cell wide data.
  Delete the nth node from the list, return the cell data x
 ==== Special words ====
 *dcl-count* ( x dcl -- u )
- Count the number of occurences of the cell data x in the list
+ Count the number of occurrences of the cell data x in the list
 *dcl-execute* ( i*x xt dcl -- j*x )
  Execute xt for every cell data in list
 *dcl-reverse* ( dcl -- )
@@ -57,7 +57,7 @@ The dcl module implements a double linked list that can store cell wide data.
 *dcl-has?* ( x dcl -- flag )
  Check if the cell data x is present in the list
 *dcl-remove* ( x dcl -- flag )
- Remove the first occurence of the cell data x from the list, return success
+ Remove the first occurrence of the cell data x from the list, return success
 ==== Sort words ====
 *dcl-insert-sorted* ( x dcl -- )
  Insert the cell data x sorted in the list

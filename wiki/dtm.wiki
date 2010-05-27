@@ -145,7 +145,7 @@ The dtm module implements a [gregorian] date and time data type.
  Calculate the number of seconds since epoch n from the date/time
 ==== Compare words ====
 *dtm-compare* ( n1 n2 n3 n4 n5 n6 n7 dtm -- n )
- Compare the date/time with millisconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7
+ Compare the date/time with milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7
 *dtm^compare* ( dtm1 dtm2 -- n )
  Compare two date/times, return the compare result [-1,0,1]
 ==== Inspection ====

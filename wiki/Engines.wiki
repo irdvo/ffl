@@ -25,7 +25,7 @@ FFL will not run on the following forth engines :
 
 || *Engine* || *Version* || *Reason* ||
 || kForth  || || Missing ANS words ||
-|| ciforth || || Case sensitive ||
+|| ciforth || 4.0.6 || Missing ANS words ||
 || pforth || || Missing ANS words ||
 || isforth || || Missing ANS words ||
 ||  4th || || Missing ANS words ||
@@ -45,7 +45,7 @@ for some forth engines. For these modules you should test the presence of the {{
 constant after loading the module (see [Using Getting started]).
 
 || || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* || *iForth* || *SP-Forth* || *lxf/ntf* ||
-|| Argument Parser (arg) || No || No || Yes || No || No || No || No || No ||
+|| Argument Parser (arg) || Yes || No || Yes || No || No || No || No || No ||
 || Distributed Random Number Generator (rdg) || Yes || No || Yes || Yes || Yes || Yes || No || No ||
 || Timer (tmr) || Yes || Yes || Yes || Yes || Yes || Yes || Yes || Yes ||
 

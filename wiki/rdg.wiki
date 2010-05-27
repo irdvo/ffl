@@ -23,7 +23,7 @@ this module has an environmental dependency.
 *rdg-uniform* ( F: r1 r2 -- r3 ; rdg -- )
  Generate a random number with a uniform distribution in the range of [r1,r2{{{>}}}
 *rdg-normal* ( F: r1 r2 -- r3 ; rdg -- )
- Generate a random number with a normal or gaussian distribution with mu or mean r1 and sigma or standard deviation r2
+ Generate a random number with a normal or Gaussian distribution with mu or mean r1 and sigma or standard deviation r2
 *rdg-exponential* ( F: r1 -- r2 ; rdg -- )
  Generate a random number with an exponential distribution with mu or mean r1 [{{{>}}}0]
 *rdg-gamma* ( F: r1 r2 -- r3 ; rdg -- )
@@ -33,9 +33,9 @@ this module has an environmental dependency.
 *rdg-binomial* ( F: r -- ; u1 rdg -- u2 )
  Generate a random number with a binomial distribution with probability r [0,1] and trails u1 [{{{>}}}=0]
 *rdg-poisson* ( F: r -- ; rdg -- u )
- Generate a random number with a poisson distribution with mean r [{{{>}}}=0]
+ Generate a random number with a Poisson distribution with mean r [{{{>}}}=0]
 *rdg-pareto* ( F: r1 r2 -- r3 ; rdg -- )
- Generate a random number with a pareto distribution with alpha r1 [{{{>}}}0] the scale parameter and r2 [{{{>}}}0] the shape parameter
+ Generate a random number with a Pareto distribution with alpha r1 [{{{>}}}0] the scale parameter and r2 [{{{>}}}0] the shape parameter
 *rdg-weibull* ( F: r1 r2 -- r3 ; rdg -- )
  Generate a random number with a Weibull distribution with alpha r1 [{{{>}}}0] the scale parameter and beta r2 [{{{>}}}0] the shape parameter
 === Examples ===

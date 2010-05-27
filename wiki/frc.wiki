@@ -18,9 +18,9 @@ output is NOT normalized. This is left to the next fraction word.
 *frc-free* ( frc -- )
  Free the fraction from the heap
 ==== General module words ====
-*frc+calc-gcd* ( n1 n2 -- n )
+*frc+calc-gcd* ( n1 n2 -- +n )
  Calculate the Greatest Common Divider
-*frc+calc-lcm* ( n1 n2 -- n )
+*frc+calc-lcm* ( n1 n2 -- +n )
  Calculate the Least Common Multiplier
 *frc+norm* ( n1 n2 -- n3 n4 )
  Normalize a fraction n1/n2, return n3/n4

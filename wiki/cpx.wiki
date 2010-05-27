@@ -47,7 +47,7 @@ and second the imaginary part of the number.
 *cpx+cos* ( F: r1 r2 -- r3 r4 )
  Calculate the trigonometric functions cosine for the complex number r1+jr2
 *cpx+tan* ( F: r1 r2 -- r3 r4 )
- Calculate the trigonometric functions trangent for the complex number r1+jr2
+ Calculate the trigonometric functions tangent for the complex number r1+jr2
 *cpx+asin* ( F: r1 r2 -- r3 r4 )
  Calculate the inverse trigonometric function sine for the complex number r1+jr2
 *cpx+acos* ( F: r1 r2 -- r3 r4 )

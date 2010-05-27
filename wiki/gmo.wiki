@@ -7,7 +7,7 @@ characters, so this module has an environmental dependency.
 === Module Words ===
 ==== Import ====
 *gmo-read* ( c-addr u msc -- 0 | ior )
- Read the mo-file c-addr u and store the contents in the message catalog msc
+ Read a mo-file named c-addr u and store the contents in the message catalog msc
 === Examples ===
 {{{
 include ffl/gmo.fs

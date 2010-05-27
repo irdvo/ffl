@@ -62,7 +62,7 @@ is  used by the [zif] and, in a future version, [zof] module.
 *gzf-flags!* ( u gzf -- )
  Set the flags for the gzip file header
 *gzf-os@* ( gzf -- n )
- Get the operting system of the current file in the gzip file
+ Get the operating system of the current file in the gzip file
 *gzf-os!* ( n gzf -- )
  Set the operating system for the next file in the gzip file
 *gzf-mtime@* ( gzf -- u )

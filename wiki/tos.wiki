@@ -1,17 +1,19 @@
 #summary Text output stream
 === Module Description ===
+The tos module implements a text output stream. It extends the str module,
+so all words from the str module, can be used on a tos variable.
+The data written to the stream is always appended. Alignment is normally
+done for the last written data. By using the start alignment pointers
+words the start of the alignment can be changed. The end of the alignment
+is always the end of the stream. The message catalog can be used for
+localization of strings. Note: the numerical words in this module use the
+the numeric output string. The writer can be used to direct the result of
+the formatter to a writer word by calling tos-flush:
+{{{<}}}pre{{{>}}}
+ Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success
+{{{<}}}/pre{{{>}}}
 
 === Module Words ===
-==== The tos module implements a text output stream. It extends the str module, ====
-==== so all words from the str module, can be used on a tos variable. ====
-==== The data written to the stream is always appended. Alignment is normally ====
-==== done for the last written data. By using the start alignment pointers ====
-==== words the start of the alignment can be changed. The end of the alignment ====
-==== is always the end of the stream. The message catalog can be used for ====
-==== localization of strings. Note: the numerical words in this module use the ====
-==== the numeric output string. The writer can be used to direct the result of ====
-==== the formatter to a writer word by calling tos-flush: ====
-==== {{{Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success}}} ====
 ==== Output stream structure ====
 *tos%* ( -- n )
  Get the required space for a tos variable

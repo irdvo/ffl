@@ -1,7 +1,7 @@
 #summary Non-deterministic finite automata expression
 === Module Description ===
 The nfe module implements an expression in a non-deterministic finite
-automata. An expression is a concatenation, repeation or alteration of
+automata. An expression is a concatenation, repetition or alteration of
 non-deterministic finite automata states [nfs]. An not yet fully built
 expression consists of two cells on the stack: a list with the non resolved
 out states and a list of [nfs] states.{{{<}}}br{{{>}}}

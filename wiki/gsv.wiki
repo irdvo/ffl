@@ -17,7 +17,7 @@ environmental dependency. See [GTKserver] for how to use this module.
 *gsv+open* ( c-addr1 u1 c-addr2 u2 -- ior )
  Open the connection to the gtk-server by reading the configuration file c-addr1 u1 and connecting to c-addr2 u2
 *gsv+close* ( -- ior )
- Close the connnection to the gtk-server, the gtk-server is *NOT* closed
+ Close the connection to the gtk-server, the gtk-server is *NOT* closed
 ==== gtk-server event words ====
 *gsv+server-connect* ( n1 c-addr1 u1 n2 -- c-addr2 u2 )
  Call gtk_server_connect with widgetid n2, signal c-addr1 u1 and description n2, returning the result c-addr2 u2

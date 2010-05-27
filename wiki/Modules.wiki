@@ -4,7 +4,7 @@
 The following modules are present in the Forth Foundation Library:
 
 || *Prefix* || *Description* || *Cluster* || *Since* || *Last Updated* || *Example* || *32/64 bit* ||
-|| [a32 a32] || Adler32 Algorithm || Interface || 0.7.0 || 0.7.0 || Yes || 32 ||
+|| [a32 a32] || Adler32 Algorithm || Interface || 0.7.0 || 0.7.0 || Yes || Both ||
 || [acn acn] || AVL binary tree cell node || Collection || 0.4.0 || 0.4.0 || Yes || Both ||
 || [act act] || AVL binary tree || Collection || 0.4.0 || 0.7.0 || Yes || Both ||
 || [arg arg] || Argument parser || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
@@ -22,8 +22,7 @@ The following modules are present in the Forth Foundation Library:
 || [chr chr] || Character words || DataType || 0.1.0 || 0.2.0 || No || Both ||
 || [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes || Both ||
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No || Both ||
-|| [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No || 32 ||
-|| [dbm dbm] || DBM interface module || Interface || 0.8.0 || 0.8.0 || Yes || Both ||
+|| [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No || Both ||
 || [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.6.0 || No || Both ||
 || [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
@@ -41,7 +40,7 @@ The following modules are present in the Forth Foundation Library:
 || [fst fst] || FSM State || Compound || 0.7.0 || 0.7.0 || Yes || Both ||
 || [ftr ftr] || FSM Transition || Compound || 0.7.0 || 0.7.0 || Yes || Both ||
 || [fwt fwt] || Fixed Width Types|| Development || 0.8.0 || 0.8.0 || No || Both ||
-|| [gmo gmo] || Gettexts mo-file import || Interface || 0.6.0 || 0.6.0 || Yes || 32 ||
+|| [gmo gmo] || Gettexts mo-file import || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
 || [gsv gsv] || GTK-server interface || Interface || 0.8.0 || 0.8.0 || Yes || Both ||
 || [gzf gzf] || GZip file || Interface || 0.7.0 || 0.7.0 || No || Both ||
 || [gzi gzi] || GZip reader || Interface || 0.7.0 || 0.7.0 || No || Both ||
@@ -53,7 +52,7 @@ The following modules are present in the Forth Foundation Library:
 || [hnn hnn] || Generic hash table node || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
 || [lbf lbf] || Linear buffer || DataType || 0.7.0 || 0.7.0 || Yes || Both ||
 || [log log] || Log module || Development || 0.7.0 || 0.7.0 || Yes || Both ||
-|| [md5 md5] || MD5 Algorithm || Interface || 0.3.0 || 0.3.0 || Yes || 32 ||
+|| [md5 md5] || MD5 Algorithm || Interface || 0.3.0 || 0.3.0 || Yes || Both ||
 || [msc msc] || Message Catalog || Compound || 0.6.0 || 0.6.0 || Yes || Both ||
 || [nci nci] || n-Tree cell iterator || Collection || 0.5.0 || 0.5.0 || No || Both ||
 || [nct nct] || n-Tree cell module || Collection || 0.5.0 || 0.6.0 || No || Both ||
@@ -70,8 +69,8 @@ The following modules are present in the Forth Foundation Library:
 || [sci sci] || Single linked cell list iterator || Collection || 0.1.0 || 0.5.0 || No || Both ||
 || [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.6.0 || No || Both ||
 || [scn scn] || Single linked cell list node || Collection || 0.1.0 || 0.5.0 || No || Both ||
-|| [sh1 sh1] || SHA1 Algorithm || Interface || 0.4.0 || 0.4.0 || Yes || 32 ||
-|| [sh2 sh2] || SHA256 Algorithm || Interface || 0.5.0 || 0.5.0 || Yes || 32 ||
+|| [sh1 sh1] || SHA1 Algorithm || Interface || 0.4.0 || 0.4.0 || Yes || Both ||
+|| [sh2 sh2] || SHA256 Algorithm || Interface || 0.5.0 || 0.5.0 || Yes || Both ||
 || [sni sni] || Generic single linked list iterator || Collection || 0.5.0 || 0.5.0 || No || Both ||
 || [snl snl] || Generic single linked list || Collection || 0.5.0 || 0.7.0 || No || Both ||
 || [snn snn] || Generic single linked node || Collection || 0.5.0 || 0.5.0 || No || Both ||
@@ -86,7 +85,7 @@ The following modules are present in the Forth Foundation Library:
 || [tst tst] || Unit test words || Development || 0.1.0 || 0.6.0 || No || Both ||
 || [xis xis] || XML/HTML reader || Interface || 0.6.0 || 0.8.0 || Yes || Both ||
 || [xos xos] || XML/HTML writer || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
-|| [zif zif] || GZip file reader || Interface || 0.7.0 || 0.7.0 || Yes || 32 ||
+|| [zif zif] || GZip file reader || Interface || 0.7.0 || 0.7.0 || Yes || Both ||
 
 In [Words] there is also an alphabetical overview of all the words in the library.
 

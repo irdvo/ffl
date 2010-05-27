@@ -42,7 +42,7 @@ The hct module implements a hash table that stores cell wide data.
  Check if the key c-addr u is present in the table
 ==== Special words ====
 *hct-count* ( x hct -- u )
- Count the number of occurences of the cell data x in the table
+ Count the number of occurrences of the cell data x in the table
 *hct-execute* ( i*x xt hct -- j*x )
  Execute xt for every key and cell data in table
 ==== Inspection ====

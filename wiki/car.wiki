@@ -55,7 +55,7 @@ The car module implements a dynamic cell array.
 *car-sort* ( car -- )
  Sort the array using the compare execution token using heap sort
 *car-find-sorted* ( x car -- n flag )
- Find the cell value x in the already sorted array using binary search, return offset and succes
+ Find the cell value x in the already sorted array using binary search, return offset and success
 *car-has-sorted?* ( x car -- flag )
  Check if the cell value x is present in an already sorted array
 *car-insert-sorted* ( x car -- )
@@ -73,9 +73,9 @@ The car module implements a dynamic cell array.
  Dequeue the cell value from the end of the array, exception if array is empty
 ==== Special words ====
 *car-count* ( x car -- u )
- Count the number of occurences of a cell value x in the array
+ Count the number of occurrences of a cell value x in the array
 *car-find* ( x car -- n )
- Find the offset first occurence of the cell value x in the array, -1 if not found
+ Find the offset first occurrence of the cell value x in the array, -1 if not found
 *car-has?* ( x car -- flag )
  Check if a cell value x is present in the array
 *car-execute* ( i*x xt car -- j*x )

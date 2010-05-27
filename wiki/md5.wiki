@@ -10,7 +10,7 @@ The md5 module implements the MD5 algorithm.
 *md5-init* ( md5 -- )
  Initialise the MD5 variable
 *md5-create* ( "{{{<}}}spaces{{{>}}}name" -- ; -- md5 )
- Create a named MD5 variable ein the dictionary
+ Create a named MD5 variable in the dictionary
 *md5-new* ( -- md5 )
  Create a new MD5 variable on the heap
 *md5-free* ( md5 -- )

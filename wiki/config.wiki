@@ -19,6 +19,10 @@ The config module contains the extension and missing words for a forth system.
  Fetch milliseconds timer
 *max-ms@* ( -- u )
  Maximum value of the milliseconds timer
+*#args* ( -- n )
+ Get the number of command line arguments
+*arg@* ( n -- c-addr u )
+ Get the nth command line argument
 *lroll* ( u1 u2 -- u3 )
  Rotate u1 u2 bits to the left
 *rroll* ( u1 u2 -- u3 )
@@ -49,6 +53,10 @@ The config module contains the extension and missing words for a forth system.
  Convert the index n1 range [-n2..n2{{{>}}} into offset n3 range [0..n2{{{>}}}, negative values of n1 downward length n2
 *r'@* ( R: x1 x2 -- x1 x2; -- x1 )
  Fetch the second cell on the return stack
+*<w@* ( w-addr -- n )
+ Fetch a word, 16 bit, sign extend
+*<l@* ( l-addr -- n )
+ Fetch a long word, 32 bit, sign extend
 ==== Float extension constants ====
 *0e+0* ( F: -- r )
  Float constant 0.0
