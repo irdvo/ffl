@@ -28,6 +28,7 @@ include ffl/a32.fs
 include ffl/acn.fs
 include ffl/act.fs
 include ffl/arg.fs
+include ffl/b64.fs
 include ffl/bar.fs
 include ffl/bci.fs
 include ffl/bcn.fs
@@ -58,6 +59,7 @@ include ffl/fsm.fs
 include ffl/fst.fs
 include ffl/ftr.fs
 include ffl/frc.fs
+include ffl/fwt.fs
 include ffl/gmo.fs
 include ffl/gzf.fs
 include ffl/gzi.fs
@@ -82,6 +84,7 @@ include ffl/nnt.fs
 include ffl/rdg.fs
 include ffl/rgx.fs
 include ffl/rng.fs
+include ffl/scf.fs
 include ffl/scn.fs
 include ffl/scl.fs
 include ffl/sci.fs

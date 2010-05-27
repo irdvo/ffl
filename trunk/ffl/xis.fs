@@ -218,12 +218,12 @@ end-structure
 ;
 
 
-: xis-strip@   ( xis -- flag = Return flag indicating the stripping of leading and trailing whitespace in normal text )
+: xis-strip@   ( xis -- flag = Return flag indicating the stripping of leading and trailing white space in normal text )
   xis>strip @
 ;
 
 
-: xis-strip!   ( flag xis -- = Set the flag indicating the stripping of leaading and trailing whitespace in normal text )
+: xis-strip!   ( flag xis -- = Set the flag indicating the stripping of leading and trailing white space in normal text )
   xis>strip !
 ;
 

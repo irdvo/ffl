@@ -92,7 +92,7 @@ include ffl/stc.fs
 
 [UNDEFINED] <w@ [IF]
 : <w@        ( w-addr -- n = Fetch a word, 16 bit, sign extend )
-  w@ DUP [ hex ] 8000 [ decimal ] AND negate OR
+  w@ dup [ hex ] 8000 [ decimal ] AND negate OR
 ;
 [THEN]
 
@@ -159,7 +159,7 @@ cell 4 = [IF]
 ; immediate
 [ELSE]
 : <l@
-  l@ DUP [ hex ] 80000000 [ decimal ] AND negate OR
+  l@ dup [ hex ] 80000000 [ decimal ] AND negate OR
 ;
 [THEN]
 [THEN]
