@@ -44,9 +44,9 @@ include ffl/msc.fs
 ( localization of strings. Note: the numerical words in this module use the  )
 ( the numeric output string. The writer can be used to direct the result of  )
 ( the formatter to a writer word by calling tos-flush:                       )
-( <pre> )
+( {{{                                                                        )
 (  Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success )
-( </pre> )
+( }}}                                                                        )
 
 4 constant tos.version
 
