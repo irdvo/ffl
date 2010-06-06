@@ -58,7 +58,7 @@ include ffl/stt.fs
 ( notation for the callback word is: [ c-addr u -- ]                         )
 
 
-1 constant log.version
+2 constant log.version
 
 
 ( Log events )
@@ -76,7 +76,8 @@ end-enumeration
 
 ( Private log database )
 
-     defer log.appender   ( --    = the current log appender )
+     defer log.appender   ( -- = the current log appender )
+     defer log.flush      ( -- = the file flusher )
 
 tos-create log.msg        ( -- tos = the log message )
 
@@ -101,6 +102,20 @@ begin-stringtable log.event>string
 +" ERROR "
 +" FATAL "
 end-stringtable
+
+
+( Private flush words )
+
+[UNDEFINED] noop [IF]
+: noop             ( -- = Do nothing )
+;
+[THEN]
+
+
+: log-flush        ( -- = Flush the log file )
+  log.file flush-file drop
+;
+' log-flush is log.flush
 
 
 ( Private appender words )
@@ -142,7 +157,7 @@ end-stringtable
     log.file close-file drop
     ['] log-console is log.appender              \ Failure -> console as appender
   ELSE
-    log.file flush-file drop
+    log.flush
   THEN
 ;
 
@@ -151,7 +166,7 @@ end-stringtable
   log.file write-line IF
     ['] log-console is log.appender              \ Failure -> console as appender
   ELSE
-    log.file flush-file drop
+    log.flush
   THEN
 ;
 
@@ -268,6 +283,16 @@ end-stringtable
 
 : log-with-time&date ( flag -- = Set if the time&date should start the log message )
   to log.time&date
+;
+
+
+: log-with-flush   ( flag -- = Set if the log line should be flushed to file )
+  IF
+    ['] log-flush
+  ELSE
+    ['] noop
+  THEN
+  is log.flush
 ;
 
 

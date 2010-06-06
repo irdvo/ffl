@@ -1,4 +1,5 @@
 0.8.0
+* log: new word: log-with-flush (2010-06-06)
 * md5: 64bit ready (2010-05-26)
 * sh2: 64bit ready (2010-05-25)
 * sh1: 64bit ready (2010-05-23)
@@ -11,7 +12,6 @@
 * xis: new word: xis+remove-read-parameters (2010-03-18)
 * fwt: new module: fixed width types (2010-01-16)
 * VFXForth: config.fs/make.fs added (2009-12-21, thanks to Stephen)
-* dbm: new module: gdbm interface (2009-10-03)
 * b64: new module: Base64 module (2009-09-24)
 * frc: rc+calc-gcd,frc+calc-lcm simplified (2009-09-18, thanks to Albert)
 * scf: %q for quoted string added (2009-09-02)

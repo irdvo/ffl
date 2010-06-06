@@ -85,6 +85,7 @@ t{ log-count @ 7 ?s }t
 
 log.trace log-from-level
 
+
 \ Test log-by-file
 
 s" log.tmp" w/o create-file 0= [IF]
@@ -117,6 +118,8 @@ t{ s" log" 10 15 log-to-rolling }t
     drop
   LOOP
 ;
+
+t{ false log-with-flush }t
 
 t{ 3 log-stack-depth }t
 
