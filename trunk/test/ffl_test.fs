@@ -53,6 +53,7 @@ include dtm_test.fs
 include dos_test.fs
 include est_test.fs
 include frc_test.fs
+include fwt_test.fs
 include fsm_test.fs
 include hct_test.fs
 include lbf_test.fs

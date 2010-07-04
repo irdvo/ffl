@@ -39,7 +39,9 @@ For gforth no futher configuration is necessary.
 
 Step 3: Test the library
 a. Change the current directory to the 'test' directory in the package
-b. Enter: gforth ffl_test.fs
+b. Enter: gforth ffl_test.fs -ab -c TEST --verbose --file=FILE input
+   (the command line arguments are for test purposes and have no real meaning,
+   enter them in the correct case)
 c. The test script will tell you which modules are tested and if there 
    were any errors. 
    If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
@@ -84,7 +86,9 @@ the configuration items.
 Step 3: Test the library
 a. Start cmd
 b. Change the current directory to the 'test' directory in the package
-c. Enter: gforth ffl_test.fs
+c. Enter: gforth ffl_test.fs -ab -c TEST --verbose --file=FILE input
+   (the command line arguments are for test purposes and have no real meaning,
+   enter them in the correct case)
 d. The test script will tell you which modules are tested and if there 
    were any errors. 
    If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
@@ -128,8 +132,9 @@ a. Change the current directory to the 'test' directory in the package
 b. Enter: bigforth ffl_test.fs
 c. The test script will tell you which modules are tested and if there 
    were any errors. 
-   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
-   then all went well.
+   If bigforth only reports errors for the fwt module, then all went well.
+   Bigforth reports errors for the fwt module, due to missing alignment
+   code in this forth engine.
 
 Tested with bigforth 2.3.1
 
@@ -454,6 +459,89 @@ e. The test script will tell you which modules are tested and if there
    then all went well.
 
 Tested with ntf 1.6
+
+
+VFXForth (linux)
+----------------
+
+VFXForth doesn't use a search path, so you should create a link to the library
+in your forth working directory
+
+Step 1: Install the library by creating a link to the library 
+a. Copy the 'ffl' directory (and its contents) from the package to
+   a freely chosen directory. For example '~/lib', '/usr/lib' or 
+   '/usr/local/lib' resulting in '~/lib/ffl', '/usr/lib/ffl' or 
+   '/usr/local/lib/ffl'.
+b. Copy from the 'engines/VFXForth' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   chosen directory, resulting in '~/lib/ffl/config.fs' and 
+   '~/lib/ffl/make.fs', etc.
+c. Create in your forth working directory a symbolic link to the
+   chosen directory. The name of this link should be 'ffl' and the
+   target the chosen directory. For example: 'ln -s ~/lib/ffl ffl' 
+   or 'ln -s /usr/lib/ffl ffl' or 'ln -s /usr/local/lib/ffl ffl'.
+d. Start vfxlin
+e. Enter: include ffl/frc.fs
+f. If all is well, VFXForth should include the file.
+g. If vfxlin reports an error that the file Ndp387.fth could not
+   be included, the macro %vfxpath% is not correctly set. 
+   Find the file by using the command: 
+      find / -iname Ndp387.fth -print 2>/dev/null
+   This command shows the path to this file. The %vfxpath% macro
+   should be set with the path to the file till and including the
+   VfxForth directory. So if the path to the file is
+      /usr/share/doc/VfxForth/Lib/Ndp387.fth
+   then enter in vfxlin
+      c" /usr/share/doc/VfxForth" c" VFXPATH" $setmacro
+
+Step 2: Configuration of the library
+For VFXForth no further configuration is necessary.
+
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Make sure that in this directory the library is present by creating a link 
+   to the library. (see Step 1).
+c. Enter: vfxlin include ffl_test.fs
+d. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
+Tested with vfxlin 4.4
+
+
+VFXForth (windows)
+------------------
+
+Due to the fact that I don't have access to VFXForth for windows, the
+following instructions are indicative.
+
+VFXForth doesn't use a search path, so you should copy the library to your forth
+working directory.
+
+Step 1: Install the library by copying the library 
+a. Copy the 'ffl' directory (and its contents) from the package to
+   your forth working directory.
+b. Copy from the 'engines/VFXForth' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   working directory.
+c. Start vfxwin
+d. Enter: include ffl/frc.fs
+e. If all is well, vfxwin should include the file.
+
+Step 2: Configuration of the library
+For vfxwin no further configuration is necessary.
+
+Step 3: Test the library
+a. Change the current directory to the 'test' directory in the package
+b. Make sure that in this directory the library is present by copying the
+   library to this directory (See step 1).
+c. Start vfxwin 
+d. Enter: include ffl_test.fs
+e. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
 
 
 fina

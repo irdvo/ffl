@@ -114,19 +114,25 @@ s" MAX-U" environment? 0= [IF] -1 [THEN] constant max-ms@   ( -- u = Maximum val
 
 
 
-: lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-2dup lshift >r
-#bits/cell swap - rshift r>
-or
+: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
+  2dup lshift >r
+  #bits/cell swap - rshift r>
+  or
 ;
 
-: rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-2dup rshift >r
-#bits/cell swap - lshift r>
-or
+: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
+  2dup rshift >r
+  #bits/cell swap - lshift r>
+  or
 ;
 
 : include PARSE-NAME ANSI-FILE::>ZFILENAME INCLUDED ;
+
+
+: file-status      ( c-addr u -- x ior = Get the file status, limited to existence )
+  FILE-EXIST 0= 0 swap
+;
+
 
 : SGN -1 MAX 1 MIN ;
 
@@ -310,6 +316,10 @@ TRUE CONSTANT FLOATING-EXT
 
 : fr@              ( -- r ; R: r -- r = Get float from top of return stack )
   r> rp@ f@ >r
+;
+
+: f>               ( r1 r2 -- flag = Check if r1 > r2 )
+  fswap f<
 ;
 
 [THEN]

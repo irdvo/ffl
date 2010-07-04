@@ -103,7 +103,7 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
     85 20 10 GTK_BUTTONBOX_END true s" End (spacing 10)" create_bbox >r
     5 true true r> r@ gtk_box_pack_start
 
-    2rdrop                        \ vbox and frame
+    rdrop rdrop                   \ vbox and frame
     
     s" Vertical Button Boxes" gtk_frame_new >r
     10 true true r@ r'@ gtk_box_pack_start
@@ -124,7 +124,7 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
     85 20 20 GTK_BUTTONBOX_END false s" End (spacing 20)" create_bbox >r
     5 true true r> r@ gtk_box_pack_start
 
-    2rdrop                        \ hbox and frame
+    rdrop rdrop                   \ hbox and frame
     rdrop                         \ main_vbox
 
     window gtk_widget_show_all

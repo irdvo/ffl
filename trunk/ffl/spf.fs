@@ -155,7 +155,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
     2swap     r@ str-append-string   \ Add exponent
     r@ spf-trailing-spaces           \ Add trailing spaces
   ELSE
-    2rdrop
+    rdrop rdrop
     s" !err!" r@ str-append-string
   THEN
   rdrop

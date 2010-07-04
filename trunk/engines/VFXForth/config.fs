@@ -71,6 +71,8 @@ s" ADDRESS-UNIT-BITS" environment? 0= [IF] 8 [THEN]
 ffl.endian c@ 0=
   constant bigendian?   ( -- flag = Check for bigendian hardware )
 
+create overrule:parse\" ( -- = VFX Forth ships with an incompatible parse\" )
+
 
 ( Extension words )
 
@@ -142,6 +144,10 @@ s" MAX-U" environment? drop constant max-ms@	\ -- u
   ?comp  postpone r>  postpone drop  ;  immediate
 [THEN]
 
+: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
+  ?comp postpone 2r@ postpone drop
+; immediate
+
 : d<>		\ d1 d2 -- flag
   d- or 0<>  ;
 
@@ -189,6 +195,8 @@ s" MAX-U" environment? drop constant max-ms@	\ -- u
 
 
 ( Float extension words )
+
+1 floats constant float  ( -- n = The size of one float )
 
 0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
 1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
@@ -241,7 +249,7 @@ end-code
 #-2056 #ErrDef exp-wrong-file-data	"Wrong file data"
 #-2057 #ErrDef exp-wrong-checksum	"Wrong checksum"
 #-2058 #ErrDef exp-wrong-length		"Wrong length"
-
+#-2059 #ErrDef exp-invalid-data   "Invalid data"
 
 
 \ ==============================================================================

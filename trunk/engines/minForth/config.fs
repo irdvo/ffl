@@ -255,6 +255,11 @@ fvariable float<>cells
   f- fabs 1e-99 f<
 ;
 
+: f>               ( F: r1 r2 -- flag = Check if r1 is bigger than r2 )
+  fswap f<
+;
+
+
 cell 4 = float 8 = AND [IF]
 
 : f>r              ( F: r --; R: -- r = Put float to return stack )

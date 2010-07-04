@@ -152,7 +152,7 @@ create est-table
 [THEN]
 
 
-[UNDEFINED] parse\" [IF]
+[UNDEFINED] parse\" [DEFINED] overrule:parse\" OR [IF]
 : parse\"   ( "ccc<quote>" -- c-addr u = Parse the input stream for a escaped string )
   source >in @ /string tuck
   pad >r
