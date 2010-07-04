@@ -91,8 +91,8 @@ t{ 1.41421356E+0 -2.3561944E+0 cpx+from-polar -1E+0 ?r -1E+0 ?r }t
 : cpxs1 s" -0.180e1-0.270e1j" ;
 : cpxs2 s" -0.180e1+0.270e1j" ;
 : cpxs3 s" 0.100e1-0.270e1j" ;    
-  
-  
+
+
 3 set-precision
 
 t{ -1.8E+0 -2.7E+0 cpx+to-string cpxs1 ?str }t

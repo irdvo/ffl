@@ -37,7 +37,7 @@ include ffl/scf.fs
 
 ( gsv = gtk-server interface )
 ( The gsv module implements an interface to the gtk-server. This server       )
-( makes it possible for an ANS forth engine to show a gtk GUI. Due to the     )
+( makes it possible for an ANSish forth engine to show a gtk GUI. Due to the  )
 ( fact that using this module requires an external tool, this module has an   )
 ( environmental dependency. See [GTKserver] for how to use this module.       )
 
@@ -59,6 +59,7 @@ str-create gsv.cmd
 [UNDEFINED] gsv+connect [IF]
 : gsv+connect      ( c-addr u -- ior = Connect to the gtk-server via a fifo c-addr u )
   2dup file-status >r drop
+\ 0 >r
   r@ IF
     2drop
   ELSE
@@ -77,7 +78,7 @@ str-create gsv.cmd
   over swap
   gsv.out str-get w/o open-file throw 
   >r  
-  r@ write-line throw        ( Call the server )
+  r@ write-file throw        ( Call the server, write-line results in a SIGPIPE )
   r> close-file throw
   
   gsv.in  str-get r/o open-file throw 
@@ -165,7 +166,7 @@ str-create gsv.cmd
     r'@ tos-write-string
     2drop
   THEN
-  2rdrop
+  rdrop rdrop
 ;
   
 
@@ -200,7 +201,7 @@ str-create gsv.cmd
     THEN
     2drop
   THEN
-  2rdrop
+  rdrop rdrop
 ;
 
 
@@ -268,7 +269,7 @@ str-create gsv.cmd
       THEN
     THEN
   THEN
-  2rdrop
+  rdrop rdrop
 ;
 
 
@@ -297,7 +298,7 @@ str-create gsv.cmd
     THEN
   THEN
   base !
-  2rdrop
+  rdrop rdrop
 ;
 
 
@@ -312,7 +313,7 @@ str-create gsv.cmd
       2r@ gsv+parse-enum
     THEN THEN
   THEN
-  2rdrop
+  rdrop rdrop
 ;
 
 

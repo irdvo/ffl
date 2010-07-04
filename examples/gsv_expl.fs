@@ -39,7 +39,7 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
   0 value window                \ the event widgets
   0 value exit-button
   
-  
+
   : gsv-example
     gtk_init                    \ Initialise toolkit
                                 \ Create toplevel window 

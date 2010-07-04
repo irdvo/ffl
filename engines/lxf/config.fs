@@ -76,14 +76,14 @@ ffl.endian c@ 0=
 [THEN]
 
 
-:m lroll            ( u1 u -- u2 = Rotate u1 u bits to the left )
+: lroll            ( u1 u -- u2 = Rotate u1 u bits to the left )
   2dup lshift >r
   #bits/cell swap - rshift r>
   or
 ;
 
 
-:m rroll            ( u1 u -- u2 = Rotate u1 u bits to the right )
+: rroll            ( u1 u -- u2 = Rotate u1 u bits to the right )
   2dup rshift >r
   #bits/cell swap - lshift r>
   or
@@ -140,7 +140,7 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-:m @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
+: @!                ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
   dup @ -rot !
 ;
 
@@ -155,12 +155,12 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-:m rdrop            ( R: x -- )
+:m rdrop           ( R: x -- )
   r>drop
 ;
 
 
-:m r'@              ( R: x1 x2 -- x1 x2, -- x1 = Fetch the second cell on the return stack )
+:m r'@             ( R: x1 x2 -- x1 x2, -- x1 = Fetch the second cell on the return stack )
   2r@ drop
 ;
 
