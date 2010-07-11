@@ -180,28 +180,28 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 
 : w@         ( w-addr -- n = Fetch a word, 16 bit, zero extend )
-  STATE @ IF POSTPONE 16B@ ELSE 16B@ THEN
-; IMMEDIATE
+  16B@
+;
 
 : <w@        ( w-addr -- n = Fetch a word, 16 bit, sign extend )
-  STATE @ IF POSTPONE S16B@ ELSE S16B@ THEN
-; IMMEDIATE
+  S16B@
+;
 
 : w!         ( n w-addr -- = Store a word, 16 bit )
-  STATE @ IF POSTPONE 16B! ELSE 16B! THEN
-; IMMEDIATE
+  16B!
+;
 
 : l@         ( l-addr -- n = Fetch a long word, 32 bit, zero extend )
-  STATE @ IF POSTPONE 32B@ ELSE 32B@ THEN
-; IMMEDIATE
+  32B@
+;
 
 : <l@        ( l-addr -- n = Fetch a long word, 32 bit, sign extend )
-  STATE @ IF POSTPONE S32B@ ELSE S32B@ THEN
-; IMMEDIATE
+  S32B@
+;
 
 : l!         ( n l-addr -- = Store a long word, 32 bit )
-  STATE @ IF POSTPONE 32B! ELSE 32B! THEN
-; IMMEDIATE
+  32B!
+;
 
 
 [DEFINED] floats [IF]
@@ -209,10 +209,6 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ( Float extension constants )
 
 1 floats constant float ( -- n = Size of one float )
-
-0E+0 fconstant 0e+0  ( -- r = Float constant 0.0 )
-1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
-2E+0 fconstant 2e+0  ( -- r = Float constant 2.0 )
 
 
 ( Float extension words )

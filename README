@@ -292,10 +292,10 @@ iForth uses a search path to find sources. If you install the ffl library
 in this search path, iForth can find the library.
 
 Step 1: Install the library in the search path
-a. Copy the 'ffl' directory (and its contents) to $IFORTH/include 
-   ( ending up as $IFORTH/include/ffl ).
-b. Copy the 'ffl-x.y.z' directory, minus the subdirectory ffl to 
-   $IFORTH/examples/
+a. Copy the 'ffl-x.y.x' directory (and its contents) to $IFORTH/include/ffl
+   ( ending up as $IFORTH/include/ffl/ffl-x.y.z ).
+b. Copy the contents of the '$IFORTH/include/ffl/ffl-x.y.z/ffl' directory to
+   $IFORTH/include/ffl
 c. Copy from the 'engines/iForth' directory in the package the files
    'config.fs' and 'make.fs' to the $IFORTH/include/ffl directory.
 d. Start iForth
@@ -306,17 +306,17 @@ f. If iForth doesn't report an error, the library is correctly
 Step 2: Configuration of the library
 For iForth no further configuration is necessary.
 
+
 Step 3: Test the library
-a. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the 
-   '$IFORTH/examples/ffl-0.6.0/test' directory.
-b. Change the line 'tst-reset-tests' to 'include ffl/tst.fs  tst-reset-tests'
-c. Start iForth.
-d. Use the 'cd' word to move to the '$IFORTH/examples/ffl-0.6.0/test' directory 
-e. Do 'include ffl_test.fs' to run the tests.
-f. The test script will tell you which modules are tested and if there
-   were any errors.
-   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
-   then all went well.
+a. Use an editor to remove the 'bye' from the 'ffl_test.fs' file in the
+  '$IFORTH/include/ffl/ffl-x.y.z/test' directory.
+b. Start iForth.
+c. Use the 'cd' word to move to the '$IFORTH/include/ffl/ffl-x.y.z/test' directory
+d. Do 'include ffl_test.fs' to run the tests.
+e. The test script will tell you which modules are tested and if there
+  were any errors.
+  If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+  then all went well.
 
 
 SP-Forth (windows)

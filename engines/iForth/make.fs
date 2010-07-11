@@ -29,7 +29,7 @@ ms?
 
 unused
 
-include ffl/ffl.fs
+include ffl-0.8.0/ffl.fs
 
 unused -
 
