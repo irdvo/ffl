@@ -165,6 +165,17 @@ the GTK-server, the module also reads the gtk-server.cfg file. It parses the fil
 translates the contents into forth words and forth constants in the dictionary.
 
 
+== Own gtk-server.cfg ==
+
+If you use your own gtk-server.cfg, then make sure that the definition of 
+*gtk_server_enable_c_string_escaping* is present in your configuration file.
+The gsv module uses this call to check if the gtk calls are loaded, if the
+connection to the gtk-server is working and to support quoted strings.
+
+If this call is missing in your gtk-server.cfg file, the gsv module will
+not work.
+
+
 == Type conversion ==
 
 The gsv-module translates the arguments of the requests in the gtk-server.cfg file 
@@ -237,3 +248,4 @@ See [http://ffl.googlecode.com/svn/trunk/examples/gsv27_expl.fs Menu] for an exa
 using this method.
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
+
