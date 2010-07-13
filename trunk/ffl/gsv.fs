@@ -58,16 +58,10 @@ str-create gsv.cmd
 
 [UNDEFINED] gsv+connect [IF]
 : gsv+connect      ( c-addr u -- ior = Connect to the gtk-server via a fifo c-addr u )
-  2dup file-status >r drop
-\ 0 >r
-  r@ IF
-    2drop
-  ELSE
-    2dup
-    gsv.in  str-set
-    gsv.out str-set
-  THEN
-  r>
+  2dup
+  gsv.in  str-set            \ No special connection necessary for named pipes
+  gsv.out str-set
+  0
 ;
 [THEN]
 
@@ -350,17 +344,24 @@ str-create gsv.cmd
   gsv+connect ?dup IF
     nip nip
   ELSE
-    dup IF 
-      gsv+included
+    c" gtk_server_enable_c_string_escaping" >r
+    r@ find nip 0= IF
+      gsv+included           \ If function not found, then include file
     ELSE
-      nip
+      2drop 0
     THEN
-    
-    c" gtk_server_enable_c_string_escaping" find IF
-      execute 2drop
+
+    ?dup 0= IF
+      r> find IF
+        catch dup 0= IF      \ If succesfull, remove response
+          nip nip
+        THEN
+      ELSE
+        drop exp-no-data
+      THEN
     ELSE
-      drop
-    THEN
+      rdrop
+    THEN 
   THEN
 ;
 
