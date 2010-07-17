@@ -44,12 +44,25 @@ A few modules have environmental dependencies. As a result they will not be pres
 for some forth engines. For these modules you should test the presence of the {{{version}}} 
 constant after loading the module (see [Using Getting started]).
 
-|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* || *iForth* || *SP-Forth* || *lxf/ntf* ||
-|| Argument Parser (arg) || Yes || No || Yes || No || No || No || No || No ||
-|| Distributed Random Number Generator (rdg) || Yes || No || Yes || Yes || Yes || Yes || No || No ||
-|| Timer (tmr) || Yes || Yes || Yes || Yes || Yes || Yes || Yes || Yes ||
+||                                           || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* || *iForth* || *SP-Forth* || *lxf/ntf* || *VFXForth* ||
+|| Argument Parser (arg)                     || Yes      || No         || Yes   || No           || No         || No       || No         || No        || No         ||
+|| Distributed Random Number Generator (rdg) || Yes      || No         || Yes   || Yes          || Yes        || Yes      || No         || No        || No         ||
+|| Timer (tmr)                               || Yes      || Yes        || Yes   || Yes          || Yes        || Yes      || Yes        || Yes       || Yes        ||
+|| GTK-server interface (gsv)                || Yes      || No         || Yes   || No           || No         || ?        || Yes        || Yes       || Yes        ||
+
+Some notes for the GTK-server interface: 
+ * gsv is for the moment only tested on Linux.
+ * PFE will sometimes get stuck or report a broken pipe.
+ * BigForth and MinForth have problems with the long names of the GTK functions.
 
 == Benchmarks ==
+
+=== Version 0.8.0 ===
+
+||                      || *GForth* || *BigForth* || *PFE*  || *Win32Forth* || *MinForth* || *SP-Forth* || *lxf*  || *VFXForth* ||
+|| Compile Time (msec)  || 1087     || 251        || 459    || 1467         || 4280       || 2680       || 344    || 500        ||
+|| Compile Size (bytes) || 247784   || 210820     || 222204 || 218196       || 231732     || 214777     || 211599 || 356392     ||
+|| Test Time (sec)      || 4.2      || 2.9        || 11.2   || 8.7          || 48.6       || 5.6        || 2.1    || 2.1        ||
 
 === Version 0.7.0 ===
 
@@ -60,24 +73,24 @@ constant after loading the module (see [Using Getting started]).
 
 === Version 0.6.0 ===
 
-|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* ||
-|| Compile Time (msec) || 1774 || 352 || 720 || 2630 || 9440 ||
-|| Compile Size (bytes) || 169560 || 146406 || 166704 || 97176 || 106600 ||
-|| Test Time (sec) || 7.9 || 8.2 || 24.1 || 15.3 || 140.2 ||
+||                      || *GForth* || *BigForth* || *PFE*  || *Win32Forth* || *MinForth* ||
+|| Compile Time (msec)  || 1774     || 352        || 720    || 2630         || 9440       ||
+|| Compile Size (bytes) || 169560   || 146406     || 166704 || 97176        || 106600     ||
+|| Test Time (sec)      || 7.9      || 8.2        || 24.1   || 15.3         || 140.2      ||
 
 === Version 0.5.0 ===
 
-|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* || *MinForth* ||
-|| Compile Time (msec) || 1020 || 220 || 374 || 1760 || 6100 ||
-|| Compile Size (bytes) || 132724 || 115090 || 133796 || 75696 || 83128 ||
-|| Test Time (sec) || 6.8 || 8.2 || 23.6 || 14.3 || 132.9 ||
+||                      || *GForth* || *BigForth* || *PFE*  || *Win32Forth* || *MinForth* ||
+|| Compile Time (msec)  || 1020     || 220        || 374    || 1760         || 6100       ||
+|| Compile Size (bytes) || 132724   || 115090     || 133796 || 75696        || 83128      ||
+|| Test Time (sec)      || 6.8      || 8.2        || 23.6   || 14.3         || 132.9      ||
 
 === Version 0.4.0 ===
 
-|| || *GForth* || *BigForth* || *PFE* || *Win32Forth* ||
-|| Compile Time (msec) || 690 || 158 || 255 || 1200 ||
-|| Compile Size (bytes) || 103132 || 89710 || 112628 || 59660 ||
-|| Test Time (sec) || 3.8 || 6.2 || 9.2 || 9.6 ||
+||                      || *GForth* || *BigForth* || *PFE*  || *Win32Forth* ||
+|| Compile Time (msec)  || 690      || 158        || 255    || 1200         ||
+|| Compile Size (bytes) || 103132   || 89710      || 112628 || 59660        ||
+|| Test Time (sec)      || 3.8      || 6.2        || 9.2    || 9.6          ||
 
 Legenda:
 
@@ -88,13 +101,14 @@ Legenda:
 Notes:
 
  * Benchmarks for versions 0.4.0 till 0.6.0 were done on a Celeron 700 MHZ.
- * Benchmarks for version 0.7.0 were done on an Athlon 64 X2 1800MHZ
+ * Benchmarks for version 0.7.0 and higher were done on an Athlon 64 X2 1800MHZ
 
 == Porting ==
 
 As already stated the FFL is mostly written in ANS forth. If the forth engine you are using, is 
-not listed in the [Engines] page and it conforms to the ANS-standard, you can try porting ffl 
+not listed on the [Engines] page and it conforms to the ANS-standard, you can try porting ffl 
 to your forth engine by adding words to and removing words from the {{{ffl/config.fs}}} file. 
 If you succeed, you can send me the config.fs file so that I can add it to the distribution.
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
+

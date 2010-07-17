@@ -108,9 +108,13 @@ start the GTK-server in the example directory:
 
 {{{gtk-server -fifo=ffl-fifo &}}}
 
-Then start gforth with the example file:
+Then start the forth engine with the example file:
 
-{{{gforth gsv_expl.fs}}}
+{{{gforth gsv_expl.fs}}} or<br>
+{{{pfe gsv_expl.fs}}} or<br>
+{{{spf4 ffl/config.fs gsv_expl.fs}}} or <br>
+{{{lxf include gsv_expl.fs}}} or<br>
+{{{vfxlin include gsv_expl.fs}}}
 
 The following examples are shipped with the library (in the examples directory):
 
@@ -150,7 +154,7 @@ file after an error. You can manually remove it (on linux):
 The GTK-server is running as a process. You can see the process ID 
 by entering:
 
-{{{ps -a | grep gtk-server}}}
+{{{ps -e | grep gtk-server}}}
 
 This ID can then be used to stop the GTK-server after problems: 
 
@@ -159,10 +163,12 @@ This ID can then be used to stop the GTK-server after problems:
 
 == How it works ==
 
-The GTK-server uses the gtk-server.cfg file to determine which requests can be made
-and what the arguments are for that requests. To keep the gsv-module in sync with
-the GTK-server, the module also reads the gtk-server.cfg file. It parses the file and
-translates the contents into forth words and forth constants in the dictionary.
+The GTK-server uses the gtk-server.cfg file to determine which requests can be 
+made and what the arguments are for that requests. 
+
+To keep the gsv-module in sync with the GTK-server, the module reads the 
+gtk-server.cfg file. It parses the file and translates the contents into forth 
+words and forth constants in the dictionary.
 
 
 == Own gtk-server.cfg ==
@@ -179,7 +185,7 @@ not work.
 == Type conversion ==
 
 The gsv-module translates the arguments of the requests in the gtk-server.cfg file 
-from the following forth stack data types :
+to the following forth stack data types :
 
 || *gtk-server.cfg argument datatype* || *forth stack data type* ||
 || NULL       ||   ||
@@ -238,8 +244,8 @@ string. If you make sure that all events are numerically, you can easily convert
 string event ID to a number and use the CASE - OF - ENDOF - ENDCASE construct to check
 which event is triggered. Most examples in the library use this method.
 
-Another method is the use of [act AVL binary tree]. The key in this tree is 
-the numerical event ID and the linked data is an execution token (XT) of the 
+Another method is the use of the [act AVL binary tree]. The key in this tree is 
+the numerical event ID and the linked data is the execution token (XT) of the 
 forth word that must be executed when the event is triggered. When an event 
 is created, the event ID and the XT of the callback word are stored in the tree.
 In the mainloop the event ID, that is returned by {{{gtk_server_callback}}}, is
