@@ -110,11 +110,7 @@ start the GTK-server in the example directory:
 
 Then start the forth engine with the example file:
 
-{{{gforth gsv_expl.fs}}} or<br>
-{{{pfe gsv_expl.fs}}} or<br>
-{{{spf4 ffl/config.fs gsv_expl.fs}}} or <br>
-{{{lxf include gsv_expl.fs}}} or<br>
-{{{vfxlin include gsv_expl.fs}}}
+{{{gforth gsv_expl.fs | pfe gsv_expl.fs | spf4 ffl/config.fs gsv_expl.fs | lxf include gsv_expl.fs | vfxlin include gsv_expl.fs}}}
 
 The following examples are shipped with the library (in the examples directory):
 
@@ -254,4 +250,3 @@ See [http://ffl.googlecode.com/svn/trunk/examples/gsv27_expl.fs Menu] for an exa
 using this method.
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
-
