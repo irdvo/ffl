@@ -80,11 +80,11 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
   : set_float_value     ( -- = Process the get value event )
     formatter tos-rewrite
     precision >r
-    spinner1 gtk_spin_button_get_digits to precision
+    spinner1 gtk_spin_button_get_digits set-precision
     spinner1 gtk_spin_button_get_value 
     formatter tos-write-float
     formatter str-get label gtk_label_set_text
-    r> to precision
+    r> set-precision
   ;
   
 
