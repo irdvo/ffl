@@ -28,7 +28,7 @@ include ffl/arg.fs
 
 \ Test if the argument parser is implemented for the current forth Engine
 
-[DEFINED] a32.version [IF]
+[DEFINED] arg.version [IF]
 
 \ Create an argument parser on the heap
 
@@ -106,3 +106,4 @@ parse-options
 arg1 arg-free
 
 [THEN]
+

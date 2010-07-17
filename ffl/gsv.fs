@@ -353,7 +353,7 @@ str-create gsv.cmd
 
     ?dup 0= IF
       r> find IF
-        catch dup 0= IF      \ If succesfull, remove response
+        catch dup 0= IF      \ If successful, remove response
           nip nip
         THEN
       ELSE
