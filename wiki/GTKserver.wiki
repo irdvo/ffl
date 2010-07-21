@@ -45,7 +45,7 @@ and the gsv-module. As a result both use the same configuration file.
 After a gtk-server.cfg is copied to the project directory, you can 
 start the GTK-server (on linux) in this project directory:
 
-{{{gtk-server -fifo=prj-fifo &}}}
+ {{{gtk-server -fifo=prj-fifo &}}}
 
 The prj-fifo is the fifo filename that is used to communicate with the
 GTK-server. You can use any file name. All the examples in the ffl 
@@ -53,15 +53,15 @@ library use the 'ffl-fifo' filename.
 
 The next step is to start the forth engine (gforth):
 
-{{{gforth}}}
+ {{{gforth}}}
 
 In gforth you should include the gsv-module: 
 
-{{{include ffl/gsv.fs}}}
+ {{{include ffl/gsv.fs}}}
 
 Then read the gtk-server.cfg file and open a connection to the GTK-server:
 
-{{{s" gtk-server.cfg" s" prj-fifo" gsv+open throw}}}
+ {{{s" gtk-server.cfg" s" prj-fifo" gsv+open throw}}}
 
 The gsv+open call returns an ior. If it is 0, there is a connection to
 the GTK-server and the gtk-server.cfg is processed.
@@ -69,30 +69,30 @@ the GTK-server and the gtk-server.cfg is processed.
 From now on you can send GTK calls to the GTK-server. First 
 initialise the toolkit:
 
-{{{gtk_init}}}
+ {{{gtk_init}}}
 
 Then create a toplevel window and save the handle in the window value:
 
-{{{GTK_WINDOW_TOPLEVEL gtk_window_new VALUE window}}}
+ {{{GTK_WINDOW_TOPLEVEL gtk_window_new VALUE window}}}
 
 Give the window a title:
 
-{{{s" Title: hello world" window gtk_window_set_title}}}
+ {{{s" Title: hello world" window gtk_window_set_title}}}
 
 Show the window:
 
-{{{window gtk_widget_show}}}
+ {{{window gtk_widget_show}}}
 
 Wait for events:
 
-{{{s" WAIT" gtk_server_callback 2drop}}}
+ {{{s" WAIT" gtk_server_callback 2drop}}}
 
 The window is shown. After pressing the close button of the window ('X'),
 the call will return.
 
 Then enter:
 
-{{{0 gtk_exit}}}
+ {{{0 gtk_exit}}}
 
 This will close all windows and stop the GTK-server process.
 
@@ -106,37 +106,47 @@ inspired by the
 The examples use the fifo name: ffl-fifo. To run an example 
 start the GTK-server in the example directory: 
 
-{{{gtk-server -fifo=ffl-fifo &}}}
+  {{{gtk-server -fifo=ffl-fifo &}}}
 
-Then start the forth engine with the example file:
+Then start one of the following forth engines with the example file:
 
-{{{gforth gsv_expl.fs | pfe gsv_expl.fs | spf4 ffl/config.fs gsv_expl.fs | lxf include gsv_expl.fs | vfxlin include gsv_expl.fs}}}
+  {{{gforth gsv_expl.fs}}}
+
+  {{{pfe gsv_expl.fs}}}
+
+  {{{spf4 ffl/config.fs gsv_expl.fs}}}
+
+  {{{lxf include gsv_expl.fs}}}
+
+  {{{vfxlin include gsv_expl.fs}}}
 
 The following examples are shipped with the library (in the examples directory):
 
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv_expl.fs   Hello World]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv2_expl.fs  Button Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv3_expl.fs  Box Packing]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv4_expl.fs  Table Packing]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv5_expl.fs  Pixmap Button]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv6_expl.fs  Toggle Button Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv7_expl.fs  Adjustment Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv8_expl.fs  Label Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv9_expl.fs  Arrow & Tooltip Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv10_expl.fs Timer & Progress bar Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv12_expl.fs Statusbar Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv13_expl.fs Entry Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv14_expl.fs Spinbutton Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv17_expl.fs File Chooser Dialog]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv18_expl.fs Event Box]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv19_expl.fs Fixed Container]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv20_expl.fs Frame]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv21_expl.fs Aspect Frame]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv23_expl.fs Scrolled Window]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv24_expl.fs Button Box]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv26_expl.fs Notebook Widget]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv27_expl.fs Menu]
- * [http://ffl.googlecode.com/svn/trunk/examples/gsv99_expl.fs Mandelbrot]
+|| *Example file* || *Description* ||
+|| gsv_expl.fs    || [http://ffl.googlecode.com/svn/trunk/examples/gsv_expl.fs   Hello World] ||
+|| gsv2_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv2_expl.fs  Button Widget] ||
+|| gsv3_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv3_expl.fs  Box Packing] ||
+|| gsv4_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv4_expl.fs  Table Packing] ||
+|| gsv5_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv5_expl.fs  Pixmap Button] ||
+|| gsv6_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv6_expl.fs  Toggle Button Widget] ||
+|| gsv7_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv7_expl.fs  Adjustment Widget] ||
+|| gsv8_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv8_expl.fs  Label Widget] ||
+|| gsv9_expl.fs   || [http://ffl.googlecode.com/svn/trunk/examples/gsv9_expl.fs  Arrow & Tooltip Widget] ||
+|| gsv10_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv10_expl.fs Timer & Progress bar Widget] ||
+|| gsv12_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv12_expl.fs Statusbar Widget] ||
+|| gsv13_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv13_expl.fs Entry Widget] ||
+|| gsv14_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv14_expl.fs Spinbutton Widget] ||
+|| gsv17_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv17_expl.fs File Chooser Dialog] ||
+|| gsv18_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv18_expl.fs Event Box] ||
+|| gsv19_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv19_expl.fs Fixed Container] ||
+|| gsv20_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv20_expl.fs Frame] ||
+|| gsv21_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv21_expl.fs Aspect Frame] ||
+|| gsv23_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv23_expl.fs Scrolled Window] ||
+|| gsv24_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv24_expl.fs Button Box] ||
+|| gsv26_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv26_expl.fs Notebook Widget] ||
+|| gsv27_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv27_expl.fs Menu] ||
+|| gsv99_expl.fs  || [http://ffl.googlecode.com/svn/trunk/examples/gsv99_expl.fs Mandelbrot] ||
+
 [http://ffl.googlecode.com/svn/trunk/examples/gsv99_expl.fs http://ffl.googlecode.com/svn/wiki/mandelbrot.png]
 
 
@@ -145,16 +155,16 @@ The following examples are shipped with the library (in the examples directory):
 My experience is that the GTK-server will not always clean up the fifo
 file after an error. You can manually remove it (on linux): 
 
-{{{rm prj-fifo}}}
+  {{{rm prj-fifo}}}
 
 The GTK-server is running as a process. You can see the process ID 
 by entering:
 
-{{{ps -e | grep gtk-server}}}
+  {{{ps -e | grep gtk-server}}}
 
 This ID can then be used to stop the GTK-server after problems: 
 
-{{{kill ID}}}
+  {{{kill ID}}}
 
 
 == How it works ==
