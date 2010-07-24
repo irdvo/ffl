@@ -54,6 +54,7 @@ cp   examples/nl.mo           ${dest}/examples
 cp   examples/index.html      ${dest}/examples
 cp   examples/gzipped.gz      ${dest}/examples
 cp   examples/info.xpm        ${dest}/examples
+cp   examples/gtk-server.cfg  ${dest}/examples
 
 tar cvzf ${package}-${version}.tar.gz ${dest} 
 

@@ -78,7 +78,7 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
                                   \ Connect button with event enter to enter-button
     enter-button s" enter" button gsv+server-connect 2drop
     
-    s" cool button" s" info.xmp" xpm_label_box >r
+    s" cool button" s" info.xpm" xpm_label_box >r
 
     r@ gtk_widget_show            \ xpm label box
 

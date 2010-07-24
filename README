@@ -16,6 +16,49 @@ example and test files are licensed under the GNU GPL.
 Installation, Configuration And Testing
 =======================================
 
+gforth (Debian/Ubuntu)
+----------------------
+
+Step 1: install the library with the Debian package
+a. Download and install the ffl-gforth_x.y.z-1_all.deb package
+b. Start gforth
+c. Enter: include ffl/frc.fs
+d. If gforth doesn't report an error, the library is correctly installed.
+
+Step 2: Configuration of the library
+With the Debian package no further configuration is necessary.
+
+Step 3: Test the library
+   The test scripts are installed in the /usr/share/ffl/x.y.z/test
+   directory. Due to ownership of those files (root), it is not 
+   possible to run the tests directly in this directory, so ..
+a. Create a temporary directory. For example: mkdir ~/ffl-test
+b. Copy the test scripts to the temporary directory:
+   cp /usr/share/ffl/x.y.z/test/* ~/ffl-test
+c. Change the current directory to the temporary directory:
+   cd ~/ffl-test
+d. Enter: gforth ffl_test.fs -ab -c TEST --verbose --file=FILE input
+   (the command line arguments are for test purposes and have no real meaning,
+   enter them in the correct case)
+e. The test script will tell you which modules are tested and if there 
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+f. Don't forget to cleanup the temporary directory.
+
+Some notes for the Debian package:
+a. The library is installed in /usr/share/gforth/site-forth/ffl
+b. The test scripts are installed in /usr/share/ffl/x.y.z/test
+c. The examples are installed in /usr/share/ffl/x.y.z/examples
+d. The documentation is installed in /usr/share/doc/ffl
+
+Due to file ownership reasons the test scripts and examples can not
+be started directly in the install directories, but must be 
+copied to temporary directories under your own account.
+
+Tested with gforth-0.7.0.
+
+
 gforth (non-windows)
 ---------------------
 
@@ -292,7 +335,7 @@ iForth uses a search path to find sources. If you install the ffl library
 in this search path, iForth can find the library.
 
 Step 1: Install the library in the search path
-a. Copy the 'ffl-x.y.x' directory (and its contents) to $IFORTH/include/ffl
+a. Copy the 'ffl-x.y.z' directory (and its contents) to $IFORTH/include/ffl
    ( ending up as $IFORTH/include/ffl/ffl-x.y.z ).
 b. Copy the contents of the '$IFORTH/include/ffl/ffl-x.y.z/ffl' directory to
    $IFORTH/include/ffl
