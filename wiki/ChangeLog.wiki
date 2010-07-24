@@ -2,6 +2,7 @@
 
 {{{
 0.8.0
+* Debian package of the library (2010-07-24)
 * log: new word: log-with-flush (2010-06-06)
 * md5: 64bit ready (2010-05-26)
 * sh2: 64bit ready (2010-05-25)
