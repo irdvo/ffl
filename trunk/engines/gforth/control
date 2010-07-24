@@ -1,0 +1,28 @@
+Package: ffl-gforth
+Source: ffl
+Version: 0.8.0-1
+Architecture: all
+Maintainer: Dick van Oudheusden <dvoudheusden@gmail.com>
+Installed-Size: 1900
+Depends: gforth
+Section: interpreters
+Priority: optional
+Homepage: http://code.google.com/p/ffl/
+Description: Forth Foundation Library
+ Library of useful Forth words, configured for gforth.
+ .
+ A set of general-purpose library modules for ANS Forth. 
+ Covered areas include:
+  * basic data types
+  * collections
+  * hashes
+  * pseudo random generators
+  * gunzip interface
+  * message catalog
+  * xml/html parser
+  * xml-dom
+  * regular expressions
+  * streams
+  * unit tests
+ .
+ This package provides the architecture-independent Forth library.

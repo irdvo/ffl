@@ -45,7 +45,6 @@ s" ffl.version" forth-wordlist search-wordlist 0= [IF]
 import float
 
 float also
-DOS   also
 
 
 ( Private words )

@@ -1,0 +1,48 @@
+#/bin/sh
+
+version=0.8.0
+
+rm -rf debian
+rm ffl-gforth_${version}-1_all.deb
+
+debian=debian/DEBIAN
+mkdir -p ${debian}
+cp    control               ${debian}
+
+site=debian/usr/share/gforth/site-forth/ffl
+mkdir -p ${site}
+cp    ../../ffl/*.fs        ${site}
+
+tests=debian/usr/share/ffl/${version}/test
+mkdir -p ${tests}
+cp    ../../test/*.fs       ${tests}
+cp    ../../test/nl.po      ${tests}
+cp    ../../test/nl.mo      ${tests}
+cp    ../../test/test.xml   ${tests}
+cp    ../../test/stored.gz  ${tests}
+cp    ../../test/fixed.gz   ${tests}
+cp    ../../test/gzipped.gz ${tests}
+
+examples=debian/usr/share/ffl/${version}/examples
+mkdir -p ${examples}
+cp    ../../examples/*.fs           ${examples}
+cp    ../../examples/test.xml       ${examples}
+cp    ../../examples/nl.mo          ${examples}
+cp    ../../examples/index.html     ${examples}
+cp    ../../examples/gzipped.gz     ${examples}
+cp    ../../examples/info.xpm       ${examples}
+cp    ../../examples/gtk-server.cfg ${examples}
+
+docs=debian/usr/share/doc/ffl
+mkdir -p ${docs}
+cp    ../../html/*.html             ${docs}
+cp    ../../README                  ${docs}
+cp    copyright                     ${docs}
+cp    ../../ChangeLog               ${docs}/changelog
+gzip  ${docs}/changelog
+cp    changelog.Debian              ${docs}
+
+fakeroot dpkg-deb --build debian
+
+mv debian.deb ffl-gforth_${version}-1_all.deb
+
