@@ -51,7 +51,7 @@ The following modules are present in the Forth Foundation Library:
 || [hnt hnt] || Generic hash table || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
 || [hnn hnn] || Generic hash table node || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
 || [lbf lbf] || Linear buffer || DataType || 0.7.0 || 0.7.0 || Yes || Both ||
-|| [log log] || Log module || Development || 0.7.0 || 0.7.0 || Yes || Both ||
+|| [log log] || Log module || Development || 0.7.0 || 0.8.0 || Yes || Both ||
 || [md5 md5] || MD5 Algorithm || Interface || 0.3.0 || 0.3.0 || Yes || Both ||
 || [msc msc] || Message Catalog || Compound || 0.6.0 || 0.6.0 || Yes || Both ||
 || [nci nci] || n-Tree cell iterator || Collection || 0.5.0 || 0.5.0 || No || Both ||

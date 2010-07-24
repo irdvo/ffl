@@ -54,6 +54,8 @@ notation for the callback word is: [ c-addr u -- ]
  Append max n top stack elements to the log message
 *log-with-time&date* ( flag -- )
  Set if the time&date should start the log message
+*log-with-flush* ( flag -- )
+ Set if the log line should be flushed to file
 ==== Log word ====
 *do-log* ( c-addr u n -- )
  Log the message c-addr u with event n

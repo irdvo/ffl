@@ -9,9 +9,9 @@ is always the end of the stream. The message catalog can be used for
 localization of strings. Note: the numerical words in this module use the
 the numeric output string. The writer can be used to direct the result of
 the formatter to a writer word by calling tos-flush:
-{{{<}}}pre{{{>}}}
+{{{
  Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success
-{{{<}}}/pre{{{>}}}
+}}}
 
 === Module Words ===
 ==== Output stream structure ====

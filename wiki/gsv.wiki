@@ -1,7 +1,7 @@
 #summary gtk-server interface
 === Module Description ===
 The gsv module implements an interface to the gtk-server. This server
-makes it possible for an ANS forth engine to show a gtk GUI. Due to the
+makes it possible for an ANSish forth engine to show a gtk GUI. Due to the
 fact that using this module requires an external tool, this module has an
 environmental dependency. See [GTKserver] for how to use this module.
 
@@ -40,7 +40,7 @@ s" gtk-server.cfg" s" ffl-fifo" gsv+open 0= [IF]
   0 value window                \ the event widgets
   0 value exit-button
   
-  
+
   : gsv-example
     gtk_init                    \ Initialise toolkit
                                 \ Create toplevel window 

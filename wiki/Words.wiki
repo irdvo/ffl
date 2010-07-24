@@ -991,6 +991,7 @@
 [log log-to-console] (-- )<br>
 [log log-to-file] (fileid -- )<br>
 [log log-to-rolling] (c-addr u n1 n2 -- )<br>
+[log log-with-flush] (flag -- )<br>
 [log log-with-time&date] (flag -- )<br>
 [log log.debug] (-- n )<br>
 [log log.error] (-- n )<br>

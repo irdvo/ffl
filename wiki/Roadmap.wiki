@@ -1,10 +1,16 @@
 ﻿#labels Featured
 
-== 0.8.0: May 2010 ==
-Eighth delivery of the FFL library. The focus for this
-release will be on interfacing with the gtk-server.
+== 0.9.0: March 2011 ==
+Ninth delivery of the FFL library. A dbm module is planned
+for this release.
 <br>
 Status: under way
+
+== 0.8.0: May 2010 ==
+Eighth delivery of the FFL library. The focus for this
+release was on interfacing with the gtk-server.
+<br>
+Status: done
 
 == 0.7.0: June 2009 ==
 Seventh delivery of the FFL library. The focus for this
