@@ -1,5 +1,14 @@
 #labels Featured
 
+== 25 Juli 2009 ==
+
+Eighth release, version 0.8.0, of the Forth Foundation Library. The
+library is extended with an interface module for the gtk-server. This 
+module enables the Forth engine to show a GTK GUI. Also a base64, a
+scanf and fixed width data module are added to the library. Four
+modules were extended with new words. The library will now also run
+on VFX Forth and on 64bit Forths. See the [ChangeLog] for more details.
+
 == 12 June 2009 ==
 
 Seventh release, version 0.7.0, of the Forth Foundation Library. The
