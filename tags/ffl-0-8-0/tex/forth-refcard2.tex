@@ -1,0 +1,337 @@
+%
+% Forth Quick Reference Card (part II)
+% Copyright (c) 2006 Dick van Oudheusden
+% TeX Format
+
+% Note: Comment the following line and Uncomment the three next for PDF
+% generation (command is pdftex vimqrc.tex).
+
+% Uncomment the following line for dvi/ps generation: tex forth-refcard1.tex; dvips -o forth-refcard1.ps forth-refcard1.dvi
+%\input outopt.tex
+
+% Uncomment the following three lines for PDF generation: pdftex forth-refcard.tex
+\pdfoutput=1
+\pdfpageheight=21cm
+\pdfpagewidth=29.7cm
+
+% Font definitions
+\font\bigbf=cmb12
+\font\smallrm=cmr8
+\font\smalltt=cmtt8
+\font\tinyit=cmmi5
+
+\def\cm#1#2{{\tt#1}\dotfill#2\par}
+\def\cn#1{\hfill$\lfloor$ #1\par}
+\def\sect#1{\vskip 0.5cm {\it#1}\par}
+\def\vsep{\vskip 4pt}
+
+% Characters definitions
+\def\bs{$\backslash$}
+\def\backspace{$\leftarrow$}
+\def\ctrl{{\rm\char94}\kern-1pt}
+\def\enter{$\hookleftarrow$}
+\def\or{\thinspace{\tinyit{or}}\thinspace}
+\def\key#1{$\langle${\rm{\it#1}}$\rangle$}
+\def\rapos{\char125}
+\def\lapos{\char123}
+\def\bs{\char92}
+\def\tild{\char126}
+
+% Three columns definitions
+\parindent 0pt
+\nopagenumbers
+\hoffset=-1.56cm
+\voffset=-1.54cm
+\newdimen\fullhsize
+\fullhsize=27.9cm
+\hsize=8.5cm
+\vsize=19cm
+\def\fullline{\hbox to\fullhsize}
+\let\lr=L
+\newbox\leftcolumn
+\newbox\midcolumn
+\output={
+  \if L\lr
+    \global\setbox\leftcolumn=\columnbox
+    \global\let\lr=M
+  \else\if M\lr
+    \global\setbox\midcolumn=\columnbox
+    \global\let\lr=R
+  \else
+    \tripleformat
+    \global\let\lr=L
+  \fi\fi
+  \ifnum\outputpenalty>-20000
+  \else
+    \dosupereject
+  \fi}
+\def\tripleformat{
+  \shipout\vbox{\fullline{\box\leftcolumn\hfil\box\midcolumn\hfil\columnbox}}
+  \advancepageno}
+\def\columnbox{\leftline{\pagebody}}
+
+% Card content
+% Header
+%\hrule\vskip 3pt
+\hfil{\bf FORTH QUICK REFERENCE CARD}\hfil\par
+\hfil{\bf Part II}\hfil\par
+\vskip 2pt\hrule
+
+\sect{File access}
+ \cm{bin (m1 - m2)}{Binary file}
+ \cm{close-file (F - i)}{Close file}
+ \cm{create-file (C u m - F i)}{Create file}
+ \cm{delete-file (C u - i)}{Delete file}
+ \cm{file-position (F - ud i)}{Current file position}
+ \cm{file-size (F - ud i)}{Current file size}
+ \cm{file-status (F - x i)}{File status}
+ \cm{flush-file (F - i)}{Flush file}
+ \cm{include-file (.. F - ..)}{Interpret file}
+ \cm{included (.. C u - ..)}{Interpret file}
+ \cm{open-file (C u m - F i)}{Open file}
+ \cm{r/o ( - m)}{Read only file}
+ \cm{r/w ( - m)}{Read write file}
+ \cm{read-file (C u1 F - u2 i)}{Read characters from file}
+ \cm{read-line (C u1 F - u2 f i)}{Read till end of line}
+ \cm{rename-file (C1 u1 C2 u2 - i)}{Rename file 1 to 2}
+ \cm{reposition-file (ud F - i)}{Reposition file pointer}
+ \cm{resize-file (ud F - i)}{Resize file}
+ \cm{w/o ( - m)}{Write only file}
+ \cm{write-file (C u F - i)}{Write characters to file}
+
+\sect{Conditional interpreting}
+ \cm{$\lbrack$IF$\rbrack$ (f - )}{Start of conditional interpreting}
+ \cm{$\lbrack$ELSE$\rbrack$ ( - )}{Else for conditional interpreting}
+ \cm{$\lbrack$THEN$\rbrack$ ( - )}{End of conditional interpreting}
+
+\sect{Dictionary}
+ \cm{also ( - )}{Dup top of the search order list}
+ \cm{definitions ( - )}{Compilation in first of search order}
+ \cm{forth ( - )}{Put forth-wordlist on top of search order}
+ \cm{forth-wordlist ( - W)}{Forth word list}
+ \cm{get-current ( - W)}{Get current compilation word list}
+ \cm{get-order ( - Ws n)}{Get search order lists}
+ \cm{only ( - )}{Set to minimum search order list}
+ \cm{previous ( - )}{Drop top of search order list}
+ \cm{search-wordlist (C u W - C x n)}{Find in word list}
+ \cm{set-current (W - )}{Set word list for compilation}
+ \cm{set-order (Ws n - )}{Set the search order word list}
+ \cm{wordlist ( - W)}{Create new word list}
+
+\eject
+\sect{Floating point numbers}
+ \cm{>float (C u - r f)}{Convert string to float}
+ \cm{d>f (d - r)}{Convert double to float}
+ \cm{f! (r R - )}{Store float at address}
+ \cm{f* (r1 r2 - r)}{Multiply floats}
+ \cm{f** (r1 r2 - r)}{Raise to the power}
+ \cm{f. (r1 - )}{Display floating point number}
+ \cm{f+ (r1 r2 - r)}{Add floats}
+ \cm{f- (r1 r2 - r)}{Subtract floats}
+ \cm{f/ (r1 r2 - r)}{Divide floats}
+ \cm{f~ (r1 r2 r3 - f)}{Compare r1 and r2 depending r3}
+ \cm{f0< (r - f)}{Check for less than zero}
+ \cm{f0= (r - f)}{Check for zero}
+ \cm{f< (r1 r2 - f)}{Check for less than}
+ \cm{f>d (f - d)}{Convert float to double}
+ \cm{f@ (R - r)}{Fetch float from address}
+ \cm{fabs (r1 - r2)}{Absolute value of float}
+ \cm{facos (r1 - r2)}{cos r2 = r1 (rad)}
+ \cm{facosh (r1 - r2)}{hyp. cos r2 = r1}
+ \cm{falog (r1 - r2)}{10**r1 = r2}
+ \cm{fasin (r1 - r2)}{sin r2 = r1 (rad)}
+ \cm{fasinh (r1 - r2)}{hyp. sin r2 = r1}
+ \cm{fatan (r1 - r2)}{tan r2 = r1 (rad)}
+ \cm{fatan2 (r1 r2 - r)}{tan r = r1/r2}
+ \cm{fatanh (r1 - r2)}{hyp. tan r2 = r1}
+ \cm{fcos (r1 - r2)}{cos r1 = r2}
+ \cm{fcosh (r1 - r2)}{hyp. cos r1 = r2}
+ \cm{fe. (r - )}{Display float engineering notation}
+ \cm{fexp (r1 - r2)}{e**r1 = r2}
+ \cm{fexpm1 (r1 - r2)}{e**r1 - 1.0 = r2}
+ \cm{fln (r1 - r2)}{ln r1 = r2}
+ \cm{flnp1 (r1 - r2)}{ln (r1+1) = r2}
+ \cm{flog (r1 - r2)}{log r1 = r2}
+ \cm{fs. (r - )}{Display float scientific notation}
+ \cm{fsin (r1 - r2)}{sin r1 = r2}
+ \cm{fsincos (r - r1 r2)}{sin r = r1 cos r = r2}
+ \cm{fsinh (r1 - r2)}{hyp. sin r1 = r2}
+ \cm{fsqrt (r1 - r2)}{sqrt r1 = r2}
+ \cm{ftan (r1 - r2)}{tan r1 = r2}
+ \cm{ftanh (r1 - r2)}{hyp. tan r1 = r2}
+ \cm{falign ( - )}{Align data space pointer for float}
+ \cm{faligned (A - R)}{Align address for float}
+ \cm{fconstant {\it word} (r - )}{Float constant}
+ \cm{fdepth ( - n)}{Depth of float stack}
+ \cm{fdrop (r - )}{Drop float from float stack}
+ \cm{fdup (r - r r)}{Dup float on float stack}
+ \cm{fliteral (r - )}{Float literal}
+ \cm{float+ (R1 - R2)}{Move to the next float address}
+ \cm{floats (n1 - n2)}{Size for n1 floats}
+ \cm{floor (r1 - r2)}{Round towards negative inf.}
+ \cm{fmax (r1 r2 - r)}{Drop lowest float}
+ \cm{fmin (r1 r2 - r)}{Drop highest float}
+ \cm{fnegate (r1 - r2)}{Negate the float}
+ \cm{fover (r1 r2 - r1 r2 r1)}{Dup second on float stack}
+ \cm{frot (r1 r2 r3 - r2 r3 r1)}{Rotate the floats}
+ \cm{fround (r1 - r2)}{Round to nearest}
+ \cm{fswap (r1 r2 - r2 r1)}{Exchange floats}
+ \cm{fvariable {\it word} ( - )}{Float variable}
+ \cm{precision ( - u)}{Precision for displaying}
+ \cm{represent (r C u - n f1 f2)}{Convert float to string}
+ \cm{set-precision (u - )}{Set precision for displaying}
+
+\sect{Single float}
+ \cm{sf! (r SF - )}{Store float at single float address}
+ \cm{sf@ (SF - r)}{Fetch float from single float address}
+ \cm{sfalign ( - )}{Align data space for single float}
+ \cm{sfaligned (A - SF)}{Align address for single float}
+ \cm{sfloat+  (SF1 - SF2)}{Move to next single float}
+ \cm{sloats (n1 - n2)}{Size for n2 single floats}
+
+\sect{Double float}
+ \cm{df! (r DF - )}{Store float at double float adddress}
+ \cm{df@ (DF - r)}{Fetch float from double float address}
+ \cm{dfalign ( - )}{Align data space for double float}
+ \cm{dfaligned (A - DF)}{Align address for double float}
+ \cm{dfloat+ (DF1 - DF2)}{Move to next double float}
+ \cm{dfloats (n1 - n2)}{Size of n1 double floats}
+
+\sect{Miscellaneous}
+ \cm{>body (x - A)}{Convert xt to data-field}
+ \cm{environment? (C u - .. f)}{Environment query}
+ \cm{ms (n - )}{Wait n milliseconds}
+ \cm{recurse ( - )}{Call current definition}
+ \cm{time\&date ( - ns nm nh nd nm ny)}{Time + Date}
+ \cm{to {\it word} (w - )}{Set value}
+
+\eject
+\sect{Interpreting and Parsing}
+ \cm{` {\it word} ( - x)}{Find xt for word}
+ \cm{(}{Comment till )}
+ \cm{>in ( - A)}{Variable with offset in input buffer}
+ \cm{>number (ud1 C1 u1 - ud2 C2 u2)}{Convert number}
+ \cm{$\backslash$}{Comment till End of Line}
+ \cm{$\lbrack$}{Enter interpretation state}
+ \cm{$\lbrack$'$\rbrack$ {\it word} ( - x)}{Compile xt of word}
+ \cm{$\lbrack$char$\rbrack$ {\it char} ( - c)}{Compile char}
+ \cm{$\lbrack$compile$\rbrack$ {\it word} ( - c)}{Compile word}
+ \cm{$\rbrack$}{Enter compilation state}
+ \cm{convert (ud1 C1 - ud2 C2)}{Convert a number}
+ \cm{evaluate (.. C u - ..)}{Interpret string}
+ \cm{execute (.. x - ..)}{Execute the execution token}
+ \cm{find (C - C 0|x 1|x -1)}{Find definition in string}
+ \cm{parse {\it word}}{Parse a word}
+ \cm{postpone {\it word}}{Postpone word}
+ \cm{quit ( - )}{Start interpreter}
+ \cm{refill ( - f)}{Refill the input buffer}
+ \cm{restore-input (.. - f)}{Restore the input}
+ \cm{save-input ( - .. n)}{Save the input}
+ \cm{source-id ( - n)}{Source identification}
+ \cm{source ( - C u)}{Input buffer}
+ \cm{state ( - A)}{State variable}
+ \cm{word {\it word} (c - C)}{Parse the word}
+
+\sect{Blocks}
+ \cm{blk ( - A)}{Mass storage block number}
+ \cm{block (u - A)}{Address of block buffer u}
+ \cm{buffer (u - A)}{Address of empty block buffer u}
+ \cm{flush ( - )}{Save all updated buffers and empty them}
+ \cm{load (.. u - ..)}{Interpret buffer u}
+ \cm{save-buffers ( - )}{Save all updated buffers}
+ \cm{update ( - )}{Set current buffer updated}
+ \cm{empty-buffers ( - )}{Empty all buffers}
+ \cm{list (u - )}{Show buffer u}
+ \cm{scr ( - A)}{Address of last listed buffer number}
+ \cm{thru (.. u1 u2 - ..)}{Load buffers u1 through u2)}
+
+\sect{Locals}
+ \cm{(LOCAL) (C u - )}{New local}
+ \cm{LOCALS| {\it words} | ( - )}{Create locals}
+
+\eject
+\sect{Non ANSI}
+ \cm{cols ( - n)}{Number of cols in screen}
+ \cm{rows ( - n)}{Number of rows in screen}
+ \cm{ud. (ud - )}{Display unsigned double number}
+ \cm{ud.r (ud n - )}{Display ud right-aligned n wide}
+ \cm{dec. (n - )}{Display n as decimal number}
+ \cm{hex. (n - )}{Display n as hex number}
+ \cm{-rot (w1 w2 w3 - w3 w1 w2)}{Rotate 3rd left}
+ \cm{2nip (d1 d2 - d2)}{Drop 2nd}
+ \cm{2tuck (d1 d2 - d2 d1 d2)}{Swap \& Over}
+ \cm{rdrop ( - )}{Drop from return stack}
+ \cm{2rdrop ( - )}{Drop double from return stack}
+ \cm{toupper (c1 - c2)}{Uppercase character}
+ \cm{0<= (n - f)}{Smaller or equal to zero}
+ \cm{0>= (n - f)}{Greater or equal to zero}
+ \cm{<= (n1 n2 - f)}{Smaller or equal}
+ \cm{>= (n1 n2 - f)}{Greater or equal}
+ \cm{u<= (u1 u2 - f)}{Smaller or equal unsigned}
+ \cm{u>= (u1 u2 - f)}{Greater or equal unsigned}
+ \cm{d0<= (d - f)}{Smaller or equal to zero}
+ \cm{d0<> (d - f)}{Unequal to zero}
+ \cm{d0> (d - f)}{Greater than zero} 
+ \cm{d0>= (d - f)}{Greater or equal to zero}
+ \cm{d<= (d1 d2 - f)}{Smaller or equal}
+ \cm{d<> (d1 d2 - f)}{Not equal}
+ \cm{d> (d1 d2 - f)}{Greater}
+ \cm{d>= (d1 d2 - f)}{Greater or equal}
+ \cm{du<= (ud1 ud2 - f)}{Smaller or equal unsigned}
+ \cm{du> (ud1 ud2 - f)}{Greater unsigned}
+ \cm{du>= (ud1 ud2 - f)}{Greater or equal unsigned}
+ \cm{bounds (A1 u - A2 A3)}{Address range for ?do}
+ \cm{erase (A u - )}{Fill buffer with zeros}
+ \cm{require {\it filename}}{Include missing file}
+
+\eject
+\sect{Environment}
+\cm{/COUNTED-STRING (n)}{Maximum size in characters}
+\cm{/HOLD (n)}{Size of buffer in characters}
+\cm{/PAD (n)}{Size of pad in characters}
+\cm{ADDRESS-UNIT-BITS (n)}{Size of address in bits}
+\cm{FLOORED (f)}{Floored division is default ?}
+\cm{MAX-CHAR (u)}{Maximum value for character}
+\cm{MAX-D (d)}{Maximum value for double}
+\cm{MAX-N (n)}{Maximum value for signed number}
+\cm{MAX-U (u)}{Maximum value for unsigned number}
+\cm{RETURN-STACK-CELLS (n)}{Size of return stack}
+\cm{STACK-CELLS (n)}{Size of data stack}
+\cm{FLOATING-STACK (n)}{Size of float stack}
+\cm{MAX-FLOAT (r)}{Maximum value for float}
+\cm{\#LOCALS (n)}{Maximum number of locals}
+\cm{WORDLISTS (n)}{Maximum size of search order list}
+
+\sect{Legend}
+\cm{w}{Cell}
+\cm{n}{Signed single precision number}
+\cm{u}{Unsigned single precision number}
+\cm{A}{Cell Address}
+\cm{d}{Signed double precision number}
+\cm{ud}{Unsigned double precision number}
+\cm{f}{Boolean flag}
+\cm{c}{Character}
+\cm{C}{Character address}
+\cm{x}{Execution token}
+\cm{r}{Float number}
+\cm{R}{Float address}
+\cm{i}{IO result}
+\cm{F}{File Id}
+\cm{m}{File access method}
+\cm{W}{Word list}
+\cm{SF}{Single float address}
+\cm{DF}{Double float address}
+
+% Footer
+\vfill \hrule\smallskip
+{\smallrm This card may be freely distributed under the terms of the 
+GNU general public licence\par
+Copyright \copyright\ {\oldstyle 2006} by Dick van Oudheusden}
+
+% Ending
+\supereject
+\if L\lr \else\null\vfill\eject\fi
+\if L\lr \else\null\vfill\eject\fi
+\bye
+
+% EOF

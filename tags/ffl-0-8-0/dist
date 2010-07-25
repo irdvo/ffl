@@ -1,0 +1,85 @@
+#/bin/sh
+
+package=ffl
+version=0.8.0
+
+dest=${package}-${version}
+
+mkdir ${dest}
+mkdir ${dest}/ffl
+mkdir ${dest}/test
+mkdir ${dest}/html
+mkdir ${dest}/examples
+mkdir ${dest}/engines
+mkdir ${dest}/engines/gforth
+mkdir ${dest}/engines/bigforth
+mkdir ${dest}/engines/pfe
+mkdir ${dest}/engines/Win32Forth
+mkdir ${dest}/engines/fina
+mkdir ${dest}/engines/minForth
+mkdir ${dest}/engines/iForth
+mkdir ${dest}/engines/spf
+mkdir ${dest}/engines/flk
+mkdir ${dest}/engines/lxf
+mkdir ${dest}/engines/VFXForth
+
+cp AUTHORS COPYING NEWS README ChangeLog ${dest}
+cp       ffl/*.fs             ${dest}/ffl
+cp       ffl/ffl.api          ${dest}/ffl
+cp      test/*.fs             ${dest}/test
+cp      html/*.html           ${dest}/html
+cp  examples/*.fs             ${dest}/examples
+
+cp   engines/gforth/*.fs      ${dest}/engines/gforth
+cp   engines/bigforth/*.fs    ${dest}/engines/bigforth
+cp   engines/pfe/*.fs         ${dest}/engines/pfe
+cp   engines/Win32Forth/*.fs  ${dest}/engines/Win32Forth
+cp   engines/fina/*.fs        ${dest}/engines/fina
+cp   engines/minForth/*.fs    ${dest}/engines/minForth
+cp   engines/iForth/*.fs      ${dest}/engines/iForth
+cp   engines/spf/*.fs         ${dest}/engines/spf
+cp   engines/flk/*.fs         ${dest}/engines/flk
+cp   engines/lxf/*.fs         ${dest}/engines/lxf
+cp   engines/VFXForth/*.fs    ${dest}/engines/VFXForth
+
+cp      test/nl.po            ${dest}/test
+cp      test/nl.mo            ${dest}/test
+cp      test/test.xml         ${dest}/test
+cp      test/stored.gz        ${dest}/test
+cp      test/fixed.gz         ${dest}/test
+cp      test/gzipped.gz       ${dest}/test
+
+cp   examples/test.xml        ${dest}/examples
+cp   examples/nl.mo           ${dest}/examples
+cp   examples/index.html      ${dest}/examples
+cp   examples/gzipped.gz      ${dest}/examples
+cp   examples/info.xpm        ${dest}/examples
+cp   examples/gtk-server.cfg  ${dest}/examples
+
+tar cvzf ${package}-${version}.tar.gz ${dest} 
+
+
+todos  ${dest}/AUTHORS 
+todos  ${dest}/COPYING 
+todos  ${dest}/NEWS 
+todos  ${dest}/README 
+todos  ${dest}/ChangeLog
+todos  ${dest}/ffl/*.fs
+todos  ${dest}/test/*.fs
+todos  ${dest}/examples/*.fs
+
+todos  ${dest}/engines/gforth/*.fs
+todos  ${dest}/engines/bigforth/*.fs
+todos  ${dest}/engines/pfe/*.fs
+todos  ${dest}/engines/Win32Forth/*.fs
+todos  ${dest}/engines/fina/*.fs
+todos  ${dest}/engines/minForth/*.fs
+todos  ${dest}/engines/iForth/*.fs
+todos  ${dest}/engines/spf/*.fs
+todos  ${dest}/engines/flk/*.fs
+todos  ${dest}/engines/lxf/*.fs
+todos  ${dest}/engines/VFXForth/*.fs
+
+zip -r ${package}-${version}.zip ${dest}
+
+rm -rf ${dest}
