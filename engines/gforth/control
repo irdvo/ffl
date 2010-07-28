@@ -1,6 +1,6 @@
 Package: ffl-gforth
 Source: ffl
-Version: 0.8.0-1
+Version: 0.9.0-1
 Architecture: all
 Maintainer: Dick van Oudheusden <dvoudheusden@gmail.com>
 Installed-Size: 1900

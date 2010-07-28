@@ -1,6 +1,6 @@
 #/bin/sh
 
-version=0.8.0
+version=0.9.0
 
 rm -rf debian
 rm ffl-gforth_${version}-1_all.deb
