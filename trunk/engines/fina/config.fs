@@ -63,7 +63,7 @@ require timer.fs
 ( The config module contains the extension and missing words for a forth system.)
 
 
-000800 constant ffl.version
+000900 constant ffl.version
 
 
 ( Private words )

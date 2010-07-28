@@ -38,7 +38,7 @@
 nostack
 sys-warning-off
 
-000800 constant ffl.version
+000900 constant ffl.version
 
 
 ( Private words )
