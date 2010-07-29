@@ -5,34 +5,34 @@
 
 First you need to include the module you want to use. For example, to include the fraction module (and all modules which are needed by the fraction module), you would do:
 
-{{{include ffl/frc.fs}}}
+ {{{include ffl/frc.fs}}}
 
 You can also include all modules at once with:
 
-{{{include ffl/ffl.fs}}}
+ {{{include ffl/ffl.fs}}}
 
-Many modules store state in a variables. These modules provide three ways to allocate and initialize the variable. For example, after including the dynamic string module, you could:
+Many modules store state in a variable. These modules provide three ways to allocate and initialize the variable. For example, after including the dynamic string module, you could:
 
 1. Create a variable named var1 in the dictionary with:
 
-{{{str-create var1}}}
+ {{{str-create var1}}}
 
 2. Dynamically allocate and free an str variable with:
 
-{{{str-new}}}
-{{{str-free }}}
+ {{{str-new}}}<br>
+ {{{str-free }}}
 
 3. If you prefer to allocate the variable yourself, you can get the necessary size with:
 
-{{{str%}}}
+ {{{str%}}}
 
 After allocating the variable, you must initialize it with:
 
-{{{str-init}}}
+ {{{str-init}}}
 
 and when you are finished with the variable, free the internal, private variables with:
 
-{{{str-(free)}}}
+ {{{str-(free)}}}
 
 The documentation for all modules is listed on the [Modules] page. There is an alphabetical list of all the words on the [Words] page. For an increasing number of modules there are small code examples.
 
@@ -43,39 +43,39 @@ The documentation for all modules is listed on the [Modules] page. There is an a
 If you want to use a module, you start with including the module in your forth engine. 
 For example if you want to do fraction calculations, you start with:
 
-{{{include ffl/frc.fs}}}
+ {{{include ffl/frc.fs}}}
 
 This will include the fraction module and also all modules that are needed by the fraction 
 module. After including you can use the module. For example, if you want to multiply two 
 fractions, you can enter:
 
-{{{1 4 2 3 frc+multiply}}}
+ {{{1 4 2 3 frc+multiply}}}
 
 This will multiply 1/4 times 2/3. By entering .s you will see the result: 2 12, which is 2/12. 
 You can then normalize, convert the fraction to a string and type it by entering:
 
-{{{frc+to-string type}}}
+ {{{frc+to-string type}}}
 
 This will show the result: 1/6
 
 === Dictionary variables ===
 
-The following example shows the use of modules that store a state in a variable. This example uses the sha1 module in the ffl library. First include the module in your forth engine:
+The following example shows the use of modules that store their state in a variable. This example uses the sha1 module in the ffl library. First include the module in your forth engine:
 
-{{{include ffl/sh1.fs}}}
+ {{{include ffl/sh1.fs}}}
 
 Then create a sha1 variable which will contain the state of the calculation. You can create the variable in the dictionary by entering:
 
-{{{sh1-create var1}}}
+ {{{sh1-create var1}}}
 
 This creates a new word, var1, which is a sha1 variable. Next you can start calculating the sha1 algorithm by feeding data to the variable:
 
-{{{s" ab" var1 sh1-update}}}
-{{{s" c"  var1 sh1-update}}}
+ {{{s" ab" var1 sh1-update}}}<br>
+ {{{s" c"  var1 sh1-update}}}
 
 In this example the sha1 variable is fed with the string abc. The next step is finishing the calculation. This is done by:
 
-{{{var1 sh1-finish sh1+to-string type}}}
+ {{{var1 sh1-finish sh1+to-string type}}}
 
 So the sha1 calculation is finished and the resulting hash value is converted to a string, which is then typed. If all went well, it should show: A9993E364706816ABA3E25717850C26C9CD0D89D which is the secure hash1 result of the string "abc".
 
@@ -83,20 +83,20 @@ So the sha1 calculation is finished and the resulting hash value is converted to
 
 Besides creating a sha1 variable in the dictionary, you can also allocate a sha1 variable on the heap by entering:
 
-{{{sh1-new}}}
+ {{{sh1-new}}}
 
 Now there is a dynamically allocated sha1 variable on the stack. Feeding data to this variable can be done by:
 
-{{{dup s" ab" rot sh1-update}}}
-{{{dup s" c"   rot sh1-update}}}
+ {{{dup s" ab" rot sh1-update}}}<br>
+ {{{dup s" c"   rot sh1-update}}}
 
 And finishing the calculation by:
 
-{{{dup sh1-finish sh1+to-string type}}}
+ {{{dup sh1-finish sh1+to-string type}}}
 
 Which resulted in the same sha1 value. When you don't need the dynamic variable anymore you can free the memory used by the variable by entering:
 
-{{{sh1-free}}}
+ {{{sh1-free}}}
 
 == Index ==
 
@@ -172,7 +172,7 @@ Generic collections implements data structures like linked lists, hash tables, t
 
 For example: using a single linked list for storing financial information about companies:
 
-First extend the generic single linked list node (invoice>node) with specific variables (invoice>company, invoice>year, invoice>value):
+First extend the generic single linked list node (invoice>node) with specific variables (invoice>customer, invoice>year, invoice>month, invoice>value):
 
 {{{
 include ffl/snl.fs
@@ -330,7 +330,14 @@ exp-wrong-file-version (-2055)
  a file for which an import is attempted, has not the correct version
 exp-wrong-file-data (-2056)
  a file for which an import is attempted, has data outside the expected ranges
+exp-wrong-checksum
+ the calculated checksum and the checksum of the source do not match
+exp-wrong-length
+ the actual length and the length of the source do not match
+exp-invalid-data
+ the data of the source is different from what is expected
 
-GForth (and FLK) report the exception with a message, all the other forth engines report the numerical value of the exception.
+GForth (and FLK and ALF) report the exception with a message, all the other forth engines report the numerical value of the exception.
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
+
