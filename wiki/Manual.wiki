@@ -314,7 +314,7 @@ A number of modules in the ffl library store their state in variables. These var
 
 == Exceptions ==
 
-At the moment the ffl library can raise 7 different exceptions. Exceptions are raised if an unexpected situation is detected that can not be resolved. The exception numbers can also be returned by words as io-results. The following exceptions are present:
+At the moment the ffl library can raise ten different exceptions. Exceptions are raised if an unexpected situation is detected that can not be resolved. The exception numbers can also be returned by words as io-results. The following exceptions are present:
 
 exp-index-out-of-range (-2050)
  an index is used in a collection, array or string that is not within the range of valid  indices

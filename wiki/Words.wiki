@@ -94,6 +94,7 @@
 [bar bar-create] (+n "{{{<}}}spaces{{{>}}}name" -- ; -- bar )<br>
 [bar bar-dump] (bar -- )<br>
 [bar bar-execute] (i*x xt bar -- j*x )<br>
+[bar bar-execute?] (i*x xt bar -- j*x flag )<br>
 [bar bar-free] (bar -- )<br>
 [bar bar-get-bit] (n bar -- flag )<br>
 [bar bar-index?] (n bar -- flag )<br>
@@ -229,6 +230,7 @@
 [car car-dump] (car -- )<br>
 [car car-enqueue] (x car -- )<br>
 [car car-execute] (i*x xt car -- j*x )<br>
+[car car-execute?] (i*x xt car -- j*x flag )<br>
 [car car-extra!] (u car -- )<br>
 [car car-extra@] (car -- u )<br>
 [car car-find] (x car -- n )<br>
@@ -335,6 +337,7 @@
 [chs chs-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- chs )<br>
 [chs chs-dump] (chs -- )<br>
 [chs chs-execute] (i*x xt chs -- j*x )<br>
+[chs chs-execute?] (i*x xt chs -- j*x flag )<br>
 [chs chs-free] (chs -- )<br>
 [chs chs-init] (chs -- )<br>
 [chs chs-invert] (chs -- )<br>
@@ -460,6 +463,7 @@
 [dcl dcl-dump] (dcl -- )<br>
 [dcl dcl-empty?] (dcl -- flag )<br>
 [dcl dcl-execute] (i*x xt dcl -- j*x )<br>
+[dcl dcl-execute?] (i*x xt dcl -- j*x flag )<br>
 [dcl dcl-find] (x dcl -- n )<br>
 [dcl dcl-free] (dcl -- )<br>
 [dcl dcl-get] (n dcl -- x )<br>
@@ -508,6 +512,7 @@
 [dnl dnl-empty?] (dnl -- flag )<br>
 [dnl dnl-enqueue] (dnn dnl -- )<br>
 [dnl dnl-execute] (i*x xt dnl -- j*x )<br>
+[dnl dnl-execute?] (i*x xt dnl -- j*x flag )<br>
 [dnl dnl-first@] (dnl -- dnn | nil )<br>
 [dnl dnl-free] (dnl -- )<br>
 [dnl dnl-get] (n dnl -- dnn )<br>
@@ -892,6 +897,7 @@
 [hct hct-dump] (hct -- )<br>
 [hct hct-empty?] (hct -- flag )<br>
 [hct hct-execute] (i*x xt hct -- j*x )<br>
+[hct hct-execute?] (i*x xt hct -- j*x flag )<br>
 [hct hct-free] (hct -- )<br>
 [hct hct-get] (c-addr u hct -- false | x true )<br>
 [hct hct-has?] (c-addr u hct -- flag )<br>
@@ -929,6 +935,7 @@
 [hnt hnt-dump] (hnt -- )<br>
 [hnt hnt-empty?] (hnt -- flag )<br>
 [hnt hnt-execute] (i*x xt hnt -- j*x )<br>
+[hnt hnt-execute?] (i*x xt hnt -- j*x flag )<br>
 [hnt hnt-free] (hnt -- )<br>
 [hnt hnt-get] (c-addr u hnt -- nil | hnn )<br>
 [hnt hnt-has?] (c-addr u hnt -- flag )<br>
@@ -1233,6 +1240,7 @@
 [scl scl-dump] (scl -- )<br>
 [scl scl-empty?] (scl -- flag )<br>
 [scl scl-execute] (i*x xt scl -- j*x )<br>
+[scl scl-execute?] (i*x xt scl -- j*x flag )<br>
 [scl scl-find] (x scl -- n )<br>
 [scl scl-free] (scl -- )<br>
 [scl scl-get] (n scl -- x )<br>
@@ -1353,6 +1361,7 @@
 [str str-empty?] (str -- flag )<br>
 [str str-enqueue-char] (char str -- )<br>
 [str str-execute] (i*x xt str -- j*x )<br>
+[str str-execute?] (i*x xt str -- j*x flag )<br>
 [str str-expand-tabs] (u str -- )<br>
 [str str-extra!] (u str -- )<br>
 [str str-extra@] (str -- u )<br>

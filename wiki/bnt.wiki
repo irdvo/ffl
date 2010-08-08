@@ -54,7 +54,7 @@ of node creation words.
 *bnt-execute* ( i*x xt bnt -- j*x )
  Execute xt for every node in the tree
 *bnt-execute?* ( i*x xt bnt -- j*x flag )
- Execute xt for every node in the tree until xt returns true
+ Execute xt for every node in the tree or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *bnt-dump* ( bnt -- )
  Dump the tree node structure

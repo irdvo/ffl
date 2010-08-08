@@ -64,7 +64,7 @@ single linked cell list [scl] module.
 *snl-execute* ( i*x xt snl -- j*x )
  Execute xt for every node in list
 *snl-execute?* ( i*x xt snl -- j*x flag )
- Execute xt for every node in the list until xt returns true
+ Execute xt for every node in the list or until xt returns true, flag is true if xt returned true
 *snl-reverse* ( snl -- )
  Reverse or mirror the list
 ==== Inspection ====

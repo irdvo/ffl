@@ -45,6 +45,8 @@ The hct module implements a hash table that stores cell wide data.
  Count the number of occurrences of the cell data x in the table
 *hct-execute* ( i*x xt hct -- j*x )
  Execute xt for every key and cell data in table
+*hct-execute?* ( i*x xt hct -- j*x flag )
+ Execute xt for every key and cell data in table or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *hct-dump* ( hct -- )
  Dump the hash table

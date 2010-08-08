@@ -9,7 +9,7 @@ The following modules are present in the Forth Foundation Library:
 || [act act] || AVL binary tree || Collection || 0.4.0 || 0.7.0 || Yes || Both ||
 || [arg arg] || Argument parser || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
 || [b64 b64] || Base64 || Interface || 0.8.0 || 0.8.0 || Yes || Both ||
-|| [bar bar] || Bit array || DataType || 0.2.0 || 0.7.0 || Yes || Both ||
+|| [bar bar] || Bit array || DataType || 0.2.0 || 0.9.0 || Yes || Both ||
 || [bci bci] || Binary cell tree iterator || Collection || 0.4.0 || 0.7.0 || Yes || Both ||
 || [bcn bcn] || Binary cell tree node || Collection || 0.4.0 || 0.7.0 || Yes || Both ||
 || [bct bct] || Binary cell tree || Collection || 0.4.0 || 0.7.0 || Yes || Both ||
@@ -17,17 +17,17 @@ The following modules are present in the Forth Foundation Library:
 || [bni bni] || Generic binary tree iterator || Collection || 0.7.0 || 0.7.0 || Yes || Both ||
 || [bnn bnn] || Generic binary tree node || Collection || 0.7.0 || 0.7.0 || Yes || Both ||
 || [bnt bnt] || Generic binary tree || Collection || 0.7.0 || 0.7.0 || Yes || Both ||
-|| [car car] || Cell array || Collection || 0.2.0 || 0.6.0 || Yes || Both ||
+|| [car car] || Cell array || Collection || 0.2.0 || 0.9.0 || Yes || Both ||
 || [cbf cbf] || Circular buffer || DataType || 0.7.0 || 0.7.0 || Yes || Both ||
 || [chr chr] || Character words || DataType || 0.1.0 || 0.2.0 || No || Both ||
-|| [chs chs] || Character set || DataType || 0.3.0 || 0.7.0 || Yes || Both ||
+|| [chs chs] || Character set || DataType || 0.3.0 || 0.9.0 || Yes || Both ||
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No || Both ||
 || [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No || Both ||
 || [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
-|| [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.6.0 || No || Both ||
+|| [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.9.0 || No || Both ||
 || [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dni dni] || Generic double linked list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
-|| [dnl dnl] || Generic double linked list || Collection || 0.4.0 || 0.6.0 || No || Both ||
+|| [dnl dnl] || Generic double linked list || Collection || 0.4.0 || 0.9.0 || No || Both ||
 || [dnn dnn] || Generic double linked list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dom dom] || Document Object Model || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
 || [dos dos] || Date Time output stream || Compound || 0.6.0 || 0.6.0 || Yes || Both ||
@@ -45,10 +45,10 @@ The following modules are present in the Forth Foundation Library:
 || [gzf gzf] || GZip file || Interface || 0.7.0 || 0.7.0 || No || Both ||
 || [gzi gzi] || GZip reader || Interface || 0.7.0 || 0.7.0 || No || Both ||
 || [hci hci] || Hash table cell iterator || Collection || 0.3.0 || 0.3.0 || Yes || Both ||
-|| [hct hct] || Hash table cell module || Collection || 0.3.0 || 0.6.0 || Yes || Both ||
+|| [hct hct] || Hash table cell module || Collection || 0.3.0 || 0.9.0 || Yes || Both ||
 || [hcn hcn] || Hash table cell node || Collection || 0.3.0 || 0.6.0 || Yes || Both ||
 || [hni hni] || Generic hash table iterator || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
-|| [hnt hnt] || Generic hash table || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
+|| [hnt hnt] || Generic hash table || Collection || 0.6.0 || 0.9.0 || Yes || Both ||
 || [hnn hnn] || Generic hash table node || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
 || [lbf lbf] || Linear buffer || DataType || 0.7.0 || 0.7.0 || Yes || Both ||
 || [log log] || Log module || Development || 0.7.0 || 0.8.0 || Yes || Both ||
@@ -67,7 +67,7 @@ The following modules are present in the Forth Foundation Library:
 || [rng rng] || Pseudo Random Number Generator || Interface || 0.4.0 || 0.4.0 || No || Both ||
 || [scf scf] || Sscanf || Compound || 0.8.0 || 0.8.0 || Yes || Both ||
 || [sci sci] || Single linked cell list iterator || Collection || 0.1.0 || 0.5.0 || No || Both ||
-|| [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.6.0 || No || Both ||
+|| [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.9.0 || No || Both ||
 || [scn scn] || Single linked cell list node || Collection || 0.1.0 || 0.5.0 || No || Both ||
 || [sh1 sh1] || SHA1 Algorithm || Interface || 0.4.0 || 0.4.0 || Yes || Both ||
 || [sh2 sh2] || SHA256 Algorithm || Interface || 0.5.0 || 0.5.0 || Yes || Both ||
@@ -76,7 +76,7 @@ The following modules are present in the Forth Foundation Library:
 || [snn snn] || Generic single linked node || Collection || 0.5.0 || 0.5.0 || No || Both ||
 || [spf spf] || Sprintf || Compound || 0.7.0 || 0.8.0 || Yes || Both ||
 || [stc stc] || Struct words || Development || 0.1.0 || 0.6.0 || No || Both ||
-|| [str str] || Text string || DataType || 0.2.0 || 0.6.0 || No || Both ||
+|| [str str] || Text string || DataType || 0.2.0 || 0.9.0 || No || Both ||
 || [stt stt] || Stringtable words || Development || 0.6.0 || 0.7.0 || Yes || Both ||
 || [tis tis] || Text input stream || Compound || 0.2.0 || 0.6.0 || Yes || Both ||
 || [tmr tmr] || Interval timer || Interface || 0.4.0 || 0.4.0 || No || Both ||

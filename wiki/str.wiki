@@ -97,6 +97,8 @@ The str module implements a dynamic text string.
  Count the number of occurrences of the string c-addr u in the string
 *str-execute* ( i*x xt str -- j*x )
  Execute the xt token for every character in the string
+*str-execute?* ( i*x xt str -- j*x flag )
+ Execute the xt token for every character in the string or until xt returns true, flag is true if xt returned true
 ==== Special manipulation words ====
 *str-capatilize* ( str -- )
  Capitalize the first word in the string

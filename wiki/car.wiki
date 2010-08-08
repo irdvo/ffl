@@ -80,6 +80,8 @@ The car module implements a dynamic cell array.
  Check if a cell value x is present in the array
 *car-execute* ( i*x xt car -- j*x )
  Execute the execution token for every cell in the array
+*car-execute?* ( i*x xt car -- j*x flag )
+ Execute the execution token for every cell in the array or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *car-dump* ( car -- )
  Dump the cell array variable

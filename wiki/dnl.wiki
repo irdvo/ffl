@@ -63,6 +63,8 @@ double linked cell list [dcl] module.
 ==== Special words ====
 *dnl-execute* ( i*x xt dnl -- j*x )
  Execute xt for every node in list
+*dnl-execute?* ( i*x xt dnl -- j*x flag )
+ Execute xt for every node in list or until xt returns true, flag is true if xt returned true
 *dnl-reverse* ( dnl -- )
  Reverse or mirror the list
 ==== Inspection ====

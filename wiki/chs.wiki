@@ -111,6 +111,8 @@ used in regular expressions.
 ==== Special words ====
 *chs-execute* ( i*x xt chs -- j*x )
  Execute xt for every character in the set
+*chs-execute?* ( i*x xt chs -- j*x flag )
+ Execute xt for every character in the set or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *chs-dump* ( chs -- )
  Dump the chs state

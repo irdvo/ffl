@@ -49,6 +49,8 @@ The scl module implements a single linked list that can store cell wide data.
  Count the number of occurrences of the cell data x in the list
 *scl-execute* ( i*x xt scl -- j*x )
  Execute xt for every cell data in list
+*scl-execute?* ( i*x xt scl -- j*x flag )
+ Execute xt for every cell data in the list or until xt returns true, flag is true if xt returned true
 *scl-reverse* ( scl -- )
  Reverse or mirror the list
 ==== Search words ====

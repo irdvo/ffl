@@ -65,6 +65,8 @@ The bar module implements a bit array.
  Count the number of bits set in the array
 *bar-execute* ( i*x xt bar -- j*x )
  Execute xt for every bit in the array
+*bar-execute?* ( i*x xt bar -- j*x flag )
+ Execute xt for every bit in the array or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *bar-dump* ( bar -- )
  Dump the bit array

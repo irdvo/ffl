@@ -46,7 +46,9 @@ example the cell hash table [hct].
  Check if the key c-addr u is present in the table
 ==== Special words ====
 *hnt-execute* ( i*x xt hnt -- j*x )
- Execute xt for every key and node in table
+ Execute xt for every key and node in the table
+*hnt-execute?* ( i*x xt hnt -- j*x flag )
+ Execute xt for every key and node in the table or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *hnt-dump* ( hnt -- )
  Dump the hash table

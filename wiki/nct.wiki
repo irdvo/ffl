@@ -30,7 +30,7 @@ to and from the tree, use the iterator [nci].
 *nct-execute* ( i*x xt nct -- j*x )
  Execute xt for every node in tree
 *nct-execute?* ( i*x xt nct -- j*x flag )
- Execute xt for every node in the tree until xt returns true
+ Execute xt for every node in the tree or until xt returns true, flag is true if xt returned true
 *nct-count* ( x nct -- u )
  Count the number of the occurrences of the cell data x in the tree
 *nct-has?* ( x nct -- flag )

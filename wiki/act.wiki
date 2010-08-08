@@ -42,7 +42,7 @@ non-recursive.
 *act-execute* ( i*x xt act -- i*x )
  Execute xt for every key and data in the tree
 *act-execute?* ( i*x xt bct -- j*x flag )
- Execute xt for every key and data in the tree until xt returns true
+ Execute xt for every key and data in the tree or until xt returns true, flag is true if xt returned true
 ==== Inspection ====
 *act-dump* ( act -- )
  Dump the tree variable

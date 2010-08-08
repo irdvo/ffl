@@ -49,6 +49,8 @@ The dcl module implements a double linked list that can store cell wide data.
  Count the number of occurrences of the cell data x in the list
 *dcl-execute* ( i*x xt dcl -- j*x )
  Execute xt for every cell data in list
+*dcl-execute?* ( i*x xt dcl -- j*x flag )
+ Execute xt for every cell data in list or until xt returns true, flag is true if xt returned true
 *dcl-reverse* ( dcl -- )
  Reverse or mirror the list
 ==== Search words ====
