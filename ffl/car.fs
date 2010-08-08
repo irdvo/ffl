@@ -38,7 +38,7 @@ include ffl/stc.fs
 ( The car module implements a dynamic cell array. )
 
 
-2 constant car.version
+3 constant car.version
 
 
 ( Cell Array Structure )
@@ -458,6 +458,21 @@ end-structure
   2drop
 ;
 
+
+: car-execute?     ( i*x xt car -- j*x flag = Execute the execution token for every cell in the array or until xt returns true, flag is true if xt returned true )
+  dup car-cells@ swap car-length@ 0 ?DO     \ Loop the array
+    2dup 2>r                                \ Clear the stack
+    @ swap execute                          \ Execute the token with the array contents
+    IF 
+      rdrop rdrop unloop true exit          \ Done? -> leave the word
+    ELSE
+      2r>
+    THEN
+    cell+
+  LOOP
+  2drop
+  false
+;
 
 
 ( Inspection )

@@ -38,7 +38,7 @@ include ffl/chr.fs
 ( The str module implements a dynamic text string. )
 
 
-3 constant str.version
+4 constant str.version
 
 
 ( String structure )
@@ -440,6 +440,23 @@ end-structure
     1 chars +LOOP
   drop
 ;
+
+
+: str-execute?     ( i*x xt str -- j*x flag = Execute the xt token for every character in the string or until xt returns true, flag is true if xt returned true )
+  str-bounds 2>r false
+  BEGIN                      \ S: xt flag R: end pntr
+    dup 0= 2r@ > AND
+  WHILE
+    drop                     \ flag
+    r@ c@
+    swap dup
+    >r execute r>            \ Clear the stack and execute xt with character
+    swap
+    r> char+ >r
+  REPEAT
+  2r> 2drop
+  nip                        \ xt
+; 
 
 
 ( Special manipulation words )

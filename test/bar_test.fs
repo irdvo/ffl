@@ -167,6 +167,14 @@ t{ 4 0 b2 bar-count-bits 3 ?s }t
 
 t{ 0 ' bar-test b2 bar-execute 17 ?s }t
 
+: bar-test2 ( n1 n2 flag - n1 n3 flag = n1:level n2:count flag:bit n3:count flag:level? )
+  IF 1+ THEN  2dup =
+;
+
+t{ 3 0 ' bar-test2 b2 bar-execute? ?true  3 ?s 3 ?s }t
+t{ 5 0 ' bar-test2 b2 bar-execute? ?true  5 ?s 5 ?s }t 
+t{ 6 0 ' bar-test2 b2 bar-execute? ?false 5 ?s 6 ?s }t
+
 \ bar 
 
 t{ 15 bar-new value b3 }t

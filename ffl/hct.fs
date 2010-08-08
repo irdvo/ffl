@@ -39,7 +39,7 @@ include ffl/hcn.fs
 
   
 
-2 constant hct.version
+3 constant hct.version
 
 
 ( Hash table structure )
@@ -196,6 +196,35 @@ hnt% constant hct%  ( -- n = Get the required space for a hash table variable )
     cell
   +LOOP
   drop
+;
+
+
+: hct-execute?     ( i*x xt hct -- j*x flag = Execute xt for every key and cell data in table or until xt returns true, flag is true if xt returned true )
+  0 swap hnt-table-bounds swap false
+  BEGIN                           \ S: xt walk end flag
+    >r 2dup < r> tuck 0= AND      \ While walk < end And flag = false
+  WHILE
+    drop                          \ false
+    >r >r
+    r@ @ false
+    BEGIN                         \ S: xt pntr false
+      over nil<> over 0= AND      \   While pntr != nil And flag = false
+    WHILE
+      drop                        \ false
+      >r                          
+      r@ hcn-cell@ swap
+      r@ hnn>key @ swap
+      r@ hnn>klen @ swap
+      >r r@ execute               \ S: pntr.cell pntr.key pntr.klen xt -> flag
+      r> r>
+      hnn-next@                   \ pntr->next
+      rot
+    REPEAT
+    nip                           \ pntr
+    r> cell+ r>                   \ walk+cell
+    rot
+  REPEAT
+  nip nip nip                     \ xt end end
 ;
 
 

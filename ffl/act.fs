@@ -447,7 +447,7 @@ bct% constant act%      ( -- n = Get the required space for an act variable )
 ;
 
 
-: act-execute?     ( i*x xt bct -- j*x flag = Execute xt for every key and data in the tree until xt returns true )
+: act-execute?     ( i*x xt bct -- j*x flag = Execute xt for every key and data in the tree or until xt returns true, flag is true if xt returned true )
   bct-execute?
 ;
 

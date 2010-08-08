@@ -40,7 +40,7 @@ include ffl/dnn.fs
 ( double linked cell list [dcl] module. )
   
 
-2 constant dnl.version
+3 constant dnl.version
 
 
 ( List structure )
@@ -315,6 +315,22 @@ defer dnl.pop
     dnn-next@                \  walk = walk->next
   REPEAT
   2drop
+;
+
+
+: dnl-execute?     ( i*x xt dnl -- j*x flag = Execute xt for every node in list or until xt returns true, flag is true if xt returned true )
+  dnl-first@ false           \ walk = first
+  BEGIN
+    over nil<> over 0= AND   \ while walk<>nil do
+  WHILE
+    drop
+    2>r 
+    2r@ swap execute         \  execute xt with node
+    2r>
+    dnn-next@                \  walk = walk->next
+    rot
+  REPEAT
+  nip nip
 ;
 
 

@@ -382,7 +382,7 @@ end-structure
 ;
 
 
-: bnt-execute?     ( i*x xt bnt -- j*x flag = Execute xt for every node in the tree until xt returns true )
+: bnt-execute?     ( i*x xt bnt -- j*x flag = Execute xt for every node in the tree or until xt returns true, flag is true if xt returned true )
   bnt>root @
   bnt-smallest-node          \ Find the smallest node
   false

@@ -1,3 +1,5 @@
+0.9.0
+* car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: *-execute? (2010-08-07)
 0.8.0
 * Debian package of the library (2010-07-24)
 * log: new word: log-with-flush (2010-06-06)
