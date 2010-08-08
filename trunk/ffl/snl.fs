@@ -305,7 +305,7 @@ defer snl.remove-first
 ;
 
 
-: snl-execute?     ( i*x xt snl -- j*x flag = Execute xt for every node in the list until xt returns true )
+: snl-execute?     ( i*x xt snl -- j*x flag = Execute xt for every node in the list or until xt returns true, flag is true if xt returned true )
   snl-first@                 \ walk = first
   false                      \ keep searching
   BEGIN

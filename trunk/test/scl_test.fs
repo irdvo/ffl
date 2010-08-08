@@ -180,6 +180,14 @@ t{ 6  scl1 scl-remove   ?true      }t
 
 t{ 0 ' + scl1 scl-execute  6 ?s   }t \ sum contents list
 
+: scl-sum?  ( n1 n2 n3 -- n1 n4 flag = n1: level n2:sum n3:value n4:sum flag:done )
+  + 2dup <
+;
+
+t{ 1 0 ' scl-sum? scl1 scl-execute? ?true  2 ?s 1 ?s }t
+t{ 4 0 ' scl-sum? scl1 scl-execute? ?true  6 ?s 4 ?s }t
+t{ 8 0 ' scl-sum? scl1 scl-execute? ?false 6 ?s 8 ?s }t
+ 
 t{    scl1 scl-clear              }t
 
 : scl-test-compare

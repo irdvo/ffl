@@ -130,7 +130,7 @@ nnt% constant nct%  ( -- n = Get the required space for a nct variable )
 ;
 
 
-: nct-execute?     ( i*x xt nct -- j*x flag = Execute xt for every node in the tree until xt returns true )
+: nct-execute?     ( i*x xt nct -- j*x flag = Execute xt for every node in the tree or until xt returns true, flag is true if xt returned true )
   nnt-root@                 \ walk = first
   false
   BEGIN

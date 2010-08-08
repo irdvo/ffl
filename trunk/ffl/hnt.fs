@@ -40,7 +40,7 @@ include ffl/hnn.fs
 ( example the cell hash table [hct].                                         )
   
 
-1 constant hnt.version
+2 constant hnt.version
 
 
 ( Hash table structure )
@@ -298,7 +298,7 @@ end-structure
 
 ( Special words )
 
-: hnt-execute      ( i*x xt hnt -- j*x = Execute xt for every key and node in table )
+: hnt-execute      ( i*x xt hnt -- j*x = Execute xt for every key and node in the table )
   0 swap hnt-table-bounds DO  \ Do for the whole table
     I @
     BEGIN
@@ -314,6 +314,31 @@ end-structure
     cell
   +LOOP
   drop
+;
+
+
+: hnt-execute?     ( i*x xt hnt -- j*x flag = Execute xt for every key and node in the table or until xt returns true, flag is true if xt returned true )
+  0 swap hnt-table-bounds swap false
+  BEGIN
+    >r 2dup < r> tuck 0= AND
+  WHILE
+    drop
+    >r >r
+    r@ @ false
+    BEGIN
+      over nil<> over 0= AND
+    WHILE
+      drop
+      >r
+      r@ swap >r r@ execute r> r>
+      hnn-next@
+      rot
+    REPEAT
+    nip
+    r> cell+ r>
+    rot
+  REPEAT
+  nip nip nip
 ;
 
 

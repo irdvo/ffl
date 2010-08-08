@@ -107,6 +107,14 @@ t{ hct1 hct-length@ 4 ?s }t
 
 t{ 0 ' hct-sum hct1 hct-execute 7 ?s }t
 
+: hct-count?  ( n1 n2 n3 c-addr u --  n4 n5 flag = n1: stop level, n2: count, n3: cell value, c-addr u: key n4: stop level n5: count flag:stop? )
+  2drop drop 1+ 2dup <
+;
+
+t{ 2 0 ' hct-count? hct1 hct-execute? ?true  3 ?s 2 ?s }t
+t{ 5 0 ' hct-count? hct1 hct-execute? ?false 4 ?s 5 ?s }t
+
+
 \ Insert and delete a lot more nodes ..
 
 t{ 50 hct-new value hct2 }t

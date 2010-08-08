@@ -42,7 +42,7 @@ include ffl/stc.fs
 ( The bar module implements a bit array. )
 
 
-3 constant bar.version
+4 constant bar.version
 
 
 ( Bit array structure )
@@ -435,6 +435,30 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     bar-next-bit
   REPEAT
   drop 2drop 2drop
+;
+
+
+: bar-execute?      ( i*x xt bar -- j*x flag = Execute xt for every bit in the array or until xt returns true, flag is true if xt returned true )
+  -1 over bar-address               \ end address
+  rot 0 swap bar-address            \ start address
+  
+  BEGIN
+    2swap
+    2>r 2>r                         \ clear the stack for execute
+    
+    2r@ c@ AND 0<>                  \ fetch the bit
+    
+    swap dup >r 
+    execute                         \ execute the token with the flag
+     r> swap                        \ restore the stack, keeping the flag
+    2r> rot
+    2r> rot
+    >r 2swap 2over 2over bar-end-address? 0= r> tuck 0= AND
+  WHILE
+    drop
+    bar-next-bit
+  REPEAT
+  >r drop 2drop 2drop r>
 ;
 
 

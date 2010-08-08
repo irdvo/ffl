@@ -62,6 +62,14 @@ t{ dnl1 dnl-empty?   ?false  }t
 
 t{ 0 ' dnl-test-count dnl1 dnl-execute 5 ?s }t
 
+: dnl-test-execute? ( u1 u2 dnn - u1 u2+1 flag )
+  drop 1+ 2dup =
+;
+
+t{ 4 0 ' dnl-test-execute? dnl1 dnl-execute? ?true  4 ?s 4 ?s }t
+t{ 6 0 ' dnl-test-execute? dnl1 dnl-execute? ?false 5 ?s 6 ?s }t
+
+
 \ Iterator test
 
 t{ dnl1 dni-create dni1 }t

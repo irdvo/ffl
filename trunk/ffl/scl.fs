@@ -39,7 +39,7 @@ include ffl/scn.fs
 ( The scl module implements a single linked list that can store cell wide data.)
   
 
-4 constant scl.version
+5 constant scl.version
 
 
 ( List structure )
@@ -187,6 +187,23 @@ end-structure
     snn-next@                \  walk = walk->next
   REPEAT
   drop
+;
+
+
+: scl-execute?     ( i*x xt scl -- j*x flag = Execute xt for every cell data in the list or until xt returns true, flag is true if xt returned true )
+  snl-first@ false           \ walk = first
+  BEGIN                      \ S:xt pntr flag
+    over nil<> over 0= AND   \ while walk<>nil and flag = false do
+  WHILE
+    drop                     \ flag
+    dup >r scn-cell@
+    swap 
+    dup >r execute           \  execute xt with cell
+    r> r>
+    snn-next@                \  walk = walk->next
+    rot
+  REPEAT
+  nip nip
 ;
 
 

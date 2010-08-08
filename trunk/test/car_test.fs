@@ -165,6 +165,12 @@ t{ 7 c4 car-find -1 ?s }t
 t{ 0 ' car-test-add c4 car-execute 15 ?s }t
 
 
+: car-test-add2 ( n n - n flag )
+  dup 5 = IF + true ELSE + false THEN
+;
+
+t{ 0 ' car-test-add2 c4 car-execute? ?true 13 ?s }t
+
 \ Sorting 
 
 t{ c4 car-clear }t

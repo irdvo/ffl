@@ -58,6 +58,14 @@ t{ s" beforehelloafter" s1 str-icompare ?0 }t
 
 t{ 0 ' + s1 str-execute 1689 ?s }t
 
+: str-sum? ( n1 n2 ch -- n1 n3 flag = n1: stop n2: sum ch = char of string n3: sum flag: stop? )
+  + 2dup <
+;
+
+t{ 1474 0 ' str-sum? s1 str-execute? ?true  1575 ?s 1474 ?s }t
+t{ 1575 0 ' str-sum? s1 str-execute? ?true  1689 ?s 1575 ?s }t
+t{ 1689 0 ' str-sum? s1 str-execute? ?false 1689 ?s 1689 ?s }t
+
 \ str-set-cstring
 \ str-get-cstring
 

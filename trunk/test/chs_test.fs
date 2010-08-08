@@ -524,6 +524,18 @@ t{ chs1 chs2 chs^move }t
 
 t{ 0 ' chs-test-execute chs2 chs-execute 62 ?s }t   \ char set count alnum
 
+: chs-test-execute2 ( n c - n+1 flag = Test execute? )
+  drop 1+ dup 51 =
+;
+
+t{ 0 ' chs-test-execute2 chs2 chs-execute? ?true 51 ?s }t
+
+: chs-test-execute3 ( n c - n+1 flag = Test execute? )
+  drop 1+ dup 71 =
+;
+
+t{ 0 ' chs-test-execute3 chs2 chs-execute? ?false 62 ?s }t
+
 \ operator words 
 
 t{ chs1 chs-reset }t

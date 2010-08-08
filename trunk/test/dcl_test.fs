@@ -192,6 +192,16 @@ t{ 6  dcl1 dcl-remove   ?true      }t
 
 t{ 0 ' + dcl1 dcl-execute  6 ?s   }t \ sum contents list
 
+: dcl-test-execute?  ( n1 n2 -- n3 flag )
+  + dup 6 >
+;
+
+t{ 0 ' dcl-test-execute? dcl1 dcl-execute? ?false 6 ?s }t
+
+t{ 6  dcl1 dcl-append              }t
+
+t{ 0 ' dcl-test-execute? dcl1 dcl-execute? ?true 12 ?s }t
+
 t{    dcl1 dcl-clear               }t
 
 

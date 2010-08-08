@@ -39,7 +39,7 @@ include ffl/chr.fs
 ( used in regular expressions.                                               )
   
 
-3 constant chs.version
+4 constant chs.version
 
 
 ( Private constant )
@@ -457,6 +457,28 @@ end-structure
 ;
 
 
+: chs-execute?     ( i*x xt chs -- j*x flag = Execute xt for every character in the set or until xt returns true, flag is true if xt returned true ) 
+  128 0 2>r false
+  BEGIN                      \ S: xt chs flag R:end index
+    dup 0= 2r@ > AND         \ While flag = false And end > index
+  WHILE
+    drop                     \ flag
+    r@ over chs-ch? IF       \ If character in the set
+      r@ 
+      swap >r                \   Clear the stack and ..
+      swap >r 
+      r@ execute r> r>       \   .. execute the token
+      rot
+    ELSE
+      false
+    THEN
+    r> 1+ >r                 \ Index++
+  REPEAT
+  rdrop rdrop                \ End Index
+  nip nip                    \ xt chs
+;
+
+   
 ( Inspection )
 
 : chs-dump         ( chs -- = Dump the chs state )

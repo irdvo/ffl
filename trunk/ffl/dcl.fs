@@ -39,7 +39,7 @@ include ffl/dcn.fs
 ( The dcl module implements a double linked list that can store cell wide data.)
   
 
-2 constant dcl.version
+3 constant dcl.version
 
 
 ( List structure )
@@ -185,6 +185,23 @@ end-structure
     dnn-next@                \  walk = walk->next
   REPEAT
   2drop
+;
+
+
+: dcl-execute?     ( i*x xt dcl -- j*x flag = Execute xt for every cell data in list or until xt returns true, flag is true if xt returned true )
+  dnl-first@ false           \ walk = first
+  BEGIN
+    over nil<> over 0= AND   \ while walk <> nil AND !done
+  WHILE
+    drop
+    dup >r dcn-cell@
+    swap
+    dup >r execute           \   execute with cell
+    r> r>
+    dnn-next@                \   walk = walk->next
+    rot
+  REPEAT
+  nip nip
 ;
 
 

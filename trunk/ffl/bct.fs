@@ -162,7 +162,7 @@ bnt% constant bct%  ( -- n = Get the required space for a bct variable )
 ;
 
 
-: bct-execute?     ( i*x xt bct -- j*x flag = Execute xt for every key and data in the tree until xt returns true )
+: bct-execute?     ( i*x xt bct -- j*x flag = Execute xt for every key and data in the tree or until xt returns true, flag is true if xt returned true )
   bnt>root @
   bnt-smallest-node               \ find the smallest node
   false
