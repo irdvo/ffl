@@ -1255,6 +1255,7 @@
 [scl scl-remove] (x scl -- flag )<br>
 [scl scl-reverse] (scl -- )<br>
 [scl scl-set] (x n scl -- )<br>
+[scl scl-sort] (xt scl -- )<br>
 [scn scn%] (-- n )<br>
 [scn scn-cell!] (x scn -- )<br>
 [scn scn-cell@] (scn -- x )<br>
@@ -1321,6 +1322,7 @@
 [snl snl-remove-after] (snn1 snl -- snn2 | nil )<br>
 [snl snl-remove-first] (snl -- snn | nil )<br>
 [snl snl-reverse] (snl -- )<br>
+[snl snl-sort] (xt snl -- )<br>
 [snl snl-tos] (snl -- snn | nil )<br>
 [snn snn%] (- n )<br>
 [snn snn-dump] (snn -- )<br>

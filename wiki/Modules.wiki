@@ -67,12 +67,12 @@ The following modules are present in the Forth Foundation Library:
 || [rng rng] || Pseudo Random Number Generator || Interface || 0.4.0 || 0.4.0 || No || Both ||
 || [scf scf] || Sscanf || Compound || 0.8.0 || 0.8.0 || Yes || Both ||
 || [sci sci] || Single linked cell list iterator || Collection || 0.1.0 || 0.5.0 || No || Both ||
-|| [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.9.0 || No || Both ||
+|| [scl scl] || Single linked cell list || Collection || 0.1.0 || 0.9.0 || Yes || Both ||
 || [scn scn] || Single linked cell list node || Collection || 0.1.0 || 0.5.0 || No || Both ||
 || [sh1 sh1] || SHA1 Algorithm || Interface || 0.4.0 || 0.4.0 || Yes || Both ||
 || [sh2 sh2] || SHA256 Algorithm || Interface || 0.5.0 || 0.5.0 || Yes || Both ||
 || [sni sni] || Generic single linked list iterator || Collection || 0.5.0 || 0.5.0 || No || Both ||
-|| [snl snl] || Generic single linked list || Collection || 0.5.0 || 0.7.0 || No || Both ||
+|| [snl snl] || Generic single linked list || Collection || 0.5.0 || 0.9.0 || Yes || Both ||
 || [snn snn] || Generic single linked node || Collection || 0.5.0 || 0.5.0 || No || Both ||
 || [spf spf] || Sprintf || Compound || 0.7.0 || 0.8.0 || Yes || Both ||
 || [stc stc] || Struct words || Development || 0.1.0 || 0.6.0 || No || Both ||

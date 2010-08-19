@@ -2,6 +2,7 @@
 
 {{{
 0.9.0
+* snl,scl: new word: *-sort (2010-08-19)
 * car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: *-execute? (2010-08-07)
 0.8.0
 * Debian package of the library (2010-07-24)
