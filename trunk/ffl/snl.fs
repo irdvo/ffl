@@ -337,9 +337,99 @@ defer snl.remove-first
   drop
   
   dup  snl-first@
-  over dup snl-last@       
+  over dup snl-last@
   swap snl>first !           \ first = last
   swap snl>last  !           \ last  = first
+;
+
+
+( Private sort words )
+
+: snl-merge-qmove  ( size p^ -- psize qsize p^ q^ = Move the q^ based on p^ and size )
+  2dup 
+  BEGIN                           \ S:qsize p^ psize q^
+    2dup nil<> AND                   
+  WHILE                           \ Move q^ until nil or size
+    snn-next@
+    >r 1- r>
+  REPEAT
+  >r >r over r> - -rot r>         \ Rearrange the stack
+;
+
+
+: snl-merge-node   ( snn snl -- = Append the snn node to the snl list during sorting )
+  dup snl>last @ nil<> IF         \ If last <> nil Then
+    2dup snl>last @ snn>next !    \   last->next = node
+  ELSE                            \ Else
+    2dup snl>first !              \   first = node
+  THEN
+  snl>last !                      \ last = node
+;
+
+
+: snl-merge-sort   ( psize qsize p^ q^ result snl -- psize qsize p^ q^ = Based on the compare result move p^ or q^ to the list )
+  >r
+  0> IF                \ If p^ bigger Then
+    dup r> snl-merge-node
+    snn-next@          \  Append q^ and move to next
+    2>r 1- 2r>
+  ELSE                 \ Else
+    over r> snl-merge-node
+    >r
+    snn-next@          \  Append p^ and move to next
+    2>r 1- 2r>
+    r>
+  THEN
+;
+
+
+: snl-merge-nodes  ( psize p^ snl -- 0 p^ | psize nil == Move all nodes from p^ in the list )
+  >r
+  BEGIN                           \ S:psize p^
+    2dup nil<> AND
+  WHILE                           \ While nodes in psize
+    dup r@ snl-merge-node
+    snn-next@                     \ Append them in the list
+    >r 1- r>
+  REPEAT
+  rdrop
+;
+
+
+( Sort word )
+
+: snl-sort         ( xt snl -- = Sort the list snl using mergesort, xt compares the nodes )
+  >r >r
+  1
+  BEGIN                      \ S:size
+    0
+    r'@ snl-first@           \ p^
+    r'@ snl>first nil!
+    r'@ snl>last  nil!
+    BEGIN                    \ S:size steps p^
+      dup nil<>
+    WHILE
+      >r 1+ over r>          \ steps++
+      snl-merge-qmove        \ Move the q^ max. size nodes
+      BEGIN                  \ S:size steps psize qsize p^ q^
+        2over 0>    AND
+        over  nil<> AND
+      WHILE
+        2dup r@ execute      \ Compare the nodes
+        r'@ snl-merge-sort   \ Merge the node from p^ or q^ based on compare result
+      REPEAT
+      rot swap 2swap         \ S:size steps qsize q^ psize p^
+      r'@ snl-merge-nodes    \ Merge p^ if still nodes present
+      2drop                  \ psize p^
+      r'@ snl-merge-nodes    \ Merge q^ if still nodes present
+      nip                    \ Save q^ as p^, drop qsize
+    REPEAT
+    drop                     \ p^
+    r'@ snl-last@ snn>next nil!  \ last->next = nil
+    >r 2* r>                 \ size*=2
+  2 < UNTIL                  \ until steps < 2
+  drop                       \ size
+  rdrop rdrop
 ;
 
 

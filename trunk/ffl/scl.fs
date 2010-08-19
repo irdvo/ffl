@@ -300,6 +300,43 @@ end-structure
 ;
 
 
+: scl-sort         ( xt scl -- = Sort the list scl using mergesort, xt compares the nodes )
+  >r >r
+  1
+  BEGIN                      \ S:size
+    0
+    r'@ snl-first@           \ p^
+    r'@ snl>first nil!
+    r'@ snl>last  nil!
+    BEGIN                    \ S:size steps p^
+      dup nil<>
+    WHILE
+      >r 1+ over r>          \ steps++
+      snl-merge-qmove        \ Move the q^ max. size nodes
+      BEGIN                  \ S:size steps psize qsize p^ q^
+        2over 0>    AND
+        over  nil<> AND
+      WHILE
+        over scn-cell@
+        over scn-cell@
+        r@ execute           \ Compare the nodes
+        r'@ snl-merge-sort   \ Merge the node from p^ or q^ based on compare result
+      REPEAT
+      rot swap 2swap         \ S:size steps qsize q^ psize p^
+      r'@ snl-merge-nodes    \ Merge p^ if still nodes present
+      2drop                  \ psize p^
+      r'@ snl-merge-nodes    \ Merge q^ if still nodes present
+      nip                    \ Save q^ as p^, drop qsize
+    REPEAT
+    drop                     \ p^
+    r'@ snl-last@ snn>next nil!  \ last->next = nil
+    >r 2* r>                 \ size*=2
+  2 < UNTIL                  \ until steps < 2
+  drop                       \ size
+  rdrop rdrop
+;
+
+
 ( Inspection )
 
 : scl-dump     ( scl -- = Dump the list )
