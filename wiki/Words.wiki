@@ -478,6 +478,7 @@
 [dcl dcl-remove] (x dcl -- flag )<br>
 [dcl dcl-reverse] (dcl -- )<br>
 [dcl dcl-set] (x n dcl -- )<br>
+[dcl dcl-sort] (xt dcl -- )<br>
 [dcn dcn%] (-- n )<br>
 [dcn dcn-cell!] (x dcn -- )<br>
 [dcn dcn-cell@] (dcn -- x )<br>
@@ -529,6 +530,7 @@
 [dnl dnl-push] (dnn dnl -- )<br>
 [dnl dnl-remove] (dnn dnl -- )<br>
 [dnl dnl-reverse] (dnl -- )<br>
+[dnl dnl-sort] (xt dnl -- )<br>
 [dnl dnl-tos] (dnl -- dnn | nil )<br>
 [dnn dnn%] (-- n )<br>
 [dnn dnn-dump] (dnn -- )<br>

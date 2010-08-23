@@ -24,10 +24,10 @@ The following modules are present in the Forth Foundation Library:
 || [cpx cpx] || Complex number || DataType || 0.4.0 || 0.4.0 || No || Both ||
 || [crc crc] || CRC32 Algorithm || Interface || 0.1.0 || 0.6.0 || No || Both ||
 || [dci dci] || Double linked cell list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
-|| [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.9.0 || No || Both ||
+|| [dcl dcl] || Double linked cell list || Collection || 0.4.0 || 0.9.0 || Yes || Both ||
 || [dcn dcn] || Double linked cell list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dni dni] || Generic double linked list iterator || Collection || 0.4.0 || 0.4.0 || No || Both ||
-|| [dnl dnl] || Generic double linked list || Collection || 0.4.0 || 0.9.0 || No || Both ||
+|| [dnl dnl] || Generic double linked list || Collection || 0.4.0 || 0.9.0 || Yes || Both ||
 || [dnn dnn] || Generic double linked list node || Collection || 0.4.0 || 0.4.0 || No || Both ||
 || [dom dom] || Document Object Model || Interface || 0.6.0 || 0.6.0 || Yes || Both ||
 || [dos dos] || Date Time output stream || Compound || 0.6.0 || 0.6.0 || Yes || Both ||

@@ -109,13 +109,9 @@ scl-new value nlist
 
 .( Before sorting there are ) 0 0 false ' nnode-out-sequence nlist scl-execute 2drop . .( numbers out of sequence. ) cr
 
-\ Sort the list using the nnode-compare word
+\ Sort the list using the <=> word
 
-: nnode-compare    ( n1 n2 -- n = Compare n1 with n2 )
-  <=>
-;
-
-' nnode-compare nlist scl-sort
+' <=> nlist scl-sort
 
 \ Check the number of numbers out of sequence again
 
