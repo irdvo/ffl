@@ -27,7 +27,7 @@
 include ffl/tst.fs
 include ffl/dcl.fs
 include ffl/dci.fs
-
+include ffl/rng.fs
 
 .( Testing: dcl, dcn and dci) cr 
 
@@ -229,6 +229,38 @@ t{    dci2 dci-next     ?false     }t
 
 t{ dci2 dci-free }t
 t{ dcl2 dcl-free }t
+
+\ dcl-sort test by inserting 1001 random numbers, sorting them and checking the sequence
+
+7898 rng-create dcl-rng
+
+: dcl-rng-insert     ( n -- = Insert n random numbers in the list )
+  0 DO
+    dcl-rng rng-next-number
+    dcl1 dcl-append
+  LOOP
+;
+
+t{ 1001 dcl-rng-insert }t
+
+: dcl-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence numbers, n1: count n2:previous float n3: number )
+  swap IF
+    tuck > IF >r 1+ r> THEN
+  ELSE
+    nip
+  THEN
+  true
+;
+
+t{ ' <=> dcl1 dcl-sort }t
+
+t{ 0 0 false ' dcl-out-sequence dcl1 dcl-execute 2drop 0 ?s }t
+
+t{ dcl1 dcl-reverse }t
+
+t{ 0 0 false ' dcl-out-sequence dcl1 dcl-execute 2drop 1000 ?s }t
+
+t{ dcl1 dcl-clear }t
 
 \ ==============================================================================
 

@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\    scl_expl - the cell based single linked list example in the ffl
+\    dcl_expl - the cell based double linked list example in the ffl
 \
 \               Copyright (C) 2010  Dick van Oudheusden
 \  
@@ -24,27 +24,27 @@
 \
 \ ==============================================================================
 
-include ffl/scl.fs
+include ffl/dcl.fs
 include ffl/rng.fs
 
 
-\ Example: sort a cell based single linked list with 1001 random numbers
+\ Example: sort a cell based double linked list with 1001 random numbers
 
 
-\ Create the single linked list on the heap
+\ Create the double linked list on the heap
 
-scl-new value nlist
+dcl-new value nlist
 
 \ Create the pseudo random generator in the dictionary with seed 5498
 
-5498 rng-create nrng
+9898 rng-create nrng
 
 \ Insert 1001 numbers in the nlist
 
 : nlist-insert     ( n -- = Insert n random numbers in nlist )
   0 DO
     nrng rng-next-number          \ Generate random number and ..
-    nlist scl-append              \ .. append to the list
+    nlist dcl-append              \ .. append to the list
   LOOP
 ;
 
@@ -61,17 +61,25 @@ scl-new value nlist
   true
 ;
 
-.( Before sorting there are ) 0 0 false ' nnode-out-sequence nlist scl-execute 2drop . .( numbers out of sequence. ) cr
+.( Before sorting there are ) 0 0 false ' nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
 
 \ Sort the list using the <=> word
 
-' <=> nlist scl-sort
+' <=> nlist dcl-sort
 
 \ Check the number of numbers out of sequence again
 
-.( After sorting there are ) 0 0 false ' nnode-out-sequence nlist scl-execute 2drop . .( numbers out of sequence. ) cr
+.( After sorting there are ) 0 0 false ' nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
+
+\  Reverse the list
+
+nlist dcl-reverse
+
+\ Check the number of out of sequence floats again
+
+.( After reversing there are ) 0 0 false ' nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
 
 \ Cleanup the list
 
-nlist scl-free
+nlist dcl-free
 

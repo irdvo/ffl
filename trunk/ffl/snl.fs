@@ -40,7 +40,7 @@ include ffl/snn.fs
 ( single linked cell list [scl] module. )
 
 
-2 constant snl.version
+3 constant snl.version
 
 
 ( List structure )
@@ -358,8 +358,8 @@ defer snl.remove-first
 
 
 : snl-merge-node   ( snn snl -- = Append the snn node to the snl list during sorting )
-  dup snl>last @ nil<> IF         \ If last <> nil Then
-    2dup snl>last @ snn>next !    \   last->next = node
+  dup snl-last@ nil<> IF          \ If last <> nil Then
+    2dup snl-last@ snn>next !     \   last->next = node
   ELSE                            \ Else
     2dup snl>first !              \   first = node
   THEN

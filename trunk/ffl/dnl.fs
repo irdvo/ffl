@@ -354,6 +354,97 @@ defer dnl.pop
 ;
 
 
+( Private sort words )
+
+: dnl-merge-qmove  ( size p^ -- psize qsize p^ q^ = Move the q^ based on p^ and size )
+  2dup 
+  BEGIN                           \ S:qsize p^ psize q^
+    2dup nil<> AND
+  WHILE                           \ Move q^ until nil or size
+    dnn-next@
+    >r 1- r>
+  REPEAT
+  >r >r over r> - -rot r>         \ Rearrange the stack
+;
+
+
+: dnl-merge-node   ( dnn dnl -- = Append the dnn node to the dnl list during sorting )
+  dup dnl-last@ nil<> IF          \ If last <> nil Then
+    2dup dnl-last@ dnn>next !     \   last->next = node
+  ELSE                            \ Else
+    2dup dnl>first !              \   first = node
+  THEN
+  2dup dnl-last@ swap dnn>prev !  \ node->prev = last
+  dnl>last !                      \ last = node
+;
+
+
+: dnl-merge-sort   ( psize qsize p^ q^ result dnl -- psize qsize p^ q^ = Based on the compare result move p^ or q^ to the list )
+  >r
+  0> IF                \ If p^ bigger Then
+    dup r> dnl-merge-node
+    dnn-next@          \  Append q^ and move to next
+    2>r 1- 2r>
+  ELSE                 \ Else
+    over r> dnl-merge-node
+    >r
+    dnn-next@          \  Append p^ and move to next
+    2>r 1- 2r>
+    r>
+  THEN
+;
+
+
+: dnl-merge-nodes  ( psize p^ dnl -- 0 p^ | psize nil == Move all nodes from p^ in the list )
+  >r
+  BEGIN                           \ S:psize p^
+    2dup nil<> AND
+  WHILE                           \ While nodes in psize
+    dup r@ dnl-merge-node
+    dnn-next@                     \ Append them in the list
+    >r 1- r>
+  REPEAT
+  rdrop
+;
+
+
+( Sort word )
+
+: dnl-sort         ( xt dnl -- = Sort the list dnl using mergesort, xt compares the nodes )
+  >r >r
+  1
+  BEGIN                      \ S:size
+    0
+    r'@ dnl-first@           \ p^
+    r'@ dnl>first nil!
+    r'@ dnl>last  nil!
+    BEGIN                    \ S:size steps p^
+      dup nil<>
+    WHILE
+      >r 1+ over r>          \ steps++
+      dnl-merge-qmove        \ Move the q^ max. size nodes
+      BEGIN                  \ S:size steps psize qsize p^ q^
+        2over 0>    AND
+        over  nil<> AND
+      WHILE
+        2dup r@ execute      \ Compare the nodes
+        r'@ dnl-merge-sort   \ Merge the node from p^ or q^ based on compare result
+      REPEAT
+      rot swap 2swap         \ S:size steps qsize q^ psize p^
+      r'@ dnl-merge-nodes    \ Merge p^ if still nodes present
+      2drop                  \ psize p^
+      r'@ dnl-merge-nodes    \ Merge q^ if still nodes present
+      nip                    \ Save q^ as p^, drop qsize
+    REPEAT
+    drop                     \ p^
+    r'@ dnl-last@ dnn>next nil!  \ last->next = nil
+    >r 2* r>                 \ size*=2
+  2 < UNTIL                  \ until steps < 2
+  drop                       \ size
+  rdrop rdrop
+;
+
+
 ( Inspection )
 
 : dnl-dump     ( dnl -- = Dump the list )
