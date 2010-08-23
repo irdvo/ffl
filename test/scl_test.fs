@@ -27,9 +27,10 @@
 include ffl/tst.fs
 include ffl/scl.fs
 include ffl/sci.fs
+include ffl/rng.fs
 
 
-.( Testing: scl, scn and sci) cr 
+.( Testing: scl, scn and sci) cr
 
 t{ scl-create scl1  }t
 
@@ -214,6 +215,34 @@ t{  sci2 sci-next     ?false     }t
 t{  sci2 sci-free                }t
 
 t{  scl1 scl-clear                 }t
+
+\ scl-sort test by inserting 1001 random numbers, sorting them and checking the sequence
+
+4598 rng-create scl-rng
+
+: scl-rng-insert     ( n -- = Insert n random numbers in the list )
+  0 DO
+    scl-rng rng-next-number
+    scl1 scl-append
+  LOOP
+;
+
+t{ 1001 scl-rng-insert }t
+
+: scl-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence numbers, n1: count n2:previous float n3: number )
+  swap IF
+    tuck > IF >r 1+ r> THEN
+  ELSE
+    nip
+  THEN
+  true
+;
+
+t{ ' <=> scl1 scl-sort }t
+
+t{ 0 0 false ' scl-out-sequence scl1 scl-execute 2drop 0 ?s }t
+
+t{  scl1 scl-clear }t
 
 \ ==============================================================================
 

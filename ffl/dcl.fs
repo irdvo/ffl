@@ -288,6 +288,43 @@ end-structure
 ;
 
 
+: dcl-sort         ( xt dcl -- = Sort the list dcl using mergesort, xt compares the nodes )
+  >r >r
+  1
+  BEGIN                      \ S:size
+    0
+    r'@ dnl-first@           \ p^
+    r'@ dnl>first nil!
+    r'@ dnl>last  nil!
+    BEGIN                    \ S:size steps p^
+      dup nil<>
+    WHILE
+      >r 1+ over r>          \ steps++
+      dnl-merge-qmove        \ Move the q^ max. size nodes
+      BEGIN                  \ S:size steps psize qsize p^ q^
+        2over 0>    AND
+        over  nil<> AND
+      WHILE
+        over dcn-cell@
+        over dcn-cell@
+        r@ execute           \ Compare the nodes
+        r'@ dnl-merge-sort   \ Merge the node from p^ or q^ based on compare result
+      REPEAT
+      rot swap 2swap         \ S:size steps qsize q^ psize p^
+      r'@ dnl-merge-nodes    \ Merge p^ if still nodes present
+      2drop                  \ psize p^
+      r'@ dnl-merge-nodes    \ Merge q^ if still nodes present
+      nip                    \ Save q^ as p^, drop qsize
+    REPEAT
+    drop                     \ p^
+    r'@ dnl-last@ dnn>next nil!  \ last->next = nil
+    >r 2* r>                 \ size*=2
+  2 < UNTIL                  \ until steps < 2
+  drop                       \ size
+  rdrop rdrop
+;
+
+
 ( Inspection )
 
 : dcl-dump     ( dcl -- = Dump the list )
@@ -300,3 +337,4 @@ end-structure
 [THEN]
 
 \ ==============================================================================
+
