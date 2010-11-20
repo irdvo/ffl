@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\          hnct_expl - the cell hash table example in the ffl
+\          bnt_expl - the binary tree example in the ffl
 \
 \               Copyright (C) 2007  Dick van Oudheusden
 \  
@@ -166,3 +166,4 @@ mount-iter bni-last nil<>? [IF]
 \ Cleanup the tree
 
 ' mount-free mountains bnt-clear
+

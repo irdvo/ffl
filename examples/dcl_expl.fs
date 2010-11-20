@@ -35,7 +35,7 @@ include ffl/rng.fs
 
 dcl-new value nlist
 
-\ Create the pseudo random generator in the dictionary with seed 5498
+\ Create the pseudo random generator in the dictionary with seed 9898
 
 9898 rng-create nrng
 
@@ -52,9 +52,9 @@ dcl-new value nlist
 
 \ Check the number of numbers out of sequence
 
-: nnode-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence number, n1: count n2:previous float n3: number )
+: nnode-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence number, n1: count n2:previous number n3: number )
   swap IF
-    tuck > IF >r 1+ r> THEN       \ Compare current float with previous float, increment counter if out of sequence
+    tuck > IF >r 1+ r> THEN       \ Compare current number with previous number increment counter if out of sequence
   ELSE
     nip                           \ First call, no check
   THEN
@@ -75,7 +75,7 @@ dcl-new value nlist
 
 nlist dcl-reverse
 
-\ Check the number of out of sequence floats again
+\ Check the number of out of sequence numbers again
 
 .( After reversing there are ) 0 0 false ' nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
 
