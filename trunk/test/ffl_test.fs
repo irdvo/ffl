@@ -56,6 +56,7 @@ include frc_test.fs
 include fwt_test.fs
 include fsm_test.fs
 include hct_test.fs
+include jos_test.fs
 include lbf_test.fs
 include log_test.fs
 include md5_test.fs
