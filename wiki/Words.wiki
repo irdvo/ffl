@@ -382,6 +382,21 @@
 [chs chs^move] (chs1 chs2 -- )<br>
 [chs chs^or] (chs1 chs2 -- )<br>
 [chs chs^xor] (chs1 chs2 -- )<br>
+[cis cis%] (-- n )<br>
+[cis cis+dump-read-parameters] (i*x n -- )<br>
+[cis cis-(free)] (cis -- )<br>
+[cis cis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- cis )<br>
+[cis cis-free] (cis -- )<br>
+[cis cis-init] (cis -- )<br>
+[cis cis-new] (-- cis )<br>
+[cis cis-read] (cis -- i*x n )<br>
+[cis cis-set-reader] (x xt cis -- )<br>
+[cis cis-set-string] (c-addr u cis -- )<br>
+[cis cis.comment] (-- n )<br>
+[cis cis.done] (-- n )<br>
+[cis cis.error] (-- n )<br>
+[cis cis.parameter] (-- n )<br>
+[cis cis.section] (-- n )<br>
 [cpx cpx%] (-- n )<br>
 [cpx cpx+abs] (F: r1 r2 -- r3 )<br>
 [cpx cpx+acos] (F: r1 r2 -- r3 r4 )<br>
@@ -952,6 +967,24 @@
 [config icompare] (c-addr1 u1 c-addr2 u2 -- n )<br>
 [config index2offset] (n1 n2 -- n3 )<br>
 [log info"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[jos jos%] (-- n )<br>
+[jos jos-(free)] (tos -- )<br>
+[jos jos-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- jos )<br>
+[jos jos-dump] (jos -- )<br>
+[jos jos-free] (jos -- )<br>
+[jos jos-init] (jos -- )<br>
+[jos jos-new] (-- jos )<br>
+[jos jos-write-boolean] (flag jos -- )<br>
+[jos jos-write-double] (d jos -- )<br>
+[jos jos-write-end-array] (jos -- )<br>
+[jos jos-write-end-object] (jos -- )<br>
+[jos jos-write-float] (r jos -- )<br>
+[jos jos-write-name] (c-addr u jos -- )<br>
+[jos jos-write-nil] (jos -- )<br>
+[jos jos-write-number] (n jos -- )<br>
+[jos jos-write-start-array] (jos -- )<br>
+[jos jos-write-start-object] (jos -- )<br>
+[jos jos-write-string] (c-addr u jos -- )<br>
 [fwt l!] (n l-addr -- )<br>
 [fwt l+!] (l l-addr -- )<br>
 [fwt l+!] (l l-addr -- )<br>
