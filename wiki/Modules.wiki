@@ -78,7 +78,7 @@ The following modules are present in the Forth Foundation Library:
 || [spf spf] || Sprintf || [http://code.google.com/p/ffl/source/browse/trunk/ffl/spf.fs source] || Compound || 0.7.0 || 0.8.0 || Yes || Both ||
 || [stc stc] || Struct words || [http://code.google.com/p/ffl/source/browse/trunk/ffl/stc.fs source] || Development || 0.1.0 || 0.6.0 || No || Both ||
 || [str str] || Text string || [http://code.google.com/p/ffl/source/browse/trunk/ffl/str.fs source] || DataType || 0.2.0 || 0.9.0 || No || Both ||
-|| [stt stt] || Stringtable words || [http://code.google.com/p/ffl/source/browse/trunk/ffl/stt.fs source] || Development || 0.6.0 || 0.7.0 || Yes || Both ||
+|| [stt stt] || Stringtable words || [http://code.google.com/p/ffl/source/browse/trunk/ffl/stt.fs source] || Development || 0.6.0 || 0.9.0 || Yes || Both ||
 || [tis tis] || Text input stream || [http://code.google.com/p/ffl/source/browse/trunk/ffl/tis.fs source] || Compound || 0.2.0 || 0.6.0 || Yes || Both ||
 || [tmr tmr] || Interval timer || [http://code.google.com/p/ffl/source/browse/trunk/ffl/tmr.fs source] || Interface || 0.4.0 || 0.4.0 || No || Both ||
 || [tos tos] || Text output stream || [http://code.google.com/p/ffl/source/browse/trunk/ffl/tos.fs source] || Compound || 0.2.0 || 0.8.0 || No || Both ||

@@ -2,6 +2,7 @@
 
 {{{
 0.9.0
+* stt: new words: +\" and +stt (2010-11-30)
 * jos: new module: JSON output stream (2010-11-20)
 * snl,scl,dnl,dcl: new word: *-sort (2010-08-23)
 * car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: *-execute? (2010-08-07)
