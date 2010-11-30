@@ -34,10 +34,12 @@ begin-stringtable stt1
 +" Forth"
 +" Foundation"
 +" Library"
++\" \x21"
 end-stringtable
 
 t{ 0 stt1 s" Forth"      ?str }t
 t{ 1 stt1 s" Foundation" ?str }t
 t{ 2 stt1 s" Library"    ?str }t
+t{ 3 stt1 s" !"          ?str }t
 
 \ ==============================================================================

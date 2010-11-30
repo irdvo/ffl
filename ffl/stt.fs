@@ -30,12 +30,14 @@ include ffl/config.fs
 
 [UNDEFINED] stt.version [IF]
 
+include ffl/est.fs
+
 ( stt = Stringtable module )
 ( The stt module implements a stringtable with counted strings. The code is  )
 ( inspired by Wil Badens stringtable.                                        )
 
 
-2 constant stt.version
+3 constant stt.version
 
 
 ( Stringtable syntax words )
@@ -52,13 +54,24 @@ include ffl/config.fs
 ;
 
 
-: +"               ( "ccc<quote>" -- = Parse ccc delimited by double quote and place the string as counted string in the stringtable )
-  [char] " parse
+: +stt  ( c-addr u -- = Place the string as counted string in the stringtable )
   here 
   over char+ allot
   2dup c!
   char+ swap cmove
   align
+;
+
+
+: +"  ( "ccc<quote>" -- = Parse ccc delimited by double quote and place the string as counted string in the stringtable )
+  [char] " parse 
+  +stt
+;
+
+
+: +\"  ( "ccc<quote>" -- = Parse ccc with escaped characters delimited by double quote and place the string as counted string in the stringtable )
+  parse\"
+  +stt
 ;
 
 
@@ -77,3 +90,4 @@ include ffl/config.fs
 [THEN]
 
 \ ==============================================================================
+
