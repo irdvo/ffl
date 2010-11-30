@@ -26,9 +26,7 @@
 
 include ffl/stt.fs
 
-
-\ Example : the month names in a stringtable
-
+\ Example : the names of the months in a stringtable
 
 \ Create the stringtable in the dictionary
 
@@ -52,8 +50,3 @@ end-stringtable
 0  months type cr       \ January
 11 months type cr       \ December
 
-
-
-  
-
-    
