@@ -9,7 +9,7 @@ modifications checks are limited. DTDs are not stored in the tree.
 Depending on the node type the following stack state is expected by
 dom-set, dom-append-node, dom-insert-node-before and
 dom-insert-node-after:
-{{
+{{{
 dom.element:   -- c-addr u              = Tag name
 dom.attribute: -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2
 dom.text:      -- c-addr u              = Normal xml text
