@@ -291,10 +291,12 @@ end-enumeration
 
 
 : jos-dump  ( jos -- = Dump the jos variable )
-  drop
+  ." jos:" dup . cr
+  dup jos>tos   tos-dump
+  dup jos>stack car-dump
+  ." state:" jos>state ? cr
 ;
 
 [THEN]
 
 \ ==============================================================================
-
