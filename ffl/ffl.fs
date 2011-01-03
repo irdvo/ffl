@@ -70,6 +70,7 @@ include ffl/hct.fs
 include ffl/hni.fs
 include ffl/hnn.fs
 include ffl/hnt.fs
+include ffl/jis.fs
 include ffl/jos.fs
 include ffl/lbf.fs
 include ffl/log.fs

@@ -173,4 +173,34 @@ t{ s" -abc" t1 tis-set }t
 t{ t1 tis-read-double ?false }t
 t{ t1 tis-read-char ?true char - ?s }t
 
+[DEFINED] tis-read-float [IF]
+t{ s" 1.0." t1 tis-set }t
+t{ t1 tis-read-float ?true 1E0 ?r }t
+t{ t1 tis-read-char ?true char . ?s }t
+
+t{ s" -.5f" t1 tis-set }t
+t{ t1 tis-read-float ?true -0.5E0 ?r }t
+t{ t1 tis-read-char ?true char f ?s }t
+
+t{ s" e10" t1 tis-set }t
+t{ t1 tis-read-float ?false }t
+t{ t1 tis-read-char ?true char e ?s }t
+
+t{ s" +56.78E-2-" t1 tis-set }t
+t{ t1 tis-read-float ?true 56.78E-2 ?r }t
+t{ t1 tis-read-char ?true char - ?s }t
+
+t{ s" +56.78e-2-" t1 tis-set }t
+t{ t1 tis-read-float ?true 56.78E-2 ?r }t
+t{ t1 tis-read-char ?true char - ?s }t
+
+t{ s" -56.78D+2+" t1 tis-set }t
+t{ t1 tis-read-float ?true -56.78E+2 ?r }t
+t{ t1 tis-read-char ?true char + ?s }t
+
+t{ s" -56.78d+2+" t1 tis-set }t
+t{ t1 tis-read-float ?true -56.78E+2 ?r }t
+t{ t1 tis-read-char ?true char + ?s }t
+[THEN]
+
 \ ==============================================================================

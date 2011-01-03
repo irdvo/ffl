@@ -49,7 +49,7 @@ include ffl/chs.fs
 ( }}}                                                                       )
 
 
-2 constant tis.version
+3 constant tis.version
 
 
 ( Input stream structure )
@@ -345,6 +345,41 @@ end-structure
 ;
 
 
+( Private read and scan words )
+
+: tis-substring   ( n tis -- c-addr u = Get a substring from the string, starting from n till tis-pntr )
+  2dup str-data@ swap chars +          \ Start of string
+  -rot
+  tis-pntr@ swap -                     \ Length of string
+;
+
+
+: tis-match-sign  ( jis -- flag = Match a sign character returning true if negative )
+  s" +-" rot tis-cmatch-chars IF
+    [char] - =
+  ELSE
+    false
+  THEN
+;
+
+
+: tis-match-digits?  ( jis -- flag = Match digits returning true if digits are matched )
+  >r
+  false                           \ No digits found
+  BEGIN
+    r@ tis-fetch-char IF
+      chr-digit?
+    ELSE
+      false
+    THEN
+  WHILE
+    drop true                     \ Digits found
+    r@ tis-next-char
+  REPEAT
+  rdrop
+;
+
+
 ( Read data words )
 
 : tis-read-char    ( tis -- false | char true = Read character from the stream )
@@ -420,12 +455,8 @@ end-structure
 : tis-read-number  ( tis -- false | n true = Read a cell number in the current base from the stream )
   >r
   r@ tis-pntr@
-  false                                \ Process leading +/-
-  [char] - r@ tis-cmatch-char IF
-    0=
-  ELSE
-    [char] + r@ tis-cmatch-char drop
-  THEN
+
+  r@ tis-match-sign
   
   r@ tis-fetch-char IF
     chr-base IF
@@ -462,12 +493,8 @@ end-structure
 : tis-read-double  ( tis -- false | d true = Read a double value in the current base from the stream )
   >r
   r@ tis-pntr@
-  false                                \ Process leading +/-
-  [char] - r@ tis-cmatch-char IF
-    0=
-  ELSE
-    [char] + r@ tis-cmatch-char drop
-  THEN
+  
+  r@ tis-match-sign
   
   r@ tis-fetch-char IF
     chr-base IF
@@ -502,13 +529,33 @@ end-structure
 ;
 
 
-( Private scan words )
+[DEFINED] >float [IF]
+: tis-read-float  ( jis -- false | r true = Read a float from the stream )
+  >r
+  r@ tis-pntr@
+  false
+  r@ tis-match-sign drop          \ Match the sign
+  r@ tis-match-digits? OR         \ Match the digits before the dot
 
-: tis-substring   ( n tis -- c-addr u = Get a substring from the string, starting from n till tis-pntr )
-  2dup str-data@ swap chars +          \ Start of string
-  -rot
-  tis-pntr@ swap -                     \ Length of string
+  [char] . r@ tis-cmatch-char IF  \ Match the optional dot
+    r@ tis-match-digits? OR       \ Match the optional digits after the dot
+  THEN
+
+  s" eEdD" r@ tis-cmatch-chars IF \ Match the optional exponent 
+    drop
+    r@ tis-match-sign drop        \ Match the optional sign after the exponent
+    r@ tis-match-digits? drop     \ Match the optional digits after the exponent
+  THEN
+  
+  IF
+    r@ tis-substring >float       \ Convert to a float
+  ELSE
+    r@ tis-pntr! drop
+    false
+  THEN
+  rdrop
 ;
+[THEN]
 
 
 ( Scan words: look for data in the stream )
