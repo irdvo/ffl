@@ -87,6 +87,8 @@ the scanned data; skip = move the stream pointer after the skipped data.
  Read a cell number in the current base from the stream
 *tis-read-double* ( tis -- false | d true )
  Read a double value in the current base from the stream
+*tis-read-float* ( jis -- false | r true )
+ Read a float from the stream
 ==== Scan words: look for data in the stream ====
 *tis-scan-char* ( char tis -- false | c-addr u true )
  Read characters till the char

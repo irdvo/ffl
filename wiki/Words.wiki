@@ -954,6 +954,29 @@
 [config icompare] (c-addr1 u1 c-addr2 u2 -- n )<br>
 [config index2offset] (n1 n2 -- n3 )<br>
 [log info"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
+[jis jis%] (-- n )<br>
+[jis jis+remove-read-parameters] (i*x n -- )<br>
+[jis jis-(free)] (xis -- )<br>
+[jis jis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- jis )<br>
+[jis jis-free] (jis -- )<br>
+[jis jis-init] (jis -- )<br>
+[jis jis-new] (-- jis )<br>
+[jis jis-read] (jis -- i*x n )<br>
+[jis jis-set-reader] (x xt jis -- )<br>
+[jis jis-set-string] (c-addr u jis -- )<br>
+[jis jis.boolean] (-- n )<br>
+[jis jis.done] (-- n )<br>
+[jis jis.double] (-- n )<br>
+[jis jis.end-array] (-- n )<br>
+[jis jis.end-object] (-- n )<br>
+[jis jis.error] (-- n )<br>
+[jis jis.float] (-- n )<br>
+[jis jis.name] (-- n )<br>
+[jis jis.nil] (-- n )<br>
+[jis jis.number] (-- n )<br>
+[jis jis.start-array] (-- n )<br>
+[jis jis.start-object] (-- n )<br>
+[jis jis.string] (-- n )<br>
 [jos jos%] (-- n )<br>
 [jos jos-(free)] (tos -- )<br>
 [jos jos-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- jos )<br>
@@ -1447,6 +1470,7 @@
 [tis tis-read-all] (tis -- 0 | c-addr u )<br>
 [tis tis-read-char] (tis -- false | char true )<br>
 [tis tis-read-double] (tis -- false | d true )<br>
+[tis tis-read-float] (jis -- false | r true )<br>
 [tis tis-read-line] (tis -- 0 | c-addr u )<br>
 [tis tis-read-more] (tis -- flag )<br>
 [tis tis-read-number] (tis -- false | n true )<br>
