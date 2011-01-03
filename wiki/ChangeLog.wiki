@@ -1,6 +1,5 @@
 ﻿#labels Featured
 
-{{{
 0.9.0
 * tis: new word: tis-read-float (2011-01-03)
 * stt: new words: +\" and +stt (2010-11-30)
@@ -199,6 +198,5 @@
 * sci: new module (Single linked cell list iterator)
 * scn: new module (Single linked cell list node)
 * scl: new module (Single linked cell list)
-}}}
 
 [http://c14.statcounter.com/1434121/0/407ca2a5/0/?img=stats.png]
