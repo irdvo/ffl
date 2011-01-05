@@ -1,11 +1,12 @@
 ﻿#labels Featured
 
 0.9.0
+ * jis: new module: JSON input stream (2011-01-05)
  * tis: new word: tis-read-float (2011-01-03)
  * stt: new words: +\" and +stt (2010-11-30)
  * jos: new module: JSON output stream (2010-11-20)
- * snl,scl,dnl,dcl: new word: *-sort (2010-08-23)
- * car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: *-execute? (2010-08-07)
+ * snl,scl,dnl,dcl: new word: `*`-sort (2010-08-23)
+ * car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: `*`-execute? (2010-08-07)
 0.8.0
  * Debian package of the library (2010-07-24)
  * log: new word: log-with-flush (2010-06-06)
@@ -36,8 +37,8 @@
  * gzi: new module: GZip reader (2008-10-11)
  * chs: new words: chs-set-list,chs-reset-list (2008-10-04)
  * bar: new words: bar-set-list,bar-reset-list (2008-10-04)
- * bar: new words: bar^or,bar^and,bar^xor,bar^move (2008-10-03)
- * chs: new words: chs^or,chs^and,chs^xor (2008-10-01)
+ * bar: new words: bar`^`or,bar`^`and,bar`^ `xor,bar`^`move (2008-10-03)
+ * chs: new words: chs`^`or,chs`^`and,chs`^`xor (2008-10-01)
  * rgx: classes added (2008-09-27)
  * spf: new module: Sprintf module (2008-09-13)
  * log: new module: Logging module (2008-09-09)

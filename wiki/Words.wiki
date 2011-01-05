@@ -972,7 +972,7 @@
 [jis jis.error] (-- n )<br>
 [jis jis.float] (-- n )<br>
 [jis jis.name] (-- n )<br>
-[jis jis.nil] (-- n )<br>
+[jis jis.null] (-- n )<br>
 [jis jis.number] (-- n )<br>
 [jis jis.start-array] (-- n )<br>
 [jis jis.start-object] (-- n )<br>
