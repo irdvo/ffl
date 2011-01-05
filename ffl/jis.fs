@@ -24,7 +24,6 @@
 \
 \ ==============================================================================
 
-
 include ffl/config.fs
 
 [UNDEFINED] jis.version [IF]
@@ -90,6 +89,7 @@ end-enumeration
 0 value jis.parse-start       \ xt of jis-parse-start word
 0 value jis.parse-first-value \ xt of jis-parse-first-value word
 0 value jis.parse-first-pair  \ xt of jis-parse-first-pair
+0 value jis.parse-pair-value  \ xt of jis-parse-pair-value
 
 
 ( json reader structure )
@@ -100,6 +100,8 @@ begin-structure jis%   ( -- n = Get the required space for a jis reader variable
   field:  jis>state     \ the state execution token
   car%
   +field  jis>stack     \ the state stack
+  str%
+  +field  jis>string    \ the parsed string
 end-structure
 
 
@@ -138,7 +140,7 @@ end-structure
 ;
 
 
-( xml reader init words )
+( json reader init words )
 
 : jis-set-reader  ( x xt jis -- = Init the json parser for reading using the reader callback xt with its data x )
   tis-set-reader
@@ -176,7 +178,51 @@ end-structure
 
 ( Private reader words )
 
+: jis-parse-unicode  ( jis -- ch = Parse an unicode character )
+  4 swap tis-read-string ?dup IF \ Read 4 hex digits
+    base @ >r hex                
+    0. swap >number 2drop d>s    \ Convert to a number 
+    r> base ! 
+  ELSE
+    [char] u
+  THEN
+;
+
+
 : jis-parse-string  ( jis -- false | c-addr u true = Parse a string )
+  >r
+  r@ jis>string str-clear
+  
+  BEGIN
+    r@ tis-read-char IF
+      dup [char] " <>             \ Read till " or no more chars
+    ELSE
+      0 false
+    THEN
+  WHILE
+    dup [char] \ = IF
+      r@ tis-read-char IF
+        nip
+        CASE
+          [char] b OF chr.bs ENDOF
+          [char] f OF chr.ff ENDOF
+          [char] n OF chr.lf ENDOF
+          [char] r OF chr.cr ENDOF
+          [char] t OF chr.ht ENDOF
+          [char] u OF r@ jis-parse-unicode ENDOF 
+          dup                     \ Default incl. \\ \/ and \"
+        ENDCASE
+      THEN
+    THEN
+    r@ jis>string str-append-char \ Append char to string
+  REPEAT
+  
+  [char] " = IF                   \ If closing " then success
+    r@ jis>string str-get true
+  ELSE
+    false
+  THEN
+  rdrop
 ;
 
 
@@ -199,15 +245,15 @@ end-structure
 [DEFINED] tis-read-float [IF]
 : jis-parse-number  ( jis -- jis.error | r jis.float | d jis.double | n jis.number = Parse a number )
   tis-read-float IF
-    fdup fdup f>d d>f f= IF       \ Is it a float ?
-      jis.float
-    ELSE
+    fdup fdup f>d d>f f= IF       \ Is it a double or number ?
       f>d
-      2dup 2dup d>s s>d d= IF     \ Is it a double ?
-        jis.double
+      2dup 2dup d>s s>d d= IF     \ Is it a number
+        d>s jis.number
       ELSE
-        s>d jis.number            \ Else number
+        jis.double
       THEN
+    ELSE
+      jis.float                   \ No, float
     THEN
   ELSE
     jis.error
@@ -274,7 +320,6 @@ end-structure
     jis.end-array
   ELSE
     [char] , r@ tis-cmatch-char IF  \ Check for ,
-      r@ tis-skip-spaces drop
       r@ jis-parse-value dup jis.error = IF \ Check for value
         jis.parse-start r@ jis-state!
       THEN
@@ -306,17 +351,75 @@ end-structure
 
 
 : jis-parse-next-pair  ( jis -- i*x n = Parse the next pair of an object )
-  \ ToDo
+  >r
+  r@ tis-skip-spaces drop
+  [char] } r@ tis-cmatch-char IF  \ Check for end of object
+    r@ jis-pop-state
+    jis.end-object
+  ELSE
+    [char] , r@ tis-cmatch-char IF
+      r@ tis-skip-spaces drop
+      [char] " r@ tis-cmatch-char IF
+        r@ jis-parse-string IF
+          jis.name
+          jis.parse-pair-value
+        ELSE
+          jis.error
+          jis.parse-start
+        THEN
+      ELSE
+        jis.error
+        jis.parse-start
+      THEN
+    ELSE
+      jis.error
+      jis.parse-start
+    THEN
+    r@ jis-state!
+  THEN
+  rdrop
 ;
 
 
 : jis-parse-pair-value  ( jis -- i*x n = Parse the value of a pair )
-  \ ToDo
+  >r
+  r@ tis-skip-spaces drop
+  [char] : r@ tis-cmatch-char IF
+    ['] jis-parse-next-pair r@ jis-state! \ Default: next-state = parse-next-pair
+    r@ jis-parse-value dup jis.error = IF \ Check for value, update next state
+      jis.parse-start r@ jis-state!
+    THEN
+  ELSE
+    jis.parse-start r@ jis-state!
+    jis.error
+  THEN
+  rdrop
 ;
+' jis-parse-pair-value to jis.parse-pair-value
 
 
 : jis-parse-first-pair  ( jis -- i*x n = Parse the first pair of an object )
-  \ ToDo
+  >r
+  r@ tis-skip-spaces drop
+  [char] } r@ tis-cmatch-char IF  \ Check for end of object
+    r@ jis-pop-state
+    jis.end-object
+  ELSE
+    [char] " r@ tis-cmatch-char IF  \ " Check for name
+      r@ jis-parse-string IF
+        jis.name                    \ Name found
+        ['] jis-parse-pair-value
+      ELSE
+        jis.error
+        jis.parse-start             \ Error
+      THEN
+    ELSE
+      jis.error
+      jis.parse-start               \ Error
+    THEN
+    r@ jis-state!
+  THEN
+  rdrop
 ;
 ' jis-parse-first-pair to jis.parse-first-pair
 
@@ -338,7 +441,6 @@ end-structure
   THEN
   rdrop
 ;
-
 ' jis-parse-start to jis.parse-start
 
 
