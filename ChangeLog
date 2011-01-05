@@ -1,4 +1,5 @@
 0.9.0
+* jis: new module: JSON input stream (2011-01-05)
 * tis: new word: tis-read-float (2011-01-03)
 * stt: new words: +\" and +stt (2010-11-30)
 * jos: new module: JSON output stream (2010-11-20)
