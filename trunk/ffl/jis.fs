@@ -34,17 +34,20 @@ include ffl/car.fs
 
 
 ( jis = JSON input stream )
-( The jis module implements a validating JSON parser.                        )
-( The jis-set-reader word expects an execution token with the following      )
-( stack behavior:                                                            )
+( The jis module implements a validating JSON parser. Feeding of the parser  )
+( can be done with two words: jis-set-string for feeding the parser          )
+( with strings and jis-set-reader for feeding the parser through an          )
+( execution token. This token should have the following stack behavior:      )
 ( {{{                                                                        )
 (    x -- c-addr u | 0                                                       )
 ( }}}                                                                        )
-( Data x is the same as the first parameter during calling of the word       )
-( xis-set-reader. For reading from files this is normally the file           )
-( descriptor. The word returns, if successful, the read data in c-addr u.    )
-( The jis-read word returns the parsed json token with the following varying )
-( stack parameters:                                                          )
+( x is a word indicating the context of the reader and is identical to       )
+( first parameter of jis-set-reader. For example this value is the file      )
+( descriptor during reading of a file. The execution token returns, if       )
+( successful, the read data in c-addr u.                                     )
+( The input is parsed by calling the jis-read word repeatedly until it       )
+( returns jis.error or jis.done. The word returns one of the following       )
+( results with its stack parameters:                                         )
 ( {{{                                                                        )
 ( jis.error          --             = Error                                  )
 ( jis.done           --             = Stream is correctly parsed             )
@@ -105,12 +108,13 @@ begin-structure jis%   ( -- n = Get the required space for a jis reader variable
 end-structure
 
 
-( xml reader variable creation, initialisation and destruction )
+( json reader variable creation, initialisation and destruction )
 
 : jis-init   ( jis -- = Initialise the json reader variable )
   dup  jis>tis tis-init
   16
   over jis>stack car-init
+  dup  jis>string str-init
   jis.parse-start
   swap jis>state !
 ;
@@ -118,8 +122,10 @@ end-structure
 
 : jis-(free)   ( xis -- = Free the internal, private variables from the heap )
   dup 
-  jis>tis   tis-(free)
-  jis>stack car-(free)
+  jis>tis    tis-(free)
+  dup
+  jis>stack  car-(free)
+  jis>string str-(free)
 ;
 
     
@@ -153,6 +159,21 @@ end-structure
 
 
 ( Private state words )
+
+: jis-skip-spaces  ( jis -- = Skip all whitespace in the stream )
+  >r
+  BEGIN
+    r@ tis-fetch-char IF
+      chr-space?
+    ELSE
+      false
+    THEN
+  WHILE
+    r@ tis-next-char
+  REPEAT
+  rdrop
+;
+
 
 : jis-state!  ( n jis -- = Set the next state n )
   jis>state !
@@ -228,7 +249,7 @@ end-structure
 
 : jis-parse-name  ( jis -- i*x n = Parse a name )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] " r@ tis-cmatch-char IF
     r@ jis-parse-string IF
       jis.name
@@ -276,7 +297,7 @@ end-structure
 
 : jis-parse-value  ( jis -- i*x n = Parse a value )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   s" true" r@ tis-cmatch-string IF  \ Check for true value
     true jis.boolean
   ELSE
@@ -314,7 +335,7 @@ end-structure
 
 : jis-parse-next-value  ( jis -- i*x n  = Parse the next value of an array )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] ] r@ tis-cmatch-char IF  \ Check for end of array
     r@ jis-pop-state
     jis.end-array
@@ -334,15 +355,15 @@ end-structure
 
 : jis-parse-first-value  ( jis -- i*x n = Parse the first value of an array )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] ] r@ tis-cmatch-char IF  \ Check for end of array
     r@ jis-pop-state
     jis.end-array
   ELSE
-    r@ jis-parse-value dup jis.error = IF \ Check for value
+    ['] jis-parse-next-value r@ jis-state!  \ Default next state
+    r@ jis-parse-value dup jis.error = IF   \ Check for value
       jis.parse-start r@ jis-state!
     ELSE
-      ['] jis-parse-next-value r@ jis-state!
     THEN
   THEN
   rdrop
@@ -352,13 +373,13 @@ end-structure
 
 : jis-parse-next-pair  ( jis -- i*x n = Parse the next pair of an object )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] } r@ tis-cmatch-char IF  \ Check for end of object
     r@ jis-pop-state
     jis.end-object
   ELSE
     [char] , r@ tis-cmatch-char IF
-      r@ tis-skip-spaces drop
+      r@ jis-skip-spaces
       [char] " r@ tis-cmatch-char IF
         r@ jis-parse-string IF
           jis.name
@@ -383,7 +404,7 @@ end-structure
 
 : jis-parse-pair-value  ( jis -- i*x n = Parse the value of a pair )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] : r@ tis-cmatch-char IF
     ['] jis-parse-next-pair r@ jis-state! \ Default: next-state = parse-next-pair
     r@ jis-parse-value dup jis.error = IF \ Check for value, update next state
@@ -400,7 +421,7 @@ end-structure
 
 : jis-parse-first-pair  ( jis -- i*x n = Parse the first pair of an object )
   >r
-  r@ tis-skip-spaces drop
+  r@ jis-skip-spaces
   [char] } r@ tis-cmatch-char IF  \ Check for end of object
     r@ jis-pop-state
     jis.end-object
@@ -427,16 +448,20 @@ end-structure
 : jis-parse-start  ( jis -- i*x n = Start reading json tokens )
   >r
   r@ jis>stack car-clear          \ Clear the state stack
-  r@ tis-skip-spaces drop
-  [char] { r@ tis-cmatch-char IF  \ Check for start of object }
-    ['] jis-parse-first-pair r@ jis-push-state
-    jis.start-object
+  r@ jis-skip-spaces
+  r@ tis-eof? IF
+    jis.done
   ELSE
-    [char] [ r@ tis-cmatch-char IF \ Check for start of array
-      ['] jis-parse-first-value r@ jis-push-state
-      jis.start-array
+    [char] { r@ tis-cmatch-char IF  \ Check for start of object }
+      ['] jis-parse-first-pair r@ jis-push-state
+      jis.start-object
     ELSE
-      jis.error
+      [char] [ r@ tis-cmatch-char IF \ Check for start of array
+        ['] jis-parse-first-value r@ jis-push-state
+        jis.start-array
+      ELSE
+        jis.error
+      THEN
     THEN
   THEN
   rdrop
@@ -452,7 +477,7 @@ end-structure
 ;
 
 
-: jis+remove-read-parameters  ( i*x n -- = Remove the various parameters of a json token after calling xis-read &lb;see xml reader constants&rb; )
+: jis+remove-read-parameters  ( i*x n -- = Remove the various parameters of a json token after calling xis-read &lb;see json reader constants&rb; )
   CASE
     jis.error        OF       ENDOF
     jis.done         OF       ENDOF

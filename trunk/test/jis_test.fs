@@ -52,47 +52,58 @@ t{ jis1 jis-read  jis.string          ?s s" hello" ?str  }t
 t{ jis1 jis-read  jis.name            ?s s" empty" ?str  }t
 t{ jis1 jis-read  jis.string          ?s s" "  ?str      }t
 t{ jis1 jis-read  jis.end-object      ?s                 }t
-
-0 [IF]
+t{ jis1 jis-read  jis.done            ?s                 }t
 
 t{ jis-new value jis2 }t
 
-t{                     jis2 jis-write-start-object  }t
-t{ s" first"           jis2 jis-write-name          }t
-t{                     jis2 jis-write-start-object  }t
-t{ s" second"          jis2 jis-write-name          }t
-t{                     jis2 jis-write-start-object  }t
-t{ s" third"           jis2 jis-write-name          }t
-t{                     jis2 jis-write-start-object  }t
-t{ s\" special/"       jis2 jis-write-name          }t
-t{ s\" \"\n\b\f\r\\\t" jis2 jis-write-string        }t
-t{                     jis2 jis-write-end-object    }t
-t{ s" value"           jis2 jis-write-name          }t
-t{ 2                   jis2 jis-write-number        }t
-t{                     jis2 jis-write-end-object    }t
-t{ s" value"           jis2 jis-write-name          }t
-t{ 3                   jis2 jis-write-number        }t
-t{                     jis2 jis-write-end-object    }t
-t{                     jis2 jis-write-end-object    }t
+t{ s\" { \"first\"\n:\t{\"second\"\r: {\"third\":{\"special\\/\":\"\\\"\\n\\b\\f\\r\\\\\\t\"},\"value\":2},\"value\":3}}" jis2 jis-set-string }t
 
-t{ s\" {\"first\":{\"second\":{\"third\":{\"special\\/\":\"\\\"\\n\\b\\f\\r\\\\\\t\"},\"value\":2},\"value\":3}}" jis2 str-get ?str }t
+t{ jis2 jis-read jis.start-object  ?s                    }t
+t{ jis2 jis-read jis.name          ?s s" first" ?str     }t
+t{ jis2 jis-read jis.start-object  ?s                    }t
+t{ jis2 jis-read jis.name          ?s s" second" ?str    }t
+t{ jis2 jis-read jis.start-object  ?s                    }t
+t{ jis2 jis-read jis.name          ?s s" third" ?str     }t
+t{ jis2 jis-read jis.start-object  ?s                    }t
+t{ jis2 jis-read jis.name          ?s s\" special/" ?str }t
+t{ jis2 jis-read jis.string  ?s s\" \"\n\b\f\r\\\t" ?str }t
+t{ jis2 jis-read jis.end-object    ?s                    }t
+t{ jis2 jis-read jis.name          ?s s" value" ?str     }t
+t{ jis2 jis-read jis.number        ?s 2 ?s               }t
+t{ jis2 jis-read jis.end-object    ?s                    }t
+t{ jis2 jis-read jis.name          ?s s" value" ?str     }t
+t{ jis2 jis-read jis.number        ?s 3 ?s               }t
+t{ jis2 jis-read jis.end-object    ?s                    }t
+t{ jis2 jis-read jis.end-object    ?s                    }t
+t{ jis2 jis-read jis.done          ?s                    }t
 
-jis2 tos-rewrite
 
-t{                     jis2 jis-write-start-array   }t
-t{                     jis2 jis-write-start-object  }t
-t{ s" first"           jis2 jis-write-name          }t
-t{ 1                   jis2 jis-write-number        }t
-t{                     jis2 jis-write-end-object    }t
-t{                     jis2 jis-write-start-array   }t
-t{                     jis2 jis-write-end-array     }t
-t{                     jis2 jis-write-start-object  }t
-t{ s" second"          jis2 jis-write-name          }t
-t{ 2                   jis2 jis-write-number        }t
-t{                     jis2 jis-write-end-object    }t
-t{                     jis2 jis-write-end-array     }t
+variable jis-cb-state  jis-cb-state on
 
-t{ s\" [{\"first\":1},[],{\"second\":2}]" jis2 str-get ?str }t
+: jis-cb  ( addr -- c-addr u | 0 )
+  dup @ IF
+    off
+    s\" [{\"first\":1},[],{\"second\":2}]"
+  ELSE
+    drop 0
+  THEN
+;
+
+t{ jis-cb-state ' jis-cb jis2 jis-set-reader }t
+
+t{ jis2 jis-read jis.start-array   ?s                      }t
+t{ jis2 jis-read jis.start-object  ?s                      }t
+t{ jis2 jis-read jis.name          ?s s" first" ?str       }t
+t{ jis2 jis-read jis.number        ?s 1 ?s                 }t
+t{ jis2 jis-read jis.end-object    ?s                      }t
+t{ jis2 jis-read jis.start-array   ?s                      }t
+t{ jis2 jis-read jis.end-array     ?s                      }t
+t{ jis2 jis-read jis.start-object  ?s                      }t
+t{ jis2 jis-read jis.name          ?s s" second" ?str      }t
+t{ jis2 jis-read jis.number        ?s 2 ?s                 }t
+t{ jis2 jis-read jis.end-object    ?s                      }t
+t{ jis2 jis-read jis.end-array     ?s                      }t
+t{ jis2 jis-read jis.done          ?s                      }t
 
 t{ jis2 jis-free }t
 
