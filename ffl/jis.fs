@@ -99,7 +99,7 @@ end-enumeration
 
 begin-structure jis%   ( -- n = Get the required space for a jis reader variable )
   tis%
-  +field  jis>tis       \ the xis reader (extends the text input stream)
+  +field  jis>tis       \ the tis reader (extends the text input stream)
   field:  jis>state     \ the state execution token
   car%
   +field  jis>stack     \ the state stack
@@ -120,7 +120,7 @@ end-structure
 ;
 
 
-: jis-(free)   ( xis -- = Free the internal, private variables from the heap )
+: jis-(free)   ( jis -- = Free the internal, private variables from the heap )
   dup 
   jis>tis    tis-(free)
   dup
@@ -477,7 +477,7 @@ end-structure
 ;
 
 
-: jis+remove-read-parameters  ( i*x n -- = Remove the various parameters of a json token after calling xis-read &lb;see json reader constants&rb; )
+: jis+remove-read-parameters  ( i*x n -- = Remove the various parameters of a json token after calling jis-read &lb;see json reader constants&rb; )
   CASE
     jis.error        OF       ENDOF
     jis.done         OF       ENDOF
@@ -493,6 +493,17 @@ end-structure
     jis.end-object   OF       ENDOF
     jis.end-array    OF       ENDOF
   ENDCASE
+;
+
+
+( Inspection )
+
+: jis-dump  ( jis -- = Dump the json input stream )
+  ." jis:" dup . cr
+  dup jis>tis     tis-dump
+  ." state: " dup jis>state ? cr
+  dup jis>stack   car-dump
+      jis>string  str-dump
 ;
 
 [THEN]
