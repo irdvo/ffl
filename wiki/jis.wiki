@@ -93,7 +93,7 @@ include ffl/jis.fs
 \ Example : Parse a json string
 
 
-\ Create the json output stream in the dictionary
+\ Create the json input stream in the dictionary
 
 jis-create jis1
 

@@ -50,7 +50,7 @@ The following modules are present in the Forth Foundation Library:
 || [hni hni] || Generic hash table iterator || [http://code.google.com/p/ffl/source/browse/trunk/ffl/hni.fs source] || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
 || [hnt hnt] || Generic hash table || [http://code.google.com/p/ffl/source/browse/trunk/ffl/hnt.fs source] || Collection || 0.6.0 || 0.9.0 || Yes || Both ||
 || [hnn hnn] || Generic hash table node || [http://code.google.com/p/ffl/source/browse/trunk/ffl/hnn.fs source] || Collection || 0.6.0 || 0.6.0 || Yes || Both ||
-|| [jis jis] || JSON input stream || [http://code.google.com/p/ffl/source/browse/trunk/ffl/jis.fs source] || Interface || 0.9.0 || 0.9.0 || No || Both ||
+|| [jis jis] || JSON input stream || [http://code.google.com/p/ffl/source/browse/trunk/ffl/jis.fs source] || Interface || 0.9.0 || 0.9.0 || Yes || Both ||
 || [jos jos] || JSON output stream || [http://code.google.com/p/ffl/source/browse/trunk/ffl/jos.fs source] || Interface || 0.9.0 || 0.9.0 || Yes || Both ||
 || [lbf lbf] || Linear buffer || [http://code.google.com/p/ffl/source/browse/trunk/ffl/lbf.fs source] || DataType || 0.7.0 || 0.7.0 || Yes || Both ||
 || [log log] || Log module || [http://code.google.com/p/ffl/source/browse/trunk/ffl/log.fs source] || Development || 0.7.0 || 0.8.0 || Yes || Both ||
