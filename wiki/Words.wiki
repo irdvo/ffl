@@ -956,8 +956,9 @@
 [log info"] ("ccc{{{<}}}quote{{{>}}}" -- )<br>
 [jis jis%] (-- n )<br>
 [jis jis+remove-read-parameters] (i*x n -- )<br>
-[jis jis-(free)] (xis -- )<br>
+[jis jis-(free)] (jis -- )<br>
 [jis jis-create] ("{{{<}}}spaces{{{>}}}name" -- ; -- jis )<br>
+[jis jis-dump] (jis -- )<br>
 [jis jis-free] (jis -- )<br>
 [jis jis-init] (jis -- )<br>
 [jis jis-new] (-- jis )<br>
