@@ -1,8 +1,8 @@
 ﻿#labels Featured
 
-== 0.9.0: March 2011 ==
-Ninth delivery of the FFL library. A dbm module is planned
-for this release.
+== 0.9.0: July 2011 ==
+Ninth delivery of the FFL library. A dbm and json module are
+planned for this release.
 <br>
 Status: under way
 

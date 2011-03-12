@@ -1,6 +1,6 @@
 #labels Featured
 
-== 25 Juli 2009 ==
+== 25 Juli 2010 ==
 
 Eighth release, version 0.8.0, of the Forth Foundation Library. The
 library is extended with an interface module for the gtk-server. This 
