@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               make - the 'make' source file for gforth
+\               make - the 'make' source file for alf
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  

@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\               make - the 'make' source file for gforth
+\               make - the 'make' source file for minForth
 \
 \               Copyright (C) 2005  Dick van Oudheusden
 \  
