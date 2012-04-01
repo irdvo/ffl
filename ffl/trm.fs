@@ -155,7 +155,7 @@ include ffl/config.fs
 
 ( Scroll words )
 
-: trm+set-scroll-region  ( u1 u2 -- = Set the scroll region rows with top u2 and bottom u1 )
+: trm+set-scroll-region  ( u1 u2 -- = Set the scroll region rows with top u2 and bottom u1, both ranging from 1 till numbers of rows )
   2 [char] r trm+do-csin
 ;
 
@@ -192,7 +192,7 @@ include ffl/config.fs
 ;
 
 
-: trm+move-cursor  ( u1 u2 -- = Move cursor to column and row with x u1 and y u2 )
+: trm+move-cursor  ( u1 u2 -- = Move cursor to column and row with x u1 and y u2, both starting from 1 )
   2 [char] H trm+do-csin
 ;
 
