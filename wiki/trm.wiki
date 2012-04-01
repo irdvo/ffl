@@ -82,7 +82,7 @@ Note: the module uses the pictured output buffer.
  Clear all tab stops
 ==== Scroll words ====
 *trm+set-scroll-region* ( u1 u2 -- )
- Set the scroll region rows with top u2 and bottom u1
+ Set the scroll region rows with top u2 and bottom u1, both ranging from 1 till numbers of rows
 *trm+scroll-up* ( -- )
  Scroll the display up
 *trm+scroll-down* ( -- )
@@ -97,7 +97,7 @@ Note: the module uses the pictured output buffer.
 *trm+move-cursor-left* ( u -- )
  Move cursor left u columns
 *trm+move-cursor* ( u1 u2 -- )
- Move cursor to column and row with x u1 and y u2
+ Move cursor to column and row with x u1 and y u2, both starting from 1
 *trm+save-cursor* ( -- )
  Save cursor location
 *trm+restore-cursor* ( -- )
