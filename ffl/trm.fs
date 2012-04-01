@@ -29,6 +29,8 @@ include ffl/config.fs
 
 [UNDEFINED] trm.version [IF]
 
+include ffl/chr.fs
+
 ( trm = Terminal Escape Sequence Outputter )
 ( The trm module implements an outputter for terminal escape sequences.        )
 ( It supports a selection of ANSI, VT100, VT102, ECMA-48 and linux console     )
@@ -76,13 +78,13 @@ include ffl/config.fs
 ( Private words )
 
 : trm+do-esc1      ( char -- = Output a single escape sequence )
-  27 emit
+  chr.esc emit
   emit
 ;
 
 
 : trm+do-esc2      ( char1 char2 -- = Output a double escape sequence )
-  27 emit
+  chr.esc emit
   emit
   emit
 ;
@@ -91,7 +93,7 @@ include ffl/config.fs
 : trm+do-csin      ( u1 .. un n char -- = Output a CSI escape sequence with multiple fields )
   base @ >r decimal
   >r
-  27 emit
+  chr.esc emit
   [char] [ emit
   BEGIN
     ?dup
@@ -108,7 +110,7 @@ include ffl/config.fs
 
 
 : trm+do-csi0      ( char -- = Output a CSI escape sequence with no number fields )
-  27 emit
+  chr.esc emit
   [char] [ emit
   emit
 ;  
@@ -119,6 +121,16 @@ include ffl/config.fs
 ;  
 
 
+: trm+read-number  ( -- n = Read a decimal number until a non-number character )
+  0
+  BEGIN
+    key dup chr-digit? 
+  WHILE
+    [char] 0 - swap 10 * +
+  REPEAT
+  drop
+;
+  
 ( Terminal words )
 
 : trm+reset        ( -- = Reset the terminal )
@@ -169,6 +181,10 @@ include ffl/config.fs
   [char] D trm+do-esc1
 ;
 
+: trm+reset-scroll-region  ( -- = Reset the scroll region rows )
+  [char] r trm+do-csi0
+;
+
 
 ( Cursor words )
 
@@ -194,6 +210,15 @@ include ffl/config.fs
 
 : trm+move-cursor  ( u1 u2 -- = Move cursor to column and row with x u1 and y u2, both starting from 1 )
   2 [char] H trm+do-csin
+;
+
+
+: trm+get-cursor ( -- u1 u2 = Get the current cursor position with x u1 and y u2, both starting from 1 )
+  6 [char] n trm+do-csi1
+  key key 2drop             \ drop esc [
+  trm+read-number           \ row
+  trm+read-number           \ column
+  swap
 ;
 
 
