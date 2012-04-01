@@ -87,6 +87,8 @@ Note: the module uses the pictured output buffer.
  Scroll the display up
 *trm+scroll-down* ( -- )
  Scroll the display down
+*trm+reset-scroll-region* ( -- )
+ Reset the scroll region rows
 ==== Cursor words ====
 *trm+move-cursor-up* ( u -- )
  Move cursor up u rows
@@ -98,6 +100,8 @@ Note: the module uses the pictured output buffer.
  Move cursor left u columns
 *trm+move-cursor* ( u1 u2 -- )
  Move cursor to column and row with x u1 and y u2, both starting from 1
+*trm+get-cursor* ( -- u1 u2 )
+ Get the current cursor position with x u1 and y u2, both starting from 1
 *trm+save-cursor* ( -- )
  Save cursor location
 *trm+restore-cursor* ( -- )

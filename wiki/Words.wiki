@@ -1538,6 +1538,7 @@
 [trm trm+erase-end-of-line] (-- )<br>
 [trm trm+erase-line] (-- )<br>
 [trm trm+erase-start-of-line] (-- )<br>
+[trm trm+get-cursor] (-- u1 u2 )<br>
 [trm trm+insert-lines] (u -- )<br>
 [trm trm+insert-spaces] (u -- )<br>
 [trm trm+move-cursor] (u1 u2 -- )<br>
@@ -1546,6 +1547,7 @@
 [trm trm+move-cursor-right] (u -- )<br>
 [trm trm+move-cursor-up] (u -- )<br>
 [trm trm+reset] (-- )<br>
+[trm trm+reset-scroll-region] (-- )<br>
 [trm trm+restore-current-state] (-- )<br>
 [trm trm+restore-cursor] (-- )<br>
 [trm trm+save-current-state] (-- )<br>
