@@ -16,6 +16,7 @@ FFL will run on and is tested with the following forth engines :
 || [http://spf.sourceforge.net SP-Forth] || 0.7.0 ||
 || [http://falth.homelinux.net/readme2.html lxf/ntf] || 0.7.0 ||
 || [http://www.mpeforth.com VFXForth] || 0.8.0 ||
+|| [http://www.forth.com/swiftforth/index.htm SwiftForth] || 0.9.0 ||
 
 For these forth engines there is a config file present in the distribution package.
 
