@@ -664,6 +664,11 @@ d. The test script will tell you which modules are tested and if there
    If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
    then all went well.
 
+Fails cpx_tests.fs : complex numbers stringify slightly differently
+
+Fails fwt_test.fs : SwiftForth's ALIGN and ALIGNED are no-ops
+
+
 Tested with SwiftForth 3.3.2
 
 
