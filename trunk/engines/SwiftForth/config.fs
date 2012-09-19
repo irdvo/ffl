@@ -103,6 +103,11 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 \ If it was started as "<cmd> <a bunch of code that happens to load
 \ FFL>", FFL's arg handling will misbehave.
  
+version zcount s" Linux" search nip nip 0= [IF]
+  : argc  cmdline argc ;
+  : argv  cmdline rot argv ;
+[THEN]
+
 argc 2 - 1 max constant #args  ( -- n = Get the number of command line arguments )
 
 argc 1 = [IF]
