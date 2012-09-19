@@ -157,82 +157,82 @@ decimal
 
 hex
 : md5+round1       
-  D76AA478  0 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a   
-  E8C7B756  1 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
-  242070DB  2 md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
-  C1BDCEEE  3 md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
-  F57C0FAF  4 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
-  4787C62A  5 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
-  A8304613  6 md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
-  FD469501  7 md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
-  698098D8  8 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
-  8B44F7AF  9 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d 
-  FFFF5BB1  A md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c  
-  895CD7BE  B md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
-  6B901122  C md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
-  FD987193  D md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
-  A679438E  E md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
-  49B40821  F md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b 
+  D76AA478  00 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a   
+  E8C7B756  01 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
+  242070DB  02 md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
+  C1BDCEEE  03 md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
+  F57C0FAF  04 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
+  4787C62A  05 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
+  A8304613  06 md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
+  FD469501  07 md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
+  698098D8  08 md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
+  8B44F7AF  09 md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d 
+  FFFF5BB1  0A md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c  
+  895CD7BE  0B md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b
+  6B901122  0C md5+buf@+ md5.a  md5.b md5.c AND md5.d md5.b md5+f u>l md5.s11 llroll  md5.b + TO md5.a 
+  FD987193  0D md5+buf@+ md5.d  md5.a md5.b AND md5.c md5.a md5+f u>l md5.s12 llroll  md5.a + TO md5.d
+  A679438E  0E md5+buf@+ md5.c  md5.d md5.a AND md5.b md5.d md5+f u>l md5.s13 llroll  md5.d + TO md5.c
+  49B40821  0F md5+buf@+ md5.b  md5.c md5.d AND md5.a md5.c md5+f u>l md5.s14 llroll  md5.c + TO md5.b 
 ;
 
 
 : md5+round2
-  F61E2562  1 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
-  C040B340  6 md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
-  265E5A51  B md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
-  E9B6C7AA  0 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
-  D62F105D  5 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
-  02441453  A md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
-  D8A1E681  F md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
-  E7D3FBC8  4 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
-  21E1CDE6  9 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
-  C33707D6  E md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
-  F4D50D87  3 md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
-  455A14ED  8 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
-  A9E3E905  D md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
-  FCEFA3F8  2 md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
-  676F02D9  7 md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
-  8D2A4C8A  C md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b 
+  F61E2562  01 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
+  C040B340  06 md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
+  265E5A51  0B md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
+  E9B6C7AA  00 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
+  D62F105D  05 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
+  02441453  0A md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
+  D8A1E681  0F md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
+  E7D3FBC8  04 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
+  21E1CDE6  09 md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
+  C33707D6  0E md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
+  F4D50D87  03 md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
+  455A14ED  08 md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b
+  A9E3E905  0D md5+buf@+ md5.a  md5.b md5.d AND md5.c md5.d md5+g u>l md5.s21 llroll  md5.b + TO md5.a
+  FCEFA3F8  02 md5+buf@+ md5.d  md5.a md5.c AND md5.b md5.c md5+g u>l md5.s22 llroll  md5.a + TO md5.d
+  676F02D9  07 md5+buf@+ md5.c  md5.d md5.b AND md5.a md5.b md5+g u>l md5.s23 llroll  md5.d + TO md5.c
+  8D2A4C8A  0C md5+buf@+ md5.b  md5.c md5.a AND md5.d md5.a md5+g u>l md5.s24 llroll  md5.c + TO md5.b 
 ;
 
 
 : md5+round3
-  FFFA3942  5 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
-  8771F681  8 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
-  6D9D6122  B md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
-  FDE5380C  E md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
-  A4BEEA44  1 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
-  4BDECFA9  4 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
-  F6BB4B60  7 md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
-  BEBFBC70  A md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
-  289B7EC6  D md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
-  EAA127FA  0 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
-  D4EF3085  3 md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
-  04881D05  6 md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
-  D9D4D039  9 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
-  E6DB99E5  C md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
-  1FA27CF8  F md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
-  C4AC5665  2 md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b 
+  FFFA3942  05 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
+  8771F681  08 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
+  6D9D6122  0B md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
+  FDE5380C  0E md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
+  A4BEEA44  01 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
+  4BDECFA9  04 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
+  F6BB4B60  07 md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
+  BEBFBC70  0A md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
+  289B7EC6  0D md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
+  EAA127FA  00 md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
+  D4EF3085  03 md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
+  04881D05  06 md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b
+  D9D4D039  09 md5+buf@+ md5.a  md5.b md5.c md5.d md5+h u>l md5.s31 llroll  md5.b + TO md5.a
+  E6DB99E5  0C md5+buf@+ md5.d  md5.a md5.b md5.c md5+h u>l md5.s32 llroll  md5.a + TO md5.d
+  1FA27CF8  0F md5+buf@+ md5.c  md5.d md5.a md5.b md5+h u>l md5.s33 llroll  md5.d + TO md5.c
+  C4AC5665  02 md5+buf@+ md5.b  md5.c md5.d md5.a md5+h u>l md5.s34 llroll  md5.c + TO md5.b 
 ;
 
 
 : md5+round4
-  F4292244  0 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
-  432AFF97  7 md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
-  AB9423A7  E md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
-  FC93A039  5 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
-  655B59C3  C md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
-  8F0CCC92  3 md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
-  FFEFF47D  A md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
-  85845DD1  1 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
-  6FA87E4F  8 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
-  FE2CE6E0  F md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
-  A3014314  6 md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
-  4E0811A1  D md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
-  F7537E82  4 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
-  BD3AF235  B md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
-  2AD7D2BB  2 md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
-  EB86D391  9 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b 
+  F4292244  00 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
+  432AFF97  07 md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
+  AB9423A7  0E md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
+  FC93A039  05 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
+  655B59C3  0C md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
+  8F0CCC92  03 md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
+  FFEFF47D  0A md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
+  85845DD1  01 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
+  6FA87E4F  08 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
+  FE2CE6E0  0F md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
+  A3014314  06 md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
+  4E0811A1  0D md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b
+  F7537E82  04 md5+buf@+ md5.a  md5.c md5.b md5.d md5+i u>l md5.s41 llroll  md5.b + TO md5.a
+  BD3AF235  0B md5+buf@+ md5.d  md5.b md5.a md5.c md5+i u>l md5.s42 llroll  md5.a + TO md5.d
+  2AD7D2BB  02 md5+buf@+ md5.c  md5.a md5.d md5.b md5+i u>l md5.s43 llroll  md5.d + TO md5.c
+  EB86D391  09 md5+buf@+ md5.b  md5.d md5.c md5.a md5+i u>l md5.s44 llroll  md5.c + TO md5.b 
 ;
 decimal
 
