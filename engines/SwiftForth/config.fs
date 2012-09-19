@@ -252,6 +252,11 @@ cell 4 = [IF]
   fswap fover
 ;
 
+\ FFL's expected fatan2 definitely isn't SwiftForth's.
+: fatan2           ( F: r r -- r )
+  f2dup f0< f0< and if fswap fabs fswap [fatan2] fnegate exit then [fatan2] 
+;
+
 [THEN]
 
 
