@@ -93,10 +93,24 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 
 \ Command line arguments in SwiftForth i386-Linux
-argc constant #args  ( -- n = Get the number of command line arguments )
 
-aka argv arg@  ( n -- c-addr u = Get the nth command line argument )
+\ FFL assumes gforth's behavior, in which system-processed args are
+\ stripped from ARGV .  SwiftForth does _not_ do this, cannot be made to
+\ do this without a recompile.
 
+\ The following assumes that SwiftForth has been started as "<cmd>
+\ <filename> ...args" (or "<cmd>", with interactive loading of FFL.)
+\ If it was started as "<cmd> <a bunch of code that happens to load
+\ FFL>", FFL's arg handling will misbehave.
+ 
+argc 2 - 1 max constant #args  ( -- n = Get the number of command line arguments )
+
+argc 1 = [IF]
+  aka argv arg@ 
+[ELSE]
+: arg@  ( n -- c-addr u = Get the nth command line argument )
+  2 + argv ;
+[THEN]
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
   2dup lshift >r
