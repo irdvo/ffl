@@ -594,6 +594,7 @@ Note: at this moment (2006-06-11) fina is not yet released, so any
 installation and configuration directives are not possible. The config.fs
 file for fina is also preliminary.
 
+
 SwiftForth (linux)
 ------------------
 
@@ -622,54 +623,58 @@ Step 3: Test the library:
 a. Change the current directory to the 'test' directory in the package
 b. Make sure that in this directory the library is present by creating a link 
    to the library. (see Step 1).
-b. Enter: sf fl_test.fs
+c. Enter: sf ffl_test.fs -ab -c TEST --verbose --file=FILE input
 d. The test script will tell you which modules are tested and if there
    were any errors. 
    If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
    then all went well.
 
 Tested with SwiftForth 3.3.2
-
-SwiftForth (linux)
-------------------
-
-SwiftForth doesn't use a search path, so you should create a link to the library in your forth working directory
-
-a. Copy the 'ffl' directory (and its contents) from the package to
-   a freely chosen directory. For example '~/lib', '/usr/lib' or 
-   '/usr/local/lib' resulting in '~/lib/ffl', '/usr/lib/ffl' or 
-   '/usr/local/lib/ffl'.
-b. Copy from the 'engines/SwiftForth' directory in the package the
-   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
-   chosen directory, resulting in '~/lib/ffl/config.fs' and 
-   '~/lib/ffl/make.fs', etc.
-c. Create in your forth working directory a symbolic link to the
-   chosen directory. The name of this link should be 'ffl' and the
-   target the chosen directory. For example: 'ln -s ~/lib/ffl ffl' 
-   or 'ln -s /usr/lib/ffl ffl' or 'ln -s /usr/local/lib/ffl ffl'.
-d. Start sf
-f. Enter: include ffl/frc.fs
-g. If all is well, SwiftForth should include the file.
-
-Step 2: Configuration of the library
-For SwiftForth no further configuration is necessary.
-
-Step 3: Test the library:
-a. Change the current directory to the 'test' directory in the package
-b. Make sure that in this directory the library is present by creating a link 
-   to the library. (see Step 1).
-b. Enter: sf fl_test.fs
-d. The test script will tell you which modules are tested and if there
-   were any errors. 
-   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
-   then all went well.
 
 Fails cpx_tests.fs : complex numbers stringify slightly differently
 
 Fails fwt_test.fs : SwiftForth's ALIGN and ALIGNED are no-ops
 
 
+SwiftForth (windows)
+--------------------
+
+SwiftForth doesn't use a search path, so you should copy the library to your forth working directory.
+
+a. Copy the 'ffl' directory (and its contents) from the package to
+   a freely chosen directory.
+b. Copy from the 'engines/SwiftForth' directory in the package the
+   files 'config.fs' and 'make.fs' to the 'ffl' directory in your
+   chosen directory.
+c. Start sf
+d. Enter: include ffl/frc.fs
+e. If all is well, SwiftForth should include the file.
+
+Step 2: Configuration of the library
+For SwiftForth no further configuration is necessary.
+
+Step 3: Test the library:
+a. Change the current directory to the 'test' directory in the package
+b. Copy the 'ffl' directory into the 'test' directory.
+c. Edit ffl_test.fs to not end with BYE , if you want to see the output!
+d. Enter: sf ffl_test.fs -ab -c TEST --verbose --file=FILE input
+   Or: \ForthInc\SwiftForth\bin\sf -ab -c TEST --verbose --file=FILE input
+e. The test script will tell you which modules are tested and if there
+   were any errors. 
+   If you see: 'Forth Foundation Modules Test: 0 errors in xxxx tests.'
+   then all went well.
+
 Tested with SwiftForth 3.3.2
+
+Fails arg_tests.fs
+
+Fails cpx_tests.fs : complex numbers stringify slightly differently
+
+Fails fwt_test.fs : SwiftForth's ALIGN and ALIGNED are no-ops
+
+Fails jis_test.fs : \r\n gets translated to \n
+
+Fails tos_test.fs : floats stringify slightly differently
 
 
 Configuration
