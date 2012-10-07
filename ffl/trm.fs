@@ -39,7 +39,7 @@ include ffl/chr.fs
 ( Note: the module uses the pictured output buffer.                            )
 
 
-1 constant trm.version
+2 constant trm.version
 
 
 ( Attributes )
@@ -188,22 +188,22 @@ include ffl/chr.fs
 
 ( Cursor words )
 
-: trm+move-cursor-up ( u -- = Move cursor up u rows )
+: trm+move-cursor-up ( u -- = Move cursor up u rows, always at least one row )
   [char] A trm+do-csi1
 ;
 
 
-: trm+move-cursor-down ( u -- = Move cursor down u rows )
+: trm+move-cursor-down ( u -- = Move cursor down u rows, always at least one row )
   [char] B trm+do-csi1
 ;
 
 
-: trm+move-cursor-right ( u -- = Move cursor right u columns )
+: trm+move-cursor-right ( u -- = Move cursor right u columns, always at least one column )
   [char] C trm+do-csi1
 ;
 
 
-: trm+move-cursor-left ( u -- = Move cursor left u columns )
+: trm+move-cursor-left ( u -- = Move cursor left u columns, always at least one column )
   [char] D trm+do-csi1
 ;
 
