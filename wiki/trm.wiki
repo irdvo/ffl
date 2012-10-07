@@ -91,13 +91,13 @@ Note: the module uses the pictured output buffer.
  Reset the scroll region rows
 ==== Cursor words ====
 *trm+move-cursor-up* ( u -- )
- Move cursor up u rows
+ Move cursor up u rows, always at least one row
 *trm+move-cursor-down* ( u -- )
- Move cursor down u rows
+ Move cursor down u rows, always at least one row
 *trm+move-cursor-right* ( u -- )
- Move cursor right u columns
+ Move cursor right u columns, always at least one column
 *trm+move-cursor-left* ( u -- )
- Move cursor left u columns
+ Move cursor left u columns, always at least one column
 *trm+move-cursor* ( u1 u2 -- )
  Move cursor to column and row with x u1 and y u2, both starting from 1
 *trm+get-cursor* ( -- u1 u2 )
