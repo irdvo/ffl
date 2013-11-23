@@ -75,10 +75,8 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 
 \ Command line arguments in gforth 32-bit
-cell 4 = [IF]
-argc @ 1- constant #args  ( -- n = Get the number of command line arguments )
 
-0 argc !            \ tell gforth not to process any more arguments
+argc @ 1- constant #args  ( -- n = Get the number of command line arguments )
 
 : arg@  ( n -- c-addr u = Get the nth command line argument )
   dup #args u< IF
@@ -87,7 +85,6 @@ argc @ 1- constant #args  ( -- n = Get the number of command line arguments )
     drop 0 0 
   THEN
 ;
-[THEN]
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
