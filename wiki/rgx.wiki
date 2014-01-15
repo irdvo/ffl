@@ -71,7 +71,7 @@ module for the actual expression building and matching.
 *rgx-isearch* ( c-addr u rgx -- n:index )
  Search case-insensitive in a string for the first match of the regular expression, return offset in string, or -1 if not found
 *rgx-result* ( n rgx -- n1 n2 )
- Get the match result of the nth grouping, return match start n2 and end n1
+ Get the match result of the nth grouping, return match start n2 and end n1, group 0 is the result of the whole match
 ==== Inspection ====
 *rgx-dump* ( rgx -- )
  Dump the regular expression
