@@ -469,7 +469,7 @@ defer rgx.parse-alternation
 ;
 
 
-: rgx-result   ( n rgx -- n1 n2 = Get the match result of the nth grouping, return match start n2 and end n1 )
+: rgx-result   ( n rgx -- n1 n2 = Get the match result of the nth grouping, return match start n2 and end n1, group 0 is the result of the whole match )
   nfe-result
 ;
 
