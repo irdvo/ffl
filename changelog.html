@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ffl -- A general purpose forth library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>Changelog</h1>
+    </div>
+
+    <div id="nav">
+  | <a href="https://irdvo.github.io//ffl">ffl</a>  - <a href="news.html">news</a> - <a href="changelog.html">changelog</a> - <a href="roadmap.html">roadmap</a> - <a href="modules.html">modules</a> - <a href="doxy/index.html">docs</a> - <a href="http://github.com/irdvo/ffl">github</a> | <a href="http://irdvo.github.io/gpxlib">gpxlib</a> | <a href="http://irdvo.github.io/htmllib">htmllib</a> | <a href="http://irdvo.github.io/htmloo">htmloo</a> | <a href="https://irdvo.github.io/ofc">ofc</a> |
+    </div>
+
+    <div id="article">
+<h2>0.9.0</h2>
+<ul>
+ <li>SwiftForth: config.fs/make.fs added (2012-09-17, thanks to Julian)</li>
+ <li>trm: new words: trm+reset-scroll-region and trm+get-cursor (thanks to Marcos)</li>
+ <li>jis: new module: JSON input stream (2011-01-05)</li>
+ <li>tis: new word: tis-read-float (2011-01-03)</li>
+ <li>stt: new words: +\" and +stt (2010-11-30)</li>
+ <li>jos: new module: JSON output stream (2010-11-20)</li>
+ <li>snl,scl,dnl,dcl: new word: `*`-sort (2010-08-23)</li>
+ <li>car,dcl,bar,chs,dnl,hct,hnt,scl,str: new word: `*`-execute? (2010-08-07)</li>
+</ul>
+
+<h2>0.8.0</h2>
+<ul>
+ <li>Debian package of the library (2010-07-24)</li>
+ <li>log: new word: log-with-flush (2010-06-06)</li>
+ <li>md5: 64bit ready (2010-05-26)</li>
+ <li>sh2: 64bit ready (2010-05-25)</li>
+ <li>sh1: 64bit ready (2010-05-23)</li>
+ <li>gmo: 64bit ready (2010-05-19)</li>
+ <li>a32: bug fix and 64bit ready (2010-05-18)</li>
+ <li>crc: 64bit ready (2010-05-16)</li>
+ <li>gforth: support for command line arguments (2010-05-16, thanks to Josh)</li>
+ <li>tos: new word: tos-write-fixed-point (2010-03-28)</li>
+ <li>xis: new word: xis+dump-read-parameters (2010-03-21)</li>
+ <li>xis: new word: xis+remove-read-parameters (2010-03-18)</li>
+ <li>fwt: new module: fixed width types (2010-01-16)</li>
+ <li>VFXForth: config.fs/make.fs added (2009-12-21, thanks to Stephen)</li>
+ <li>b64: new module: Base64 module (2009-09-24)</li>
+ <li>frc: frc+calc-gcd,frc+calc-lcm simplified (2009-09-18, thanks to Albert)</li>
+ <li>scf: %q for quoted string added (2009-09-02)</li>
+ <li>spf: %q for quoted string added (2009-09-02)</li>
+ <li>scf: new module: Sscanf module (2009-08-19)</li>
+ <li>spf: %e and %E for floats added (2009-08-16)</li>
+ <li>tos: new word: tos-write-float (2009-07-01)</li>
+ <li>gsv: new module: gtk-server interface (2009-06-20)</li>
+</ul>
+
+<h2>0.7.0</h2>
+<ul>
+ <li>stt: word for stringtable addition changed from ," to +"  (2009-05-20)</li>
+ <li>dom: small bug fixes for processing instruction (2008-11-18)</li>
+ <li>zif: new module: GZip file reader  (2008-10-12)</li>
+ <li>gzi: new module: GZip reader (2008-10-11)</li>
+ <li>chs: new words: chs-set-list,chs-reset-list (2008-10-04)</li>
+ <li>bar: new words: bar-set-list,bar-reset-list (2008-10-04)</li>
+ <li>bar: new words: bar`^`or,bar`^`and,bar`^ `xor,bar`^`move (2008-10-03)</li>
+ <li>chs: new words: chs`^`or,chs`^`and,chs`^`xor (2008-10-01)</li>
+ <li>rgx: classes added (2008-09-27)</li>
+ <li>spf: new module: Sprintf module (2008-09-13)</li>
+ <li>log: new module: Logging module (2008-09-09)</li>
+ <li>bis: new module: Bit input stream (2008-08-20)</li>
+ <li>cbf: new module: circulair buffer (2008-06-02)</li>
+ <li>lbf: new module: lineair buffer (2008-05-29)</li>
+ <li>lxf: config.fs/make.fs/readme added (2008-05-23)</li>
+ <li>stc: bug fix in +field (2008-05-23)</li>
+ <li>gzf: new module: GZip file (2008-05-07)</li>
+ <li>act: new words: act-clear, act-execute?</li>
+ <li>act,acn extends bct,bcn (2008-04-24)</li>
+ <li>bcn: new words: bcn-cell@,bcn-cell!</li>
+ <li>bct: new word: bct-execute?</li>
+ <li>bct,bcn,bci extends bnt,bnn,bni (2008-04-14)</li>
+ <li>bnt,bnn,bni: new modules: Generic binary tree (2008-04-06)</li>
+ <li>a32: new module: Adler32 algorithm (2008-04-03)</li>
+ <li>chs: chs-char? bug fixed</li>
+ <li>SP-Forth: config.fs/make.fs/readme added</li>
+ <li>dist: also zip file with cr/lf line-endings</li>
+ <li>iForth: config.fs/make.fs/readme added</li>
+ <li>fsm: new module: Finite State Machine (2008-03-05)</li>
+ <li>fst: new module: FSM State (2008-03-05)</li>
+ <li>ftr: new module: FSM Transition (2008-03-05)</li>
+ <li>snl: new word: snl-execute? (2008-03-05)</li>
+</ul>
+
+<h2>0.6.0</h2>
+<ul>
+ <li>tos: new word: tos-set-writer,tos-flush (2008-02-21)</li>
+ <li>bct: new word: bct-clear</li>
+ <li>nct: word nct-delete-all renamed to nct-clear</li>
+ <li>dcl: word dcl-delete-all renamed to dcl-clear</li>
+ <li>scl: word scl-delete-all renamed to scl-clear</li>
+ <li>nct,nnt,str,act,bct,arg,bar,car,crc,dcl,dnl,hnn,hnt,hcn,hct,msc,nfe,snl,scl,tis,xis: new word: ...-(free)</li>
+ <li>dom: new module: Document Object Model (2008-01-06)</li>
+ <li>rdg: new module: Distributed Random Generator (2007-12-27)</li>
+ <li>tst: new word ?str for module testing strings (2007-12-24)</li>
+ <li>tis: new word tis-match-set</li>
+ <li>tis: new word tis-scan-set</li>
+ <li>chs: chs-char? return false in place of an exception if outside range</li>
+ <li>enm: new module: Enumeration (2007-12-12)</li>
+ <li>Stack notation changed to ANSish (2007-12-06)</li>
+ <li>stc: structures are changed to ANS structures (2007-12-04)</li>
+ <li>est: new module: String with escaped characters (2007-12-03)</li>
+ <li>xos: new module: XML/HTML writer (2007-11-22)</li>
+ <li>xis: new module: XML/HTML reader (2007-11-22)</li>
+ <li>tos: new words: tos-msc@,tos-msc! (2007-11-20)</li>
+ <li>stt: new module: Stringtable (2007-11-19)</li>
+ <li>dos: new module: DateTime output stream (2007-11-18)</li>
+ <li>hct: support for zero-length key</li>
+ <li>str: new words: str-data@,str-length!  (2007-11-14)</li>
+ <li>gmo: new module: Gettexts mo-file (2007-11-12)</li>
+ <li>hnt: bug fix (2007-11-11)</li>
+ <li>hci: extends hni</li>
+ <li>hni: new module: Hash table base iterator (2007-11-10)</li>
+ <li>hct: extends hnt</li>
+ <li>hnt: new module: Hash table base module (2007-11-09)</li>
+ <li>hcn: extends hnn</li>
+ <li>hnn: new module: Hash Table base node (2007-11-09)</li>
+ <li>msc: new module: Message Catalog (2007-11-09)</li>
+ <li>tis: new word: tis-iscan-string (2007-10-17)</li>
+ <li>tis: new word: tis-set-reader (2007-10-17)</li>
+ <li>tis: new word: tis-read-all (2007-10-08)</li>
+ <li>str: new word: str+columns (2007-07-17)</li>
+ <li>arg: new module: Arguments parser (2007-07-09)</li>
+ <li>config.fs: 0e0-&gt;0E+0, 1e0-&gt;1E+0, 2e0-&gt;2E+0 (2007-06-25)</li>
+</ul>
+
+<h2>0.5.0</h2>
+<ul>
+ <li>config.fs: #bits/byte uses environment (2007-06-07)</li>
+ <li>config.fs: sys.eol -&gt; end-of-line, sys.bits-in-byte -&gt; #bits/byte,sys.bits-in-char -&gt; #bits/char, sys.bits-in-cell -&gt; #bits/cell</li>
+ <li>config.fs: new word char/ (2007-06-07)</li>
+ <li>config.fs: sys.bigendian -&gt; bigendian? (2007-06-05)</li>
+ <li>sh2: new module (SHA-256) (2007-06-05)</li>
+ <li>config.fs: new word ?free for freeing memory blocks (2007-05-21)</li>
+ <li>rgx: new module (Regular Expression) (2007-05-10)</li>
+ <li>nfe: new module (Non-deterministic finite automata expression) (2007-05-08)</li>
+ <li>nfs: new module (Non-deterministic finite automata state) (2007-05-07)</li>
+ <li>minForth config.fs/make.fs added</li>
+ <li>nci: new module (n-Tree cell iterator) (2007-03-13)</li>
+ <li>nct: new module (n-Tree cell tree) (2007-03-13)</li>
+ <li>ncn: new module (n-Tree cell node) (2007-03-13)</li>
+ <li>nni: new module (n-Tree base iterator) (2007-03-05)</li>
+ <li>nnt: new module (n-Tree base module) (2007-03-04)</li>
+ <li>nnn: new module (n-Tree base node) (2007-03-04)</li>
+ <li>sci: extends sni</li>
+ <li>scl: extends snl</li>
+ <li>scn: new words scn-cell! scn-cell@</li>
+ <li>scn: extends snn</li>
+ <li>sni: new module (Single linked base iterator) (2007-02-27)</li>
+ <li>snl: new module (Single linked base list) (2007-02-26)</li>
+ <li>snn: new module (Single linked base node) (2007-02-19)</li>
+ <li>icompare from str.fs to config.fs (2007-02-06)</li>
+ <li>fina config.fs/make.fs added (thanks to Jorge Acereda Macia)</li>
+ <li>Manual added to the website</li>
+</ul>
+
+<h2>0.4.0</h2>
+<ul>
+ <li>dtm: new words dtm-get-date and dtm-get-time</li>
+ <li>dtm: dtm-set-with-days bug fix </li>
+ <li>tst: tst-get-result will now also return ms since tst-reset-tests (2007-01-07)</li>
+ <li>dci: new module (Double linked cell list iterator) (2007-01-07)</li>
+ <li>dni: new module (Double linked base list iterator) (2007-01-03)</li>
+ <li>dcl: new module (Double linked cell list) (2006-12-31)</li>
+ <li>dcn: new module (Double linked cell list node) (2006-12-31)</li>
+ <li>dnl: new module (Double linked base list) (2006-12-28)</li>
+ <li>dnn: new module (Double linked base node) (2006-12-28)</li>
+ <li>Win32Forth config.fs/make.fs added</li>
+ <li>config: new word <=> for comparing numbers (2006-12-12)</li>
+ <li>chs: new words chs-set-string,chs-reset-string (2006-12-11)</li>
+ <li>Comment cleanup (2006-12-10)</li>
+ <li>tmr: new module (Interval timer) (2006-12-8)</li>
+ <li>crc: word scr-free renamed to crc-free (bug)</li>
+ <li>crc: word crc-start renamed to crc-reset</li>
+ <li>sh1: new module (Secure Hash 1) (2006-12-04)</li>
+ <li>trm: new module (Terminal escape sequences outputter) (2006-11-17)</li>
+ <li>bci: new module (Binary cell tree iterator) (2006-10-03)</li>
+ <li>bct: new module (Binary cell tree) (2006-10-03)</li>
+ <li>bcn: new module (Binary cell tree node) (2006-10-03)</li>
+ <li>act: new module (AVL cell binary tree) (2006-09-24)</li>
+ <li>acn: new module (AVL cell tree node) (2006-09-23)</li>
+ <li>rng: new module (Pseudo Random Number Generator) (2006-09-15)</li>
+ <li>tst: partly rewritten: reporting more info; no change in interface (2006-09-12)</li>
+ <li>config: new words ftuck, fnip, f2dup, f-rot, 0e0, 1e0, 2e0 (2006-09-11)</li>
+ <li>config: new words: f&gt;r fr&gt; fr@ (2006-08-30)  </li>
+ <li>config: sys.cells-in-float added (2006-08-30)</li>
+ <li>cpx: new module (Complex number) (2006-08-28)</li>
+ <li>frc: new module (Fraction) (2006-08-26)</li>
+</ul>
+
+<h2>0.3.0</h2>
+<ul>
+ <li>config: sys.bits-in-byte added</li>
+ <li>config: sys.bits-in-cell added</li>
+ <li>config: sys.bits-in-char added</li>
+ <li>chs: new module (Character Set)</li>
+ <li>crc: word crc-calc-crc32 renamed to crc+calc-crc32</li>
+ <li>crc: word crc-calc-poly renamed to crc+calc-poly</li>
+ <li>config: sys.bigendian added</li>
+ <li>md5: new module (MD5 Algorithm)</li>
+ <li>hci: new module (Hash cell table iterator)</li>
+ <li>hcn: new module (Hash cell table node)</li>
+ <li>hct: new module (Hash cell table)</li>
+ <li>float words optional</li>
+ <li>pfe config.fs/make.fs added</li>
+ <li>dti: new module (Date &amp; Time iterator)</li>
+ <li>dtm: new module (Date &amp; Time)</li>
+</ul>
+
+<h2>0.2.0</h2>
+<ul>
+ <li>car: new module (Cell array)</li>
+ <li>bar: new module (Bit array)</li>
+ <li>tst: new words: ?d and ?ud for tests on doubles</li>
+ <li>chr: new word: chr-string?</li>
+ <li>chr: new word: chr-base</li>
+ <li>tos: new module (Text output stream)</li>
+ <li>tis: new module (Text input stream)</li>
+ <li>chr: constants for ascii 0 till 31 and 127</li>
+ <li>str: new module (Text string)</li>
+ <li>scl: compare field for flexible sorting</li>
+ <li>scl: execute removes 'own' stack contents before executing xt</li>
+ <li>bigforth config.fs/make.fs added</li>
+</ul>
+
+<h2>0.1.0</h2>
+<ul>
+ <li>crc: new module (Cyclic Redundancy Check)</li>
+ <li>chr: new module (Char module)</li>
+ <li>tst: new module (Word test module)</li>
+ <li>stc: new module (Struct module)</li>
+ <li>sci: new module (Single linked cell list iterator)</li>
+ <li>scn: new module (Single linked cell list node)</li>
+ <li>scl: new module (Single linked cell list)</li>
+</ul>
+
+    </div>
+
+    <div id="footer">
+    <p>
+  <!-- Start of StatCounter Code -->
+  <!-- End of StatCounter Code -->
+  -
+     Last updated: 2015-07-25</p>
+    </div>
+  </div>
+</body>
+</html>
