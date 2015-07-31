@@ -25,6 +25,14 @@ BODY {
   COLOR: white; BACKGROUND-COLOR: #00a
 }  
 
+#container code {
+  padding-left: 50pt;
+}
+
+#container pre {
+  padding-left: 50pt;
+}
+
 #header {
 }
 
