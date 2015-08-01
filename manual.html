@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ffl -- A general purpose forth library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>Manual</h1>
+    </div>
+
+    <div id="nav">
+  | <a href="https://irdvo.github.io//ffl">ffl</a>  - <a href="news.html">news</a> - <a href="changelog.html">changelog</a> - <a href="roadmap.html">roadmap</a> - <a href="modules.html">modules</a> - <a href="manual.html">manual</a> - <a href="doxy/index.html">docs</a> - <a href="http://github.com/irdvo/ffl">github</a> | <a href="http://irdvo.github.io/gpxlib">gpxlib</a> | <a href="http://irdvo.github.io/htmllib">htmllib</a> | <a href="http://irdvo.github.io/htmloo">htmloo</a> | <a href="https://irdvo.github.io/ofc">ofc</a> |
+    </div>
+
+    <div id="article">
+<h2>Getting started</h2>
+
+<p>First you need to include the module you want to use. For example, to include 
+the fraction module (and all modules which are needed by the fraction module), 
+you would do:</p>
+
+<pre>include ffl/frc.fs</pre>
+
+<p>You can also include all modules at once with:</p>
+
+<pre>include ffl/ffl.fs</pre>
+
+<p>Many modules store state in a variable. These modules provide three ways to 
+allocate and initialize the variable. For example, after including the dynamic 
+string module, you could:</p>
+
+<ol>
+<li>Create a variable named var1 in the dictionary with:</li>
+
+<pre>str-create var1</pre>
+
+<li>Dynamically allocate and free an str variable with:</li>
+
+<pre>
+str-new
+str-free
+</pre>
+
+<li>If you prefer to allocate the variable yourself, you can get the necessary size with:</li>
+
+<pre>str%</pre>
+
+</ol>
+
+<p>After allocating the variable, you must initialize it with:</p>
+
+<pre>str-init</pre>
+
+<p>and when you are finished with the variable, free the internal, private variables with:</p>
+
+<pre>str-(free)</pre>
+
+<p>The documentation for all modules is listed on the <a href="modules.html">modules</a> page. There is 
+an alphabetical list of all the words on the <a href="words.html">Words</a> page. For an increasing 
+number of modules there are small code examples.</p>
+
+<h2>Hands on</h2>
+
+<h3>Modules</h3>
+
+<p>If you want to use a module, you start with including the module in your forth engine. 
+For example if you want to do fraction calculations, you start with:</p>
+
+<pre>include ffl/frc.fs</pre>
+
+<p>This will include the fraction module and also all modules that are needed by the fraction 
+module. After including you can use the module. For example, if you want to multiply two 
+fractions, you can enter:</p>
+
+<pre>1 4 2 3 frc+multiply</pre>
+
+<p>This will multiply 1/4 times 2/3. By entering .s you will see the result: 2 12, which is 2/12. 
+You can then normalize, convert the fraction to a string and type it by entering:</p>
+
+<pre>frc+to-string type</pre>
+
+<p>This will show the result: 1/6</p>
+
+<h3>Dictionary variables</h3>
+
+<p>The following example shows the use of modules that store their state in a 
+variable. This example uses the sha1 module in the ffl library. First include 
+the module in your forth engine:</p>
+
+<pre>include ffl/sh1.fs</pre>
+
+<p>Then create a sha1 variable which will contain the state of the calculation. 
+You can create the variable in the dictionary by entering:</p>
+
+<pre>sh1-create var1</pre>
+
+<p>This creates a new word, var1, which is a sha1 variable. Next you can start 
+calculating the sha1 algorithm by feeding data to the variable:</p>
+
+<pre>
+s" ab" var1 sh1-update
+s" c"  var1 sh1-update
+</pre>
+
+<p>In this example the sha1 variable is fed with the string abc. The next step 
+is finishing the calculation. This is done by:</p>
+
+<pre>var1 sh1-finish sh1+to-string type</pre>
+
+<p>So the sha1 calculation is finished and the resulting hash value is converted 
+to a string, which is then typed. If all went well, it should show: 
+<samp>A9993E364706816ABA3E25717850C26C9CD0D89D</samp> which is the secure hash1 
+result of the string "abc".</p>
+
+<h3>Heap variables</h3>
+
+<p>Besides creating a sha1 variable in the dictionary, you can also allocate a 
+sha1 variable on the heap by entering:</p>
+
+<pre>sh1-new</pre>
+
+<p>Now there is a dynamically allocated sha1 variable on the stack. Feeding data 
+to this variable can be done by:</p>
+
+<pre>
+dup s" ab" rot sh1-update
+dup s" c"  rot sh1-update
+</pre>
+
+<p>And finishing the calculation by:</p>
+
+<pre>dup sh1-finish sh1+to-string type</pre>
+
+<p>Which resulted in the same sha1 value. When you don't need the dynamic 
+variable anymore you can free the memory used by the variable by entering:</p>
+
+<pre>sh1-free</pre>
+
+<h2>Index</h2>
+
+<p>Some modules allow you to use an index to access members of a collection 
+(an array, list, etc.). All indices are zero-based, so index 0 is the first 
+element, index 1 is the second element, and so on.</p>
+
+<p>Negative indices can also be used, and index backward from the end of the 
+collection. That is, index -1 is the last element in the collection, index -2 is 
+the next-to-last element, and so on.</p>
+
+<p>If the value of an index is not valid in a collection, the exception 
+exp-index-out-of-range is thrown.</p>
+
+<h2>Reader</h2>
+
+<p>The tis, xis and dom modules use a reader word. This word makes it possible 
+to feed these modules with data from different sources.</p>
+
+<p>For example for feeding data from a text file, the following reader can be used:</p>
+
+<pre>
+: file-reader  ( file-id -- c-addr u | 0 = Read data from a text file)
+  pad 80 rot read-file throw
+  dup IF
+    pad swap
+  THEN
+;
+</pre>
+
+<p>The stack notation for the reader is <code>( x -- c-addr u | 0)</code>, 
+in which _x_ is the specific state for the reader and _c-addr u_ is the read data.</p>
+
+<p>To let the <strong>tis</strong> module use this reader word, use the following example code:</p>
+
+<pre>
+\ Open the 'file.txt' file and save the file-id in variable txt-file
+s" file.txt" r/o open-file throw   value txt-file
+
+\ Setup a file reader for tis1 variable
+txt-file  ' file-reader  tis1 tis-set-reader
+
+\ Close the file
+txt-file file-close throw
+</pre>
+
+<p>The stack notation for the <i>tis-set-reader</i> word is <code>(x xt tis -- )</code>,
+in which <i>x</i> is the specific state for the reader. This <i>x</i>is fed to 
+the reader (see above). <i>Xt</i> is the reader word itself.</p>
+
+<p>The <strong>xis</strong> module can also use this reader word. See the 
+following example code:</p>
+
+<pre>
+\ Open the 'file.xml' file and save the file-id in variable reader-file
+s" file.xml" r/o open-file throw   value xml-file
+
+\ Setup a file reader for xis1 variable
+xml-file  ' file-reader  xis1 xis-set-reader
+
+\ Close the file
+xml-file file-close throw
+</pre>
+
+<h2>Versions</h2>
+
+<p>As soon as a module of the ffl is included, the library version constant 
+<var>ffl.version</var> is created. This constant returns the version number 
+of the library. For example for version 0.4.0 the constant returns 000400.</p>
+
+<p>When a module is included, it defines a constant with the version of that 
+module. The name of this constant is the name of the module followed by 
+'.version'. So the constant <var>frc.version</var> returns the version of the 
+fraction module.</p>
+
+<p>The constant for the module version starts with number 1 after the initial 
+creation of the module. Then every time the interface of the module changes or 
+the functionality of the module increases, the version number is increased by 1.
+The version number is not changed if a small bug is fixed in the module.</p>
+
+<p>The version constants can be used to check if the library or module is 
+present in the forth dictionary: </p>
+
+<pre>[DEFINED] frc.version .</pre>
+
+<p>It can also be used to check if the code in the dictionary is up to date:</p>
+
+<pre>frc.version 2 = .</pre>
+
+<h2>Collections</h2>
+
+<p>There are two types of collections in the library: generic collections and 
+cell based collections.</p>
+
+<h3>Generic collections</h3>
+
+<p>Generic collections implements data structures like linked lists, hash tables, 
+trees. These collections do not store any data; they are the base code for 
+implementing more specialised collections. Using a generic collection 
+involves extending the generic code with code for the specific task.</p>
+
+<p>For example: using a single linked list for storing financial information 
+about companies:</p>
+
+<p>First extend the generic single linked list node (<var>invoice&gt;node</var>) 
+with specific variables (<var>invoice&gt;customer</var>, <var>invoice&gt;year</var>, 
+<var>invoice&gt;month</var>, <var>invoice&gt;value</var>):
+
+<pre>
+include ffl/snl.fs
+
+begin-structure invoice%
+  snn%
+  +field  invoice>node
+  field:  invoice>customer
+  field:  invoice>year
+  field:  invoice>month
+  ffield: invoice>value
+end-structure
+</pre>
+
+<p>After that make a word that allocates and initialises a new invoice node:</p>
+
+<pre>
+: invoice-new  ( F: r -- ; n1 n2 n3 -- invoice = Allocates and initialise an invoice node with r value, n1 customer, n2 year and n3 month )
+  invoice% allocate throw    \ Allocate the specific single list node
+  &gt;r
+  r@ invoice&gt;node snn-init   \ Initialise the single list node fields
+  r@ invoice&gt;month !         \ Initialise the specific fields
+  r@ invoice&gt;year !
+  r@ invoice&gt;customer !
+  r@ invoice&gt;value f!
+  r>
+;
+</pre>
+
+<p>Then create the single list where the new invoice nodes are stored:</p>
+
+<pre>
+snl-create invoices
+</pre>
+
+<p>Next is the allocation of some invoice nodes, these nodes are added to the 
+invoices list:</p>
+
+<pre>
+10.00E+0 1 2008 02 invoice-new invoices snl-append
+25.00E+0 1 2008 03 invoice-new invoices snl-append
+12.75E+0 1 2008 04 invoice-new invoices snl-append
+</pre>
+
+<p>After that you can use the words from the generic single linked list. For 
+example print all the invoices in the list with the <code>snl-execute</code> word:</p>
+
+<pre>
+: print-invoice ( invoice -- )
+  dup invoice&gt;year @ 4 .r   
+  [char] / emit  
+  dup invoice&gt;month @ 2 .r  
+  space [char] : emit space  
+  dup invoice&gt;customer @ 8 .r space 
+  invoice&gt;value f@ f. cr
+;
+
+." Date      Customer Value" cr
+' print-invoice invoices snl-execute
+</pre>
+
+<p>Also the words from the generic single linked list iterator can be used with 
+the invoices list:</p>
+
+<pre>
+include ffl/sni.fs
+
+invoices sni-create invoices-iterator
+
+: print-invoices
+  ." Date      Customer Value" cr
+  invoices-iterator sni-first
+  BEGIN
+     nil&lt;&gt;
+  WHILE
+    print-invoice
+    invoices-iterator sni-next
+  REPEAT
+;
+
+print-invoices
+</pre>
+
+<h3>Cell based collections</h3>
+
+<p>The cell based collections implements data structures like linked list, hash 
+tables, trees, that can store a single cell value.</h3>
+
+<p>For example: using a single linked list for storing temperatures.</p>
+
+<p>First create the single linked list:</p>
+
+<pre>
+include ffl/scl.fs
+
+scl-create temperatures
+</pre>
+
+<p>Then add the temperatures to the list:</p>
+
+<pre>
+23 temperatures scl-append
+27 temperatures scl-append
+26 temperatures scl-append
+22 temperatures scl-append
+</pre>
+
+<p>After that you can use the list. For example: print the contents of the list:</p>
+
+<pre>
+: print-temperature ( n1 n2 -- n3 = Print temperature n2 with ordered list number n1 )
+  over 2 .r space 4 .r cr
+  1+
+;
+
+1 ' print-temperature temperatures scl-execute drop
+</pre>
+
+<p>The list can also be iterated with the single linked cell based iterator:</p>
+
+<pre>
+include ffl/sci.fs
+
+temperatures sci-create temperatures-iterator
+
+: print-temperatures ( -- )
+  1
+  temperatures-iterator sci-first
+  BEGIN
+  WHILE
+    print-temperature
+    temperatures-iterator sci-next
+  REPEAT
+  drop
+;
+
+print-temperatures
+</pre>
+
+<h2>Inspection</h2>
+
+<p>A number of modules in the ffl library store their state in variables. These 
+variables are based on a structure with different fields. To inspect those 
+fields the modules define a word for inspecting their variables. The name of the 
+inspecting word ends with <i>-dump</i>. For example the sha1 module defines the 
+word <i>sh1-dump</i> for inspecting the sh1 variables. These words expect the 
+variable that must be inspected on the stack. As a result they print the 
+contents of all the fields of the variable on the console.</p>
+
+<h2>Exceptions</h2>
+
+<p>At the moment the ffl library can raise ten different exceptions. Exceptions 
+are raised if an unexpected situation is detected that can not be resolved. 
+The exception numbers can also be returned by words as io-results. The following 
+exceptions are present:</p>
+
+<ul>
+  <li>exp-index-out-of-range (-2050)</li>
+    <p>an index is used in a collection, array or string that is not within the range of valid  indices</p>
+  <li>exp-invalid-state (-2051)</li>
+    <p>a word of the module is called that is not allowed in the current state of the variable</p>
+  <li>exp-no-data (-2052)</li>
+    <p>a word tries to fetch data, but unexpectly there is no data available</p>
+  <li>exp-invalid-parameters (-2053)</li>
+    <p>a parameter on the stack is invalid</p>
+  <li>exp-wrong-file-type (-2054)</li>
+    <p>a file for which an import is attempted, is not of the correct type</p>
+  <li>exp-wrong-file-version (-2055)</li>
+    <p>a file for which an import is attempted, has not the correct version</p>
+  <li>exp-wrong-file-data (-2056)</li>
+    <p>a file for which an import is attempted, has data outside the expected ranges</p>
+  <li>exp-wrong-checksum</li>
+    <p>the calculated checksum and the checksum of the source do not match</p>
+  <li>exp-wrong-length</li>
+    <p>the actual length and the length of the source do not match</p>
+  <li>exp-invalid-data</li>
+    <p>the data of the source is different from what is expected</p>
+</ul>
+
+<p>GForth (and FLK and ALF) report the exception with a message, all the other 
+forth engines report the numerical value of the exception.</p>
+
+    </div>
+
+    <div id="footer">
+    <p>
+  <!-- Start of StatCounter Code -->
+  <!-- End of StatCounter Code -->
+     Last updated: 2015-08-01</p>
+    </div>
+  </div>
+</body>
+</html>
