@@ -9,7 +9,7 @@
 <body>
   <div id="container">
     <div id="header">
-      <h1>Roadmap</h1>
+      <h1>Labelling</h1>
     </div>
 
     <div id="nav">
@@ -17,50 +17,33 @@
     </div>
 
     <div id="article">
-<h2>0.9.0: 2015</h2>
-<p>Ninth delivery of the FFL library. A json module is planned
-for this release.</p>
-<p>Status: under way</p>
+<h2>ANS Labelling</h2>
 
-<h2>0.8.0: May 2010</h2>
-<p>Eighth delivery of the FFL library. The focus for this
-release was on interfacing with the gtk-server.</p>
-<p>Status: done</p>
+<p>The Forth Foundation Library is written in ANS-standard forth. But it requires some 
+extensions. All those extensions are listed in one config source file which is forth 
+engine specific. One exception is the word: <code>include</code> <i>filename</i>. This word 
+is used to include all modules. This is not a big problem, because this word is 
+quite common in forth engines.</p>
 
-<h2>0.7.0: June 2009</h2>
-<p>Seventh delivery of the FFL library. The focus for this
-release will be on decompression of gzip files.</p>
-<p>Status: done</p>
+<p>FFL is labelled as follows in accordance with the ANS standard:</p>
 
-<h2>0.6.0: February 2008</h2>
-<p>Sixth delivery of the FFL library. The following modules were
-planned: XML parser and the ANS structures.</p>
-<p>Status: done</p>
-
-<h2>0.5.0: June 2007</h2>
-<p>Fifth delivery of the FFL library. The following modules were
-planned: a n-tree collection and a SHA-2 module.</p>
-<p>Status: done</p>
-
-<h2>0.4.0: March 2007</h2>
-<p>Fourth delivery of the FFL library. The following modules were
-planned: a fraction data type, a binary tree collection, pseudo
-random generator, a timer and a sha1 module.</p>
-<p>Status: done</p>
-
-<h2>0.3.0: September 2006</h2>
-<p>Third delivery of the FFL library. It will extend the library with
-modules for the clusters DataTypes, Collections and Interfaces.</p>
-<p>Status: done</p>
-
-<h2>0.2.0: April 2006</h2>
-<p>Second delivery of the FFL library. It will extend the library with
-modules for the clusters DataTypes and Collections.</p>
-<p>Status: done</p>
-
-<h2>0.1.0: December 2005</h2>
-<p>First delivery of the FFL library.</p>
-<p>Status: done</p>
+<ul>
+ <li>ANS Forth Program with Environmental Dependencies.</li>
+ <li>Requiring names from the Core Extensions word set.</li>
+ <li>Requiring the Double-Number word set.</li>
+ <li>Requiring names from the Double-Number Extensions word set.</li>
+ <li>Requiring the Exception word set.</li>
+ <li>Requiring the Facility word set.</li>
+ <li>Requiring names from the Facility Extensions word set.</li>
+ <li>Requiring the File Access word set.</li>
+ <li>Requiring names from the File Access Extensions word set.</li>
+ <li>Requiring (optional) the Floating-Point word set.</li>
+ <li>Requiring (optional) names from the Floating-Point Extensions word set.</li>
+ <li>Requiring the Memory-Allocation word set.</li>
+ <li>Requiring the Programming-Tools word set.</li>
+ <li>Requiring names from the Programming-Tools Extensions word set.</li>
+ <li>Requiring the String word set.</li>
+</ul>
     </div>
 
     <div id="footer">
