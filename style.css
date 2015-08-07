@@ -64,34 +64,25 @@ BODY {
   TEXT-ALIGN: center; FONT-SIZE: 90%
 }
 
-// tables: classes and download
-.modheadtxt {
-	FONT-SIZE: 110%;
+table.gridtable {
+  border-width: 1px;
+  border-collapse: collapse;
+  border-color: black;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.modsubtxt {
-	BORDER-BOTTOM: black 1px solid
+table.gridtable th {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: black;
+  font-size: 110%;
 }
-
-.modbox {
-  BORDER-TOP: black 1px solid; BORDER-BOTTOM: black 1px solid;
-  MARGIN-TOP: 25px; MARGIN-BOTTOM: 15px;
-  MARGIN-LEFT: auto; MARGIN-RIGHT: auto
+table.gridtable td {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: black;
 }
-
-.moditemtxt {
-}
-
-.downbox {
-	BORDER-TOP: black 1px solid; BORDER-BOTTOM: black 1px solid;
-  MARGIN-TOP: 25px; MARGIN-BOTTOM: 15px
-}
-.downheadtxt {
-	FONT-SIZE: 110%;
-}
-.downsubtxt {
-	BORDER-BOTTOM: black 1px solid
-}
-.downitemtxt {
-}
-
-

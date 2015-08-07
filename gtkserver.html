@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ffl -- A general purpose forth library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>GTK Server</h1>
+    </div>
+
+    <div id="nav">
+  | <a href="https://irdvo.github.io//ffl">ffl</a>  - <a href="news.html">news</a> - <a href="changelog.html">changelog</a> - <a href="roadmap.html">roadmap</a> - <a href="modules.html">modules</a> - <a href="manual.html">manual</a> - <a href="doxy/index.html">docs</a> - <a href="http://github.com/irdvo/ffl">github</a> | <a href="http://irdvo.github.io/gpxlib">gpxlib</a> | <a href="http://irdvo.github.io/htmllib">htmllib</a> | <a href="http://irdvo.github.io/htmloo">htmloo</a> | <a href="https://irdvo.github.io/ofc">ofc</a> |
+    </div>
+
+    <div id="article">
+<h2>Getting started with the GTK-server interface module</h2>
+
+<h3>Introduction</h3>
+
+<p>The GTK-server interface module (gsv) in the FFL library implements an ANS
+compatible way to use the GTK library. This module is added in version 0.8.0.</p>
+
+<p>To actually display the GUI, the 
+<a href="http://www.gtk-server.org/">GTK-server</a> tool is used. This tool can 
+receive GTK calls through a pipe or TCP-IP connection from an external process 
+(the forth engine).</p>
+
+<p>The gsv module supports this by connecting to the GTK-server, translating the 
+forth calls to GTK-server calls, sending the calls, receiving the response and
+translating the response back.</p>
+
+<p>This way the module makes it possible for a forth engine to display a 
+GTK GUI.</p>
+
+<p>Currently the module supports UNIX/LINUX. Support for Windows will be added at
+a later time.</p>
+
+<h3>Installation</h3>
+
+<p>You will need the GTK library and the <a href="http://www.gtk-server.org/">
+GTK-server</a> application. See the relevant docs for installing. </p>
+
+<h3>Getting Started</h3>
+
+<p>For using the GTK-server it is important to read the relevant documentation. 
+In particular the documentation of the gtk-server.cfg file is very
+important. This file describes what requests can be made to the GTK-server.
+By adding or deleting calls in this file, you can optimize the 
+gtk-server.cfg file for your project. For example the gtk-server.cfg
+file used in the examples directory of the ffl library, is expanded
+with a number of requests to make the examples possible.</p>
+
+<p>For a project using GTK and Forth, the best setup is a dedicated
+directory. In this directory you can put the project specific 
+gtk-server.cfg file. This file can then be used by the GTK-server
+and the gsv-module. As a result both use the same configuration file.</p>
+
+<p>After a gtk-server.cfg is copied to the project directory, you can 
+start the GTK-server (on linux) in this project directory:</p>
+
+ <pre>gtk-server -fifo=prj-fifo &amp;</pre>
+
+<p>The prj-fifo is the fifo filename that is used to communicate with the
+GTK-server. You can use any file name. All the examples in the ffl 
+library use the 'ffl-fifo' filename.</p>
+
+<p>The next step is to start the forth engine (gforth):</p>
+
+ <pre>gforth</pre>
+
+<p>In gforth you should include the gsv-module: </p>
+
+ <pre>include ffl/gsv.fs</pre>
+
+<p>Then read the gtk-server.cfg file and open a connection to the GTK-server:</p>
+
+ <pre>s" gtk-server.cfg" s" prj-fifo" gsv+open throw</pre>
+
+<p>The gsv+open call returns an ior. If it is 0, there is a connection to
+the GTK-server and the gtk-server.cfg is processed.</p>
+
+<p>From now on you can send GTK calls to the GTK-server. First 
+initialise the toolkit:</p>
+
+ <pre>gtk_init</pre>
+
+<p>Then create a toplevel window and save the handle in the window value:</p>
+
+ <pre>GTK_WINDOW_TOPLEVEL gtk_window_new VALUE window</pre>
+
+<p>Give the window a title:</p>
+
+ <pre>s" Title: hello world" window gtk_window_set_title</pre>
+
+<p>Show the window:</p>
+
+ <pre>window gtk_widget_show</pre>
+
+<p>Wait for events:</p>
+
+ <pre>s" WAIT" gtk_server_callback 2drop</pre>
+
+<p>The window is shown. After pressing the close button of the window ('X'),
+the call will return.</p>
+
+<p>Then enter:</p>
+
+ <pre>0 gtk_exit</pre>
+
+<p>This will close all windows and stop the GTK-server process.</p>
+
+
+<h3>Examples</h3>
+
+<p>There are a number of examples in the library available. These are 
+inspired by the 
+<a href="http://library.gnome.org/devel/gtk-tutorial/stable/">GTK-tutorial</a></p>
+
+<p>The examples use the fifo name: ffl-fifo. To run an example 
+start the GTK-server in the example directory: </p>
+
+  <pre>gtk-server -fifo=ffl-fifo &amp;</pre>
+
+<p>Then start one of the following forth engines with the example file:</p>
+
+  <pre>gforth gsv_expl.fs</pre>
+
+  <pre>pfe gsv_expl.fs</pre>
+
+  <pre>spf4 ffl/config.fs gsv_expl.fs</pre>
+
+  <pre>lxf include gsv_expl.fs</pre>
+
+  <pre>vfxlin include gsv_expl.fs</pre>
+
+<p>The following examples are shipped with the library (in the examples directory):</p>
+
+<table class="gridtable">
+  <tr>
+    <th>Example file</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td>gsv_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv_expl.fs">Hello World</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv2_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv2_expl.fs">Button Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv3_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv3_expl.fs">Box Packing</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv4_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv4_expl.fs">Table Packing</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv5_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv5_expl.fs">Pixmap Button</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv6_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv6_expl.fs">Toggle Button Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv7_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv7_expl.fs">Adjustment Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv8_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv8_expl.fs">Label Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv9_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv9_expl.fs">Arrow &amp; Tooltip Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv10_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv10_expl.fs">Timer &amp; Progress bar Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv12_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv12_expl.fs">Statusbar Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv13_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv13_expl.fs">Entry Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv14_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv14_expl.fs">Spinbutton Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv17_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv17_expl.fs">File Chooser Dialog</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv18_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv18_expl.fs">Event Box</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv19_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv19_expl.fs">Fixed Container</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv20_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv20_expl.fs">Frame</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv21_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv21_expl.fs">Aspect Frame</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv23_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv23_expl.fs">Scrolled Window</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv24_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv24_expl.fs">Button Box</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv26_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv26_expl.fs">Notebook Widget</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv27_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv27_expl.fs">Menu</a></td>
+  </tr>
+
+  <tr>
+    <td>gsv99_expl.fs</td>
+    <td><a href="https://github.com/irdvo/ffl/blob/master/examples/gsv99_expl.fs">Mandelbrot</a></td>
+  </tr>
+
+</table>
+
+<a href="https://github.com/irdvo/ffl/blob/master/gsv99_expl.fs"><img src="mandelbrot.png"></a>
+
+<h3>Trouble shooting</h3>
+
+<p>My experience is that the GTK-server will not always clean up the fifo
+file after an error. You can manually remove it (on linux): </p>
+
+  <pre>rm prj-fifo</pre>
+
+<p>The GTK-server is running as a process. You can see the process ID 
+by entering:</p>
+
+  <pre>ps -e | grep gtk-server</pre>
+
+<p>This ID can then be used to stop the GTK-server after problems: </p>
+
+  <pre>kill ID</pre>
+
+<h3>How it works</h3>
+
+<p>The GTK-server uses the gtk-server.cfg file to determine which requests can be 
+made and what the arguments are for that requests. </p>
+
+<p>To keep the gsv-module in sync with the GTK-server, the module reads the 
+gtk-server.cfg file. It parses the file and translates the contents into forth 
+words and forth constants in the dictionary.</p>
+
+<h3>Own gtk-server.cfg</h3>
+
+<p>If you use your own gtk-server.cfg, then make sure that the definition of 
+<i>gtk_server_enable_c_string_escaping</i> is present in your configuration file.
+The gsv module uses this call to check if the gtk calls are loaded, if the
+connection to the gtk-server is working and to support quoted strings.</p>
+
+<p>If this call is missing in your gtk-server.cfg file, the gsv module will
+not work.</p>
+
+<h3>Type conversion</h3>
+
+<p>The gsv-module translates the arguments of the requests in the gtk-server.cfg file 
+to the following forth stack data types :</p>
+
+<table class="gridtable">
+  <tr>
+    <th>gtk-server.cfg argument datatype</th>
+    <th>forth stack data type</th>
+  </tr>
+
+  <tr>
+    <td>NULL</td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>WIDGET</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>POINTER</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>BOOL</td>
+    <td>flag</td>
+  </tr>
+
+  <tr>
+    <td>STRING</td>
+    <td>c-addr</td>
+  </tr>
+
+  <tr>
+    <td>INT</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>LONG</td>
+    <td>d</td>
+  </tr>
+
+  <tr>
+    <td>DOUBLE</td>
+    <td>r</td>
+  </tr>
+
+  <tr>
+    <td>FLOAT</td>
+    <td>r</td>
+  </tr>
+
+  <tr>
+    <td>ENUM</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>MACRO</td>
+    <td>c-addr</td>
+  </tr>
+
+  <tr>
+    <td>BASE64</td>
+    <td>c-addr</td>
+  </tr>
+
+</table>
+
+<p>Note: The argument STRING is quoted by the gsv-module.</p>
+
+<p>The return value of the requests in the gtk-server.cfg file is translated 
+to the following forth data type:</p>
+
+<table class="gridtable">
+|| *gtk-server.cfg returnvalue datatype* || *forth stack data type* ||
+  <tr>
+    <td>NONE</td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>VOID</td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>WIDGET</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>POINTER</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>ADDRESS</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>BOOL</td>
+    <td>flag</td>
+  </tr>
+
+  <tr>
+    <td>STRING</td>
+    <td>c-addr u</td>
+  </tr>
+
+  <tr>
+    <td>INT</td>
+    <td>n</td>
+  </tr>
+
+  <tr>
+    <td>LONG</td>
+    <td>d</td>
+  </tr>
+
+  <tr>
+    <td>DOUBLE</td>
+    <td>r</td>
+  </tr>
+
+  <tr>
+    <td>FLOAT</td>
+    <td>r</td>
+  </tr>
+
+</table>
+
+<p>Note: Keep in mind that returned addresses and pointers refer to memory
+in the GTK-server and not in the forth engine.</p>
+
+
+<h3>Events</h3>
+
+<p>Special attention should be given to the event handling by the GTK-server.
+The server links a default event to most widget types. If this default
+event is triggered, the widget ID is returned by gtk_server_callback. See
+the gtk-server.cfg file for the default event per widget type.</p>
+
+<p>If another event triggering is necessary for a widget, the 
+<code>gtk_server_connect</code> request must be used to connect an event to a widget. 
+According to the gtk-server.cfg file, the type of the ID for this event is string, 
+but this is not always convenient. So the gsv-module also defines: 
+<code>gsv+server-connect</code> and <code>gsv+server-connect-after</code>. Those 
+two words use the same parameters as the <code>gtk_server_connect</code> call, 
+except that the event ID is numerically.</p>
+
+<p>Events that are triggered, are returned to your program via the <code>gtk_server_callback</code>
+request. According to the gtk-server.cfg file this request returns the event in a 
+string. If you make sure that all events are numerically, you can easily convert the
+string event ID to a number and use the CASE - OF - ENDOF - ENDCASE construct to check
+which event is triggered. Most examples in the library use this method.</p>
+
+<p>Another method is the use of the act module (AVL binary tree). The key in this 
+tree is the numerical event ID and the linked data is the execution token (XT) of the 
+forth word that must be executed when the event is triggered. When an event 
+is created, the event ID and the XT of the callback word are stored in the tree.
+In the mainloop the event ID, that is returned by <code>gtk_server_callback</code>, is
+fed to the tree. The tree will return the callback XT which is then executed.
+See <a href="https://github.com/irdvo/ffl/blob/master/examples/gsv27_expl.fs">Menu</a>
+for an example using this method.</p>
+    </div>
+
+    <div id="footer">
+    <p>
+  <!-- Start of StatCounter Code for Default Guide -->
+  <script type="text/javascript">
+  var sc_project=1434121; 
+  var sc_invisible=0; 
+  var sc_security="407ca2a5"; 
+  var sc_text=5; 
+  var scJsHost = (("https:" == document.location.protocol) ?
+  "https://secure." : "http://www.");
+  document.write("<sc"+"ript type='text/javascript' src='" +
+  scJsHost+
+  "statcounter.com/counter/counter.js'></"+"script>");
+  </script>
+  <noscript><div class="statcounter"><a title="shopify
+  analytics tool" href="http://statcounter.com/shopify/"
+  target="_blank"><img class="statcounter"
+  src="http://c.statcounter.com/1434121/0/407ca2a5/0/"
+  alt="shopify analytics tool"></a></div></noscript>
+  <!-- End of StatCounter Code for Default Guide -->
+  - 
+     Last updated: 2015-08-07</p>
+    </div>
+  </div>
+</body>
+</html>

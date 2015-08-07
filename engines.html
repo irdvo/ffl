@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ffl -- A general purpose forth library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>Supported Forth Engines</h1>
+    </div>
+
+    <div id="nav">
+  | <a href="https://irdvo.github.io//ffl">ffl</a>  - <a href="news.html">news</a> - <a href="changelog.html">changelog</a> - <a href="roadmap.html">roadmap</a> - <a href="modules.html">modules</a> - <a href="manual.html">manual</a> - <a href="doxy/index.html">docs</a> - <a href="http://github.com/irdvo/ffl">github</a> | <a href="http://irdvo.github.io/gpxlib">gpxlib</a> | <a href="http://irdvo.github.io/htmllib">htmllib</a> | <a href="http://irdvo.github.io/htmloo">htmloo</a> | <a href="https://irdvo.github.io/ofc">ofc</a> |
+    </div>
+
+    <div id="article">
+<h2>Supported Forth engines</h2>
+
+<p>FFL will run on and is tested with the following forth engines :</p>
+
+<table class="gridtable">
+  <tr>
+    <th>Engine</th>
+    <th>Since</th>
+  </tr>
+
+  <tr>
+    <td><a href="https://gnu.org/software/gforth/">GForth</a></td>
+    <td>0.1.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://www.jwdt.com/~paysan/bigforth.html">BigForth</a></td>
+    <td>0.2.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://pfe.sourceforge.net">PFE</a></td>
+    <td>0.3.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://win32forth.sourceforge.net">Win32Forth</a></td>
+    <td>0.4.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://code.google.com/p/fina-forth">fina</a></td>
+    <td>0.5.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://home.arcor.de/a.s.kochenburger/minforth.html">MinForth</a></td>
+    <td>0.5.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://home.iae.nl/users/mhx">iForth</a></td>
+    <td>0.6.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://spf.sourceforge.net">SP-Forth</a></td>
+    <td>0.7.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://falth.homelinux.net/readme2.html">lxf/ntf</a></td>
+    <td>0.7.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://www.mpeforth.com">VFXForth</a></td>
+    <td>0.8.0</td>
+  </tr>
+
+  <tr>
+    <td><a href="http://www.forth.com/swiftforth/index.htm">VFXForth</a></td>
+    <td>0.9.0</td>
+  </tr>
+
+</table>
+
+<p>For these forth engines there is a config file present in the distribution package.</p>
+
+<h3>Unsupported and not yet checked Forth Engines</h3>
+
+<p>FFL will not run on the forth engines: kForth, ciforth, pforth, isforth, 4th 
+and helforth due to missing ANS words.</p>
+
+<p>The forth engines RetroForth, ficl and forth4p are not yet checked.</p>
+
+<h2>Environmental dependencies</h2>
+
+<p>A few modules have environmental dependencies. As a result they will not be 
+present for some forth engines. For these modules you should test the presence 
+of the <code>version</code> constant after loading the module.</p>
+
+<table class="gridtable">
+<tr><th>                                          </th><th>GForth</th><th>BigForth</th><th>PFE</th><th>Win32Forth</th><th>MinForth</th><th>iForth</th><th>SP-Forth</th><th>lxf/ntf</th><th>VFXForth</th></tr>
+<tr><td>Argument Parser (arg)                     </td><td> Yes  </td><td>  No    </td><td>Yes</td><td>   No     </td><td>  No    </td><td> No   </td><td> No     </td><td>  No   </td><td> No     </td></tr>
+<tr><td>Distributed Random Number Generator (rdg) </td><td> Yes  </td><td>  No    </td><td>Yes</td><td>   Yes    </td><td> Yes    </td><td>Yes   </td><td> No     </td><td>  No   </td><td> No     </td></tr>
+<tr><td>Timer (tmr)                               </td><td> Yes  </td><td> Yes    </td><td>Yes</td><td>   Yes    </td><td> Yes    </td><td>Yes   </td><td> Yes    </td><td>  Yes  </td><td> Yes    </td></tr>
+<tr><td>GTK-server interface (gsv)                </td><td> Yes  </td><td>  No    </td><td>Yes</td><td>   No     </td><td>  No    </td><td> ?    </td><td> Yes    </td><td>  Yes  </td><td> Yes    </td></tr>
+</table>
+
+<p>Some notes for the GTK-server interface: </p>
+<ul>
+ <li>gsv is for the moment only tested on Linux</li>
+ <li>PFE will sometimes get stuck or report a broken pipe</li>
+ <li>BigForth and MinForth have problems with the long names of the GTK functions</li>
+</ul>
+
+<h2>Benchmarks </h2>
+
+<h3>Version 0.8.0</h3>
+
+<table class="gridtable">
+<tr><th>                     </th><th>GForth</th><th>BigForth</th><th>PFE   </th><th>Win32Forth</th><th>MinForth</th><th>SP-Forth</th><th>lxf/ntf</th><th>VFXForth</th></tr>
+<tr><td>Compile Time (msec)  </td><td> 1087 </td><td>  251   </td><td>459   </td><td>   1467   </td><td>  4280  </td><td> 2680 </td><td> 344     </td><td>  500   </td></tr>
+<tr><td>Compile Size (bytes) </td><td>247784</td><td>210820  </td><td>222204</td><td>   218196 </td><td> 231732 </td><td>214777</td><td> 211599  </td><td> 356392 </td></tr>
+<tr><td>Test Time (sec)      </td><td> 4.2  </td><td> 2.9    </td><td> 11.2 </td><td>   8.7    </td><td> 48.6   </td><td>5.6   </td><td> 	2.1    </td><td>   	2.1 </td></tr>
+</table>
+
+<h3>Version 0.7.0</h3>
+
+<table class="gridtable">
+<tr><th>                     </th><th>GForth</th><th>BigForth</th><th>PFE   </th><th>Win32Forth</th><th>MinForth</th><th>SP-Forth</th><th>lxf/ntf</th></tr>
+<tr><td>Compile Time (msec)  </td><td> 850  </td><td>  328   </td><td>517   </td><td>   1248   </td><td>  3780  </td><td> 2530   </td><td> 310   </td></tr>
+<tr><td>Compile Size (bytes) </td><td>224912</td><td>196089  </td><td>209764</td><td>   203748 </td><td> 215676 </td><td>201260  </td><td> 206142</td></tr>
+<tr><td>Test Time (sec)      </td><td> 4.1  </td><td> 3.4    </td><td> 11.2 </td><td>   11.3   </td><td> 49.0   </td><td>5.6     </td><td> 	2.0  </td></tr>
+</table>
+
+<h3>Version 0.6.0</h3>
+
+<table class="gridtable">
+<tr><th>                     </th><th>GForth</th><th>BigForth</th><th>PFE   </th><th>Win32Forth</th><th>MinForth</th></tr>
+<tr><td>Compile Time (msec)  </td><td> 1774 </td><td>  352   </td><td>720   </td><td>   2630   </td><td>  9440  </td></tr>
+<tr><td>Compile Size (bytes) </td><td>169560</td><td>146406  </td><td>166704</td><td>   97176  </td><td> 106600 </td></tr>
+<tr><td>Test Time (sec)      </td><td> 7.9  </td><td>8.2     </td><td> 24.1 </td><td>   15.3   </td><td> 140.2  </td></tr>
+</table>
+
+<h3>Version 0.5.0</h3>
+
+<table class="gridtable">
+<tr><th>                     </th><th>GForth</th><th>BigForth</th><th>PFE   </th><th>Win32Forth</th><th>MinForth</th></tr>
+<tr><td>Compile Time (msec)  </td><td> 1020 </td><td>  220   </td><td>374   </td><td>   1760   </td><td>  6100  </td></tr>
+<tr><td>Compile Size (bytes) </td><td>132724</td><td>115090  </td><td>133796</td><td>   75696  </td><td> 83128  </td></tr>
+<tr><td>Test Time (sec)      </td><td> 	6.8 </td><td>8.2     </td><td> 23.6 </td><td>   14.3   </td><td> 132.9  </td></tr>
+</table>
+
+<h3>Version 0.4.0</h3>
+
+<table class="gridtable">
+<tr><th>                     </th><th>GForth</th><th>BigForth</th><th>PFE   </th><th>Win32Forth</th></tr>
+<tr><td>Compile Time (msec)  </td><td> 690  </td><td>  158   </td><td>255   </td><td>   1200   </td></tr>
+<tr><td>Compile Size (bytes) </td><td>103132</td><td> 89710  </td><td>112628</td><td>   59660  </td></tr>
+<tr><td>Test Time (sec)      </td><td>  3.8 </td><td>6.2     </td><td> 9.2  </td><td>   9.6    </td></tr>
+</table>
+
+<p>Legenda:</p>
+<ul>
+ <li>The Compile Time is the time required to include all modules in the dictionary.</li>
+ <li>The Compile Size is the space required in the dictionary to include all modules.</li>
+ <li>The Test time is the time required to include and run all the test scripts.</li>
+</ul>
+
+<p>Benchmarks for version 0.7.0 and higher were done on an Athlon 64 X2 1800MHZ.</p>
+
+<h2>Porting</h2>
+
+<p>As already stated the FFL is mostly written in ANS forth. If the forth engine you are using, is 
+not listed on the this page and it conforms to the ANS-standard, you can try porting ffl 
+to your forth engine by adding words to and removing words from the <code>ffl/config.fs</code> file. 
+If you succeed, you can send me the config.fs file so that I can add it to the distribution.</p>
+
+    </div>
+
+    <div id="footer">
+    <p>
+  <!-- Start of StatCounter Code for Default Guide -->
+  <script type="text/javascript">
+  var sc_project=1434121; 
+  var sc_invisible=0; 
+  var sc_security="407ca2a5"; 
+  var sc_text=5; 
+  var scJsHost = (("https:" == document.location.protocol) ?
+  "https://secure." : "http://www.");
+  document.write("<sc"+"ript type='text/javascript' src='" +
+  scJsHost+
+  "statcounter.com/counter/counter.js'></"+"script>");
+  </script>
+  <noscript><div class="statcounter"><a title="shopify
+  analytics tool" href="http://statcounter.com/shopify/"
+  target="_blank"><img class="statcounter"
+  src="http://c.statcounter.com/1434121/0/407ca2a5/0/"
+  alt="shopify analytics tool"></a></div></noscript>
+  <!-- End of StatCounter Code for Default Guide -->
+  - 
+     Last updated: 2015-08-07</p>
+    </div>
+  </div>
+</body>
+</html>

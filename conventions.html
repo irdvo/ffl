@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ffl -- A general purpose forth library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>Source conventions</h1>
+    </div>
+
+    <div id="nav">
+  | <a href="https://irdvo.github.io//ffl">ffl</a>  - <a href="news.html">news</a> - <a href="changelog.html">changelog</a> - <a href="roadmap.html">roadmap</a> - <a href="modules.html">modules</a> - <a href="manual.html">manual</a> - <a href="doxy/index.html">docs</a> - <a href="http://github.com/irdvo/ffl">github</a> | <a href="http://irdvo.github.io/gpxlib">gpxlib</a> | <a href="http://irdvo.github.io/htmllib">htmllib</a> | <a href="http://irdvo.github.io/htmloo">htmloo</a> | <a href="https://irdvo.github.io/ofc">ofc</a> |
+    </div>
+
+    <div id="article">
+<h2>Source conventions used in the library</h2>
+
+<h3>Stack</h3>
+
+<p>Since version 0.6.0 FFL uses the ANS stack notation.</p>
+
+<p>Stack parameters input to and output from a word are described by: 
+( <i>stack</i> : <i>before</i> -- <i>after</i> ) where <i>stack</i> specifies 
+which stack is used. The code for the control-flow-stack is C:, for the 
+return-stack it is R: and for the float stack F:. If no stack identifier is 
+present in the notation, the data stack is used.</p>
+
+<p><i>Before</i> represents the stack parameter data types before execution of 
+the word and <i>after</i> represents them after execution. The top of the stack 
+is to the right. The following symbols are used in <i>before</i> and 
+<i>after</i>: </p>
+
+<table class="gridtable">
+    <tr>
+    <td>flag</td>
+    <td>a boolean flag</td>
+  </tr>
+
+    <tr>
+    <td>true</td>
+    <td>the boolean true flag</td>
+  </tr>
+
+    <tr>
+    <td>false</td>
+    <td>the boolean false flag</td>
+  </tr>
+
+    <tr>
+    <td>char</td>
+    <td>a character</td>
+  </tr>
+
+    <tr>
+    <td>n</td>
+    <td>a signed number</td>
+  </tr>
+
+    <tr>
+    <td>+n</td>
+    <td>a non-negative number</td>
+  </tr>
+
+    <tr>
+    <td>u</td>
+    <td>an unsigned number</td>
+  </tr>
+
+    <tr>
+    <td>n|u</td>
+    <td>a number</td>
+  </tr>
+
+    <tr>
+    <td>x</td>
+    <td>an unspecified cell</td>
+  </tr>
+
+    <tr>
+    <td>xt</td>
+    <td>an execution token</td>
+  </tr>
+
+    <tr>
+    <td>addr</td>
+    <td>an address</td>
+  </tr>
+
+    <tr>
+    <td>a-addr</td>
+    <td>an aligned address</td>
+  </tr>
+
+    <tr>
+    <td>c-addr</td>
+    <td>a character-aligned address</td>
+  </tr>
+
+    <tr>
+    <td>d</td>
+    <td>a double-cell signed number</td>
+  </tr>
+
+    <tr>
+    <td>+d</td>
+    <td>a double-cell non-negative number</td>
+  </tr>
+
+    <tr>
+    <td>ud</td>
+    <td>a double-cell unsigned number</td>
+  </tr>
+
+    <tr>
+    <td>d|ud</td>
+    <td>a double-cell number</td>
+  </tr>
+
+    <tr>
+    <td>xd</td>
+    <td>an unspecified cell pair</td>
+  </tr>
+
+    <tr>
+    <td>i*x, j*x, k*x</td>
+    <td>any data type</td>
+  </tr>
+
+    <tr>
+    <td>r</td>
+    <td>a float number</td>
+  </tr>
+
+</table>
+
+<p>As an addition to this table the FFL variables on the stack are represented 
+by the three alphabetic characters of the defining module. For example the stack 
+notation of the sh1-finish word, used in the manual is: 
+( sh1 -- u1 u2 u3 u4 u5 ). This word expects a sh1 variable on stack and returns 
+five unsigned numbers. The FFL variables are actually aligned addresses 
+(a-addr).</p>
+
+<p>It is possible that a word returns different stack parameters after execution. 
+This is described by <i>after1</i> | <i>after2</i>.</p>
+
+<p>If a word has both compile time as run time behaviour, this is described by 
+( <i>before1</i> -- <i>after1</i> ; <i>before2</i> -- <i>after2</i> ). 
+The stack parameters <i>before1</i> and <i>after1</i> specifies stack behaviour 
+during compilation time and <i>before2</i> and <i>after2</i> during run time.</p>
+
+<p>A few words in the FFL parse text during compilation. Those words use the 
+following syntax: 
+( <i>before</i> "<i>parsed-text-abbreviation</i>" -- <i>after</i> ). The 
+parsed-text-abbreviation uses the following specifications:</p>
+
+<table class="gridtable">
+    <tr>
+    <td>&lt;char&gt;</td>
+    <td>the char marking the end of the parsed string</td>
+  </tr>
+
+    <tr>
+    <td>&lt;chars&gt;</td>
+    <td>zero or more chars</td>
+  </tr>
+
+    <tr>
+    <td>&lt;space&gt;</td>
+    <td>a delimiting space character</td>
+  </tr>
+
+    <tr>
+    <td>&lt;spaces&gt;</td>
+    <td>zero or more spaces</td>
+  </tr>
+
+    <tr>
+    <td>&lt;quote&gt;</td>
+    <td>a delimiting double quote</td>
+  </tr>
+
+    <tr>
+    <td>&lt;paren&gt;</td>
+    <td>a delimiting right parenthesis</td>
+  </tr>
+
+    <tr>
+    <td>&lt;eol&gt;</td>
+    <td>a delimiting end of line</td>
+  </tr>
+
+    <tr>
+    <td>ccc</td>
+    <td>any arbitrary characters, excluding the delimiter character</td>
+  </tr>
+
+    <tr>
+    <td>name</td>
+    <td>a token delimited by space</td>
+  </tr>
+
+</table>
+
+<h3>Word naming</h3>
+
+<p>There are two different type of words in the FFL: general use words and 
+library words.</p>
+
+<h4>General words</h4>
+
+<p>The general words perform small, general actions. They use normal, 
+descriptive names. Exampes are nil&lt;&gt;, #bits/byte, begin-stringtable and 
+so on.</p>
+
+<h4>Library words</h4>
+
+<p>The name of the library words start with a prefix, followed by a special 
+character and ends with a descriptive name. The prefix is equal to the module 
+name. The special character is one of the following:</p>
+
+<table class="gridtable">
+    <tr>
+    <td>%</td>
+    <td>this word returns the size of the module variable, for example: sh1%</td>
+  </tr>
+
+    <tr>
+    <td>.</td>
+    <td>this word is an enumeration, variable, value, constant of defer in the module, for example: sh1.version</td>
+  </tr>
+
+    <tr>
+    <td>+</td>
+    <td>this word expects *no* module variables on the stack, for example: frc+multiply</td>
+  </tr>
+
+    <tr>
+    <td>-</td>
+    <td>this word expects *one* module variable on the stack, for example: sh1-update</td>
+  </tr>
+
+    <tr>
+    <td>^</td>
+    <td>this word expects *two* module variables on the stack, for example: str^move</td>
+  </tr>
+
+</table>
+
+The descriptive name specifies the action that the word performs on the optional stack 
+parameters. Some special characters are used for abbreviations:
+
+<table class="gridtable">
+    <tr>
+    <td>?</td>
+    <td>the word performs a check and will return a boolean flag, for example: str-index?</td>
+  </tr>
+
+    <tr>
+    <td>@</td>
+    <td>the word fetches the state of an internal variable, for example: dtm-day@</td>
+  </tr>
+
+    <tr>
+    <td>!</td>
+    <td>the word stores the state of an internal variable, for example: dtm-day!</td>
+  </tr>
+
+    <tr>
+    <td>+</td>
+    <td>the word performs an addition or incrementation, for example: dti-seconds+</td>
+  </tr>
+
+    <tr>
+    <td>-</td>
+    <td>the word performs an subtraction or decrementation, for example: dti-seconds-</td>
+  </tr>
+
+    <tr>
+    <td>( )</td>
+    <td>the word performs an action on the internal state, for example: str-(free)</td>
+  </tr>
+" col2="the word performs an action on the internal state, for example: str-(free)")
+</table>
+
+<h3>Inconsistencies</h3>
+
+<p>Due to historical reasons there are two groups of words that do not follow 
+this naming convention. Those are <i>module-name</i><code>-create</code> and 
+<i>module-name</i><code>-new</code>. Based on the name you should expect that 
+those words expect a module variable on the stack, but actually they don't. So 
+they should be named <i>module-name</i><code>+create</code> and 
+<i>module-name</i><code>+new</code>, but again for historical reasons they are 
+not.</p>
+    </div>
+
+    <div id="footer">
+    <p>
+  <!-- Start of StatCounter Code for Default Guide -->
+  <script type="text/javascript">
+  var sc_project=1434121; 
+  var sc_invisible=0; 
+  var sc_security="407ca2a5"; 
+  var sc_text=5; 
+  var scJsHost = (("https:" == document.location.protocol) ?
+  "https://secure." : "http://www.");
+  document.write("<sc"+"ript type='text/javascript' src='" +
+  scJsHost+
+  "statcounter.com/counter/counter.js'></"+"script>");
+  </script>
+  <noscript><div class="statcounter"><a title="shopify
+  analytics tool" href="http://statcounter.com/shopify/"
+  target="_blank"><img class="statcounter"
+  src="http://c.statcounter.com/1434121/0/407ca2a5/0/"
+  alt="shopify analytics tool"></a></div></noscript>
+  <!-- End of StatCounter Code for Default Guide -->
+  - 
+     Last updated: 2015-08-07</p>
+    </div>
+  </div>
+</body>
+</html>
