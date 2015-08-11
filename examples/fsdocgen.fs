@@ -1,6 +1,6 @@
 \ ==============================================================================
 \
-\         fsdocgen - ffl document generator
+\         fsdocgen - ffl documentation generator
 \
 \               Copyright (C) 2015  Dick van Oudheusden
 \  
