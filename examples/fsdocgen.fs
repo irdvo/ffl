@@ -25,6 +25,7 @@
 \ ==============================================================================
 
 include ffl/stc.fs
+include ffl/enm.fs
 include ffl/str.fs
 include ffl/car.fs
 
@@ -39,27 +40,38 @@ include ffl/car.fs
 \ Data structure
 \ ------------------------------------------------------------------------------
 
+begin-enumeration
+  enum: fswd.empty
+  enum: fswd.module
+  enum: fswd.description
+  enum: fswd.header
+  enum: fswd.word
+end-enumeration
+
 begin-structure fswd%
+  field:   fswd>type
+  str%
+  +field   fswd>module
   str%
   +field   fswd>word
   str%
   +field   fswd>stack
+  str%
+  +field   fswd>description
 end-structure
 
 \ ------------------------------------------------------------------------------
 \ allocator
 \ ------------------------------------------------------------------------------
 
-: fswd-new ( str1  str2 -- fswd = Allocate a new generator 1:word with 2:stack)
+: fswd-new ( -- fswd = Allocate a new description )
   fswd% allocate throw
   >r
-  r@ fswd>stack str-init
-  str-get
-  r@ fswd>stack str-set
-  
-  r@ fswd>word  str-init
-  str-get
-  r@ fswd>word  str-set
+  r@ fswd>type        0!
+  r@ fswd>module      str-init
+  r@ fswd>stack       str-init
+  r@ fswd>word        str-init
+  r@ fswd>description str-init
   r>
 ;
 
@@ -69,18 +81,28 @@ end-structure
 
 : fswd-free  ( fswd -- = Free the generator word )
   >r
-  r@ fswd>word  str-(free)
-  f@ fswd>stack str-(free)
+  r@ fswd>module str-(free)
+  r@ fswd>word   str-(free)
+  r@ fswd>stack  str-(free)
+  r@ fswd>stack  str-(free)
   r>
   free throw
 ;
 
 \ ------------------------------------------------------------------------------
-\ Compare
+\ Word compare
 \ ------------------------------------------------------------------------------
 
-: fswd^ccompare  ( fswd1 fswd2 -- n = Compare two generator words )
+: fswd^word-compare  ( fswd1 fswd2 -- n = Compare two generator words )
   swap fswd>word swap fswd>word str^ccompare
+;
+
+\ ------------------------------------------------------------------------------
+\ Module compare
+\ ------------------------------------------------------------------------------
+
+: fswd^module-compare  ( fswd1 fswd2 -- n = Compare two generator modules )
+  swap fswd>module swap fswd>module str^icompare
 ;
 
 \ ------------------------------------------------------------------------------
@@ -108,6 +130,8 @@ begin-structure fsdg%
   +field   fsdg>input-files
   car%
   +field   fsdg>index
+  car%
+  +field   fsdg>words
 end-structure
 
 
@@ -130,8 +154,12 @@ end-structure
   r@ fsdg>index             car-size!
   512
   r@ fsdg>index             car-extra!           \ Let the array increase faster
-  ['] fswd^ccompare
+  ['] fswd^module-compare
   r@ fsdg>index             car-compare!
+  0
+  r@ fsdg>words             car-init
+  ['] fswd^word-compare
+  r@ fsdg>words             car-compare!
   r>
 ;
 
@@ -141,12 +169,12 @@ end-structure
 
 : fsdg-free  ( fsdg -- = Free the fsdg variable )
   >r
-  r@ fsdg>output-directory  str-(free)
-  r@ fsdg>example-directory str-(free)
+  r@ fsdg>output-directory          str-(free)
+  r@ fsdg>example-directory         str-(free)
   ['] str-free  r@ fsdg>input-files car-execute
-  r@ fsdg>input-files       car-(free)
+  r@ fsdg>input-files               car-(free)
   ['] fswd-free r@ fsdg>index       car-execute
-  r@ fsdg>index             car-(free)
+  r@ fsdg>index                     car-(free)
   r> free throw
 ;
 
@@ -181,20 +209,58 @@ end-structure
 \ Convert the source modules to html files
 \ ------------------------------------------------------------------------------
 
+: fsdg-open-module  ( str fsdg -- fileid fileid = Open a new module )
+  \ XXX: strip the extension and directory name
+  \ XXX: prepend the output directory and html extension
+  \ XXX: create index entry with filename, missing module
+  \ XXX: create the output file
+  \ XXX: open the input file
+  \ XXX: mode = start
+  drop str-get type cr 0 0
+;
+
+: fsdg-read-line ( fileid fsdg -- fswd true | false = Read a line from the module )
+  \ XXX: Read the next line
+  \ XXX: if available
+  \ XXX:   parse the line
+  2drop false
+;
+
+: fsdg-write-line ( fileid fswd fsdg -- = Write a line )
+  \ XXX: Depending the type
+  \ XXX:   generate html
+  \ XXX:   update the index
+  \ XXX:   add in words
+  2drop drop
+;
+
+: fsdg-close-module ( fileid fileid fsdg -- = Close the current module )
+  \ XXX
+  2drop drop
+;
+
 : fsdg-write-module  ( fsdg str -- fsdg = Convert a source module to html )
-  \ XXX: Create output file -> fileid
-  \ XXX: Open the input file -> fileid
-  \ XXX:   Read and scan a line fileid -> fswd
-  \ XXX:   Store filename in fswd str fswd ->
-  \ XXX:   Generate html   fileid fswd ->
-  \ XXX:   Store fswd in fsdg>index
-  \ XXX: Close input file
-  \ XXX: Close output file
+  swap >r
+  r@ fsdg-open-module
+  BEGIN
+    2dup 
+    r@ fsdg-read-line 
+  WHILE
+    r@ fsdg-write-line
+  REPEAT
   drop
+  r@ fsdg-close-module
+  r>
+;
+
+: fsdg-try-write-module ( fsdg str -- fsdg = Try to convert a source module to html )
+  ['] fsdg-write-module catch ?dup IF
+    ." Failed to generate documentation for " swap str-get type ."  reason: " . cr
+  THEN
 ;
 
 : fsdg-write-modules  ( fsdg -- = Convert the source modules to html )
-  ['] fsdg-write-module  over fsdg>input-files  car-execute
+  ['] fsdg-try-write-module  over fsdg>input-files  car-execute
   drop
 ;
 
@@ -202,7 +268,16 @@ end-structure
 \ Write the word index file
 \ ------------------------------------------------------------------------------
 
-: fsdg-write-index  ( fsdg -- = Write the word index file )
+: fsdg-write-index  ( fsdg -- = Write the module index file )
+  \ XXX
+  drop
+;
+
+\ ------------------------------------------------------------------------------
+\ Write the word index file
+\ ------------------------------------------------------------------------------
+
+: fsdg-write-words ( fsdg -- = Write the word index file )
   \ XXX
   drop
 ;
@@ -216,6 +291,7 @@ end-structure
   r@ fsdg-read-arguments
   r@ fsdg-write-modules
   r@ fsdg-write-index
+  r@ fsdg-write-words
   r> fsdg-free
 ;
 
