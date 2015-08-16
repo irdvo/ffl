@@ -261,7 +261,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
       tuck c@ OR
       swap c!
       
-      2over 2over bar-end-address? 0=
+      4dup bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -309,7 +309,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
       swap invert over c@ AND
       swap c!
       
-      2over 2over bar-end-address? 0=
+      4dup bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -356,7 +356,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
       tuck c@ XOR
       swap c!
       
-      2over 2over bar-end-address? 0=
+      4dup bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -395,7 +395,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
         r> 1+ >r             \ increase counter if bit set
       THEN
       
-      2over 2over bar-end-address? 0=
+      4dup bar-end-address? 0=
     WHILE
       bar-next-bit
     REPEAT
@@ -430,7 +430,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     2r> 2r>                         \ restore the stack
     2swap
     
-    2over 2over bar-end-address? 0=
+    4dup bar-end-address? 0=
   WHILE
     bar-next-bit
   REPEAT
@@ -453,7 +453,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
      r> swap                        \ restore the stack, keeping the flag
     2r> rot
     2r> rot
-    >r 2swap 2over 2over bar-end-address? 0= r> tuck 0= AND
+    >r 2swap 4dup bar-end-address? 0= r> tuck 0= AND
   WHILE
     drop
     bar-next-bit

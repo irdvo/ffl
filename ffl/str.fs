@@ -670,7 +670,7 @@ end-structure
     2drop
   ELSE
     over + swap DO                     \ Search the string from offset till end
-      over 2over 2over compare 0= IF   \ If found then
+      over 4dup compare 0= IF          \ If found then
         2drop 2drop
         I UNLOOP EXIT                  \  Return the index
       THEN

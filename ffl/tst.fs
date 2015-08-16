@@ -183,7 +183,7 @@ variable tst-timer
 
 : ?d           ( d1 d2 -- = Check for a signed double on stack )
   tst-depth4? IF
-    2over 2over
+    4dup
     d<> IF 
       tst-report-mismatch
       tst-report-checking d. tst-report-found d. cr
@@ -196,7 +196,7 @@ variable tst-timer
 
 : ?ud          ( ud1 ud2 -- = Check for an unsigned double on stack )
   tst-depth4? IF
-    2over 2over
+    4dup
     d<> IF 
       tst-report-mismatch
       tst-report-checking ud. tst-report-found ud. cr
@@ -274,7 +274,7 @@ variable tst-timer
 
 : ?str         ( c-addr1 u1 c-addr2 u2 -- = Check for a string on the stack )
   tst-depth4? IF
-    2over 2over compare IF
+    4dup compare IF
       tst-report-mismatch
       tst-report-checking type space tst-report-found type cr
     ELSE

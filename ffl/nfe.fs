@@ -276,7 +276,7 @@ end-structure
         ENDOF
       nfs.rparen OF                        \ if ) then
         2dup  nfs-data@ nfe+match@         \   save the match state of this paren
-        2over 2over nip r@ nfe>index @ swap 
+        4dup nip r@ nfe>index @ swap 
         2swap nfs-data@ nfe+match!         \   set the end index 
         2over nfs-out1@ r@ recurse         \   add the out1 state
         2over nfs-data@ nfe+match!         \   restore the match state of this paren

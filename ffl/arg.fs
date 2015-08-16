@@ -391,7 +391,7 @@ end-structure
   dup sni-first                   \ Iterate the option list
   BEGIN                           \ S: c-addr u iter opt
     dup nil<> IF
-      2over 2over nip
+      4dup nip
       arg>opt>long @ str-get arg-compare-long 0=  \ Check for long option in list
     ELSE
       false
