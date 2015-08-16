@@ -303,7 +303,7 @@ end-structure
       tuck 2* 1+
     THEN
   REPEAT
-  2drop drop
+  3drop
   rdrop
 ;
 

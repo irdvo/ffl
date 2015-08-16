@@ -282,7 +282,7 @@ cell 4 = [IF]
     r@ sh1-transform
     /string
   REPEAT
-  r> 2drop 2drop
+  r> 4drop
 ;
 
 

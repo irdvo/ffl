@@ -429,9 +429,9 @@ end-structure
       xis.empty-element OF dom.element  r@ dom-append-node r@ dom-append-attributes r@ dom-parent 2drop ENDOF
       xis.cdata         OF dom.cdata    r@ dom-append-node                          r@ dom-parent 2drop ENDOF
       xis.proc-instr    OF dom.pi       r@ dom-append-node r@ dom-append-attributes               ENDOF
-      xis.internal-dtd  OF 2drop 2drop                                                            ENDOF
-      xis.public-dtd    OF 2drop 2drop 2drop 2drop                                                ENDOF
-      xis.system-dtd    OF 2drop 2drop 2drop                                                      ENDOF
+      xis.internal-dtd  OF 4drop                                                                  ENDOF
+      xis.public-dtd    OF 4drop 4drop                                                            ENDOF
+      xis.system-dtd    OF 4drop 2drop                                                            ENDOF
     ENDCASE
   REPEAT
   rdrop

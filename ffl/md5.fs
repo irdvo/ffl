@@ -338,7 +338,7 @@ decimal
     /string
   REPEAT
   rdrop
-  drop 2drop
+  3drop
 ;
 
 

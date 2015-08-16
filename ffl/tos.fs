@@ -168,7 +168,7 @@ end-structure
         r@ tos>pntr 0!            \       Reset stream pointer
       THEN
     ELSE
-      2drop 2drop
+      4drop
     THEN
   THEN
   rdrop
@@ -283,7 +283,7 @@ end-structure
       pad -rot /string r@ str-append-string              \   Append the remaining
     THEN THEN
   ELSE
-    drop 2drop
+    3drop
     s" !err!" r@ str-append-string
   THEN
   rdrop
@@ -311,7 +311,7 @@ end-structure
     THEN
     
   ELSE
-    drop 2drop
+    3drop
   THEN
   
   rdrop

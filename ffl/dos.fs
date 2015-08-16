@@ -434,7 +434,7 @@ create dos.jump
       THEN
     THEN
   1 chars +LOOP
-  drop 2drop  
+  3drop  
 ;
 
 ' dos-write-format is dos.write-format

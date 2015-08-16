@@ -370,14 +370,14 @@ end-structure
 : arg-compare-long   ( c-addr1 u1 c-addr2 u2 -- flag = Compare two long options )
   rot
   2dup < IF                       \ If option 2 is shorter than option 1 -> not equal
-    2drop 2drop
+    4drop
     false exit
   THEN
   
   tuck > IF                       \ If option 2 is longer than option 1 Then
     2dup chars +
     c@ [char] = <> IF             \   The longer char must be '=' else not equal
-      2drop drop
+      3drop
       false exit
     THEN
   THEN

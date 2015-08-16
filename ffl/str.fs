@@ -306,7 +306,7 @@ end-structure
     swap dup 0> IF                \   If length of move > 0 then
       cmove                       \     Move the data
     ELSE
-      drop 2drop
+      3drop
     THEN
   ELSE
     exp-no-data throw
@@ -418,7 +418,7 @@ end-structure
   rot
   tuck - 1+                  \ Determine the maximum length for full string
   dup 0<= IF
-    2drop 2drop
+    4drop
   ELSE
     >r swap r> bounds DO
       2dup I over compare 0= IF  \ Test all substrings for success ..
@@ -671,14 +671,14 @@ end-structure
   ELSE
     over + swap DO                     \ Search the string from offset till end
       over 4dup compare 0= IF          \ If found then
-        2drop 2drop
+        4drop
         I UNLOOP EXIT                  \  Return the index
       THEN
       drop
       char+
     LOOP
   THEN
-  2drop drop
+  3drop
   -1
 ;
 
@@ -700,7 +700,7 @@ end-structure
     r@ over
     >r str-delete r>              \   Delete the search string
   REPEAT
-  drop 2drop 2drop
+  3drop 2drop
   rdrop
 ;
 
@@ -713,7 +713,7 @@ end-structure
   r>
   
   over 0= IF                      \ If length = 0 Then
-    2drop drop                    \   No substring
+    3drop                         \   No substring
     0
   ELSE                            \ Else
     2dup > IF                     \   If string is longer then the width

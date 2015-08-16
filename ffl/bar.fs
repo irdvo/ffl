@@ -157,7 +157,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
 : bar-end-address?   ( u1 addr1 u2 addr2 -- flag = Has the first address reached the second, end address ? )
   rot
   2dup < IF                  \ first byte address is smaller than the second address
-    2drop 2drop false
+    4drop false
   ELSE
     = IF                     \ first byte address is equal to the second address -> check the mask
       u<=
@@ -265,7 +265,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     WHILE
       bar-next-bit
     REPEAT
-    2drop 2drop
+    4drop
   ELSE
     2drop
   THEN
@@ -313,7 +313,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     WHILE
       bar-next-bit
     REPEAT
-    2drop 2drop
+    4drop
   ELSE
     2drop
   THEN
@@ -360,7 +360,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     WHILE
       bar-next-bit
     REPEAT
-    2drop 2drop
+    4drop
   ELSE
     2drop
   THEN
@@ -399,9 +399,9 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     WHILE
       bar-next-bit
     REPEAT
-    2drop 2drop
+    4drop
   ELSE
-    2drop drop
+    3drop
   THEN
   
   r>
@@ -434,7 +434,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
   WHILE
     bar-next-bit
   REPEAT
-  drop 2drop 2drop
+  3drop 2drop
 ;
 
 
@@ -458,7 +458,7 @@ create bar.mask  255 c, 127 c, 63 c, 31 c, 15 c, 7 c, 3 c, 1 c,
     drop
     bar-next-bit
   REPEAT
-  >r drop 2drop 2drop r>
+  >r 3drop 2drop r>
 ;
 
 

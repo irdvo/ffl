@@ -345,7 +345,7 @@ include ffl/chr.fs
       drop 0                      \ Error, done
     THEN
   REPEAT
-  2drop 2drop
+  4drop
   r>
 ;
 

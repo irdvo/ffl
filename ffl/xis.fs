@@ -283,8 +283,7 @@ end-structure
 : xis+error-tag   ( c-addrn un c-addrn un .. n c-addr1 u1 -- = Clear the stack after an error in a tag )
   2drop
   0 ?DO
-    2drop
-    2drop
+    4drop
   LOOP
 ;
 
@@ -490,7 +489,7 @@ end-structure
 
 : xis+error-dtd      ( i*x n -- = Cleanup stack if DTD is not correct )
   >r
-  2drop 2drop                               \ Drop name and markup
+  4drop                                     \ Drop name and markup
   r@ xis.internal-dtd <> IF
     2drop                                   \ Drop system id
     r@ xis.public-dtd = IF
@@ -602,7 +601,7 @@ end-structure
 
 : xis+remove-attribute-parameters  ( c-addr1 u1 .. c-addrn un n -- = Remove the attributes parameters )
   0 ?DO
-    2drop 2drop
+    4drop
   LOOP
 ;
 
@@ -640,7 +639,7 @@ end-structure
       false
     THEN
   WHILE
-    drop 2drop
+    3drop
   REPEAT
   rdrop
 ;
@@ -658,9 +657,9 @@ end-structure
     xis.empty-element OF  2drop xis+remove-attribute-parameters ENDOF
     xis.cdata         OF  2drop                                 ENDOF
     xis.proc-instr    OF  2drop xis+remove-attribute-parameters ENDOF
-    xis.internal-dtd  OF  2drop 2drop                           ENDOF
-    xis.public-dtd    OF  2drop 2drop 2drop 2drop               ENDOF
-    xis.system-dtd    OF  2drop 2drop 2drop                     ENDOF
+    xis.internal-dtd  OF  4drop                                 ENDOF
+    xis.public-dtd    OF  4drop 4drop                           ENDOF
+    xis.system-dtd    OF  4drop 2drop                           ENDOF
   ENDCASE
 ;
 

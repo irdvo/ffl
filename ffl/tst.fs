@@ -188,7 +188,7 @@ variable tst-timer
       tst-report-mismatch
       tst-report-checking d. tst-report-found d. cr
     ELSE
-      2drop 2drop
+      4drop
     THEN
   THEN
 ;
@@ -201,7 +201,7 @@ variable tst-timer
       tst-report-mismatch
       tst-report-checking ud. tst-report-found ud. cr
     ELSE
-      2drop 2drop
+      4drop
     THEN
   THEN
 ;
@@ -278,7 +278,7 @@ variable tst-timer
       tst-report-mismatch
       tst-report-checking type space tst-report-found type cr
     ELSE
-      2drop 2drop
+      4drop
     THEN
   THEN
 ;

@@ -362,7 +362,7 @@ end-structure
     >r cmove r>
     swap
   ELSE
-    2drop drop                         \ no success: clear the stack ToDo: exception ??
+    3drop                              \ no success: clear the stack ToDo: exception ??
     false
   THEN
 ;

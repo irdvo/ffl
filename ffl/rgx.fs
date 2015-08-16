@@ -186,7 +186,7 @@ end-structure
         swap chs-set-chars
         r@ rgx-scan-incr
       ELSE
-        2drop drop
+        3drop
       THEN
     ELSE
       2drop

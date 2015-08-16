@@ -99,7 +99,7 @@ hnt% constant msc%    ( -- n = Get the required space for a message catalog )
   2dup r@ hnt-search              \ Search for the key in the table
   nil<>? IF                       \ If already in hash table Then
     >r
-    drop 2drop                    \   Drop hash and key
+    3drop                         \   Drop hash and key
     dup r@ msc>msg>length @ > IF  \   If new translation is longer previous Then
       r@ msc>msg>text @ 
       over resize throw           \     Resize the text

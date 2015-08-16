@@ -163,7 +163,7 @@ spf.space-sign spf.plus-sign OR spf.minus-sign OR
 [ELSE]
 : spf-scientific   ( F: r  n1 n2 char str -- = Convert r using flags n1 and width n2 using char to a string )
   ." spf: %e is not supported" cr
-  2drop 2drop
+  4drop
 ;
 [THEN]
 

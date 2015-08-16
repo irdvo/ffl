@@ -189,7 +189,7 @@ end-stringtable
 
     ['] log-rolling is log.appender
   ELSE                           \ File could not be opened -> use the console appender
-    drop 2drop 2drop
+    3drop 2drop
     ['] log-console is log.appender
   THEN
 ;
@@ -216,7 +216,7 @@ end-stringtable
 
 : (do-log)         ( c-addr u n -- = Log the message c-addr u with event n to the current appender )
   dup log.level < IF
-    drop 2drop
+    3drop
   ELSE
     log.msg tos-rewrite                  \ Format the message
 
@@ -300,7 +300,7 @@ end-stringtable
 
 : do-log           ( c-addr u n -- = Log the message c-addr u with event n )
   dup log.level < IF
-    drop 2drop
+    3drop
   ELSE
     state @ IF
       -rot

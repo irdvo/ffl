@@ -62,41 +62,6 @@
 [THEN]
 
 
-[UNDEFINED] 2nip [IF]
-: 2nip    ( x1 x2 x3 x4 -- x3 x4  = Drop the third and fourth cell on stack )
-  2swap 2drop
-;
-[THEN]
-
-
-[UNDEFINED] shove [IF]
-: shove   ( x1 x2 -- x2 x2 x1 = Shove the two cells on stack )
-  dup rot
-;
-[THEN]
-
-
-[UNDEFINED] udup [IF]
-: udup   ( x1 x2 -- x1 x1 x2 = Duplicate second cell on stack )
-  over swap
-;
-[THEN]
-
-
-[UNDEFINED] third [IF]
-: third  ( x1 x2 x3 -- x1 x2 x3 x1 = Duplicate the third cell on stack )
-  2 pick
-;
-[THEN]
-
-
-[UNDEFINED] fourth [IF]
-: fourth ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 = Duplicatie the fourth cell on stack )
-  3 pick
-;
-[THEN]
-
-
 [UNDEFINED] lroll [IF]
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
   2dup lshift >r
