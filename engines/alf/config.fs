@@ -68,117 +68,6 @@ ffl.endian c@ 0=
 -1 constant max-ms@   ( - u = Maximum value of the milliseconds timer )
 
 
-: lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-
-: 0!               ( w - = Set zero in address )
-  0 swap !
-;
-
-
-: u<=              ( u u - f = Check for smaller and equal )
-  u> 0=
-;
-
-
-: 0>=              ( n - f = Check for equal and greater zero )
-  0< 0=
-;
-
-
-: 0<=
-  0> 0=
-;
-
-
-: >=               ( n n - f = Check for greater equal )
-  < 0=
-;
-
-
-: <=               ( n n - f = Check for smaller equal )
-  > 0=
-;
-
-
-: d<>              ( d d - f = Check if two two double are unequal )
-  d= 0=
-;
-
-
-0 constant nil     ( - w = Nil )
-
-
-: nil!             ( w - = Set nil in address )
-  nil swap !
-;
-
-
-: nil=             ( w - f = Check for nil )
-  nil =
-;
-
-
-: nil<>            ( w - f = Check for unequal to nil )
-  nil <>
-;
-
-
-: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-
-
-: 1+!              ( w - = Increase contents of address by 1 )
-  1 swap +!
-;
-
-
-: 1-!              ( w - = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!               ( w a - w = First fetch the contents and then store the new value )
-  dup @ -rot !
-;
-
-
-: ud.
-  <# #s #> type
-;
-
-
-: sgn              ( n - n = Determine the sign of the number )
-  -1 max 1 min
-;
-
-
-: <=>              ( n n - n = Compare two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-      
-: index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
 [DEFINED] float [IF]
 
 ( Float extension constants )
@@ -201,15 +90,6 @@ ffl.endian c@ 0=
   fover fover
 ;
 
-
-: ftuck
-  fswap fover
-;
-
-: f=
-  f- f0=
-;
-
 [THEN]
 
 
@@ -225,6 +105,10 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [THEN]
 

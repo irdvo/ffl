@@ -87,6 +87,55 @@
 [THEN]
 
 
+[UNDEFINED] u<> [IF]
+: u<>              ( u u - f = Check for not equal )
+  <>
+;
+[THEN]
+
+
+[UNDEFINED] u<= [IF]
+: u<=              ( u u - f = Check for smaller and equal )
+  u> 0=
+;
+[THEN]
+
+
+[UNDEFINED] 0>= [IF]
+: 0>=              ( n - f = Check for equal and greater zero )
+  0< 0=
+;
+[THEN]
+
+
+[UNDEFINED] 0<= [IF]
+: 0<=
+  0> 0=
+;
+[THEN]
+
+
+[UNDEFINED] >= [IF]
+: >=               ( n n - f = Check for greater equal )
+  < 0=
+;
+[THEN]
+
+
+[UNDEFINED] <= [IF]
+: <=               ( n n - f = Check for smaller equal )
+  > 0=
+;
+[THEN]
+
+
+[UNDEFINED] 0! [IF]
+: d<>              ( d d - f = Check if two two double are unequal )
+  d= 0=
+;
+[THEN]
+
+
 [UNDEFINED] nil [IF]
 
 0 CONSTANT nil
@@ -188,6 +237,20 @@
 [THEN]
 
 
+[UNDEFINED] ud. [IF]
+: ud.              ( ud -- = Type the unsigned double number )
+  <# #s #> type
+;
+[THEN]
+
+
+[UNDEFINED] sgn [IF]
+: sgn              ( n1 - n2 = Determine the sign of the number )
+  -1 max 1 min
+;
+[THEN]
+
+
 [UNDEFINED] <=> [IF]
 : <=>   ( n1 n2 -- n = Compare the two numbers and return the compare result [-1,0,1] )
   2dup = IF 
@@ -199,7 +262,6 @@
 
 
 [UNDEFINED] index2offset [IF]
-
 : index2offset   ( n1 n2 -- n3 = Convert the index n1 range [-n2..n2> into offset n3 range [0..n2>, negative values of n1 downward length n2 )
   over 0< IF
     +
@@ -231,6 +293,20 @@
 [UNDEFINED] f2dup [IF]
 : f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
+;
+[THEN]
+
+
+[UNDEFINED] ftuck [IF]
+: ftuck
+  fswap fover
+;
+[THEN]
+
+
+[UNDEFINED] f= [IF]
+: f=
+  f- f0=
 ;
 [THEN]
 

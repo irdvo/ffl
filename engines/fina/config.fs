@@ -29,41 +29,34 @@
 \ ==============================================================================
 
 
-( Extension words )
-
-
 char " parse ffl.version" forth-wordlist search-wordlist 0= [IF]
-
-require timer.fs
-
-: s" [char] " parse state @ if postpone sliteral else here >r s, r> count then ; immediate
-
-: [DEFINED]
- bl word find   nip
-; immediate
-
-
-: [UNDEFINED]
- bl word find   nip 0=
-; immediate
-
-1 cells constant cell
-
-: u<=  u> 0= ;
-: 0>=  0< 0= ;
-: >= < 0= ;
-: d<> d= 0= ;
-: ud. <# #s #> type space ;
-
-: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  -1 max 1 min
-;
 
 ( config = Forth system specific words )
 ( The config module contains the extension and missing words for a forth system.)
 
-
 000900 constant ffl.version
+
+require timer.fs
+
+: s" 
+  [char] " parse state @ if 
+    postpone sliteral 
+  else 
+    here >r s, r> count 
+  then 
+; immediate
+
+
+: [DEFINED]
+  bl word find   nip
+; immediate
+
+
+: [UNDEFINED]
+  bl word find   nip 0=
+; immediate
+
+1 cells constant cell
 
 
 ( Private words )
@@ -110,97 +103,6 @@ s" MAX-U" environment? drop constant max-ms@  ( -- u = Max val of the millisecon
 [THEN]
 
 
-: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
- 2dup lshift >r
- #bits/cell swap - rshift r>
- or
-;
-
-
-: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
-
-: 0!               ( a-addr -- = Set zero in address )
- 0 swap !
-;
-
-
-0 constant nil     ( -- addr = Nil constant )
-
-: nil!             ( a-addr -- = Set nil in address )
- nil swap !
-;
-
-
-: nil=             ( addr -- flag = Check for nil )
- nil =
-;
-
-
-: nil<>            ( addr -- flag = Check for unequal to nil )
- nil <>
-;
-
-
-: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-
-
-: ?free            ( addr -- wior = Free the address if not nil )
-  dup nil<> IF
-    free 
-  ELSE
-    drop 0
-  THEN
-;
-
-
-: 1+!              ( a-addr -- = Increase contents of address by 1 )
- 1 swap +!
-;
-
-
-: 1-!              ( a-addr -- = Decrease contents of address by 1 )
- -1 swap +!
-;
-
-
-: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
- dup @ -rot !
-;
-
-
-: <=>              ( n1 n2 -- n3 = Compare two numbers and return the compare result [-1,0,1] )
- 2dup = IF
-   2drop 0 EXIT
- THEN
- < 2* 1+
-;
-
-\ ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
-: index2offset
- over 0< IF
-   +
- ELSE
-   drop
- THEN
-;
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
-
-
 ( Exceptions )
 
 variable exp-next  -2050 exp-next !
@@ -222,6 +124,12 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
+
+( Toolbelt )
+
+include ffl/tlb.fs
+
 
 [ELSE]
  drop
