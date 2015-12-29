@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dos  --  Datetime output stream </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>dos  --  Datetime output stream </dt>
+<dd>
+The dos module implements a date and time formatter. It is built upon the  
+tos structure, so all words write to the tos stream. If the tos structure  
+contains a message catalog, it is used for localization of times, dates    
+and names. The format word uses most of the same conversion characters as  
+the strftime c-function:                                                   
+<pre>                                                                      
+%a - the abbreviated weekday name using the streams catalog for locale     
+%A - the full weekday name using the streams catalog for locale            
+%b - the abbreviated month name using the streams catalog for locale       
+%B - the full month name using the streams catalog for locale              
+%c - the preferred date and time using the streams catalog for locale      
+%C - the century number as a 2-digit integer                               
+%d - the day of the month as a decimal number: 00..31                      
+%D - equivalent to %m/%d/%y -- for Americans                               
+%e - like %d, the day of the month as a decimal number with leading space  
+%F - equivalent to %Y-%m-%d, the ISO 8601 date format                      
+%h - equivalent to %b                                                      
+%H - the hour as a decimal number using a 24-hour clock: 00..23            
+%I - the hour as a decimal number using a 12-hour clock: 01..12            
+%j - the day of the year as a decimal number: 001..366                     
+%k - the hour, 24-hour clock, as a decimal number: 0..23, leading space    
+%l - the hour, 12-hour clock, as a decimal number: 1..12, leading space    
+%m - the month as a decimal number: 01..12                                 
+%M - the minute as a decimal number: 00..59                                
+%p - either 'AM' or 'PM' according to the given time value with locale     
+%P - like %p but in lowercase: 'am' with locale                            
+%r - the time in a.m. or p.m. notation, '%I:%M:%S %p'                      
+%R - the time in 24-hour notation, %H:%M                                   
+%s - the number of seconds since the 1970-01-01 00:00:00                   
+%S - the second as a decimal number: 00..60                                
+%T - the time in 24-hour notation, %H:%M:%S                                
+%V - the ISO 8601 week number as a decimal number: 01..53                  
+%w - the day of the week as a decimal, range 0 to 6, Sunday being 0        
+%x - the preferred date using the streams catalog for locale               
+%X - the preferred time using the streams catalog for locale               
+%y - the year as a decimal number without a century: 00..99                
+%Y - the year as a decimal number including the century                    
+%% - the character %                                                       
+</pre> 
+</dd>
+</dl>
+<hr>
+<h2>Date and time writing words </h2>
+<dl>
+<dt id='dos-write-abbr-weekday-name'>dos-write-abbr-weekday-name (  dtm tos --  )</dt>
+<dd> Write the abbreviated weekday name, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-weekday-name'>dos-write-weekday-name (  dtm tos --  )</dt>
+<dd> Write the full weekday name, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-abbr-month-name'>dos-write-abbr-month-name (  dtm tos --  )</dt>
+<dd> Write the abbreviated month name, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-month-name'>dos-write-month-name (  dtm tos --  )</dt>
+<dd> Write the full month name, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-date-time'>dos-write-date-time (  dtm tos --  )</dt>
+<dd> Write the preferred time and date using the streams catalog for the locale, else yyyy/mm/dd hh:mm:ss</dd>
+</dl>
+<dl>
+<dt id='dos-write-century'>dos-write-century (  dtm tos --  )</dt>
+<dd> Write the century number </dd>
+</dl>
+<dl>
+<dt id='dos-write-monthday'>dos-write-monthday (  dtm tos --  )</dt>
+<dd> Write the day of the month: 01..31</dd>
+</dl>
+<dl>
+<dt id='dos-write-american-date'>dos-write-american-date (  dtm tos --  )</dt>
+<dd> Write the date in mm/dd/yy format </dd>
+</dl>
+<dl>
+<dt id='dos-write-spaced-monthday'>dos-write-spaced-monthday (  dtm tos --  )</dt>
+<dd> Write the day of the month,  1..31, space padded</dd>
+</dl>
+<dl>
+<dt id='dos-write-iso8601-date'>dos-write-iso8601-date (  dtm tos --  )</dt>
+<dd> Write the date in ISO 8601 format: yyyy-mm-dd </dd>
+</dl>
+<dl>
+<dt id='dos-write-24hour'>dos-write-24hour (  dtm tos --  )</dt>
+<dd> Write the hour using a 24-hour clock: 00..23 </dd>
+</dl>
+<dl>
+<dt id='dos-write-12hour'>dos-write-12hour (  dtm tos --  )</dt>
+<dd> Write the hour using a 12-hour clock: 01..12 </dd>
+</dl>
+<dl>
+<dt id='dos-write-yearday'>dos-write-yearday (  dtm tos --  )</dt>
+<dd> Write the day of the year: 001..366 </dd>
+</dl>
+<dl>
+<dt id='dos-write-spaced-24hour'>dos-write-spaced-24hour (  dtm tos --  )</dt>
+<dd> Write the hour using a 24-hour clock:  0..23, space padded </dd>
+</dl>
+<dl>
+<dt id='dos-write-spaced-12hour'>dos-write-spaced-12hour (  dtm tos --  )</dt>
+<dd> Write the hour using a 12-hour clock:  1..12, space padded </dd>
+</dl>
+<dl>
+<dt id='dos-write-month'>dos-write-month (  dtm tos --  )</dt>
+<dd> Write the month: 01..12</dd>
+</dl>
+<dl>
+<dt id='dos-write-minute'>dos-write-minute (  dtm tos --  )</dt>
+<dd> Write the minute: 00..59</dd>
+</dl>
+<dl>
+<dt id='dos-write-ampm'>dos-write-ampm (  dtm tos --  )</dt>
+<dd> Write the am or pm notation, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-upper-ampm'>dos-write-upper-ampm (  dtm tos --  )</dt>
+<dd> Write the AM or PM notation, using the streams catalog for locale </dd>
+</dl>
+<dl>
+<dt id='dos-write-ampm-time'>dos-write-ampm-time (  dtm tos --  )</dt>
+<dd> Write the time in ampm notation: hh:mm:ss ?m, using the streams catalog for locale</dd>
+</dl>
+<dl>
+<dt id='dos-write-hhmm-time'>dos-write-hhmm-time (  dtm tos --  )</dt>
+<dd> Write the time: hh:mm</dd>
+</dl>
+<dl>
+<dt id='dos-write-seconds-since-epoch'>dos-write-seconds-since-epoch (  dtm tos --  )</dt>
+<dd> Write the number of seconds since 1970-01-01 00:00:00</dd>
+</dl>
+<dl>
+<dt id='dos-write-seconds'>dos-write-seconds (  dtm tos --  )</dt>
+<dd> Write the number of seconds: 00..61</dd>
+</dl>
+<dl>
+<dt id='dos-write-hhmmss-time'>dos-write-hhmmss-time (  dtm tos --  )</dt>
+<dd> Write the time: hh:mm:ss</dd>
+</dl>
+<dl>
+<dt id='dos-write-weekday'>dos-write-weekday (  dtm tos -- = Write the weekday: 0..6, 0  )</dt>
+<dd> sunday </dd>
+</dl>
+<dl>
+<dt id='dos-write-week-number'>dos-write-week-number (  dtm tos --  )</dt>
+<dd> Write the week number: 01..53 </dd>
+</dl>
+<dl>
+<dt id='dos-write-date'>dos-write-date (  dtm tos --  )</dt>
+<dd> Write the preferred date using the streams catalog for the locale, else yyyy/mm/dd </dd>
+</dl>
+<dl>
+<dt id='dos-write-time'>dos-write-time (  dtm tos --  )</dt>
+<dd> Write the preferred time using the stream catalog for the locale, else hh:mm:ss </dd>
+</dl>
+<dl>
+<dt id='dos-write-2year'>dos-write-2year (  dtm tos --  )</dt>
+<dd> Write the year without the century: 00..99</dd>
+</dl>
+<dl>
+<dt id='dos-write-year'>dos-write-year (  dtm tos --  )</dt>
+<dd> Write the year including the century </dd>
+</dl>
+<h2>Date and time formatting word </h2>
+<dl>
+<dt id='dos-write-format'>dos-write-format (  dtm c-addr u tos --  )</dt>
+<dd> Write date and time info with the format string c-addr u in the stream tos </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          dos_expl - the date output stream example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2007-11-22 19:15:25 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/dos.fs
+include ffl/gmo.fs
+
+
+
+\ Example 1: Format the output with words
+
+\ Create the date and output stream in the dictionary
+
+dtm-create dtm1
+tos-create tos1
+
+\ Set the date with 22 november 2007 15:00:59
+
+0 59 00 15 22 dtm.may 2007 dtm1 dtm-set
+
+\ Format the output stream
+
+dtm1 tos1 dos-write-date-time
+
+tos1 str-get type cr                 \ Shows: 2007/05/22 15:00:59
+
+tos1 tos-rewrite                     \ Clean the stream
+
+dtm1 tos1 dos-write-weekday-name
+
+tos1 str-get type cr                 \ Shows: Tuesday
+
+
+
+\ Example 2: Format the output with a string format
+
+tos1 tos-rewrite
+
+dtm1 s" %a %b %e %H:%M:%S %Y" tos1 dos-write-format
+
+tos1 str-get type cr                 \ Shows: Tue May 22 15:00:59 2007
+
+
+
+\ Example 3: Use a message catalog for localisation of dates
+
+msc-create en&gt;nl                     \ Create the message catalog
+
+s" nl.mo" en&gt;nl gmo-read throw       \ Import the nl.mo file in the catalog
+
+en&gt;nl tos1 tos-msc!                  \ Let the ouput stream use the message catalog
+
+
+tos1 tos-rewrite                     \ Clear the output stream
+
+dtm1 s" %a %b %e %H:%M:%S %Y" tos1 dos-write-format
+
+tos1 str-get type cr                 \ Shows: din mei 22 15:00:59 2007 (dutch)
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

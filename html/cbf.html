@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>cbf  --  Circular buffer module </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>cbf  --  Circular buffer module </dt>
+<dd>
+The cbf module implements a circular buffer with variable elements.        
+During adding of extra data, the buffer will be resized. The cbf-access!   
+word expects two execution tokens on the stack: store with stack effect:   
+i*x addr --  and fetch: addr -- i*x. Those two words are used to store     
+data in the buffer and fetch data from the buffer. Their behavior should   
+match the size of the elements in the buffer.                              
+Important: the cbf-get and cbf-fetch copy data from the buffer to the      
+destination address. This is different from the linear buffer [lbf]        
+implementation: the lbf-get and lbf-fetch return addresses located         
+in the buffer.                                                             
+</dd>
+</dl>
+<hr>
+<h2>Circular Buffer Structure </h2>
+<dl>
+<dt id='cbf%'>cbf% (  -- n  )</dt>
+<dd> Get the required space for a cbf variable </dd>
+</dl>
+<h2>Buffer creation, initialisation and destruction </h2>
+<dl>
+<dt id='cbf-init'>cbf-init (  +n1 +n2 cbf --  )</dt>
+<dd> Initialise the buffer with element size n1 and initial length n2 </dd>
+</dl>
+<dl>
+<dt id='cbf-(free)'>cbf-(free) (  cbf --  )</dt>
+<dd> Free the internal data from the heap </dd>
+</dl>
+<dl>
+<dt id='cbf-create'>cbf-create (  +n1 +n2 "&lt;spaces&gt;name" -- ; -- cbf  )</dt>
+<dd> Create a circular buffer in the dictionary with element size n1 and initial length n2 </dd>
+</dl>
+<dl>
+<dt id='cbf-new'>cbf-new (  +n1 +n2 -- cbf  )</dt>
+<dd> Create a circular buffer with element size n1 and initial length n2 on the heap </dd>
+</dl>
+<dl>
+<dt id='cbf-free'>cbf-free (  cbf --  )</dt>
+<dd> Free the circular buffer from the heap </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='cbf-length@'>cbf-length@ (  cbf -- u  )</dt>
+<dd> Get the number of elements in the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf-extra@'>cbf-extra@ (  cbf -- u  )</dt>
+<dd> Get the number of extra elements allocated during resizing of the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf-extra!'>cbf-extra! (  u cbf --  )</dt>
+<dd> Set the number of extra elements allocated during resizing of the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf-size!'>cbf-size! (  +n cbf --  )</dt>
+<dd> Insure the size of the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf+extra@'>cbf+extra@ (  -- u  )</dt>
+<dd> Get the initial number of extra elements allocated during resizing of the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf+extra!'>cbf+extra! (  u --  )</dt>
+<dd> Set the initial number of extra elements allocated during resizing of the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf-access@'>cbf-access@ (  cbf -- xt1 xt2  )</dt>
+<dd> Get the store word xt1 and the fetch word xt2 for the buffer </dd>
+</dl>
+<dl>
+<dt id='cbf-access!'>cbf-access! (  xt1 xt2 cbf --  )</dt>
+<dd> Set the store word xt1 and the fetch word x2 for the buffer </dd>
+</dl>
+<h2>Lifo words </h2>
+<dl>
+<dt id='cbf-set'>cbf-set (  addr u cbf --  )</dt>
+<dd> Set u elements, starting from addr in the buffer, resize if necessary </dd>
+</dl>
+<dl>
+<dt id='cbf-fetch'>cbf-fetch (  addr u1 cbf -- u2  )</dt>
+<dd> Fetch maximum u1 elements from the buffer in addr, return the actual number of elements u2 </dd>
+</dl>
+<dl>
+<dt id='cbf-get'>cbf-get (  addr u1 cbf -- u2  )</dt>
+<dd> Get maximum u1 elements from the buffer in addr, return the actual number of elements u2 </dd>
+</dl>
+<dl>
+<dt id='cbf-skip'>cbf-skip (  +n1 cbf -- +n2  )</dt>
+<dd> Skip maximum u1 elements from the buffer, return the actual skipped elements u2 </dd>
+</dl>
+<dl>
+<dt id='cbf-enqueue'>cbf-enqueue (  i*x | addr cbf --  )</dt>
+<dd> Enqueue one element in the buffer, optional using the store word </dd>
+</dl>
+<dl>
+<dt id='cbf-dequeue'>cbf-dequeue (  cbf -- i*x | addr true | false  )</dt>
+<dd> Dequeue one element from the buffer, optional using the fetch word </dd>
+</dl>
+<h2>Fifo words </h2>
+<dl>
+<dt id='cbf-tos'>cbf-tos (  cbf -- i*x | addr true | false  )</dt>
+<dd> Fetch the top element, optional using the fetch word </dd>
+</dl>
+<dl>
+<dt id='cbf-push'>cbf-push (  i*x | addr cbf --  )</dt>
+<dd> Push one element in the buffer, optional using the store word </dd>
+</dl>
+<dl>
+<dt id='cbf-pop'>cbf-pop (  cbf -- i*x | addr true | false  )</dt>
+<dd> Pop one element from the buffer, optional using the fetch word </dd>
+</dl>
+<h2>Buffer words </h2>
+<dl>
+<dt id='cbf-clear'>cbf-clear (  cbf --  )</dt>
+<dd> Clear the buffer </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='cbf-dump'>cbf-dump (  cbf --  )</dt>
+<dd> Dump the circular buffer variable </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\      cbf_expl - the example file for the cbf module in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-06-24 18:18:58 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/cbf.fs
+
+
+\ Example 1: buffering characters strings
+
+
+\ Create the circulair buffer in the dictionary with an initial size of 10 chars
+
+1 chars 10 cbf-create char-buf
+
+
+\ Put characters in the buffer
+
+s" Hello" char-buf cbf-set
+
+\ Get the length of the stored characters
+
+.( Number characters in buffer:) char-buf cbf-length@ . cr
+
+\ Put more characters in the buffer, resulting in a resize of the buffer
+
+s" , a nice morning to you." char-buf cbf-set
+
+
+\ Get characters from the buffer
+
+.( Read the buffer:) pad 29 char-buf cbf-get pad swap type cr
+
+
+
+\ Example 2: buffering compound data: pair of cells as element
+
+
+\ Create the circulair buffer on the heap with an initial size of 3 elements
+
+2 cells 3 cbf-new value xy-buf
+
+
+\ Set the store and fetch words for the buffer
+
+&apos; 2! &apos; 2@ xy-buf cbf-access!
+
+
+\ Use the buffer as fifo buffer, using the store and fetch words
+
+1 2 xy-buf cbf-enqueue
+3 4 xy-buf cbf-enqueue
+5 6 xy-buf cbf-enqueue
+7 8 xy-buf cbf-enqueue       \ Buffer is resized
+
+\ Get the length of the stored elements in the buffer
+
+.( Number elements in buffer:) xy-buf cbf-length@ . cr
+
+\ Get first element from buffer
+
+.( First pair in buffer:) xy-buf cbf-dequeue [IF]
+  .  . cr
+[ELSE]
+  .(  nothing in buffer) cr
+[THEN]
+
+
+\ Use the buffer as lifo buffer, using the store and fetch words
+
+\ Get last pair from buffer
+
+.( Last pair in buffer:) xy-buf cbf-pop [IF]
+  . . cr
+[ELSE]
+  .(  nothing in buffer) cr
+[THEN]
+
+\ Free the buffer from the heap
+
+xy-buf cbf-free
+
+\ ==============================================================================
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>spf  --  Sprintf string formatter </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>spf  --  Sprintf string formatter </dt>
+<dd>
+The spf module implements a simplified version of C's sprintf function.    
+The words in this module expect a format string with specifiers &lb;see    
+below for the format&rb;. For every specifier &lb;except %% and %n&rb; a   
+stack item is converted to the character representation and added to the   
+destination. All other characters are simply copied to the destination.    
+The float conversion uses the PRECISION value for precision.               
+<pre>                                                                      
+Format: %[flags][width][length]specifier                                   
+    Flags: 0      = Left-pads the number with zeros instead of spaces      
+           -      = Left justify the number                                
+           +      = A positive number is preceded with a '+'               
+           space  = A positive number is preceded with a space             
+    Width: number = the minimum number of characters written               
+   Double: l      = the argument is interpreted as a double                
+Specifier: c      = format a character [char]                              
+           d      = format a signed number [n or d]                        
+           i      = format a signed number [n or d]                        
+           o      = format a signed octal [n or d]                         
+           s      = format a string [c-addr u]                             
+           u      = format a unsigned number [u or ud]                     
+           x      = format a unsigned hexadecimal number [u or ud]         
+           X      = format a unsigned hexadecimal number, capital letters  
+           p      = format a unsigned hexadecimal number [u or ud]         
+           e      = format a float number in scientific notation [r]       
+           E      = format a float number in scientific notation [r]       
+           n      = store the length of the string in [addr]               
+           q      = format a quoted string &lb;non sprintf&rb; [c-addr u]  
+           %      = write a '%' []                                         
+</pre>                                                                     
+</dd>
+</dl>
+<hr>
+<h2>Sprintf words </h2>
+<dl>
+<dt id='spf-append'>spf-append (  i*x j*r c-addr u str -- k*x l*r  )</dt>
+<dd> Convert the arguments i*x with the format string c-addr u and append the result to str </dd>
+</dl>
+<dl>
+<dt id='spf-set'>spf-set (  i*x j*r c-addr u str --  )</dt>
+<dd> Convert the arguments i*x with the format string c-addr u and set the result in str</dd>
+</dl>
+<dl>
+<dt id='spf"'>spf" (  "ccc&lt;quote&gt;" i*x j*r str --  )</dt>
+<dd> Convert the arguments i*x with the format string and set the result in str </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\              spf_expl - the sprintf example in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-09-22 18:46:53 $ $Revision: 1.2 $
+\
+\ ==============================================================================
+
+include ffl/spf.fs
+
+str-new value spf1                                     \ Create string as destination
+
+.( Format numbers                       : ) 
+[DEFINED] represent [IF]
+18E+0 15 15 10 8 1 s" %d %u %o %x %X %E" spf1 spf-set  \ Format the numbers
+[ELSE]
+      15 15 10 8 1 s" %d %u %o %x %X"    spf1 spf-set  \ Format the numbers
+[THEN]
+
+spf1 str-get type cr                                   \ Print the result
+
+.( Format strings and characters        : )
+char ! s" Hello" s" %s %c" spf1 spf-set                \ Format strings and characters
+
+spf1 str-get type cr                                   \ Print result
+
+.( Format numbers with signs            : )
+-30 20 10 s" %+d % d %d" spf1 spf-set                  \ Format numbers with signs
+
+spf1 str-get type cr                                   \ Print result
+
+.( Leading and trailing zeros and spaces: )
+-40 -30 20 10 s" %5d %-+5d %05d %5d" spf1 spf-set      \ Format numbers with leading and trailing spaces
+
+spf1 str-get type cr
+
+.( Format with parsing word             : )
+time&amp;date spf1 spf" %04d-%02d-%2d %02d:%02d:%02d"      \ Format date &amp; time
+
+spf1 str-get type cr                                   \ Print result
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

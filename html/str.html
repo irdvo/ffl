@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>str  --  Dynamic text string </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>str  --  Dynamic text string </dt>
+<dd>
+The str module implements a dynamic text string. 
+</dd>
+</dl>
+<hr>
+<h2>String structure </h2>
+<dl>
+<dt id='str%'>str% (  -- n  )</dt>
+<dd> Get the required space for a str variable </dd>
+</dl>
+<h2>String creation, initialisation and destruction </h2>
+<dl>
+<dt id='str-init'>str-init (  str --  )</dt>
+<dd> Initialise to an empty string </dd>
+</dl>
+<dl>
+<dt id='str-(free)'>str-(free) (  str --  )</dt>
+<dd> Free the string data from the heap </dd>
+</dl>
+<dl>
+<dt id='str-create'>str-create (  "&lt;spaces&gt;name" -- ; -- str  )</dt>
+<dd> Create a named empty string in the dictionary </dd>
+</dl>
+<dl>
+<dt id='str-new'>str-new (  -- str  )</dt>
+<dd> Create a new empty string on the heap </dd>
+</dl>
+<dl>
+<dt id='str-free'>str-free (  str --  )</dt>
+<dd> Free the string from the heap </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='str-empty?'>str-empty? (  str -- flag  )</dt>
+<dd> Check for an empty string </dd>
+</dl>
+<dl>
+<dt id='str-length@'>str-length@ (  str -- u  )</dt>
+<dd> Get the length of the string </dd>
+</dl>
+<dl>
+<dt id='str-length!'>str-length! (  u str --  )</dt>
+<dd> Set the length of the string </dd>
+</dl>
+<dl>
+<dt id='str-index?'>str-index? (  n str -- flag  )</dt>
+<dd> Check if the index n is valid in the string </dd>
+</dl>
+<dl>
+<dt id='str-data@'>str-data@ (  str -- c-addr  )</dt>
+<dd> Get the start of the string </dd>
+</dl>
+<dl>
+<dt id='str-size!'>str-size! (  u str --  )</dt>
+<dd> Insure the size u of the string </dd>
+</dl>
+<dl>
+<dt id='str-extra@'>str-extra@ (  str -- u  )</dt>
+<dd> Get the extra space allocated during resizing of the string </dd>
+</dl>
+<dl>
+<dt id='str-extra!'>str-extra! (  u str --  )</dt>
+<dd> Set the extra space allocated during resizing of the string </dd>
+</dl>
+<dl>
+<dt id='str+extra@'>str+extra@ (  -- u  )</dt>
+<dd> Get the initial extra space allocated during resizing of the string </dd>
+</dl>
+<dl>
+<dt id='str+extra!'>str+extra! (  u --  )</dt>
+<dd> Set the initial extra space allocated during resizing of the string </dd>
+</dl>
+<h2>Set words </h2>
+<dl>
+<dt id='str-clear'>str-clear (  str --  )</dt>
+<dd> Clear the string </dd>
+</dl>
+<dl>
+<dt id='str-set'>str-set (  c-addr u str --  )</dt>
+<dd> Set the string c-addr u in the string </dd>
+</dl>
+<dl>
+<dt id='str-append-string'>str-append-string (  c-addr u str --  )</dt>
+<dd> Append the string c-addr u to the string </dd>
+</dl>
+<dl>
+<dt id='str-prepend-string'>str-prepend-string (  c-addr u str --  )</dt>
+<dd> Prepend the string c-addr u to the string </dd>
+</dl>
+<dl>
+<dt id='str-append-chars'>str-append-chars (  char u str --  )</dt>
+<dd> Append u chars in the string </dd>
+</dl>
+<dl>
+<dt id='str-prepend-chars'>str-prepend-chars (  char u str --  )</dt>
+<dd> Prepend u chars in the string </dd>
+</dl>
+<dl>
+<dt id='str-insert-string'>str-insert-string (  c-addr u n str --  )</dt>
+<dd> Insert the string c-addr in the string at index n </dd>
+</dl>
+<dl>
+<dt id='str-insert-chars'>str-insert-chars (  char u n str --  )</dt>
+<dd> Insert u chars in the string at index n </dd>
+</dl>
+<h2>Get words </h2>
+<dl>
+<dt id='str-get-substring'>str-get-substring (  u n str -- c-addr u  )</dt>
+<dd> Get a substring starting from index n,  u characters long </dd>
+</dl>
+<dl>
+<dt id='str-get'>str-get (  str -- c-addr u  )</dt>
+<dd> Get the string in the string </dd>
+</dl>
+<dl>
+<dt id='str-bounds'>str-bounds (  str -- c-addr+u c-addr  )</dt>
+<dd> Get the bounds of the string </dd>
+</dl>
+<h2>Delete word </h2>
+<dl>
+<dt id='str-delete'>str-delete (  u n str --  )</dt>
+<dd> Delete a substring starting at index n with length u from the string </dd>
+</dl>
+<h2>Zero terminated string words </h2>
+<dl>
+<dt id='str-set-zstring'>str-set-zstring (  c-addr str --  )</dt>
+<dd> Set a zero terminated string in the string </dd>
+</dl>
+<dl>
+<dt id='str-get-zstring'>str-get-zstring (  str -- c-addr  )</dt>
+<dd> Get the string as zero terminated string </dd>
+</dl>
+<h2>Strings word </h2>
+<dl>
+<dt id='str^move'>str^move (  str2 str1 -- Move str2 in str1  )</dt>
+<dd></dd>
+</dl>
+<h2>Character words </h2>
+<dl>
+<dt id='str-append-char'>str-append-char (  char str --  )</dt>
+<dd> Append a character at the end of the string </dd>
+</dl>
+<dl>
+<dt id='str-prepend-char'>str-prepend-char (  char str --  )</dt>
+<dd> Prepend a character at the start of the string </dd>
+</dl>
+<dl>
+<dt id='str-push-char'>str-push-char (  char str --  )</dt>
+<dd> Push a character at the end of the string </dd>
+</dl>
+<dl>
+<dt id='str-pop-char'>str-pop-char (  str -- char  )</dt>
+<dd> Pop a character from the end of the string </dd>
+</dl>
+<dl>
+<dt id='str-enqueue-char'>str-enqueue-char (  char str --  )</dt>
+<dd> Place a character at the start of the string </dd>
+</dl>
+<dl>
+<dt id='str-dequeue-char'>str-dequeue-char (  char str --  )</dt>
+<dd> Get the character at the end of the string </dd>
+</dl>
+<dl>
+<dt id='str-set-char'>str-set-char (  char n str --  )</dt>
+<dd> Set the character on the nth position in the string </dd>
+</dl>
+<dl>
+<dt id='str-get-char'>str-get-char (  n str -- char  )</dt>
+<dd> Get the character from the nth position in the string </dd>
+</dl>
+<dl>
+<dt id='str-insert-char'>str-insert-char (  char n str --  )</dt>
+<dd> Insert the character on the nth position in the string </dd>
+</dl>
+<dl>
+<dt id='str-delete-char'>str-delete-char (  n str --  )</dt>
+<dd> Delete the character on the nth position in the string </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='str-count'>str-count (  c-addr u str -- u  )</dt>
+<dd> Count the number of occurrences of the string c-addr u in the string </dd>
+</dl>
+<dl>
+<dt id='str-execute'>str-execute (  i*x xt str -- j*x  )</dt>
+<dd> Execute the xt token for every character in the string </dd>
+</dl>
+<dl>
+<dt id='str-execute?'>str-execute? (  i*x xt str -- j*x flag  )</dt>
+<dd> Execute the xt token for every character in the string or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Special manipulation words </h2>
+<dl>
+<dt id='str-capatilize'>str-capatilize (  str --  )</dt>
+<dd> Capitalize the first word in the string </dd>
+</dl>
+<dl>
+<dt id='str-cap-words'>str-cap-words (  str --  )</dt>
+<dd> Capitalize all words in the string </dd>
+</dl>
+<dl>
+<dt id='str-center'>str-center (  u str --  )</dt>
+<dd> Center the string in width u </dd>
+</dl>
+<dl>
+<dt id='str-align-left'>str-align-left (  u str --  )</dt>
+<dd> Align left the string in width u </dd>
+</dl>
+<dl>
+<dt id='str-align-right'>str-align-right (  u str --  )</dt>
+<dd> Align right the string in width u </dd>
+</dl>
+<dl>
+<dt id='str-strip-leading'>str-strip-leading (  str --  )</dt>
+<dd> Strip leading spaces in the string </dd>
+</dl>
+<dl>
+<dt id='str+strip-leading'>str+strip-leading (  c-addr1 u1 -- c-addr2 u2  )</dt>
+<dd> Strip leading whitespace in the string c-addr1 u1 </dd>
+</dl>
+<dl>
+<dt id='str-strip-trailing'>str-strip-trailing (  str --  )</dt>
+<dd> Strip trailing spaces in the string </dd>
+</dl>
+<dl>
+<dt id='str+strip-trailing'>str+strip-trailing (  c-addr u1 -- c-addr u2  )</dt>
+<dd> Strip trailing whitespace in the string c-addr u1 </dd>
+</dl>
+<dl>
+<dt id='str-strip'>str-strip (  str --  )</dt>
+<dd> Strip leading and trailing spaces in the string </dd>
+</dl>
+<dl>
+<dt id='str+strip'>str+strip (  c-addr1 u1 -- c-addr2 u2  )</dt>
+<dd> Strip leading and trailing spaces from string c-addr1 u1 </dd>
+</dl>
+<dl>
+<dt id='str-lower'>str-lower (  str --  )</dt>
+<dd> Convert the string to lower case </dd>
+</dl>
+<dl>
+<dt id='str-upper'>str-upper (  str --  )</dt>
+<dd> Convert the string to upper case </dd>
+</dl>
+<dl>
+<dt id='str-expand-tabs'>str-expand-tabs (  u str --  )</dt>
+<dd> Expand the tabs to u spaces in the string </dd>
+</dl>
+<h2>Comparison words </h2>
+<dl>
+<dt id='str-icompare'>str-icompare (  c-addr u str -- n  )</dt>
+<dd> Compare case-insensitive the string c-addr u with the string, return the result [-1,0,1] </dd>
+</dl>
+<dl>
+<dt id='str-ccompare'>str-ccompare (  c-addr u str -- n  )</dt>
+<dd> Compare case-sensitive the string c-addr u with the string, return the result [-1,0,1] </dd>
+</dl>
+<dl>
+<dt id='str^icompare'>str^icompare (  str1 str2 -- n  )</dt>
+<dd> Compare case-insensitive the strings str1 and str, return the result [-1,0,1] </dd>
+</dl>
+<dl>
+<dt id='str^ccompare'>str^ccompare (  str1 str2 -- n  )</dt>
+<dd> Compare case-sensitive the string str1 and str2, return the result [-1,0,1] </dd>
+</dl>
+<h2>Search and replace words </h2>
+<dl>
+<dt id='str-find'>str-find (  c-addr u n1 str -- n2  )</dt>
+<dd> Find the first occurrence of the string c-addr u starting from index n1 in the string, return -1 if not found </dd>
+</dl>
+<dl>
+<dt id='str-replace'>str-replace (  c-addr1 u1 c-addr2 u2 str --  )</dt>
+<dd> Replace all occurences of the string c-addr2 u2 with the string c-addr1 u1 in the string </dd>
+</dl>
+<h2>Split words </h2>
+<dl>
+<dt id='str+columns'>str+columns (  c-addr u n -- c-addrn un ... c-addr1 u1 n  )</dt>
+<dd> Split the string c-addr u in n substrings, u width wide, skipping leading spaces [recursive] </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='str-dump'>str-dump (  str --  )</dt>
+<dd> Dump the string </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

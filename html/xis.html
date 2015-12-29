@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>xis  --  XML/HTML reader </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>xis  --  XML/HTML reader </dt>
+<dd>
+The xis module implements a non-validating XML/HTML parser.                
+The default entity references, &lt; &gt; &amp;, &quot; and ' are           
+translated, all others are simply returned in the text. By using the       
+xis-msc! word a message catalog can be set, that will overrule the default 
+translations of entity references. The xis-set-reader word expects an      
+execution token with the following stack behavior:                         
+<pre>                                                                      
+   x -- c-addr u | 0                                                       
+</pre>                                                                     
+Data x is the same as the first parameter during calling of the word       
+xis-set-reader. For reading from files this is normally the file           
+descriptor. The word returns, if successful, the read data in c-addr u.    
+The xis-read word returns the parsed xml token with the following varying  
+stack parameters:                                                          
+<pre>                                                                      
+xis.error          --                                                      
+xis.done           --                                                      
+xis.start-xml      -- c-addr1 u1 .. c-addrn un n          = Return n attribute names with their value                
+xis.comment        -- c-addr u                            = Return the comment                                       
+xis.text           -- c-addr u                            = Return the normal text                                   
+xis.start-tag      -- c-addr1 u1 .. c-addrn un n c-addr u = Return the tag name and n attributes with their value    
+xis.end-tag        -- c-addr u                            = Return the tag name                                      
+xis.empty-element  -- c-addr1 u1 .. c-addrn un n c-addr u = Return the tag name and n attributes with their value    
+xis.cdata          -- c-addr u                            = Return the CDATA section text                            
+xis.proc-instr     -- c-addr1 u1 .. c-addrn un n c-addr u = Return the target name and n attributes with their value 
+xis.internal-dtd   -- c-addr1 u1 c-addr2 u2               = Return the DTD name c-addr2 u2 and markup c-addr1 u1     
+xis.public-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 = Return the DTD name, the markup, the system-id and public-id 
+xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3    = Return the DTD name, the markup and the system-id        
+</pre>                                                                     
+</dd>
+</dl>
+<hr>
+<h2>xis reader constants </h2>
+<dl>
+<dt id='xis.error'>xis.error (  -- n  )</dt>
+<dd> Error          </dd>
+</dl>
+<dl>
+<dt id='xis.done'>xis.done (  -- n  )</dt>
+<dd> Done reading   </dd>
+</dl>
+<dl>
+<dt id='xis.start-xml'>xis.start-xml (  -- n  )</dt>
+<dd> Start Document </dd>
+</dl>
+<dl>
+<dt id='xis.comment'>xis.comment (  -- n  )</dt>
+<dd> Comment        </dd>
+</dl>
+<dl>
+<dt id='xis.text'>xis.text (  -- n  )</dt>
+<dd> Normal text    </dd>
+</dl>
+<dl>
+<dt id='xis.start-tag'>xis.start-tag (  -- n  )</dt>
+<dd> Start tag      </dd>
+</dl>
+<dl>
+<dt id='xis.end-tag'>xis.end-tag (  -- n  )</dt>
+<dd> End tag        </dd>
+</dl>
+<dl>
+<dt id='xis.empty-element'>xis.empty-element (  -- n  )</dt>
+<dd> Empty element  </dd>
+</dl>
+<dl>
+<dt id='xis.cdata'>xis.cdata (  -- n  )</dt>
+<dd> CDATA section  </dd>
+</dl>
+<dl>
+<dt id='xis.proc-instr'>xis.proc-instr (  -- n  )</dt>
+<dd> Proc. instr.   </dd>
+</dl>
+<dl>
+<dt id='xis.internal-dtd'>xis.internal-dtd (  -- n  )</dt>
+<dd> Internal DTD   </dd>
+</dl>
+<dl>
+<dt id='xis.public-dtd'>xis.public-dtd (  -- n  )</dt>
+<dd> Public DTD     </dd>
+</dl>
+<dl>
+<dt id='xis.system-dtd'>xis.system-dtd (  -- n  )</dt>
+<dd> System DTD     </dd>
+</dl>
+<h2>xml reader structure </h2>
+<dl>
+<dt id='xis%'>xis% (  -- n  )</dt>
+<dd> Get the required space for a xis reader variable </dd>
+</dl>
+<h2>xml reader variable creation, initialisation and destruction </h2>
+<dl>
+<dt id='xis-init'>xis-init (  xis --  )</dt>
+<dd> Initialise the xml reader variable </dd>
+</dl>
+<dl>
+<dt id='xis-(free)'>xis-(free) (  xis --  )</dt>
+<dd> Free the internal, private variables from the heap </dd>
+</dl>
+<dl>
+<dt id='xis-create'>xis-create (  "&lt;spaces&gt;name" -- ; -- xis  )</dt>
+<dd> Create a named xml reader variable in the dictionary </dd>
+</dl>
+<dl>
+<dt id='xis-new'>xis-new (  -- xis  )</dt>
+<dd> Create a new xml reader variable on the heap </dd>
+</dl>
+<dl>
+<dt id='xis-free'>xis-free (  xis --  )</dt>
+<dd> Free the xis reader variable from the heap </dd>
+</dl>
+<h2>xml reader init words </h2>
+<dl>
+<dt id='xis-set-reader'>xis-set-reader (  x xt xis --  )</dt>
+<dd> Init the xml parser for reading using the reader callback xt with its data x </dd>
+</dl>
+<dl>
+<dt id='xis-set-string'>xis-set-string (  c-addr u xis --  )</dt>
+<dd> Init the xml parser for for reading from the string c-addr u </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='xis-msc@'>xis-msc@ (  xis -- msc  )</dt>
+<dd> Get the current entity reference catalog </dd>
+</dl>
+<dl>
+<dt id='xis-msc!'>xis-msc! (  msc xis --  )</dt>
+<dd> Set the entity reference catalog for the reader </dd>
+</dl>
+<dl>
+<dt id='xis-strip@'>xis-strip@ (  xis -- flag  )</dt>
+<dd> Return flag indicating the stripping of leading and trailing white space in normal text </dd>
+</dl>
+<dl>
+<dt id='xis-strip!'>xis-strip! (  flag xis --  )</dt>
+<dd> Set the flag indicating the stripping of leading and trailing white space in normal text </dd>
+</dl>
+<h2>xml reader word </h2>
+<dl>
+<dt id='xis-read'>xis-read (  xis -- i*x n  )</dt>
+<dd> Read the next xml token n with various parameters from the source &lb;see xml reader constants&rb; </dd>
+</dl>
+<dl>
+<dt id='xis+remove-read-parameters'>xis+remove-read-parameters (  i*x n --  )</dt>
+<dd> Remove the various parameters of a xml token after calling xis-read &lb;see xml reader constants&rb; </dd>
+</dl>
+<dl>
+<dt id='xis+dump-read-parameters'>xis+dump-read-parameters (  i*x n --  )</dt>
+<dd> Dump the various parameters of a xml token after calling xis-read &lb;see xml reader constants&rb; </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          xis_expl - the text input stream example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-11-16 18:55:14 $ $Revision: 1.5 $
+\
+\ ==============================================================================
+
+include ffl/xis.fs
+
+
+\ Example: Read a XML/HTML file
+
+\ Create a XML/HTML input stream on the heap
+
+xis-new value xis1
+
+
+\ Setup the reader callback word for reading from file
+
+: file-reader ( fileid -- c-addr u | 0 )
+  pad 64 rot read-file throw
+  dup IF
+    pad swap
+  THEN
+;
+
+
+
+s" test.xml" r/o open-file throw value xis.file  \ Open the file
+
+xis.file  &apos; file-reader   xis1 xis-set-reader     \ Use the xml reader with a file
+
+true xis1 xis-strip!                              \ Strip leading and trailing whitespace in the text
+
+: file-parse  ( -- = Parse the xml file )
+  BEGIN
+    xis1 xis-read                           \ Read the next token from the file
+    dup xis.error &lt;&gt; over xis.done &lt;&gt; AND   \ Done when ready or error
+  WHILE
+    xis+dump-read-parameters                \ Dump the next token with its parameters
+   
+  REPEAT
+  
+  xis.error = IF
+    ." Error parsing the file." cr
+  ELSE
+    ." File succesfully parsed." cr
+  THEN
+;
+
+\ Parse the file
+
+file-parse
+
+
+\ Done, close the file
+
+xis.file close-file throw
+
+
+\ Free the stream from the heap
+
+xis1 xis-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

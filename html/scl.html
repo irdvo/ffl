@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>scl  --  Single Linked Cell List </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>scl  --  Single Linked Cell List </dt>
+<dd>
+The scl module implements a single linked list that can store cell wide data.
+</dd>
+</dl>
+<hr>
+<h2>List structure </h2>
+<dl>
+<dt id='scl%'>scl% (  -- n  )</dt>
+<dd> Get the required space for a scl variable </dd>
+</dl>
+<h2>List creation, initialisation and destruction </h2>
+<dl>
+<dt id='scl-init'>scl-init (  scl --  )</dt>
+<dd> Initialise the scl list </dd>
+</dl>
+<dl>
+<dt id='scl-(free)'>scl-(free) (  scl --  )</dt>
+<dd> Free the nodes from the heap </dd>
+</dl>
+<dl>
+<dt id='scl-create'>scl-create (  "&lt;spaces&gt;name" -- ; -- scl  )</dt>
+<dd> Create a named scl list in the dictionary </dd>
+</dl>
+<dl>
+<dt id='scl-new'>scl-new (  -- scl  )</dt>
+<dd> Create a new scl list on the heap </dd>
+</dl>
+<dl>
+<dt id='scl-free'>scl-free (  scl --  )</dt>
+<dd> Free the list from the heap </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='scl-empty?'>scl-empty? (  scl -- flag  )</dt>
+<dd> Check for an empty list </dd>
+</dl>
+<dl>
+<dt id='scl-length@'>scl-length@ (  scl -- u  )</dt>
+<dd> Get the number of nodes in the list </dd>
+</dl>
+<dl>
+<dt id='scl-compare!'>scl-compare! (  xt scl --  )</dt>
+<dd> Set the compare execution token for sorting the list </dd>
+</dl>
+<dl>
+<dt id='scl-compare@'>scl-compare@ (  scl -- xt  )</dt>
+<dd> Get the compare execution token for sorting the list </dd>
+</dl>
+<h2>List words </h2>
+<dl>
+<dt id='scl-clear'>scl-clear (  scl --  )</dt>
+<dd> Delete all nodes from the list </dd>
+</dl>
+<dl>
+<dt id='scl-append'>scl-append (  x scl --  )</dt>
+<dd> Append the cell data x in the list </dd>
+</dl>
+<dl>
+<dt id='scl-prepend'>scl-prepend (  x scl --  )</dt>
+<dd> Prepend the cell data x in the list </dd>
+</dl>
+<h2>Index words </h2>
+<dl>
+<dt id='scl-index?'>scl-index? (  n scl -- flag  )</dt>
+<dd> Check if the index n is valid for the list </dd>
+</dl>
+<dl>
+<dt id='scl-set'>scl-set (  x n scl --  )</dt>
+<dd> Set the cell data x in the nth node in the list </dd>
+</dl>
+<dl>
+<dt id='scl-get'>scl-get (  n scl -- x  )</dt>
+<dd> Get the cell data x from the nth node in the list </dd>
+</dl>
+<dl>
+<dt id='scl-insert'>scl-insert (  x n scl --  )</dt>
+<dd> Insert cell data x at the nth node in the list </dd>
+</dl>
+<dl>
+<dt id='scl-delete'>scl-delete (  n scl -- x  )</dt>
+<dd> Delete the nth node from the list, return the cell data from the deleted node </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='scl-count'>scl-count (  x scl -- u  )</dt>
+<dd> Count the number of occurrences of the cell data x in the list </dd>
+</dl>
+<dl>
+<dt id='scl-execute'>scl-execute (  i*x xt scl -- j*x  )</dt>
+<dd> Execute xt for every cell data in list </dd>
+</dl>
+<dl>
+<dt id='scl-execute?'>scl-execute? (  i*x xt scl -- j*x flag  )</dt>
+<dd> Execute xt for every cell data in the list or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<dl>
+<dt id='scl-reverse'>scl-reverse (  scl --  )</dt>
+<dd> Reverse or mirror the list </dd>
+</dl>
+<h2>Search words </h2>
+<dl>
+<dt id='scl-find'>scl-find (  x scl -- n  )</dt>
+<dd> Find the first index for cell data x in the list, -1 for not found </dd>
+</dl>
+<dl>
+<dt id='scl-has?'>scl-has? (  x scl -- flag  )</dt>
+<dd> Check if the cell data x is present in the list </dd>
+</dl>
+<dl>
+<dt id='scl-remove'>scl-remove (  x scl -- flag  )</dt>
+<dd> Remove the first occurrence of the cell data x from the list, return success </dd>
+</dl>
+<h2>Sort words </h2>
+<dl>
+<dt id='scl-insert-sorted'>scl-insert-sorted (  x scl --  )</dt>
+<dd> Insert the cell data x sorted in the list </dd>
+</dl>
+<dl>
+<dt id='scl-sort'>scl-sort (  xt scl --  )</dt>
+<dd> Sort the list scl using mergesort, xt compares the nodes </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='scl-dump'>scl-dump (  scl --  )</dt>
+<dd> Dump the list </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\    scl_expl - the cell based single linked list example in the ffl
+\
+\               Copyright (C) 2010  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-04-10 16:12:01 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/scl.fs
+include ffl/rng.fs
+
+
+\ Example: sort a cell based single linked list with 1001 random numbers
+
+
+\ Create the single linked list on the heap
+
+scl-new value nlist
+
+\ Create the pseudo random generator in the dictionary with seed 5498
+
+5498 rng-create nrng
+
+\ Insert 1001 numbers in the nlist
+
+: nlist-insert     ( n -- = Insert n random numbers in nlist )
+  0 DO
+    nrng rng-next-number          \ Generate random number and ..
+    nlist scl-append              \ .. append to the list
+  LOOP
+;
+
+1001 nlist-insert
+
+\ Check the number of numbers out of sequence
+
+: nnode-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence number, n1: count n2:previous number n3: number )
+  swap IF
+    tuck &gt; IF &gt;r 1+ r&gt; THEN       \ Compare current number with previous number increment counter if out of sequence
+  ELSE
+    nip                           \ First call, no check
+  THEN
+  true
+;
+
+.( Before sorting there are ) 0 0 false &apos; nnode-out-sequence nlist scl-execute 2drop . .( numbers out of sequence. ) cr
+
+\ Sort the list using the &lt;=&gt; word
+
+&apos; &lt;=&gt; nlist scl-sort
+
+\ Check the number of numbers out of sequence again
+
+.( After sorting there are ) 0 0 false &apos; nnode-out-sequence nlist scl-execute 2drop . .( numbers out of sequence. ) cr
+
+\ Cleanup the list
+
+nlist scl-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

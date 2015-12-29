@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>hct  --  Hash Cell Table </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>hct  --  Hash Cell Table </dt>
+<dd>
+The hct module implements a hash table that stores cell wide data.
+</dd>
+</dl>
+<hr>
+<h2>Hash table structure </h2>
+<dl>
+<dt id='hct%'>hct% (  -- n  )</dt>
+<dd> Get the required space for a hash table variable </dd>
+</dl>
+<h2>Hash table creation, initialisation and destruction </h2>
+<dl>
+<dt id='hct-init'>hct-init (  u hct --  )</dt>
+<dd> Initialise the hash table with an initial size u </dd>
+</dl>
+<dl>
+<dt id='hct-(free)'>hct-(free) (  hct --  )</dt>
+<dd> Free the nodes from the hash table </dd>
+</dl>
+<dl>
+<dt id='hct-create'>hct-create (  u "&lt;spaces&gt;name" -- ; -- hct  )</dt>
+<dd> Create a named hash table with an initial size u in the dictionary </dd>
+</dl>
+<dl>
+<dt id='hct-new'>hct-new (  u -- hct  )</dt>
+<dd> Create a hash table with an initial size u on the heap </dd>
+</dl>
+<dl>
+<dt id='hct-free'>hct-free (  hct --  )</dt>
+<dd> Free the hash table from the heap </dd>
+</dl>
+<h2>Module words </h2>
+<dl>
+<dt id='hct+hash'>hct+hash (  c-addr1 u1 -- u2  )</dt>
+<dd> Calculate the hash value of a key </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='hct-empty?'>hct-empty? (  hct -- flag  )</dt>
+<dd> Check if the table is empty </dd>
+</dl>
+<dl>
+<dt id='hct-length@'>hct-length@ (  hct -- u  )</dt>
+<dd> Get the number of nodes in the table </dd>
+</dl>
+<dl>
+<dt id='hct-load@'>hct-load@ (  hct -- u  )</dt>
+<dd> Get the load factor [*100%] </dd>
+</dl>
+<dl>
+<dt id='hct-load!'>hct-load! (  u hct --  )</dt>
+<dd> Set the load factor [*100%] </dd>
+</dl>
+<dl>
+<dt id='hct-size!'>hct-size! (  u hct --  )</dt>
+<dd> Resize the hash table to size u </dd>
+</dl>
+<h2>Hash table words </h2>
+<dl>
+<dt id='hct-insert'>hct-insert (  x c-addr u hct --  )</dt>
+<dd> Insert cell data x with the key c-addr u in the table </dd>
+</dl>
+<dl>
+<dt id='hct-delete'>hct-delete (  c-addr u hct -- false | x true  )</dt>
+<dd> Delete the key c-addr u from the table, return the cell data related to the key </dd>
+</dl>
+<dl>
+<dt id='hct-get'>hct-get (  c-addr u hct -- false | x true  )</dt>
+<dd> Get the cell data x related to the key c-addr u from the table </dd>
+</dl>
+<dl>
+<dt id='hct-has?'>hct-has? (  c-addr u hct -- flag  )</dt>
+<dd> Check if the key c-addr u is present in the table </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='hct-count'>hct-count (  x hct -- u  )</dt>
+<dd> Count the number of occurrences of the cell data x in the table </dd>
+</dl>
+<dl>
+<dt id='hct-execute'>hct-execute (  i*x xt hct -- j*x  )</dt>
+<dd> Execute xt for every key and cell data in table </dd>
+</dl>
+<dl>
+<dt id='hct-execute?'>hct-execute? (  i*x xt hct -- j*x flag  )</dt>
+<dd> Execute xt for every key and cell data in table or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='hct-dump'>hct-dump (  hct --  )</dt>
+<dd> Dump the hash table </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          hnct_expl - the cell hash table example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-03-11 18:33:47 $ $Revision: 1.4 $
+\
+\ ==============================================================================
+
+include ffl/hct.fs
+include ffl/hci.fs
+
+\ Example: store mountain heights in a hash table
+
+
+\ Create the hash table in the dictionary with an initial size of 10
+
+10 hct-create height-table
+
+
+\ Add the mountains (in meters)
+
+8300 s" mount everest" height-table hct-insert
+4819 s" mont blanc"    height-table hct-insert
+5642 s" mount elbrus"  height-table hct-insert
+
+\ Get a mountain height
+
+s" mount everest" height-table hct-get [IF]
+  .( Mount everest: ) . cr
+[ELSE]
+  .( Unknown mountain) cr
+[THEN]
+
+s" vaalserberg" height-table hct-get [IF]
+  .( Vaalserberg: ) . cr
+[ELSE]
+  .( Unknown mountain) cr
+[THEN]
+
+
+\ Word for printing the mountain height
+
+: height-emit ( n c-addr u -- = height key )
+  type ."  -&gt; " . cr
+;
+
+
+\ Print all mountain heights
+
+&apos; height-emit height-table hct-execute            \ Execute the word height-emit for all entries in the hash table
+
+
+
+\ Example hash table iterator
+
+\ Create the hash table iterator in the dictionary
+
+height-table hci-create height-iter               \ Create an iterator named height-iter on the height-table hash table
+
+\ Moving the iterator
+
+height-iter hci-first                         \ Move the iterator to the first record
+[IF]                                          \ If record exists Then ..
+  height-iter hci-key type                    \   Type the key ..
+  .(  =&gt; )
+  .                                           \   .. and the value
+  cr
+[THEN]
+
+8300 height-iter hci-move                     \ Move the iterator to the mountain with a height of 8300
+[IF]                                          \ If mountain exists Then ..
+  height-iter hci-key type                    \   Type the name ..
+  .(  =&gt; )
+  height-iter hci-get drop .                  \   .. and the height
+  cr
+[ELSE]
+  .( No mountain found with a height of 8300) cr  
+[THEN]
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

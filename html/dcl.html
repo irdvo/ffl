@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dcl  --  Double Linked Cell List </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>dcl  --  Double Linked Cell List </dt>
+<dd>
+The dcl module implements a double linked list that can store cell wide data.
+</dd>
+</dl>
+<hr>
+<h2>List structure </h2>
+<dl>
+<dt id='dcl%'>dcl% (  -- n  )</dt>
+<dd> Get the required space for a dcl variable </dd>
+</dl>
+<h2>List creation, initialisation and destruction </h2>
+<dl>
+<dt id='dcl-init'>dcl-init (  dcl --  )</dt>
+<dd> Initialise the dcl list </dd>
+</dl>
+<dl>
+<dt id='dcl-(free)'>dcl-(free) (  dnl --  )</dt>
+<dd> Free the nodes from the heap </dd>
+</dl>
+<dl>
+<dt id='dcl-create'>dcl-create (  "&lt;spaces&gt;name" -- ; -- dcl  )</dt>
+<dd> Create a named dcl list in the dictionary </dd>
+</dl>
+<dl>
+<dt id='dcl-new'>dcl-new (  -- dcl  )</dt>
+<dd> Create a new dcl list on the heap </dd>
+</dl>
+<dl>
+<dt id='dcl-free'>dcl-free (  dcl --  )</dt>
+<dd> Free the list from the heap, including the nodes </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='dcl-empty?'>dcl-empty? (  dcl -- flag  )</dt>
+<dd> Check for empty list </dd>
+</dl>
+<dl>
+<dt id='dcl-length@'>dcl-length@ (  dcl -- u  )</dt>
+<dd> Get the number of nodes in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-compare!'>dcl-compare! (  xt dcl --  )</dt>
+<dd> Set the compare execution token for sorting the list </dd>
+</dl>
+<dl>
+<dt id='dcl-compare@'>dcl-compare@ (  dcl -- xt  )</dt>
+<dd> Get the compare execution token for sorting the list </dd>
+</dl>
+<h2>List words </h2>
+<dl>
+<dt id='dcl-clear'>dcl-clear (  dnl --  )</dt>
+<dd> Delete all nodes from the list </dd>
+</dl>
+<dl>
+<dt id='dcl-append'>dcl-append (  x dcl --  )</dt>
+<dd> Append the cell data x in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-prepend'>dcl-prepend (  x dcl --  )</dt>
+<dd> Prepend the cell data x in the list </dd>
+</dl>
+<h2>Index words </h2>
+<dl>
+<dt id='dcl-index?'>dcl-index? (  n dcl -- flag  )</dt>
+<dd> Check if the index n is valid for the list </dd>
+</dl>
+<dl>
+<dt id='dcl-set'>dcl-set (  x n dcl --  )</dt>
+<dd> Set the cell data x in the nth node in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-get'>dcl-get (  n dcl -- x  )</dt>
+<dd> Get the cell data x from the nth node from the list </dd>
+</dl>
+<dl>
+<dt id='dcl-insert'>dcl-insert (  x n dcl --  )</dt>
+<dd> Insert cell data x at the nth node in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-delete'>dcl-delete (  n dcl -- x  )</dt>
+<dd> Delete the nth node from the list, return the cell data x </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='dcl-count'>dcl-count (  x dcl -- u  )</dt>
+<dd> Count the number of occurrences of the cell data x in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-execute'>dcl-execute (  i*x xt dcl -- j*x  )</dt>
+<dd> Execute xt for every cell data in list </dd>
+</dl>
+<dl>
+<dt id='dcl-execute?'>dcl-execute? (  i*x xt dcl -- j*x flag  )</dt>
+<dd> Execute xt for every cell data in list or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<dl>
+<dt id='dcl-reverse'>dcl-reverse (  dcl --  )</dt>
+<dd> Reverse or mirror the list </dd>
+</dl>
+<h2>Search words </h2>
+<dl>
+<dt id='dcl-find'>dcl-find (  x dcl -- n  )</dt>
+<dd> Find the first index for the cell data x in the list, -1 for not found </dd>
+</dl>
+<dl>
+<dt id='dcl-has?'>dcl-has? (  x dcl -- flag  )</dt>
+<dd> Check if the cell data x is present in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-remove'>dcl-remove (  x dcl -- flag  )</dt>
+<dd> Remove the first occurrence of the cell data x from the list, return success </dd>
+</dl>
+<h2>Sort words </h2>
+<dl>
+<dt id='dcl-insert-sorted'>dcl-insert-sorted (  x dcl --  )</dt>
+<dd> Insert the cell data x sorted in the list </dd>
+</dl>
+<dl>
+<dt id='dcl-sort'>dcl-sort (  xt dcl --  )</dt>
+<dd> Sort the list dcl using mergesort, xt compares the nodes </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='dcl-dump'>dcl-dump (  dcl --  )</dt>
+<dd> Dump the list </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\    dcl_expl - the cell based double linked list example in the ffl
+\
+\               Copyright (C) 2010  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-04-10 16:12:01 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/dcl.fs
+include ffl/rng.fs
+
+
+\ Example: sort a cell based double linked list with 1001 random numbers
+
+
+\ Create the double linked list on the heap
+
+dcl-new value nlist
+
+\ Create the pseudo random generator in the dictionary with seed 9898
+
+9898 rng-create nrng
+
+\ Insert 1001 numbers in the nlist
+
+: nlist-insert     ( n -- = Insert n random numbers in nlist )
+  0 DO
+    nrng rng-next-number          \ Generate random number and ..
+    nlist dcl-append              \ .. append to the list
+  LOOP
+;
+
+1001 nlist-insert
+
+\ Check the number of numbers out of sequence
+
+: nnode-out-sequence ( n1 n2 flag n3 -- n4 n5 true = Count the number of out of sequence number, n1: count n2:previous number n3: number )
+  swap IF
+    tuck &gt; IF &gt;r 1+ r&gt; THEN       \ Compare current number with previous number increment counter if out of sequence
+  ELSE
+    nip                           \ First call, no check
+  THEN
+  true
+;
+
+.( Before sorting there are ) 0 0 false &apos; nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
+
+\ Sort the list using the &lt;=&gt; word
+
+&apos; &lt;=&gt; nlist dcl-sort
+
+\ Check the number of numbers out of sequence again
+
+.( After sorting there are ) 0 0 false &apos; nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
+
+\  Reverse the list
+
+nlist dcl-reverse
+
+\ Check the number of out of sequence numbers again
+
+.( After reversing there are ) 0 0 false &apos; nnode-out-sequence nlist dcl-execute 2drop . .( numbers out of sequence. ) cr
+
+\ Cleanup the list
+
+nlist dcl-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

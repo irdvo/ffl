@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>chr  --  Char Data Type </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>chr  --  Char Data Type </dt>
+<dd>
+The chr module implements words for checking ranges of characters and for 
+converting characters.                                                    
+</dd>
+</dl>
+<hr>
+<h2>ASCII constants </h2>
+<dl>
+<dt id='chr.nul'>chr.nul (  -- char  )</dt>
+<dd> the null character </dd>
+</dl>
+<dl>
+<dt id='chr.soh'>chr.soh (  -- char  )</dt>
+<dd> the soh character </dd>
+</dl>
+<dl>
+<dt id='chr.stx'>chr.stx (  -- char  )</dt>
+<dd> the stx character </dd>
+</dl>
+<dl>
+<dt id='chr.etx'>chr.etx (  -- char  )</dt>
+<dd> the etx character </dd>
+</dl>
+<dl>
+<dt id='chr.eot'>chr.eot (  -- char  )</dt>
+<dd> the eot character </dd>
+</dl>
+<dl>
+<dt id='chr.enq'>chr.enq (  -- char  )</dt>
+<dd> the enq character </dd>
+</dl>
+<dl>
+<dt id='chr.ack'>chr.ack (  -- char  )</dt>
+<dd> the ack character </dd>
+</dl>
+<dl>
+<dt id='chr.bel'>chr.bel (  -- char  )</dt>
+<dd> the bel character </dd>
+</dl>
+<dl>
+<dt id='chr.bs'>chr.bs (  -- char  )</dt>
+<dd> the backspace character </dd>
+</dl>
+<dl>
+<dt id='chr.ht'>chr.ht (  -- char  )</dt>
+<dd> the horz. tab character </dd>
+</dl>
+<dl>
+<dt id='chr.lf'>chr.lf (  -- char  )</dt>
+<dd> the line feed character </dd>
+</dl>
+<dl>
+<dt id='chr.vt'>chr.vt (  -- char  )</dt>
+<dd> the vert. tab character </dd>
+</dl>
+<dl>
+<dt id='chr.ff'>chr.ff (  -- char  )</dt>
+<dd> the formfeed character </dd>
+</dl>
+<dl>
+<dt id='chr.cr'>chr.cr (  -- char  )</dt>
+<dd> the carriage return character </dd>
+</dl>
+<dl>
+<dt id='chr.sm'>chr.sm (  -- char  )</dt>
+<dd> the sm character </dd>
+</dl>
+<dl>
+<dt id='chr.si'>chr.si (  -- char  )</dt>
+<dd> the si character </dd>
+</dl>
+<dl>
+<dt id='chr.dle'>chr.dle (  -- char  )</dt>
+<dd> the dle character </dd>
+</dl>
+<dl>
+<dt id='chr.dc1'>chr.dc1 (  -- char  )</dt>
+<dd> the dc1 character </dd>
+</dl>
+<dl>
+<dt id='chr.dc2'>chr.dc2 (  -- char  )</dt>
+<dd> the dc2 character </dd>
+</dl>
+<dl>
+<dt id='chr.dc3'>chr.dc3 (  -- char  )</dt>
+<dd> the dc3 character </dd>
+</dl>
+<dl>
+<dt id='chr.dc4'>chr.dc4 (  -- char  )</dt>
+<dd> the dc4 character </dd>
+</dl>
+<dl>
+<dt id='chr.nak'>chr.nak (  -- char  )</dt>
+<dd> the nak character </dd>
+</dl>
+<dl>
+<dt id='chr.syn'>chr.syn (  -- char  )</dt>
+<dd> the syn character </dd>
+</dl>
+<dl>
+<dt id='chr.etb'>chr.etb (  -- char  )</dt>
+<dd> the etc character </dd>
+</dl>
+<dl>
+<dt id='chr.can'>chr.can (  -- char  )</dt>
+<dd> the cancel character </dd>
+</dl>
+<dl>
+<dt id='chr.em'>chr.em (  -- char  )</dt>
+<dd> the em character </dd>
+</dl>
+<dl>
+<dt id='chr.sub'>chr.sub (  -- char  )</dt>
+<dd> the sub character </dd>
+</dl>
+<dl>
+<dt id='chr.esc'>chr.esc (  -- char  )</dt>
+<dd> the escape character </dd>
+</dl>
+<dl>
+<dt id='chr.fs'>chr.fs (  -- char  )</dt>
+<dd> the fs character </dd>
+</dl>
+<dl>
+<dt id='chr.gs'>chr.gs (  -- char  )</dt>
+<dd> the gs character </dd>
+</dl>
+<dl>
+<dt id='chr.rs'>chr.rs (  -- char  )</dt>
+<dd> the rs character </dd>
+</dl>
+<dl>
+<dt id='chr.us'>chr.us (  -- char  )</dt>
+<dd> the us character </dd>
+</dl>
+<dl>
+<dt id='chr.sp'>chr.sp (  -- char  )</dt>
+<dd> the space character </dd>
+</dl>
+<dl>
+<dt id='chr.del'>chr.del (  -- char  )</dt>
+<dd> the delete character </dd>
+</dl>
+<h2>Character class checking words </h2>
+<dl>
+<dt id='chr-range?'>chr-range? (  char1 char2 char3 -- flag  )</dt>
+<dd> Check if char1 is in the range [char2..char3] </dd>
+</dl>
+<dl>
+<dt id='chr-lower?'>chr-lower? (  char -- flag  )</dt>
+<dd> Check for a lowercase alphabetic character </dd>
+</dl>
+<dl>
+<dt id='chr-upper?'>chr-upper? (  char -- flag  )</dt>
+<dd> Check for an uppercase alphabetic character </dd>
+</dl>
+<dl>
+<dt id='chr-alpha?'>chr-alpha? (  char -- flag  )</dt>
+<dd> Check for an alphabetic character </dd>
+</dl>
+<dl>
+<dt id='chr-digit?'>chr-digit? (  char -- flag  )</dt>
+<dd> Check for a decimal digit character </dd>
+</dl>
+<dl>
+<dt id='chr-alnum?'>chr-alnum? (  char -- flag  )</dt>
+<dd> Check for an alphanumeric character </dd>
+</dl>
+<dl>
+<dt id='chr-ascii?'>chr-ascii? (  char -- flag  )</dt>
+<dd> Check for an ascii character </dd>
+</dl>
+<dl>
+<dt id='chr-blank?'>chr-blank? (  char -- flag  )</dt>
+<dd> Check for a blank character, space or tab </dd>
+</dl>
+<dl>
+<dt id='chr-cntrl?'>chr-cntrl? (  char -- flag  )</dt>
+<dd> Check for a control character, 0 till 31 </dd>
+</dl>
+<dl>
+<dt id='chr-graph?'>chr-graph? (  char -- flag  )</dt>
+<dd> Check for a printable character except space </dd>
+</dl>
+<dl>
+<dt id='chr-print?'>chr-print? (  char -- flag  )</dt>
+<dd> Check for a printable character including space </dd>
+</dl>
+<dl>
+<dt id='chr-punct?'>chr-punct? (  char -- flag  )</dt>
+<dd> Check for a printable character, but not a space or alphanumeric character </dd>
+</dl>
+<dl>
+<dt id='chr-space?'>chr-space? (  char -- flag  )</dt>
+<dd> Check for a white-space: space, lf, vt, ff, cr </dd>
+</dl>
+<dl>
+<dt id='chr-hexdigit?'>chr-hexdigit? (  char -- flag  )</dt>
+<dd> Check for a hexadecimal character </dd>
+</dl>
+<dl>
+<dt id='chr-octdigit?'>chr-octdigit? (  char -- flag  )</dt>
+<dd> Check for an octal character </dd>
+</dl>
+<dl>
+<dt id='chr-string?'>chr-string? (  c-addr u char -- flag  )</dt>
+<dd> Check if the character is in the string </dd>
+</dl>
+<h2>Character conversion words </h2>
+<dl>
+<dt id='chr-upper'>chr-upper (  char1 -- char2  )</dt>
+<dd> Convert char1 to uppercase </dd>
+</dl>
+<dl>
+<dt id='chr-lower'>chr-lower (  char1 -- char2  )</dt>
+<dd> Convert char1 to lowercase </dd>
+</dl>
+<dl>
+<dt id='chr-base'>chr-base (  char -- false | u true  )</dt>
+<dd> Convert the character to a digit according the current base </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

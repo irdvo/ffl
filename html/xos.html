@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>xos  --  XML/HTML writer </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>xos  --  XML/HTML writer </dt>
+<dd>
+The xos module implements an xml and html writer. The xos module extends   
+the tos module with extra words, so the xos words work on tos variables.   
+The module translates the normal entity references: &lt;, &gt;, &quot;,    
+&amp; and '. All other entity references should be written with the word   
+xos-write-raw-text. Note: balancing of start and end tags is not checked,  
+so the module can also be used to write html output.                       
+</dd>
+</dl>
+<hr>
+<h2>xml writer words </h2>
+<dl>
+<dt id='xos-write-start-xml'>xos-write-start-xml (  c-addr1 u1 ... c-addr2n u2n n tos --  )</dt>
+<dd> Write the start of a xml document with n attributes and values </dd>
+</dl>
+<dl>
+<dt id='xos-write-text'>xos-write-text (  c-addr u tos --  )</dt>
+<dd> Write normal xml text c-addr u with translation to the default entity references </dd>
+</dl>
+<dl>
+<dt id='xos-write-start-tag'>xos-write-start-tag (  c-addr1 u1 ... c-addr2n u2n n c-addr u tos --  )</dt>
+<dd> Write the xml start tag c-addr u with n attributes and values c-addr* u* </dd>
+</dl>
+<dl>
+<dt id='xos-write-end-tag'>xos-write-end-tag (  c-addr u tos --  )</dt>
+<dd> Write the xml end tag c-addr u </dd>
+</dl>
+<dl>
+<dt id='xos-write-empty-element'>xos-write-empty-element (  c-addr1 u1 ... c-addr2n u2n n c-addr u tos --  )</dt>
+<dd> Write the xml start and end tag c-addr u with n attributes and values c-addr* u*</dd>
+</dl>
+<dl>
+<dt id='xos-write-raw-text'>xos-write-raw-text (  c-addr u tos --  )</dt>
+<dd> Write unprocessed xml text </dd>
+</dl>
+<dl>
+<dt id='xos-write-comment'>xos-write-comment (  c-addr u tos --  )</dt>
+<dd> Write a xml comment </dd>
+</dl>
+<dl>
+<dt id='xos-write-cdata'>xos-write-cdata (  c-addr u tos --  )</dt>
+<dd> Write a xml CDATA section </dd>
+</dl>
+<dl>
+<dt id='xos-write-proc-instr'>xos-write-proc-instr (  c-addr1 u1 c-addr2n u2n n c-addr u tos --  )</dt>
+<dd> Write a xml processing instruction with target c-addr u and n attributes and values c-addr* u* </dd>
+</dl>
+<dl>
+<dt id='xos-write-internal-dtd'>xos-write-internal-dtd (  c-addr1 u1 c-addr2 u2 tos --  )</dt>
+<dd> Write an internal document type definition with name c-addr2 u2 and markup c-addr1 u1 </dd>
+</dl>
+<dl>
+<dt id='xos-write-system-dtd'>xos-write-system-dtd (  c-addr1 u1 c-addr2 u2 c-addr3 u3 tos --  )</dt>
+<dd> Write a system document type definition with name c-addr3 u3, markup c-addr2 u2 and system c-addr1 u1 </dd>
+</dl>
+<dl>
+<dt id='xos-write-public-dtd'>xos-write-public-dtd (  c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 tos --  )</dt>
+<dd> Write a public document type definition with name c-addr4 u4, markup c-addr3 u3, public-id c-addr2 u2 and system c-addr1 u1 </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          xos_expl - the xml output stream example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.3 $
+\
+\ ==============================================================================
+
+include ffl/xos.fs
+
+
+\ Example 1: Write xml output
+
+
+\ Create the xml output stream
+
+tos-create xos1
+
+s" encoding" s" ISO-8859-1" s" version" s" 1.0" 2 xos1 xos-write-start-xml
+
+s"  menu of the day " xos1 xos-write-comment
+
+0 s" menu"         xos1 xos-write-start-tag
+0 s" food"         xos1 xos-write-start-tag
+0 s" name"         xos1 xos-write-start-tag
+  s" Breakfast"    xos1 xos-write-text
+  s" name"         xos1 xos-write-end-tag
+0 s" description"  xos1 xos-write-start-tag
+  s" two eggs &amp; bacon or sausage &amp; toast &amp; hash browns" xos1 xos-write-text
+  s" description"  xos1 xos-write-end-tag
+0 s" price"        xos1 xos-write-start-tag
+  s" $6.95"        xos1 xos-write-text
+  s" price"        xos1 xos-write-end-tag
+s" cholesterol" s" yes"
+1 s" health"       xos1 xos-write-empty-element
+  s" food"         xos1 xos-write-end-tag
+  s" menu"         xos1 xos-write-end-tag
+
+
+xos1 str-get type cr                 \ Type the xml info
+
+
+\ Example 2: Write html output
+
+
+xos1 tos-rewrite                     \ Clean the output stream
+
+nil 0 s" -//W3C//DTD HTML 4.0 Transitional//EN" nil 0 s" HTML" xos1 xos-write-public-dtd
+
+0 s" HTML"         xos1 xos-write-start-tag
+0 s" HEAD"         xos1 xos-write-start-tag
+0 s" TITLE"        xos1 xos-write-start-tag
+  s" HTML example" xos1 xos-write-text
+  s" TITLE"        xos1 xos-write-end-tag
+0 s" BODY"         xos1 xos-write-start-tag
+0 s" H1"           xos1 xos-write-start-tag
+  s" &apos;Welcome&apos;"    xos1 xos-write-text          \ Translate &apos; to &amp;apos;
+  s" H1"           xos1 xos-write-end-tag
+  s"  comment "    xos1 xos-write-comment
+  
+  s" align" s" center"
+1 s" DIV"          xos1 xos-write-start-tag     \ = &lt;DIV align="center"&gt;
+
+  s" Test"         xos1 xos-write-text
+  s" DIV"          xos1 xos-write-end-tag
+  s" BODY"         xos1 xos-write-end-tag
+  s" HTML"         xos1 xos-write-end-tag
+  
+xos1 str-get type cr
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>jis  --  JSON input stream </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>jis  --  JSON input stream </dt>
+<dd>
+The jis module implements a validating JSON parser. Feeding of the parser  
+can be done with two words: jis-set-string for feeding the parser          
+with strings and jis-set-reader for feeding the parser through an          
+execution token. This token should have the following stack behavior:      
+<pre>                                                                      
+   x -- c-addr u | 0                                                       
+</pre>                                                                     
+x is a word indicating the context of the reader and is identical to       
+first parameter of jis-set-reader. For example this value is the file      
+descriptor during reading of a file. The execution token returns, if       
+successful, the read data in c-addr u.                                     
+The input is parsed by calling the jis-read word repeatedly until it       
+returns jis.error or jis.done. The word returns one of the following       
+results with its stack parameters:                                         
+<pre>                                                                      
+jis.error          --             = Error                                  
+jis.done           --             = Stream is correctly parsed             
+jis.start-object   --             = Start of new object                    
+jis.end-object     --             = End of object                          
+jis.start-array    --             = Start of new array                     
+jis.end-array      --             = End of array                           
+jis.name           -- c-addr u    = Name as string                         
+jis.string         -- c-addr u    = String value                           
+jis.number         -- n           = Number value                           
+jis.double         -- d           = Double value                           
+jis.float          -- r           = Float value                            
+jis.boolean        -- flag        = Boolean value                          
+jis.null           --             = Null value                             
+</pre>                                                                     
+</dd>
+</dl>
+<hr>
+<h2>json reader constants </h2>
+<dl>
+<dt id='jis.error'>jis.error (  -- n  )</dt>
+<dd> Error          </dd>
+</dl>
+<dl>
+<dt id='jis.done'>jis.done (  -- n  )</dt>
+<dd> Done reading   </dd>
+</dl>
+<dl>
+<dt id='jis.start-object'>jis.start-object (  -- n  )</dt>
+<dd> Start object   </dd>
+</dl>
+<dl>
+<dt id='jis.start-array'>jis.start-array (  -- n  )</dt>
+<dd> Start array    </dd>
+</dl>
+<dl>
+<dt id='jis.name'>jis.name (  -- n  )</dt>
+<dd> Name           </dd>
+</dl>
+<dl>
+<dt id='jis.string'>jis.string (  -- n  )</dt>
+<dd> String value   </dd>
+</dl>
+<dl>
+<dt id='jis.number'>jis.number (  -- n  )</dt>
+<dd> Number value   </dd>
+</dl>
+<dl>
+<dt id='jis.double'>jis.double (  -- n  )</dt>
+<dd> Double value   </dd>
+</dl>
+<dl>
+<dt id='jis.float'>jis.float (  -- n  )</dt>
+<dd> Float value    </dd>
+</dl>
+<dl>
+<dt id='jis.boolean'>jis.boolean (  -- n  )</dt>
+<dd> Boolean value  </dd>
+</dl>
+<dl>
+<dt id='jis.null'>jis.null (  -- n  )</dt>
+<dd> Null value     </dd>
+</dl>
+<dl>
+<dt id='jis.end-object'>jis.end-object (  -- n  )</dt>
+<dd> End object     </dd>
+</dl>
+<dl>
+<dt id='jis.end-array'>jis.end-array (  -- n  )</dt>
+<dd> End array      </dd>
+</dl>
+<h2>json reader structure </h2>
+<dl>
+<dt id='jis%'>jis% (  -- n  )</dt>
+<dd> Get the required space for a jis reader variable </dd>
+</dl>
+<h2>json reader variable creation, initialisation and destruction </h2>
+<dl>
+<dt id='jis-init'>jis-init (  jis --  )</dt>
+<dd> Initialise the json reader variable </dd>
+</dl>
+<dl>
+<dt id='jis-(free)'>jis-(free) (  jis --  )</dt>
+<dd> Free the internal, private variables from the heap </dd>
+</dl>
+<dl>
+<dt id='jis-create'>jis-create (  "&lt;spaces&gt;name" -- ; -- jis  )</dt>
+<dd> Create a named json reader variable in the dictionary </dd>
+</dl>
+<dl>
+<dt id='jis-new'>jis-new (  -- jis  )</dt>
+<dd> Create a new json reader variable on the heap </dd>
+</dl>
+<dl>
+<dt id='jis-free'>jis-free (  jis --  )</dt>
+<dd> Free the jis reader variable from the heap </dd>
+</dl>
+<h2>json reader init words </h2>
+<dl>
+<dt id='jis-set-reader'>jis-set-reader (  x xt jis --  )</dt>
+<dd> Init the json parser for reading using the reader callback xt with its data x </dd>
+</dl>
+<dl>
+<dt id='jis-set-string'>jis-set-string (  c-addr u jis --  )</dt>
+<dd> Init the json parser for for reading from the string c-addr u </dd>
+</dl>
+<h2>json reader word </h2>
+<dl>
+<dt id='jis-read'>jis-read (  jis -- i*x n  )</dt>
+<dd> Read the next json token n with its parameters from the source &lb;see json reader constants&rb; </dd>
+</dl>
+<dl>
+<dt id='jis+remove-read-parameters'>jis+remove-read-parameters (  i*x n --  )</dt>
+<dd> Remove the various parameters of a json token after calling jis-read &lb;see json reader constants&rb; </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='jis-dump'>jis-dump (  jis --  )</dt>
+<dd> Dump the json input stream </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          jos_expl - the json output stream example in the ffl
+\
+\               Copyright (C) 2010  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-01-13 08:09:33 $ $Revision: 1.3 $
+\
+\ ==============================================================================
+
+include ffl/jis.fs
+
+
+\ Example : Parse a json string
+
+
+\ Create the json input stream in the dictionary
+
+jis-create jis1
+
+\ Feed the parser with a string
+
+s\" {\"value\":10,\"flag\":false,\"array\":[1,2,3.1],\"string\":\"hello\",\"empty\":\"\"}" jis1 jis-set-string
+
+\ Parse the string and print the parsed tokens
+
+: json-parse  ( -- = Parse the string )
+  BEGIN
+    jis1 jis-read
+    dup  jis.error &lt;&gt; over jis.done &lt;&gt; AND
+  WHILE
+    CASE
+      jis.start-object OF ." Start Object"     ENDOF
+      jis.start-array  OF ." Start array"      ENDOF
+      jis.name         OF ." Name : "     type ENDOF
+      jis.string       OF ." String : "   type ENDOF
+      jis.number       OF ." Number : "   .    ENDOF 
+      jis.double       OF ." Double : "   d.   ENDOF
+      jis.float        OF ." Float : "    f.   ENDOF
+      jis.boolean      OF ." Boolean : "  .    ENDOF
+      jis.null         OF ." Null"             ENDOF
+      jis.end-object   OF ." End Object"       ENDOF
+      jis.end-array    OF ." End Array"        ENDOF
+      ." Token:" dup .
+    ENDCASE
+    cr
+  REPEAT
+  drop
+;
+
+json-parse
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

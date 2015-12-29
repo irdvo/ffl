@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>arg  --  Arguments parser </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>arg  --  Arguments parser </dt>
+<dd>
+The arg parser module implements a command line arguments parser.          
+Due to the fact that the ANS standard does not specify words for arguments 
+this module has a environmental dependency.                                
+<pre>                                                                      
+  Supported option formats:                                                
+     -v            short switch option                                     
+     -f a.txt      short option with parameter                             
+     -vq           multiple short switch options                           
+     --file=a.txt  long option with parameter                              
+     --verbose     long switch option                                      
+     --            stop parsing arguments                                  
+</pre>                                                                     
+</dd>
+</dl>
+<hr>
+<h2>Global setting </h2>
+<dl>
+<dt id='arg.cols'>arg.cols (  -- n  )</dt>
+<dd> Value with the number of columns for parser output [def. 79] </dd>
+</dl>
+<h2>Constants </h2>
+<dl>
+<dt id='arg.version-option'>arg.version-option (  -- n  )</dt>
+<dd> Version option  </dd>
+</dl>
+<dl>
+<dt id='arg.help-option'>arg.help-option (  -- n  )</dt>
+<dd> Help option     </dd>
+</dl>
+<dl>
+<dt id='arg.non-option'>arg.non-option (  -- n  )</dt>
+<dd> Non option      </dd>
+</dl>
+<dl>
+<dt id='arg.done'>arg.done (  -- n  )</dt>
+<dd> Done parsing    </dd>
+</dl>
+<dl>
+<dt id='arg.error'>arg.error (  -- n  )</dt>
+<dd> Error in option </dd>
+</dl>
+<h2>Argument parser structure </h2>
+<dl>
+<dt id='arg%'>arg% (  -- n  )</dt>
+<dd> Get the required space for an argument parser variable </dd>
+</dl>
+<h2>Argument parser structure creation, initialisation and destruction </h2>
+<dl>
+<dt id='arg-init'>arg-init (  c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 arg --  )</dt>
+<dd> Initialise the parser with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 </dd>
+</dl>
+<dl>
+<dt id='arg-(free)'>arg-(free) (  arg --  )</dt>
+<dd> Free the internal, private variables from the heap </dd>
+</dl>
+<dl>
+<dt id='arg-create'>arg-create (  c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 "&lt;spaces&gt;name" -- ; -- arg  )</dt>
+<dd> Create a named parser in the dictionary with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 </dd>
+</dl>
+<dl>
+<dt id='arg-new'>arg-new (   c-addr1 u1  c-addr2 u2 c-addr3 u3 c-addr4 u4 -- arg  )</dt>
+<dd> Create a new parser on the heap with the program name c-addr1 u1, the usage c-addr2 u2, the version c-addr3 u3 and general info c-addr4 u4 </dd>
+</dl>
+<dl>
+<dt id='arg-free'>arg-free (  arg --  )</dt>
+<dd> Free the parser from the heap </dd>
+</dl>
+<h2>Default print words </h2>
+<dl>
+<dt id='arg-print-version'>arg-print-version (  arg --  )</dt>
+<dd> Print the version info </dd>
+</dl>
+<dl>
+<dt id='arg-print-help'>arg-print-help (  arg --  )</dt>
+<dd> Print the help info </dd>
+</dl>
+<h2>Option words </h2>
+<dl>
+<dt id='arg-add-option'>arg-add-option (  char c-addr1 u1 c-addr2 u2 flag n arg -- = Add an option to the parser with the short option char, the long option c-addr1 u1, the description c-addr2 u2, the switch flag and the identifier n [id )</dt>
+<dd>4..]</dd>
+</dl>
+<dl>
+<dt id='arg-add-help-option'>arg-add-help-option (  arg --  )</dt>
+<dd> Add the default help option </dd>
+</dl>
+<dl>
+<dt id='arg-add-version-option'>arg-add-version-option (  arg --  )</dt>
+<dd> Add the default version option </dd>
+</dl>
+<h2>Parser words </h2>
+<dl>
+<dt id='arg-parse'>arg-parse (  arg -- c-addr u n | n  )</dt>
+<dd> Parse the next command line argument, return the option identifier and optional the parameter </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          arg_expl - the argument parser example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.5 $
+\
+\ ==============================================================================
+
+include ffl/arg.fs
+
+\ Test if the argument parser is implemented for the current forth Engine
+
+[DEFINED] arg.version [IF]
+
+\ Create an argument parser on the heap
+
+s" argparser"                       \ program name
+s" [OPTION] .. [FILES]"             \ program usage
+s" v1.0"                            \ program version
+s" Report bugs to bugs@bugs.com"    \ program extra info
+arg-new value arg1
+
+
+\ Add the default help and version options
+
+arg1 arg-add-help-option
+
+arg1 arg-add-version-option
+
+
+\ Variable for the verbose switch
+
+variable verbose  verbose off
+
+
+\ Add the -v/--verbose option switch
+
+char v                              \ Short option name
+s" verbose"                         \ Long option name
+s" activate verbose mode"           \ Description
+true                                \ Switch -&gt; true
+4                                   \ Option id
+arg1 arg-add-option
+
+     
+\ Add the -f/--file=FILE option
+
+char f                              \ Short option name
+s" file=FILE"                       \ Long option name
+s" set input file, any input file is allowed, as long as the description is multicolumn"  \ Description
+false                               \ Parameter -&gt; false
+5                                   \ Option id
+arg1 arg-add-option
+
+
+: parse-options ( -- )
+  BEGIN
+    arg1 arg-parse                 \ parse the next argument
+    dup arg.done &lt;&gt; over arg.error &lt;&gt; AND  \ stop parsing when ready or after an error
+  WHILE
+    
+    CASE
+      arg.help-option    OF arg1 arg-print-help             ENDOF  \ print default help info
+    
+      arg.version-option OF arg1 arg-print-version          ENDOF  \ print default version info
+      
+      arg.non-option     OF ." Non option found:" type cr   ENDOF  \ non option parameter, parameter on stack
+      
+      4                  OF verbose on ." Verbose is on" cr ENDOF  \ switch, no extra stack parameters
+      
+      5                  OF ." File parameter:" type cr     ENDOF  \ parameter switch, parameter on stack
+    ENDCASE
+  REPEAT
+  
+  arg.done = IF
+    ." All options okee." cr
+  ELSE
+    ." Error in one of the options." cr
+  THEN
+;  
+
+\ Parse the command line arguments
+
+parse-options
+
+\ Free the argument parser from the heap
+
+arg1 arg-free
+
+[THEN]
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>
