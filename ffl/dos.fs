@@ -41,7 +41,7 @@ include ffl/stt.fs
 ( contains a message catalog, it is used for localization of times, dates    )
 ( and names. The format word uses most of the same conversion characters as  )
 ( the strftime c-function:                                                   )
-( {{{                                                                        )
+( <pre>                                                                      )
 ( %a - the abbreviated weekday name using the streams catalog for locale     )
 ( %A - the full weekday name using the streams catalog for locale            )
 ( %b - the abbreviated month name using the streams catalog for locale       )
@@ -74,7 +74,7 @@ include ffl/stt.fs
 ( %y - the year as a decimal number without a century: 00..99                )
 ( %Y - the year as a decimal number including the century                    )
 ( %% - the character %                                                       )
-( }}} )
+( </pre> )
 
 1 constant dos.version
 

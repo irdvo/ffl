@@ -336,31 +336,29 @@ end-structure
 
 
 : car-find-sorted  ( x car -- n flag = Find the cell value x in the already sorted array using binary search, return offset and success )
-  swap >r >r
-  r@ car-length@ 1- 0
+  >r
+  0 r@ car-length@ 1-                            \ imin imax
   BEGIN
-    2dup >=
+    2dup <=                                      \ while imin <= imax
   WHILE
-    2dup + 2/
-    r> r@ swap >r
-    over cells r@ car-cells@ + @
-    r@ car-compare@ execute
+    2dup + 2/                                    \   mid = (imin+imax)/2
+    -rot 2over
+    cells r@ car-cells@ + @
+    r@ car-compare@ execute                      \   compare x and car[mid]
     dup 0< IF
-      drop 1- rot drop swap
+      drop
+      drop swap 1-                               \   smaller: imax = mid-1
     ELSE
       0> IF
-        1+ nip
+        >r drop 1+ r>                            \   bigger: imin = mid + 1
       ELSE
-        rdrop rdrop
-        nip nip
+        2drop nip rdrop                          \   equal: found
         true
         exit
       THEN
     THEN
   REPEAT
-  
-  rdrop rdrop
-  nip
+  drop nip rdrop                                 \ not found: return imin
   false
 ;
 
@@ -369,16 +367,16 @@ end-structure
   car-find-sorted nip
 ;
 
-      
+
 : car-insert-sorted ( x car -- = Insert the cell value x sorted in an already sorted array )
   2dup car-find-sorted
-  drop over car-length@ over <= IF
-    drop car-append
-  ELSE
+  drop
+  2dup swap car-length@ < IF
     swap car-insert
+  ELSE
+    drop car-append
   THEN
 ;
-
 
 
 ( Fifo/Lifo words )

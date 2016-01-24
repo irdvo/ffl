@@ -44,9 +44,9 @@ include ffl/chs.fs
 ( the stream pointer is updated; scan = scan for data, if the data is found )
 ( then the leading text is returned and the stream pointer is moved after   )
 ( the scanned data; skip = move the stream pointer after the skipped data.  )
-( {{{                                                                       )
+( <pre>                                                                     )
 (   Stack usage reader word: x -- c-addr u | 0 = Return read data c-addr u or 0 for no more )
-( }}}                                                                       )
+( </pre>                                                                    )
 
 
 3 constant tis.version

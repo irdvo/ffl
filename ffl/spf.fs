@@ -40,7 +40,7 @@ include ffl/str.fs
 ( stack item is converted to the character representation and added to the   )
 ( destination. All other characters are simply copied to the destination.    )
 ( The float conversion uses the PRECISION value for precision.               )
-( {{{                                                                        )
+( <pre>                                                                      )
 ( Format: %[flags][width][length]specifier                                   )
 (     Flags: 0      = Left-pads the number with zeros instead of spaces      )
 (            -      = Left justify the number                                )
@@ -62,7 +62,7 @@ include ffl/str.fs
 (            n      = store the length of the string in [addr]               )
 (            q      = format a quoted string &lb;non sprintf&rb; [c-addr u]  )
 (            %      = write a '%' []                                         )
-( }}}                                                                        )
+( </pre>                                                                     )
 
 
 2 constant spf.version

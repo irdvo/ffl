@@ -43,15 +43,15 @@ include ffl/chs.fs
 ( xis-msc! word a message catalog can be set, that will overrule the default )
 ( translations of entity references. The xis-set-reader word expects an      )
 ( execution token with the following stack behavior:                         )
-( {{{                                                                        )
+( <pre>                                                                      )
 (    x -- c-addr u | 0                                                       )
-( }}}                                                                        )
+( </pre>                                                                     )
 ( Data x is the same as the first parameter during calling of the word       )
 ( xis-set-reader. For reading from files this is normally the file           )
 ( descriptor. The word returns, if successful, the read data in c-addr u.    )
 ( The xis-read word returns the parsed xml token with the following varying  )
 ( stack parameters:                                                          )
-( {{{                                                                        )
+( <pre>                                                                      )
 ( xis.error          --                                                      )
 ( xis.done           --                                                      )
 ( xis.start-xml      -- c-addr1 u1 .. c-addrn un n          = Return n attribute names with their value                )
@@ -65,7 +65,7 @@ include ffl/chs.fs
 ( xis.internal-dtd   -- c-addr1 u1 c-addr2 u2               = Return the DTD name c-addr2 u2 and markup c-addr1 u1     )
 ( xis.public-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 = Return the DTD name, the markup, the system-id and public-id )
 ( xis.system-dtd     -- c-addr1 u1 c-addr2 u2 c-addr3 u3    = Return the DTD name, the markup and the system-id        )
-( }}}                                                                        )
+( </pre>                                                                     )
 
 2 constant xis.version
 

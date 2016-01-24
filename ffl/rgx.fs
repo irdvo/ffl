@@ -37,7 +37,7 @@ include ffl/nfe.fs
 ( The rgx module implements regular expressions. It supports words for       )
 ( compiling and matching regular expressions. The module uses the [nfe]      )
 ( module for the actual expression building and matching.                    )
-( {{{                                                                        )
+( <pre>                                                                      )
 (                                                                            )
 (     This module uses the following syntax:                                 )
 (      .   Match any char [incl. newline]     *   Match zero or more         )
@@ -78,7 +78,7 @@ include ffl/nfe.fs
 (                                                                            )
 (      All other backslash characters simply return the trailing character,  )
 (      but this can change in future versions.                               )
-( }}} )
+( </pre> )
 
 
 2 constant rgx.version

@@ -38,9 +38,9 @@ include ffl/car.fs
 ( can be done with two words: jis-set-string for feeding the parser          )
 ( with strings and jis-set-reader for feeding the parser through an          )
 ( execution token. This token should have the following stack behavior:      )
-( {{{                                                                        )
+( <pre>                                                                      )
 (    x -- c-addr u | 0                                                       )
-( }}}                                                                        )
+( </pre>                                                                     )
 ( x is a word indicating the context of the reader and is identical to       )
 ( first parameter of jis-set-reader. For example this value is the file      )
 ( descriptor during reading of a file. The execution token returns, if       )
@@ -48,7 +48,7 @@ include ffl/car.fs
 ( The input is parsed by calling the jis-read word repeatedly until it       )
 ( returns jis.error or jis.done. The word returns one of the following       )
 ( results with its stack parameters:                                         )
-( {{{                                                                        )
+( <pre>                                                                      )
 ( jis.error          --             = Error                                  )
 ( jis.done           --             = Stream is correctly parsed             )
 ( jis.start-object   --             = Start of new object                    )
@@ -62,7 +62,7 @@ include ffl/car.fs
 ( jis.float          -- r           = Float value                            )
 ( jis.boolean        -- flag        = Boolean value                          )
 ( jis.null           --             = Null value                             )
-( }}}                                                                        )
+( </pre>                                                                     )
 
 1 constant jis.version
 

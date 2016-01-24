@@ -50,7 +50,7 @@ include ffl/xos.fs
 ( Depending on the node type the following stack state is expected by     )
 ( dom-set, dom-append-node, dom-insert-node-before and                    )
 ( dom-insert-node-after:                                                  )
-( {{{                                                                     )
+( <pre>                                                                   )
 ( dom.element:   -- c-addr u              = Tag name                                       )
 ( dom.attribute: -- c-addr1 u1 c-addr2 u2 = Attribute name c-addr1 u1 and value c-addr2 u2 )
 ( dom.text:      -- c-addr u              = Normal xml text                                )
@@ -58,7 +58,7 @@ include ffl/xos.fs
 ( dom.pi:        -- c-addr u              = Proc. instr. target c-addr u                   )
 ( dom.comment:   -- c-addr n              = Comment                                        )
 ( dom.document:  --                       = Document root                                  )
-( }}}                                                                     )
+( </pre>                                                                  )
 
 1 constant dom.version
 

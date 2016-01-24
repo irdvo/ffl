@@ -41,7 +41,7 @@ include ffl/tis.fs
 ( The arg parser module implements a command line arguments parser.          )
 ( Due to the fact that the ANS standard does not specify words for arguments )
 ( this module has a environmental dependency.                                )
-( {{{                                                                        )
+( <pre>                                                                      )
 (   Supported option formats:                                                )
 (      -v            short switch option                                     )
 (      -f a.txt      short option with parameter                             )
@@ -49,7 +49,7 @@ include ffl/tis.fs
 (      --file=a.txt  long option with parameter                              )
 (      --verbose     long switch option                                      )
 (      --            stop parsing arguments                                  )
-( }}}                                                                        )
+( </pre>                                                                     )
 
 
 1 constant arg.version

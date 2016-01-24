@@ -56,11 +56,11 @@ include ffl/tos.fs
 ( state is left, the exit action is called, when a state is entered the      )
 ( entry state is called. If a transition matched, the action of this         )
 ( transition is also called. The stack usage for those actions:              )
-( {{{ )
+( <pre> )
 ( state entry action:  fst -- = State fst is entered                         )
 ( state exit action:   fst -- = State fst is left                            )
 ( transition action: n ftr -- = Transition fst matched for event n           )
-( }}} )
+( </pre> )
 
 
 1 constant fsm.version

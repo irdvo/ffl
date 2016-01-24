@@ -39,7 +39,7 @@ include ffl/chr.fs
 ( is scanned and converted to a stack item. The white space character in the )
 ( specifier string will match repeatedly all white space in the source       )
 ( string. All other characters must be matched in the source string.         )
-( {{{                                                                        )
+( <pre>                                                                      )
 ( Format: %[double]specifier                                                 )
 (    Double: l      = the argument is interpreted as a double                )
 ( Specifier: c      = scan a character [char]                                )
@@ -53,7 +53,7 @@ include ffl/chr.fs
 (            E      = scan a float number [r]                                )
 (            q      = scan a quoted string &lb;non sprintf&rb; [c-addr u]    )
 (            %      = match a '%' []                                         )
-( }}}                                                                        )
+( </pre>                                                                     )
 
 
 1 constant scf.version
