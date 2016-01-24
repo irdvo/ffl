@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tos  --  Text output stream </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>tos  --  Text output stream </dt>
+<dd>
+The tos module implements a text output stream. It extends the str module, 
+so all words from the str module, can be used on a tos variable.           
+The data written to the stream is always appended. Alignment is normally   
+done for the last written data. By using the start alignment pointers      
+words the start of the alignment can be changed. The end of the alignment  
+is always the end of the stream. The message catalog can be used for       
+localization of strings. Note: the numerical words in this module use the  
+the numeric output string. The writer can be used to direct the result of  
+the formatter to a writer word by calling tos-flush:                       
+<pre>                                                                      
+ Stack usage writer word: c-addr u x -- flag = Write c-addr u, return success 
+</pre>                                                                     
+</dd>
+</dl>
+<hr>
+<h2>Output stream structure </h2>
+<dl>
+<dt id='tos%'>tos% (  -- n  )</dt>
+<dd> Get the required space for a tos variable </dd>
+</dl>
+<h2>Output stream creation, initialisation and destruction </h2>
+<dl>
+<dt id='tos-init'>tos-init (  tos --  )</dt>
+<dd> Initialise the empty output stream </dd>
+</dl>
+<dl>
+<dt id='tos-(free)'>tos-(free) (  tos --  )</dt>
+<dd> Free the tos data from the heap </dd>
+</dl>
+<dl>
+<dt id='tos-create'>tos-create (  "&lt;spaces&gt;name" -- ; -- tos  )</dt>
+<dd> Create a named output stream in the dictionary </dd>
+</dl>
+<dl>
+<dt id='tos-new'>tos-new (  -- tos  )</dt>
+<dd> Create a new output stream on the heap </dd>
+</dl>
+<dl>
+<dt id='tos-free'>tos-free (  tos --  )</dt>
+<dd> Free the output stream from the heap </dd>
+</dl>
+<h2>Stream words </h2>
+<dl>
+<dt id='tos-rewrite'>tos-rewrite (  tos --  )</dt>
+<dd> Rewrite the output stream </dd>
+</dl>
+<h2>Alignment start pointer words </h2>
+<dl>
+<dt id='tos-pntr@'>tos-pntr@ (  tos -- u  )</dt>
+<dd> Get the current alignment start pointer </dd>
+</dl>
+<dl>
+<dt id='tos-pntr!'>tos-pntr! (  n tos -- flag = Set the alignment pointer from start [n&gt; )</dt>
+<dd>0] or from end [n<0], return success </dd>
+</dl>
+<dl>
+<dt id='tos-pntr+!'>tos-pntr+! (  n tos -- flag  )</dt>
+<dd> Add the offset n to the alignment pointer, return success </dd>
+</dl>
+<h2>Writer words </h2>
+<dl>
+<dt id='tos-set-writer'>tos-set-writer (  x xt tos --  )</dt>
+<dd> Use the stream for writing using the writer callback xt and its data x </dd>
+</dl>
+<dl>
+<dt id='tos-flush'>tos-flush (  tos --  )</dt>
+<dd> Flush the contents of the stream to the writer </dd>
+</dl>
+<h2>Message catalog words </h2>
+<dl>
+<dt id='tos-msc!'>tos-msc! (  msc tos --  )</dt>
+<dd> Set the message catalog for the output stream </dd>
+</dl>
+<dl>
+<dt id='tos-msc@'>tos-msc@ (  tos -- msc | nil  )</dt>
+<dd> Get the message catalog for the output stream </dd>
+</dl>
+<h2>Write data words </h2>
+<dl>
+<dt id='tos-write-char'>tos-write-char (  char tos --  )</dt>
+<dd> Write character to the stream </dd>
+</dl>
+<dl>
+<dt id='tos-write-chars'>tos-write-chars (  char u tos --  )</dt>
+<dd> Write u chars to the stream </dd>
+</dl>
+<dl>
+<dt id='tos-write-string'>tos-write-string (  c-addr u tos --  )</dt>
+<dd> Write the string c-addr u to the stream, using the message catalog if present </dd>
+</dl>
+<dl>
+<dt id='tos-write-line'>tos-write-line (  tos --  )</dt>
+<dd> Write end-of-line from config to the stream, not align able </dd>
+</dl>
+<dl>
+<dt id='tos-write-number'>tos-write-number (  n tos --  )</dt>
+<dd> Write the number n in the current base to the stream </dd>
+</dl>
+<dl>
+<dt id='tos-write-double'>tos-write-double (  d tos --  )</dt>
+<dd> Write the double d in the current base to the stream </dd>
+</dl>
+<dl>
+<dt id='tos-write-float'>tos-write-float (  r tos --  )</dt>
+<dd> Write the float r to the stream in notation: [-]0.digitsE[-]digits, using PAD and PRECISION </dd>
+</dl>
+<dl>
+<dt id='tos-write-fixed-point'>tos-write-fixed-point (  r tos --  )</dt>
+<dd> Write the float r to the stream in fixed-point notation: [-]digits.digits0, using PAD and PRECISION </dd>
+</dl>
+<h2>Alignment words </h2>
+<dl>
+<dt id='tos-align'>tos-align (  char u1 u2 tos --  )</dt>
+<dd> Align the previous written data with padding character char, u1 trailing chars and u2 leading chars </dd>
+</dl>
+<dl>
+<dt id='tos-align-left'>tos-align-left (  char u tos --  )</dt>
+<dd> Align the previous written data to the left, using padding character char with width u </dd>
+</dl>
+<dl>
+<dt id='tos-align-right'>tos-align-right (  char u tos --  )</dt>
+<dd> Align the previous written data to the right, using padding character char with width u </dd>
+</dl>
+<dl>
+<dt id='tos-center'>tos-center (  char u tos --  )</dt>
+<dd> Center the previous written data, using padding character char with width u </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='tos-dump'>tos-dump (  tos --  )</dt>
+<dd> Dump the text output stream </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

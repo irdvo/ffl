@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>bar  --  Bit array module </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>bar  --  Bit array module </dt>
+<dd>
+The bar module implements a bit array. 
+</dd>
+</dl>
+<hr>
+<h2>Bit array structure </h2>
+<dl>
+<dt id='bar%'>bar% (  -- n  )</dt>
+<dd> Get the required space for a bar variable </dd>
+</dl>
+<h2>Array creation, initialisation and destruction </h2>
+<dl>
+<dt id='bar-init'>bar-init (  +n bar --  )</dt>
+<dd> Initialise the array with length n</dd>
+</dl>
+<dl>
+<dt id='bar-(free)'>bar-(free) (  bar --  )</dt>
+<dd> Free the internal data from the heap </dd>
+</dl>
+<dl>
+<dt id='bar-create'>bar-create (  +n "&lt;spaces&gt;name" -- ; -- bar  )</dt>
+<dd> Create a bit array in the dictionary with length n </dd>
+</dl>
+<dl>
+<dt id='bar-new'>bar-new (  n -- bar  )</dt>
+<dd> Create a bit array on the heap with length n </dd>
+</dl>
+<dl>
+<dt id='bar-free'>bar-free (  bar --  )</dt>
+<dd> Free the array from the heap </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='bar-length@'>bar-length@ (  bar -- +n  )</dt>
+<dd> Get the number of bits in the array </dd>
+</dl>
+<dl>
+<dt id='bar-index?'>bar-index? (  n bar -- flag  )</dt>
+<dd> Check if the index n is valid in the array </dd>
+</dl>
+<h2>Bit array words </h2>
+<dl>
+<dt id='bar^move'>bar^move (  bar1 bar2 --  )</dt>
+<dd> Move bar1 into bar2 </dd>
+</dl>
+<dl>
+<dt id='bar^or'>bar^or (  bar1 bar2 --  )</dt>
+<dd> OR the bit arrays bar1 and bar2 and store the result in bar2 </dd>
+</dl>
+<dl>
+<dt id='bar^and'>bar^and (  bar1 bar2 --  )</dt>
+<dd> AND the bit arrays bar1 and bar2 and store the result in bar2 </dd>
+</dl>
+<dl>
+<dt id='bar^xor'>bar^xor (  bar1 bar2 --  )</dt>
+<dd> XOR the bit arrays bar1 and bar2 and store the result in bar2 </dd>
+</dl>
+<h2>Bit set words </h2>
+<dl>
+<dt id='bar-set-bit'>bar-set-bit (  n bar --  )</dt>
+<dd> Set the nth bit in the array </dd>
+</dl>
+<dl>
+<dt id='bar-set-bits'>bar-set-bits (  u n bar --  )</dt>
+<dd> Set a range of bits in the array, starting from the nth bit, u bits long </dd>
+</dl>
+<dl>
+<dt id='bar-set-list'>bar-set-list (  nu .. n1 u bar --  )</dt>
+<dd> Set n1 till nuth bits in the array </dd>
+</dl>
+<dl>
+<dt id='bar-set'>bar-set (  bar --  )</dt>
+<dd> Set all bits in the array </dd>
+</dl>
+<h2>Bit reset words </h2>
+<dl>
+<dt id='bar-reset-bit'>bar-reset-bit (  n bar --  )</dt>
+<dd> Reset the nth bit </dd>
+</dl>
+<dl>
+<dt id='bar-reset-bits'>bar-reset-bits (  u n bar --  )</dt>
+<dd> Reset a range of bits in the array, starting from the nth bit, u bits long </dd>
+</dl>
+<dl>
+<dt id='bar-reset-list'>bar-reset-list (  nu .. n1 u bar --  )</dt>
+<dd> Reset n1 till nuth bits in the array </dd>
+</dl>
+<dl>
+<dt id='bar-reset'>bar-reset (  bar --  )</dt>
+<dd> Reset all bits in the array </dd>
+</dl>
+<h2>Bit invert words </h2>
+<dl>
+<dt id='bar-invert-bit'>bar-invert-bit (  n bar --  )</dt>
+<dd> Invert the nth bit </dd>
+</dl>
+<dl>
+<dt id='bar-invert-bits'>bar-invert-bits (  u n bar --  )</dt>
+<dd> Invert a range of bits in the array, starting from the nth bit, u bits long </dd>
+</dl>
+<dl>
+<dt id='bar-invert'>bar-invert (  bar --  )</dt>
+<dd> Invert all bits in the array </dd>
+</dl>
+<h2>Bit check words </h2>
+<dl>
+<dt id='bar-get-bit'>bar-get-bit (  n bar -- flag  )</dt>
+<dd> Check if the nth bit is set </dd>
+</dl>
+<dl>
+<dt id='bar-count-bits'>bar-count-bits (  +n1 n2 bar -- u  )</dt>
+<dd> Count the number of bits set in a range in the array, starting from the n2th bit, n1 bits long </dd>
+</dl>
+<dl>
+<dt id='bar-count'>bar-count (  bar -- u  )</dt>
+<dd> Count the number of bits set in the array </dd>
+</dl>
+<dl>
+<dt id='bar-execute'>bar-execute (  i*x xt bar -- j*x  )</dt>
+<dd> Execute xt for every bit in the array </dd>
+</dl>
+<dl>
+<dt id='bar-execute?'>bar-execute? (  i*x xt bar -- j*x flag  )</dt>
+<dd> Execute xt for every bit in the array or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='bar-dump'>bar-dump (  bar --  )</dt>
+<dd> Dump the bit array </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\             bar_expl - the bit array example in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-10-05 06:34:20 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/bar.fs
+
+
+\ Create a bit array with 15 bits [0..14] in the dictionary
+
+15 bar-create bar1
+
+
+\ Set bit 1, 4..8, 12 and 14 in the array
+
+1       bar1 bar-set-bit
+5 4     bar1 bar-set-bits
+
+12 14 2 bar1 bar-set-list   \ new in version 3
+
+\ Count the number of bits set 
+
+.( There are ) bar1 bar-count . .( bits set in the array.) cr
+
+\ Check for bits
+
+6 bar1 bar-get-bit [IF]
+  .( Bit 6 is set in the array.) cr
+[ELSE]
+  .( Bit 6 is not set in the array.) cr
+[THEN]
+
+13 bar1 bar-get-bit [IF]
+  .( Bit 13 is set in the array.) cr
+[ELSE]
+  .( Bit 13 is not set in the array.) cr
+[THEN]
+
+
+\ Create a bit array with 8 bits on the heap
+
+8 bar-new value bar2
+
+\ Set all bits in the array
+
+bar2 bar-set
+
+\ Reset bits 5..7 in the array
+
+3 5 bar2 bar-reset-bits
+
+\ Print the bit array by executing bar-emit for every bit in the array
+
+: bar-emit ( flag -- )
+  1 AND [char] 0 + emit
+;
+
+.( Bit array: ) &apos; bar-emit bar2 bar-execute cr
+
+\ Hamming distance
+
+.( Hamming distance: ) 
+bar2 bar1 bar^xor          \ new in version 3
+bar1 bar-count . cr
+
+\ Free the array from the heap
+
+bar2 bar-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

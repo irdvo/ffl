@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>chs  --  Character set module </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>chs  --  Character set module </dt>
+<dd>
+The chs module implements a character set. It supports the POSIX classes   
+used in regular expressions.                                               
+</dd>
+</dl>
+<hr>
+<h2>Character Set Structure </h2>
+<dl>
+<dt id='chs%'>chs% (  -- n  )</dt>
+<dd> Get the required space for a chs variable </dd>
+</dl>
+<h2>Set creation, initialisation and destruction </h2>
+<dl>
+<dt id='chs-init'>chs-init (  chs --  )</dt>
+<dd> Initialise the set </dd>
+</dl>
+<dl>
+<dt id='chs-create'>chs-create (  "&lt;spaces&gt;name" -- ; -- chs  )</dt>
+<dd> Create a named character set in the dictionary </dd>
+</dl>
+<dl>
+<dt id='chs-new'>chs-new (  -- chs  )</dt>
+<dd> Create a new character set on the heap </dd>
+</dl>
+<dl>
+<dt id='chs-free'>chs-free (  chs --  )</dt>
+<dd> Free the set from the heap </dd>
+</dl>
+<h2>Sets words </h2>
+<dl>
+<dt id='chs^move'>chs^move (  chs1 chs2 --  )</dt>
+<dd> Move chs1 in chs2 </dd>
+</dl>
+<dl>
+<dt id='chs^or'>chs^or (  chs1 chs2 --  )</dt>
+<dd> OR the sets chs1 with chs2 and store the result in chs2 </dd>
+</dl>
+<dl>
+<dt id='chs^and'>chs^and (  chs1 chs2 --  )</dt>
+<dd> AND the sets chs1 with chs2 and store the result in chs2 </dd>
+</dl>
+<dl>
+<dt id='chs^xor'>chs^xor (  chs1 chs2 --  )</dt>
+<dd> XOR the sets chs1 with chs2 and store the result in chs2 </dd>
+</dl>
+<h2>Set words </h2>
+<dl>
+<dt id='chs-set'>chs-set (  chs --  )</dt>
+<dd> Set all characters in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset'>chs-reset (  chs --  )</dt>
+<dd> Reset all characters in the set </dd>
+</dl>
+<dl>
+<dt id='chs-invert'>chs-invert (  chs --  )</dt>
+<dd> Invert all characters in the set </dd>
+</dl>
+<h2>Char words </h2>
+<dl>
+<dt id='chs-set-char'>chs-set-char (  char chs --  )</dt>
+<dd> Set the character in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-char'>chs-reset-char (  char chs --  )</dt>
+<dd> Reset the character in the set </dd>
+</dl>
+<h2>Character range words </h2>
+<dl>
+<dt id='chs-set-chars'>chs-set-chars (  char1 char2 chs --  )</dt>
+<dd> Set the character range [char2..char1] in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-chars'>chs-reset-chars (  char1 char2 chs --  )</dt>
+<dd> Reset the character range [char2..char1] in the set </dd>
+</dl>
+<h2>String words </h2>
+<dl>
+<dt id='chs-set-string'>chs-set-string (  c-addr u chs --  )</dt>
+<dd> Set the characters in the string in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-string'>chs-reset-string (  c-addr u chs --  )</dt>
+<dd> Reset the characters in the string in the set </dd>
+</dl>
+<h2>List words </h2>
+<dl>
+<dt id='chs-set-list'>chs-set-list (  charu .. char1 u chs --  )</dt>
+<dd> Set the characters char1 till charu in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-list'>chs-reset-list (  charu .. char1 u chs --  )</dt>
+<dd> Reset the characters char1 till charu in the set </dd>
+</dl>
+<h2>POSIX classes </h2>
+<dl>
+<dt id='chs-set-upper'>chs-set-upper (  chs --  )</dt>
+<dd> Set the upper class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-upper'>chs-reset-upper (  chs --  )</dt>
+<dd> Reset the upper class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-lower'>chs-set-lower (  chs --  )</dt>
+<dd> Set the lower  class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-lower'>chs-reset-lower (  chs --  )</dt>
+<dd> Reset the lower class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-alpha'>chs-set-alpha (  chs --  )</dt>
+<dd> Set the alpha class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-alpha'>chs-reset-alpha (  chs --  )</dt>
+<dd> Reset the alpha class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-digit'>chs-set-digit (  chs --  )</dt>
+<dd> Set the digit class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-digit'>chs-reset-digit (  chs --  )</dt>
+<dd> Reset the digit class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-alnum'>chs-set-alnum (  chs --  )</dt>
+<dd> Set the alnum class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-alnum'>chs-reset-alnum (  chs --  )</dt>
+<dd> Reset the alnum class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-xdigit'>chs-set-xdigit (  chs --  )</dt>
+<dd> Set the xdigit class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-xdigit'>chs-reset-xdigit (  chs --  )</dt>
+<dd> Reset the xdigit class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-punct'>chs-set-punct (  chs --  )</dt>
+<dd> Set the punct class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-punct'>chs-reset-punct (  chs --  )</dt>
+<dd> Reset the punct class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-blank'>chs-set-blank (  chs --  )</dt>
+<dd> Set the blank class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-blank'>chs-reset-blank (  chs --  )</dt>
+<dd> Reset the blank class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-space'>chs-set-space (  chs --  )</dt>
+<dd> Set the space class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-space'>chs-reset-space (  chs --  )</dt>
+<dd> Reset the space class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-cntrl'>chs-set-cntrl (  chs --  )</dt>
+<dd> Set the cntrl class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-cntrl'>chs-reset-cntrl (  chs --  )</dt>
+<dd> Reset the cntrl class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-graph'>chs-set-graph (  chs --  )</dt>
+<dd> Set the graph class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-graph'>chs-reset-graph (  chs --  )</dt>
+<dd> Reset the graph class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-print'>chs-set-print (  chs --  )</dt>
+<dd> Set the print class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-print'>chs-reset-print (  chs --  )</dt>
+<dd> Reset the print class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-set-word'>chs-set-word (  chs --  )</dt>
+<dd> Set the word class in the set </dd>
+</dl>
+<dl>
+<dt id='chs-reset-word'>chs-reset-word (  chs --  )</dt>
+<dd> Reset the word class in the set </dd>
+</dl>
+<h2>Char check word </h2>
+<dl>
+<dt id='chs-char?'>chs-char? (  char chs -- flag  )</dt>
+<dd> Check if the character is in the set </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='chs-execute'>chs-execute (  i*x xt chs -- j*x  )</dt>
+<dd> Execute xt for every character in the set </dd>
+</dl>
+<dl>
+<dt id='chs-execute?'>chs-execute? (  i*x xt chs -- j*x flag  )</dt>
+<dd> Execute xt for every character in the set or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='chs-dump'>chs-dump (  chs --  )</dt>
+<dd> Dump the chs state </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\             chs_expl - the character set example in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-10-05 06:34:20 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/chs.fs
+
+
+\ Create a character set variable chs1 in the dictionary
+
+chs-create chs1
+
+\ Set &apos;a&apos;, &apos;*&apos;, &apos;q&apos;, &apos;w&apos; and &apos;0&apos;..&apos;9&apos; in the set
+
+char a chs1 chs-set-char
+char * chs1 chs-set-char
+
+char 9 char 0 chs1 chs-set-chars
+
+s" qw" chs1 chs-set-string
+
+\ Check for characters in the set
+
+char 7 chs1 chs-char? [IF]
+  .( Character &apos;7&apos; is in the set ) cr
+[ELSE]
+  .( Character &apos;7&apos; is not in the set ) cr
+[THEN]
+
+char ; chs1 chs-char? [IF]
+  .( Character &apos;;&apos; is in the set ) cr
+[ELSE]
+  .( Character &apos;;&apos; is not in the set ) cr
+[THEN]
+
+\ Create a character set on the heap
+
+chs-new value chs2
+
+\ Use the space and xdigit classes to fill the set 
+
+chs1 chs-set-space
+chs1 chs-set-xdigit
+
+\ Invert the set so that the set contains no spaces and xdigits
+
+chs1 chs-invert
+
+\ Print the set contents by excecuting chs-emit for every character in the set
+
+: chs-emit  ( char -- )
+  dup chr-print? IF
+    emit
+  ELSE
+    [char] &lt; emit 0 .r [char] &gt; emit
+  THEN
+;
+
+.( Set:) &apos; chs-emit chs1 chs-execute cr
+
+\ Free the set from the heap
+
+chs2 chs-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

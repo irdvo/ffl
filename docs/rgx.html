@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rgx  --  Regular expressions </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>rgx  --  Regular expressions </dt>
+<dd>
+The rgx module implements regular expressions. It supports words for       
+compiling and matching regular expressions. The module uses the [nfe]      
+module for the actual expression building and matching.                    
+<pre>                                                                      
+                                                                           
+    This module uses the following syntax:                                 
+     .   Match any char [incl. newline]     *   Match zero or more         
+     +   Match one or more                  ?   Match zero or one          
+     |   Match alternatives                 []  Class                      
+     &lb;&rb;  Group or subexpression                                      
+                                                                           
+    Backslash characters:                                                  
+     \.  Character .                       \*   Character *                
+     \+  Character +                       \?   Character ?                
+     \|  Character |                       \\   Backslash                  
+     \[  Character [                                                       
+                                                                           
+     \r  Carriage return                   \n   Line feed                  
+     \t  Horizontal tab                    \e   Escape                     
+                                                                           
+     \d  Digits class: [0-9]               \D   No digits: [^0-9]          
+     \w  Word class: [0-9a-zA-Z_]          \W   No word: [^0-9a-zA-Z_]     
+     \s  Whitespace                        \S   No whitespace              
+                                                                           
+     All other backslash characters simply return the trailing character,  
+     but this can change in future versions.                               
+                                                                           
+     Classes:                                                              
+      [abc]  - match a or b or c                                           
+      [^abc] - match everything except a or b or c                         
+      [a-z]  - match a or b or .. z                                        
+      [-abc] - match - or a or b or c                                      
+      []abc] - match ] or a or b or c                                      
+      [\d\n] - match digit or line feed                                    
+                                                                           
+     Backslash characters in classes:                                      
+      \r  Carriage return                \n    Line feed                   
+      \t  Horizontal tab                 \e    Escape                      
+      \]  Character ]                    \-    Character -                 
+      \d  Digits class: [0-9]            \w    Word class: [0-9a-zA-Z_]    
+      \s  Whitespace                                                       
+                                                                           
+     All other backslash characters simply return the trailing character,  
+     but this can change in future versions.                               
+</pre> 
+</dd>
+</dl>
+<hr>
+<h2>Regular expression structure </h2>
+<dl>
+<dt id='rgx%'>rgx% (  -- n  )</dt>
+<dd> Get the required space for a rgx variable </dd>
+</dl>
+<h2>Regular expression creation, initialisation and destruction </h2>
+<dl>
+<dt id='rgx-init'>rgx-init (  rgx --  )</dt>
+<dd> Initialise the regular expression </dd>
+</dl>
+<dl>
+<dt id='rgx-create'>rgx-create (  "&lt;spaces&gt;name" -- ; -- rgx  )</dt>
+<dd> Create a named regular expression in the dictionary </dd>
+</dl>
+<dl>
+<dt id='rgx-new'>rgx-new (  -- rgx  )</dt>
+<dd> Create a new regular expression on the heap </dd>
+</dl>
+<dl>
+<dt id='rgx-free'>rgx-free (  rgx --  )</dt>
+<dd> Free the regular expression from the heap </dd>
+</dl>
+<h2>Regular expression words </h2>
+<dl>
+<dt id='rgx-compile'>rgx-compile (  c-addr u rgx -- true | n false  )</dt>
+<dd> Compile a pattern as regular expression, return success and optional the error offset n </dd>
+</dl>
+<dl>
+<dt id='rgx-cmatch?'>rgx-cmatch? (  c-addr u rgx -- flag  )</dt>
+<dd> Match case-sensitive a string with the regular expression, return match result </dd>
+</dl>
+<dl>
+<dt id='rgx-imatch?'>rgx-imatch? (  c-addr u rgx -- flag  )</dt>
+<dd> Match case-insensitive a string with the regular expression, return match result </dd>
+</dl>
+<dl>
+<dt id='rgx-csearch'>rgx-csearch (  c-addr u rgx -- n  )</dt>
+<dd> Search case-sensitive in a string for the first match of the regular expression, return offset in string, or -1 for not found </dd>
+</dl>
+<dl>
+<dt id='rgx-isearch'>rgx-isearch (  c-addr u rgx -- n:index  )</dt>
+<dd> Search case-insensitive in a string for the first match of the regular expression, return offset in string, or -1 if not found </dd>
+</dl>
+<dl>
+<dt id='rgx-result'>rgx-result (  n rgx -- n1 n2  )</dt>
+<dd> Get the match result of the nth grouping, return match start n2 and end n1, group 0 is the result of the whole match </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='rgx-dump'>rgx-dump (  rgx --  )</dt>
+<dd> Dump the regular expression </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          rgx_expl - the regular expression example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-10-06 18:22:09 $ $Revision: 1.3 $
+\
+\ ==============================================================================
+
+include ffl/rgx.fs
+
+\ Create a regular expression variable rgx1 
+
+rgx-create rgx1
+
+\ Compile a regular expression and check the result
+
+s" ((a*)b)*" rgx1 rgx-compile [IF] 
+  .( Expression successful compiled) cr
+[ELSE]
+  .( Compilation failed on position:) . cr
+[THEN]
+
+\ Match case sensitive a test string
+ 
+s" abb" rgx1 rgx-cmatch? [IF]
+  .( Test string matched) cr
+[ELSE]
+  .( No match) cr  
+[THEN]
+
+
+
+\ Create a regular expression variable on the heap
+ 
+rgx-new value rgx2
+
+\ Compile a regular expression for matching a float number
+
+s" [-+\s]?\d+(\.\d+)?" rgx2 rgx-compile [IF]
+  .( Expression successful compiled) cr
+[ELSE]
+  .( Compilation failed on position:) . cr
+[THEN]
+
+\ Match a float number
+
+s" -12.47" rgx2 rgx-cmatch? [IF]
+  .( Float number matched) cr
+[ELSE]
+  .( No match) cr
+[THEN]
+
+\ Free the variable from the heap
+
+rgx2 rgx-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

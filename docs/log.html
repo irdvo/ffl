@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>log  --  Logging module </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>log  --  Logging module </dt>
+<dd>
+The log module implements a software logging and tracing module.           
+The module uses 6 different log events, from low to high: trace, debug,    
+info, warning, error and fatal. All log events will generate a log message.
+Only the fatal log event will do an abort. A log message shows the         
+date and time, the log event and the actual message. The log events can be 
+skipped during compilation and suppressed during execution. This is done   
+by setting the log level with the log-level word. All log events that are  
+equal or higher then this level will be compiled c.q. accepted. All events 
+can be skipped by setting log.none to the log level.                       
+A log message can be sent to one of the four so called appenders. The      
+default appender is the console. This appender is also used if one of the  
+file appenders is not able to write to a file. The second appender is a    
+normal text file. The third type appender is a rolling file appender. This 
+appender writes a number of log messages to the first file, then moves to  
+the next file and writes again a number of log messages, and so on, until  
+the number of files is reached. Then the appender starts again with the    
+first file. The calling word provides the base filename for the rolling    
+filename. The logging module appends ".1", ".2" and so on for the          
+different filenames. The last appender is the callback appender. With this 
+appender the calling module can process the messages by its own. The stack 
+notation for the callback word is: [ c-addr u -- ]                         
+</dd>
+</dl>
+<hr>
+<h2>Log events </h2>
+<dl>
+<dt id='log.trace'>log.trace (  -- n  )</dt>
+<dd> the trace event </dd>
+</dl>
+<dl>
+<dt id='log.debug'>log.debug (  -- n  )</dt>
+<dd> the debug event </dd>
+</dl>
+<dl>
+<dt id='log.info'>log.info (  -- n  )</dt>
+<dd> the info event </dd>
+</dl>
+<dl>
+<dt id='log.warning'>log.warning (  -- n  )</dt>
+<dd> the warning event </dd>
+</dl>
+<dl>
+<dt id='log.error'>log.error (  -- n  )</dt>
+<dd> the error event </dd>
+</dl>
+<dl>
+<dt id='log.fatal'>log.fatal (  -- n  )</dt>
+<dd> the fatal event </dd>
+</dl>
+<dl>
+<dt id='log.none'>log.none (  -- n  )</dt>
+<dd> disable all events </dd>
+</dl>
+<h2>Appender words </h2>
+<dl>
+<dt id='log-to-rolling'>log-to-rolling (  c-addr u n1 n2 --  )</dt>
+<dd> Start logging to rolling files, with names starting with c-addr u, maximum n1 files and n2 entries in one file </dd>
+</dl>
+<dl>
+<dt id='log-to-file'>log-to-file (  fileid --  )</dt>
+<dd> Start logging to the file </dd>
+</dl>
+<dl>
+<dt id='log-to-callback'>log-to-callback (  xt --  )</dt>
+<dd> Start logging to the xt callback </dd>
+</dl>
+<dl>
+<dt id='log-to-console'>log-to-console (  --  )</dt>
+<dd> Start logging to the console </dd>
+</dl>
+<h2>Log settings words </h2>
+<dl>
+<dt id='log-from-level'>log-from-level (  n --  )</dt>
+<dd> Skip and suppress all events below level n </dd>
+</dl>
+<dl>
+<dt id='log-stack-depth'>log-stack-depth (  n --  )</dt>
+<dd> Append max n top stack elements to the log message </dd>
+</dl>
+<dl>
+<dt id='log-with-time&amp;date'>log-with-time&amp;date (  flag --  )</dt>
+<dd> Set if the time&date should start the log message </dd>
+</dl>
+<dl>
+<dt id='log-with-flush'>log-with-flush (  flag --  )</dt>
+<dd> Set if the log line should be flushed to file </dd>
+</dl>
+<h2>Log word </h2>
+<dl>
+<dt id='do-log'>do-log (  c-addr u n --  )</dt>
+<dd> Log the message c-addr u with event n </dd>
+</dl>
+<h2>Parsing log words </h2>
+<dl>
+<dt id='fatal"'>fatal" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log a fatal message </dd>
+</dl>
+<dl>
+<dt id='error"'>error" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log an error message </dd>
+</dl>
+<dl>
+<dt id='warning"'>warning" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log a warning message </dd>
+</dl>
+<dl>
+<dt id='info"'>info" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log an info message </dd>
+</dl>
+<dl>
+<dt id='debug"'>debug" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log a debug message </dd>
+</dl>
+<dl>
+<dt id='trace"'>trace" (  "ccc&lt;quote&gt;" --  )</dt>
+<dd> Log a trace message </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\              log_expl - the logging example in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-10-22 16:48:40 $ $Revision: 1.2 $
+\
+\ ==============================================================================
+
+include ffl/log.fs
+
+
+.( Logging to the console:) cr
+
+log-to-console
+
+warning" Warning message"
+
+log.error log-from-level          \ Log only errors and higher
+
+warning" Skip warning message"
+
+error" Error message"
+
+log.trace log-from-level          \ Log all events
+
+
+.( Logging to file "log.tmp" ) cr
+
+s" log.tmp" w/o create-file 0= [IF]
+  dup log-to-file
+
+  trace" Trace message"
+
+  info" Info message"
+
+  close-file drop
+[ELSE]
+  drop
+  .( Error: could not create "log.tmp" ) cr
+[THEN]
+
+
+.( Logging to rolling files: log.1 log.2 and log.3, 5 entries per file .." ) cr
+
+s" log" 3 5 log-to-rolling
+
+3 log-stack-depth            \ Log also the stack contents, maximum 3 values
+
+: do-18logs
+  18 0 DO
+    info" Infos message via rolling files"
+  LOOP
+;
+
+23 56                        \ Put some example values on the stack for the logger
+
+do-18logs                    \ Generate 18 log messages in the rolling files
+
+2drop
+
+
+.( Logging to callback ) cr
+
+: callback ( c-addr u -- )
+  ." Logging:" type cr       \ Callback shows the message on the console
+;
+
+&apos; callback log-to-callback
+
+0 log-stack-depth            \ Stop logging the stack contents
+
+error" Error message via callback"
+
+debug" Debug message via callback"
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

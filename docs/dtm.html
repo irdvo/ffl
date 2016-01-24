@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dtm  --  Date time data type </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>dtm  --  Date time data type </dt>
+<dd>
+The dtm module implements a [gregorian] date and time data type. 
+</dd>
+</dl>
+<hr>
+<h2>Date time structure </h2>
+<dl>
+<dt id='dtm%'>dtm% (  -- n  )</dt>
+<dd> Get the required space for a dtm variable </dd>
+</dl>
+<h2>Constants </h2>
+<dl>
+<dt id='dtm.unix-epoch'>dtm.unix-epoch (  -- n  )</dt>
+<dd> Unix epoch [1970] </dd>
+</dl>
+<dl>
+<dt id='dtm.start-epoch'>dtm.start-epoch (  -- n  )</dt>
+<dd> Start epoch [1583] </dd>
+</dl>
+<dl>
+<dt id='dtm.sunday'>dtm.sunday (  -- n  )</dt>
+<dd> Sunday </dd>
+</dl>
+<dl>
+<dt id='dtm.monday'>dtm.monday (  -- n  )</dt>
+<dd> Monday </dd>
+</dl>
+<dl>
+<dt id='dtm.tuesday'>dtm.tuesday (  -- n  )</dt>
+<dd> Tuesday </dd>
+</dl>
+<dl>
+<dt id='dtm.wednesday'>dtm.wednesday (  -- n  )</dt>
+<dd> Wednesday </dd>
+</dl>
+<dl>
+<dt id='dtm.thursday'>dtm.thursday (  -- n  )</dt>
+<dd> Thursday </dd>
+</dl>
+<dl>
+<dt id='dtm.friday'>dtm.friday (  -- n  )</dt>
+<dd> Friday </dd>
+</dl>
+<dl>
+<dt id='dtm.saturday'>dtm.saturday (  -- n  )</dt>
+<dd> Saturday </dd>
+</dl>
+<dl>
+<dt id='dtm.january'>dtm.january (  -- n  )</dt>
+<dd> January </dd>
+</dl>
+<dl>
+<dt id='dtm.february'>dtm.february (  -- n  )</dt>
+<dd> February </dd>
+</dl>
+<dl>
+<dt id='dtm.march'>dtm.march (  -- n  )</dt>
+<dd> March </dd>
+</dl>
+<dl>
+<dt id='dtm.april'>dtm.april (  -- n  )</dt>
+<dd> April </dd>
+</dl>
+<dl>
+<dt id='dtm.may'>dtm.may (  -- n  )</dt>
+<dd> May </dd>
+</dl>
+<dl>
+<dt id='dtm.june'>dtm.june (  -- n  )</dt>
+<dd> June </dd>
+</dl>
+<dl>
+<dt id='dtm.july'>dtm.july (  -- n  )</dt>
+<dd> July </dd>
+</dl>
+<dl>
+<dt id='dtm.august'>dtm.august (  -- n  )</dt>
+<dd> August </dd>
+</dl>
+<dl>
+<dt id='dtm.september'>dtm.september (  -- n  )</dt>
+<dd> September </dd>
+</dl>
+<dl>
+<dt id='dtm.october'>dtm.october (  -- n  )</dt>
+<dd> October </dd>
+</dl>
+<dl>
+<dt id='dtm.november'>dtm.november (  -- n  )</dt>
+<dd> November </dd>
+</dl>
+<dl>
+<dt id='dtm.december'>dtm.december (  -- n  )</dt>
+<dd> December </dd>
+</dl>
+<h2>Date time variable creation, initialisation and destruction </h2>
+<dl>
+<dt id='dtm-init'>dtm-init (  dtm --  )</dt>
+<dd> Initialise the date/time with the current date and time </dd>
+</dl>
+<dl>
+<dt id='dtm-create'>dtm-create (  "&lt;spaces&gt;name" -- ; -- dtm  )</dt>
+<dd> Create a date/time variable in the dictionary with the current date/time </dd>
+</dl>
+<dl>
+<dt id='dtm-new'>dtm-new (  -- dtm  )</dt>
+<dd> Allocate a date/time variable on the heap with the current date/time </dd>
+</dl>
+<dl>
+<dt id='dtm-free'>dtm-free (  dtm --  )</dt>
+<dd> Free the date/time variable from the heap </dd>
+</dl>
+<h2>Module words </h2>
+<dl>
+<dt id='dtm+leap-year?'>dtm+leap-year? (  n -- flag  )</dt>
+<dd> Check if the year n is a leap year </dd>
+</dl>
+<dl>
+<dt id='dtm+calc-leap-years'>dtm+calc-leap-years (  n1 n2 -- n3  )</dt>
+<dd> Calculate the number of leap years in the year range [n2..n1] </dd>
+</dl>
+<dl>
+<dt id='dtm+days-in-year'>dtm+days-in-year (  n1 -- n2  )</dt>
+<dd> Get the number of days in the year n1 </dd>
+</dl>
+<dl>
+<dt id='dtm+days-in-month'>dtm+days-in-month (  n1 n2 -- n3  )</dt>
+<dd> Get the number of days in the month n1 and year n2 </dd>
+</dl>
+<dl>
+<dt id='dtm+days-till-month'>dtm+days-till-month (  n1 n2 -- n3  )</dt>
+<dd> Get the number of days till the month n1 and year n2 </dd>
+</dl>
+<dl>
+<dt id='dtm+milli?'>dtm+milli? (  n -- flag  )</dt>
+<dd> Check if the milliseconds n are valid </dd>
+</dl>
+<dl>
+<dt id='dtm+second?'>dtm+second? (  n -- flag  )</dt>
+<dd> Check if the seconds n are valid </dd>
+</dl>
+<dl>
+<dt id='dtm+minute?'>dtm+minute? (  n -- flag  )</dt>
+<dd> Check if the minutes n are valid </dd>
+</dl>
+<dl>
+<dt id='dtm+hour?'>dtm+hour? (  n -- flag  )</dt>
+<dd> Check if the hours n are valid </dd>
+</dl>
+<dl>
+<dt id='dtm+day?'>dtm+day? (  n1 n2 n3 -- flag  )</dt>
+<dd> Check if the day n1 in the month n2 and year n3 is valid </dd>
+</dl>
+<dl>
+<dt id='dtm+month?'>dtm+month? (  n -- flag  )</dt>
+<dd> Check if the month n is valid </dd>
+</dl>
+<dl>
+<dt id='dtm+year?'>dtm+year? (  n -- flag  )</dt>
+<dd> Check if the year n [>1582] is valid </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='dtm-milli@'>dtm-milli@ (  dtm -- n  )</dt>
+<dd> Get the milliseconds </dd>
+</dl>
+<dl>
+<dt id='dtm-milli!'>dtm-milli! (  n dtm --  )</dt>
+<dd> Set the milliseconds </dd>
+</dl>
+<dl>
+<dt id='dtm-second@'>dtm-second@ (  dtm -- n  )</dt>
+<dd> Get the seconds </dd>
+</dl>
+<dl>
+<dt id='dtm-second!'>dtm-second! (  n dtm --  )</dt>
+<dd> Set the seconds </dd>
+</dl>
+<dl>
+<dt id='dtm-minute@'>dtm-minute@ (  dtm -- n  )</dt>
+<dd> Get the minutes </dd>
+</dl>
+<dl>
+<dt id='dtm-minute!'>dtm-minute! (  n dtm --  )</dt>
+<dd> Set the minutes </dd>
+</dl>
+<dl>
+<dt id='dtm-hour@'>dtm-hour@ (  dtm -- n  )</dt>
+<dd> Get the hour </dd>
+</dl>
+<dl>
+<dt id='dtm-hour!'>dtm-hour! (  n dtm --  )</dt>
+<dd> Set the hour </dd>
+</dl>
+<dl>
+<dt id='dtm-day@'>dtm-day@ (  dtm -- n  )</dt>
+<dd> Get the day </dd>
+</dl>
+<dl>
+<dt id='dtm-day!'>dtm-day! (  n dtm --  )</dt>
+<dd> Set the day </dd>
+</dl>
+<dl>
+<dt id='dtm-month@'>dtm-month@ (  dtm -- n  )</dt>
+<dd> Get the month </dd>
+</dl>
+<dl>
+<dt id='dtm-month!'>dtm-month! (  n dtm --  )</dt>
+<dd> Set the month </dd>
+</dl>
+<dl>
+<dt id='dtm-year@'>dtm-year@ (  dtm -- n  )</dt>
+<dd> Get the year </dd>
+</dl>
+<dl>
+<dt id='dtm-year!'>dtm-year! (  n dtm --  )</dt>
+<dd> Set the year </dd>
+</dl>
+<h2>Set words </h2>
+<dl>
+<dt id='dtm-set-date'>dtm-set-date (  n1 n2 n3 dtm --  )</dt>
+<dd> Set the date with day n1, month n2 and year n3 </dd>
+</dl>
+<dl>
+<dt id='dtm-set-time'>dtm-set-time (  n1 n2 n3 n4 dtm --  )</dt>
+<dd> Set the time with milliseconds n1, seconds n2, minutes n3 and hours n4 </dd>
+</dl>
+<dl>
+<dt id='dtm-set'>dtm-set (  n1 n2 n3 n4 n5 n6 n7 dtm --  )</dt>
+<dd> Set the date/time with milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 </dd>
+</dl>
+<dl>
+<dt id='dtm-set-now'>dtm-set-now (  dtm --  )</dt>
+<dd> Set the date time with the current date/time </dd>
+</dl>
+<dl>
+<dt id='dtm-set-with-days'>dtm-set-with-days (  d1 n2 dtm --  )</dt>
+<dd> Set the date with days d1 since epoch n2 </dd>
+</dl>
+<dl>
+<dt id='dtm-set-with-seconds'>dtm-set-with-seconds (  d n dtm --  )</dt>
+<dd> Set the date/time with d seconds since epoch n </dd>
+</dl>
+<h2>Get words </h2>
+<dl>
+<dt id='dtm-get'>dtm-get (  dtm -- n1 n2 n3 n4 n5 n6 n7  )</dt>
+<dd> Get the date/time, return milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 </dd>
+</dl>
+<dl>
+<dt id='dtm-get-date'>dtm-get-date (  dtm -- n1 n2 n3  )</dt>
+<dd> Get the date, return day n1, month n2 and year n3 </dd>
+</dl>
+<dl>
+<dt id='dtm-get-time'>dtm-get-time (  dtm -- n1 n2 n3 n4  )</dt>
+<dd> Get the time, return milliseconds n1, seconds n2, minutes n3 and hours n4 </dd>
+</dl>
+<dl>
+<dt id='dtm-weekday'>dtm-weekday (  dtm -- n  )</dt>
+<dd> Get the week day from the date </dd>
+</dl>
+<dl>
+<dt id='dtm-yearday'>dtm-yearday (  dtm -- n  )</dt>
+<dd> Get the day number [in the year] from the date </dd>
+</dl>
+<dl>
+<dt id='dtm-iso-weeknumber'>dtm-iso-weeknumber (  dtm -- n1 n2  )</dt>
+<dd> Get the iso week number n1 and year n2 from the date </dd>
+</dl>
+<h2>Epoch words </h2>
+<dl>
+<dt id='dtm-calc-days-since-epoch'>dtm-calc-days-since-epoch (  n dtm -- d  )</dt>
+<dd> Calculate the number of days since epoch n from the date </dd>
+</dl>
+<dl>
+<dt id='dtm-calc-seconds-since-epoch'>dtm-calc-seconds-since-epoch (  n dtm -- d  )</dt>
+<dd> Calculate the number of seconds since epoch n from the date/time </dd>
+</dl>
+<h2>Compare words </h2>
+<dl>
+<dt id='dtm-compare'>dtm-compare (  n1 n2 n3 n4 n5 n6 n7 dtm -- n  )</dt>
+<dd> Compare the date/time with milliseconds n1, seconds n2, minutes n3, hours n4, day n5, month n6 and year n7 </dd>
+</dl>
+<dl>
+<dt id='dtm^compare'>dtm^compare (  dtm1 dtm2 -- n  )</dt>
+<dd> Compare two date/times, return the compare result [-1,0,1] </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='dtm-dump'>dtm-dump (  dtm --  )</dt>
+<dd> Dump the date/time variable </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

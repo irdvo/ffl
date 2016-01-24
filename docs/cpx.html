@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>cpx  --  Complex number data type </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>cpx  --  Complex number data type </dt>
+<dd>
+The cpx module implements complex numbers. A complex number consists of    
+two float numbers on the stack: first the real part of the complex number  
+and second the imaginary part of the number.                               
+</dd>
+</dl>
+<hr>
+<h2>Complex Structure </h2>
+<dl>
+<dt id='cpx%'>cpx% (  -- n  )</dt>
+<dd> Get the required space for a cpx variable </dd>
+</dl>
+<h2>Complex variable creation, initialisation and destruction </h2>
+<dl>
+<dt id='cpx-init'>cpx-init (  cpx --  )</dt>
+<dd> Initialise to the zero complex number </dd>
+</dl>
+<dl>
+<dt id='cpx-create'>cpx-create (  "&lt;spaces&gt;name" -- ; -- cpx  )</dt>
+<dd> Create a named complex number variable in the dictionary </dd>
+</dl>
+<dl>
+<dt id='cpx-new'>cpx-new (  -- cpx  )</dt>
+<dd> Create a new complex number variable on the heap </dd>
+</dl>
+<dl>
+<dt id='cpx-free'>cpx-free (  cpx --  )</dt>
+<dd> Free the complex number variable from the heap </dd>
+</dl>
+<h2>Calculation module words </h2>
+<dl>
+<dt id='cpx+add'>cpx+add (  F: r1 r2 r3 r4 -- r5 r6  )</dt>
+<dd> Add the complex number r1+jr2 to r3+jr4 </dd>
+</dl>
+<dl>
+<dt id='cpx+sub'>cpx+sub (  F: r1 r2 r3 r4 -- r5 r6  )</dt>
+<dd> Subtract the complex number r1+jr2 from the number r3+jr4 </dd>
+</dl>
+<dl>
+<dt id='cpx+mul'>cpx+mul (  F: r1 r2 r3 r4 -- r5 r6  )</dt>
+<dd> Multiply the complex numbers r1+jr2 with r3+jr4 </dd>
+</dl>
+<dl>
+<dt id='cpx+rmul'>cpx+rmul (  F: r1 r2 r3 -- r4 r5  )</dt>
+<dd> Multiply the complex number r1+jr2 with the real number r3 </dd>
+</dl>
+<dl>
+<dt id='cpx+imul'>cpx+imul (  F: r1 r2 r3 -- r4 r5  )</dt>
+<dd> Multiply the complex number r1+jr2 with the imaginary number r3 </dd>
+</dl>
+<dl>
+<dt id='cpx+div'>cpx+div (  F: r1 r2 r3 r4 -- r5 r6  )</dt>
+<dd> Divide the complex number r3+jr4 by number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+conj'>cpx+conj (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Conjugate the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+nrm'>cpx+nrm (  F: r1 r2 -- r3  )</dt>
+<dd> Calculate the square of the modulus of the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+abs'>cpx+abs (  F: r1 r2 -- r3  )</dt>
+<dd> Calculate the modulus of the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+sqrt'>cpx+sqrt (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the square root for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+exp'>cpx+exp (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the exponent function for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+ln'>cpx+ln (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the natural logarithm for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+sin'>cpx+sin (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the trigonometric functions sine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+cos'>cpx+cos (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the trigonometric functions cosine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+tan'>cpx+tan (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the trigonometric functions tangent for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+asin'>cpx+asin (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse trigonometric function sine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+acos'>cpx+acos (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse trigonometric function cosine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+atan'>cpx+atan (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse trigonometric function tangent for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+sinh'>cpx+sinh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the hyperbolic function sine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+cosh'>cpx+cosh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the hyperbolic function cosine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+tanh'>cpx+tanh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the hyperbolic function tangent for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+asinh'>cpx+asinh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse hyperbolic function sine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+acosh'>cpx+acosh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse hyperbolic function cosine for the complex number r1+jr2 </dd>
+</dl>
+<dl>
+<dt id='cpx+atanh'>cpx+atanh (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Calculate the inverse hyperbolic function tangent for the complex number r1+jr2 </dd>
+</dl>
+<h2>Conversion module words </h2>
+<dl>
+<dt id='cpx+to-string'>cpx+to-string (  F: r1 r2 -- ; -- c-addr u  )</dt>
+<dd> Convert the complex number r1+jr2 to a string, using precision and PAD </dd>
+</dl>
+<dl>
+<dt id='cpx+to-polar'>cpx+to-polar (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Convert the complex number r1+jr2 to polar notation with radius r3 and theta r4 </dd>
+</dl>
+<dl>
+<dt id='cpx+from-polar'>cpx+from-polar (  F: r1 r2 -- r3 r4  )</dt>
+<dd> Convert the polar radius r1, theta r2 to complex number r3+jr4 </dd>
+</dl>
+<h2>Compare module words </h2>
+<dl>
+<dt id='cpx+equal?'>cpx+equal? (  F: r1 r2 r3 r4 -- ; -- flag  )</dt>
+<dd> Check if the complex numbers r1+jr2 and r3+jr4 are [true] equal </dd>
+</dl>
+<h2>Variable words </h2>
+<dl>
+<dt id='cpx-re@'>cpx-re@ (  F: -- r ; cpx --  )</dt>
+<dd> Get the real part of the complex number </dd>
+</dl>
+<dl>
+<dt id='cpx-im@'>cpx-im@ (  F: -- r ; cpx --  )</dt>
+<dd> Get the imaginary part of the complex number </dd>
+</dl>
+<dl>
+<dt id='cpx-get'>cpx-get (  F: -- r1 r2 ; cpx --  )</dt>
+<dd> Get the complex number r1+jr2 from the complex variable </dd>
+</dl>
+<dl>
+<dt id='cpx-set'>cpx-set (  F: r1 r2 -- ; cpx --  )</dt>
+<dd> Set the complex number r1+jr2 in the complex variable </dd>
+</dl>
+<dl>
+<dt id='cpx^move'>cpx^move (  cpx2 cpx1 --  )</dt>
+<dd> Move complex2 in complex1 </dd>
+</dl>
+<dl>
+<dt id='cpx^equal?'>cpx^equal? (  cpx2 cpx1 -- flag  )</dt>
+<dd> Check if complex2 is [true] equal to complex1 </dd>
+</dl>
+<dl>
+<dt id='cpx-dump'>cpx-dump (  cpx --  )</dt>
+<dd> Dump the complex variable </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

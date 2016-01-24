@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>trm  --  Terminal Escape Sequence Outputter </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>trm  --  Terminal Escape Sequence Outputter </dt>
+<dd>
+The trm module implements an outputter for terminal escape sequences.        
+It supports a selection of ANSI, VT100, VT102, ECMA-48 and linux console     
+specific escape sequences in order to perform special terminal actions like  
+colors, cursor movements, inserting, erasing lines, etc.                     
+Note: the module uses the pictured output buffer.                            
+</dd>
+</dl>
+<hr>
+<h2>Attributes </h2>
+<dl>
+<dt id='trm.reset'>trm.reset (  -- u  )</dt>
+<dd> Reset attributes to defaults </dd>
+</dl>
+<dl>
+<dt id='trm.bold'>trm.bold (  -- u  )</dt>
+<dd> Set bold </dd>
+</dl>
+<dl>
+<dt id='trm.half-bright'>trm.half-bright (  -- u  )</dt>
+<dd> Set half bright </dd>
+</dl>
+<dl>
+<dt id='trm.underscore-on'>trm.underscore-on (  -- u  )</dt>
+<dd> Set underscore </dd>
+</dl>
+<dl>
+<dt id='trm.blink-on'>trm.blink-on (  -- u  )</dt>
+<dd> Set blink </dd>
+</dl>
+<dl>
+<dt id='trm.reverse-on'>trm.reverse-on (  -- u  )</dt>
+<dd> Set reverse video </dd>
+</dl>
+<dl>
+<dt id='trm.normal-intensity'>trm.normal-intensity (  -- u  )</dt>
+<dd> Set normal intensity </dd>
+</dl>
+<dl>
+<dt id='trm.underline-off'>trm.underline-off (  -- u  )</dt>
+<dd> Reset underline </dd>
+</dl>
+<dl>
+<dt id='trm.blink-off'>trm.blink-off (  -- u  )</dt>
+<dd> Reset blink </dd>
+</dl>
+<dl>
+<dt id='trm.reverse-off'>trm.reverse-off (  -- u  )</dt>
+<dd> Reset reverse </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-black'>trm.foreground-black (  -- u  )</dt>
+<dd> Set black foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-red'>trm.foreground-red (  -- u  )</dt>
+<dd> Set red foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-green'>trm.foreground-green (  -- u  )</dt>
+<dd> Set green foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-brown'>trm.foreground-brown (  -- u  )</dt>
+<dd> Set brown foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-blue'>trm.foreground-blue (  -- u  )</dt>
+<dd> Set blue foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-magenta'>trm.foreground-magenta (  -- u  )</dt>
+<dd> Set magenta foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-cyan'>trm.foreground-cyan (  -- u  )</dt>
+<dd> Set cyan foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-white'>trm.foreground-white (  -- u  )</dt>
+<dd> Set white foreground </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-def-underline'>trm.foreground-def-underline (  -- u  )</dt>
+<dd> Set default foreground with underscore on </dd>
+</dl>
+<dl>
+<dt id='trm.foreground-default'>trm.foreground-default (  -- u  )</dt>
+<dd> Set default foreground </dd>
+</dl>
+<dl>
+<dt id='trm.background-black'>trm.background-black (  -- u  )</dt>
+<dd> Set black background </dd>
+</dl>
+<dl>
+<dt id='trm.background-red'>trm.background-red (  -- u  )</dt>
+<dd> Set red background </dd>
+</dl>
+<dl>
+<dt id='trm.background-green'>trm.background-green (  -- u  )</dt>
+<dd> Set green background </dd>
+</dl>
+<dl>
+<dt id='trm.background-brown'>trm.background-brown (  -- u  )</dt>
+<dd> Set brown background </dd>
+</dl>
+<dl>
+<dt id='trm.background-blue'>trm.background-blue (  -- u  )</dt>
+<dd> Set blue background </dd>
+</dl>
+<dl>
+<dt id='trm.background-magenta'>trm.background-magenta (  -- u  )</dt>
+<dd> Set magenta background </dd>
+</dl>
+<dl>
+<dt id='trm.background-cyan'>trm.background-cyan (  -- u  )</dt>
+<dd> Set cyan background </dd>
+</dl>
+<dl>
+<dt id='trm.background-white'>trm.background-white (  -- u  )</dt>
+<dd> Set white background </dd>
+</dl>
+<dl>
+<dt id='trm.background-default'>trm.background-default (  -- u  )</dt>
+<dd> Set default background </dd>
+</dl>
+<h2>Terminal words </h2>
+<dl>
+<dt id='trm+reset'>trm+reset (  --  )</dt>
+<dd> Reset the terminal </dd>
+</dl>
+<dl>
+<dt id='trm+save-current-state'>trm+save-current-state (  --  )</dt>
+<dd> Save the current state: cursor, attributes and character sets </dd>
+</dl>
+<dl>
+<dt id='trm+restore-current-state'>trm+restore-current-state (  --  )</dt>
+<dd> Restore the current state: cursor, attributes and character sets </dd>
+</dl>
+<h2>Tab words </h2>
+<dl>
+<dt id='trm+set-tab-stop'>trm+set-tab-stop (  --  )</dt>
+<dd> Set tab stop at current column </dd>
+</dl>
+<dl>
+<dt id='trm+clear-tab-stop'>trm+clear-tab-stop (  --  )</dt>
+<dd> Clear tab stop at current column </dd>
+</dl>
+<dl>
+<dt id='trm+clear-all-tab-stops'>trm+clear-all-tab-stops (  --  )</dt>
+<dd> Clear all tab stops </dd>
+</dl>
+<h2>Scroll words </h2>
+<dl>
+<dt id='trm+set-scroll-region'>trm+set-scroll-region (  u1 u2 --  )</dt>
+<dd> Set the scroll region rows with top u2 and bottom u1, both ranging from 1 till numbers of rows </dd>
+</dl>
+<dl>
+<dt id='trm+scroll-up'>trm+scroll-up (  --  )</dt>
+<dd> Scroll the display up </dd>
+</dl>
+<dl>
+<dt id='trm+scroll-down'>trm+scroll-down (  --  )</dt>
+<dd> Scroll the display down </dd>
+</dl>
+<dl>
+<dt id='trm+reset-scroll-region'>trm+reset-scroll-region (  --  )</dt>
+<dd> Reset the scroll region rows </dd>
+</dl>
+<h2>Cursor words </h2>
+<dl>
+<dt id='trm+move-cursor-up'>trm+move-cursor-up (  u --  )</dt>
+<dd> Move cursor up u rows, always at least one row </dd>
+</dl>
+<dl>
+<dt id='trm+move-cursor-down'>trm+move-cursor-down (  u --  )</dt>
+<dd> Move cursor down u rows, always at least one row </dd>
+</dl>
+<dl>
+<dt id='trm+move-cursor-right'>trm+move-cursor-right (  u --  )</dt>
+<dd> Move cursor right u columns, always at least one column </dd>
+</dl>
+<dl>
+<dt id='trm+move-cursor-left'>trm+move-cursor-left (  u --  )</dt>
+<dd> Move cursor left u columns, always at least one column </dd>
+</dl>
+<dl>
+<dt id='trm+move-cursor'>trm+move-cursor (  u1 u2 --  )</dt>
+<dd> Move cursor to column and row with x u1 and y u2, both starting from 1 </dd>
+</dl>
+<dl>
+<dt id='trm+get-cursor'>trm+get-cursor (  -- u1 u2  )</dt>
+<dd> Get the current cursor position with x u1 and y u2, both starting from 1 </dd>
+</dl>
+<dl>
+<dt id='trm+save-cursor'>trm+save-cursor (  --  )</dt>
+<dd> Save cursor location </dd>
+</dl>
+<dl>
+<dt id='trm+restore-cursor'>trm+restore-cursor (  --  )</dt>
+<dd> Restore cursor location </dd>
+</dl>
+<h2>Erase display words </h2>
+<dl>
+<dt id='trm+erase-display-down'>trm+erase-display-down (  --  )</dt>
+<dd> Erase display from cursor to end </dd>
+</dl>
+<dl>
+<dt id='trm+erase-display-up'>trm+erase-display-up (  --  )</dt>
+<dd> Erase from start display to cursor </dd>
+</dl>
+<dl>
+<dt id='trm+erase-display'>trm+erase-display (  --  )</dt>
+<dd> Erase the whole display </dd>
+</dl>
+<h2>Erase line words </h2>
+<dl>
+<dt id='trm+erase-end-of-line'>trm+erase-end-of-line (  --  )</dt>
+<dd> Erase the line from cursor to end of line </dd>
+</dl>
+<dl>
+<dt id='trm+erase-start-of-line'>trm+erase-start-of-line (  --  )</dt>
+<dd> Erase the line from start line to cursor </dd>
+</dl>
+<dl>
+<dt id='trm+erase-line'>trm+erase-line (  --  )</dt>
+<dd> Erase the whole line </dd>
+</dl>
+<h2>Insert and delete lines words </h2>
+<dl>
+<dt id='trm+insert-lines'>trm+insert-lines (  u --  )</dt>
+<dd> Insert u blank lines </dd>
+</dl>
+<dl>
+<dt id='trm+delete-lines'>trm+delete-lines (  u --  )</dt>
+<dd> Delete u lines </dd>
+</dl>
+<h2>Character words </h2>
+<dl>
+<dt id='trm+insert-spaces'>trm+insert-spaces (  u --  )</dt>
+<dd> Insert u spaces </dd>
+</dl>
+<dl>
+<dt id='trm+delete-chars'>trm+delete-chars (  u --  )</dt>
+<dd> Delete n characters on the current line </dd>
+</dl>
+<dl>
+<dt id='trm+erase-chars'>trm+erase-chars (  u --  )</dt>
+<dd> Erase u characters on the current line </dd>
+</dl>
+<h2>Attribute words </h2>
+<dl>
+<dt id='trm+set-attributes'>trm+set-attributes (  u1 .. un n --  )</dt>
+<dd> Set n attributes </dd>
+</dl>
+<h2>LED words </h2>
+<dl>
+<dt id='trm+clear-all-leds'>trm+clear-all-leds (  --  )</dt>
+<dd> Clear all LEDs </dd>
+</dl>
+<dl>
+<dt id='trm+set-scroll-led'>trm+set-scroll-led (  --  )</dt>
+<dd> Set the scroll lock LED </dd>
+</dl>
+<dl>
+<dt id='trm+set-num-led'>trm+set-num-led (  --  )</dt>
+<dd> Set the num lock LED </dd>
+</dl>
+<dl>
+<dt id='trm+set-caps-led'>trm+set-caps-led (  --  )</dt>
+<dd> Set the caps lock LED </dd>
+</dl>
+<h2>Character set words </h2>
+<dl>
+<dt id='trm+select-default-font'>trm+select-default-font (  --  )</dt>
+<dd> Select the default character set </dd>
+</dl>
+<dl>
+<dt id='trm+select-alternate-font'>trm+select-alternate-font (  --  )</dt>
+<dd> Select the alternate character set </dd>
+</dl>
+<h2>Linux console words </h2>
+<dl>
+<dt id='trm+set-default-attributes'>trm+set-default-attributes (  --  )</dt>
+<dd> Set the current attributes the default attributes </dd>
+</dl>
+<dl>
+<dt id='trm+set-screen-blank-timeout'>trm+set-screen-blank-timeout (  u --  )</dt>
+<dd> Set the screen blank timeout in minutes </dd>
+</dl>
+<dl>
+<dt id='trm+activate-console'>trm+activate-console (  u --  )</dt>
+<dd> Bring the console to the front </dd>
+</dl>
+<dl>
+<dt id='trm+unblank-screen'>trm+unblank-screen (  --  )</dt>
+<dd> Unblank the screen </dd>
+</dl>
+<dl>
+<dt id='trm+select-default'>trm+select-default (  --  )</dt>
+<dd> Select the default character set ISO8859-1 </dd>
+</dl>
+<dl>
+<dt id='trm+select-UTF-8'>trm+select-UTF-8 (  --  )</dt>
+<dd> Select the UTF-8 character set </dd>
+</dl>
+<dl>
+<dt id='trm+select-graphics-font2'>trm+select-graphics-font2 (  --  )</dt>
+<dd> Select the vt100 graphics font for the alternate font </dd>
+</dl>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

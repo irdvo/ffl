@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>hnt  --  Generic Hash Table </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>hnt  --  Generic Hash Table </dt>
+<dd>
+The hnt module implements a generic hash table that can store variable     
+size nodes. It is the base module for more specialized hash tables, for    
+example the cell hash table [hct].                                         
+</dd>
+</dl>
+<hr>
+<h2>Hash table structure </h2>
+<dl>
+<dt id='hnt%'>hnt% (  -- n  )</dt>
+<dd> Get the required space for a hash table variable </dd>
+</dl>
+<h2>Hash table creation, initialisation and destruction </h2>
+<dl>
+<dt id='hnt-init'>hnt-init (  u hnt --  )</dt>
+<dd> Initialise the hash table with an initial size u </dd>
+</dl>
+<dl>
+<dt id='hnt-(free)'>hnt-(free) (  xt hnt --  )</dt>
+<dd> Free the nodes from the heap using xt </dd>
+</dl>
+<dl>
+<dt id='hnt-create'>hnt-create (  u "&lt;spaces&gt;name" -- ; -- hnt  )</dt>
+<dd> Create a named hash table with an initial size u in the dictionary </dd>
+</dl>
+<dl>
+<dt id='hnt-new'>hnt-new (  u -- hnt  )</dt>
+<dd> Create a hash table with an initial size u on the heap </dd>
+</dl>
+<dl>
+<dt id='hnt-free'>hnt-free (  hnt --  )</dt>
+<dd> Free the hash table from the heap </dd>
+</dl>
+<h2>Module words </h2>
+<dl>
+<dt id='hnt+hash'>hnt+hash (  c-addr1 u1 -- u2  )</dt>
+<dd> Calculate the hash value of the key c-addr1 u1 </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='hnt-empty?'>hnt-empty? (  hnt -- flag  )</dt>
+<dd> Check for an empty table </dd>
+</dl>
+<dl>
+<dt id='hnt-length@'>hnt-length@ (  hnt -- u  )</dt>
+<dd> Get the number of nodes in the table </dd>
+</dl>
+<dl>
+<dt id='hnt-load@'>hnt-load@ (  hnt -- u  )</dt>
+<dd> Get the load factor [*100%] </dd>
+</dl>
+<dl>
+<dt id='hnt-load!'>hnt-load! (  u hnt --  )</dt>
+<dd> Set the load factor [*100%] </dd>
+</dl>
+<dl>
+<dt id='hnt-size!'>hnt-size! (  u hnt --  )</dt>
+<dd> Resize the hash table </dd>
+</dl>
+<h2>Hash table words </h2>
+<dl>
+<dt id='hnt-search'>hnt-search (  c-addr u hnt -- u hnn  )</dt>
+<dd> Search the node based on the key, return the hash u and the node hnn </dd>
+</dl>
+<dl>
+<dt id='hnt-insert'>hnt-insert (  hnn hnt --  )</dt>
+<dd> Insert the node hnn in the table, double keys are NOT checked </dd>
+</dl>
+<dl>
+<dt id='hnt-delete'>hnt-delete (  c-addr u hnt -- nil | hnn  )</dt>
+<dd> Delete the key c-addr u from the table, return the deleted node hnn </dd>
+</dl>
+<dl>
+<dt id='hnt-get'>hnt-get (  c-addr u hnt -- nil | hnn  )</dt>
+<dd> Get the node related to the key c-addr u from the table, return the node hnn </dd>
+</dl>
+<dl>
+<dt id='hnt-has?'>hnt-has? (  c-addr u hnt -- flag  )</dt>
+<dd> Check if the key c-addr u is present in the table </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='hnt-execute'>hnt-execute (  i*x xt hnt -- j*x  )</dt>
+<dd> Execute xt for every key and node in the table </dd>
+</dl>
+<dl>
+<dt id='hnt-execute?'>hnt-execute? (  i*x xt hnt -- j*x flag  )</dt>
+<dd> Execute xt for every key and node in the table or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='hnt-dump'>hnt-dump (  hnt --  )</dt>
+<dd> Dump the hash table </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\           hnt_expl - the base hash table example in the ffl
+\
+\               Copyright (C) 2007  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2007-12-09 07:23:14 $ $Revision: 1.4 $
+\
+\ ==============================================================================
+
+include ffl/hnt.fs
+include ffl/hni.fs
+
+
+\ Example: store scientific constants in a hash table
+
+\ Extend the base node with a float for storing the value of the constant
+
+begin-structure sc%
+  hnn%
+  +field  sc&gt;ht                      \ Node extends the base node
+  ffield: sc&gt;value                   \ Value of constant
+end-structure
+
+
+\ Create the hash table in the dictionary with an initial size of 10
+
+10 hnt-create sc-table
+
+
+\ Word for adding the value
+
+: sc-add ( r c-addr u -- = value key )
+  2dup sc-table hnt-search                     \ Search if the key is already present in the hash table
+  dup nil&lt;&gt; IF                                 \ If the key is already present Then
+    nip nip nip                                \   Remove the key and hash value from stack
+    sc&gt;value f!                                \   Update the node in the hash table with the value
+  ELSE                                         \ Else
+    drop                                       \   Drop nil
+    sc% allocate throw                         \   Allocate a new sc% node
+    &gt;r
+    r@ hnn-init                                \   Initialise the new sc% node with the key and hash
+    r@ sc&gt;value f!                             \   Save the value in the node
+    r&gt; sc-table hnt-insert                     \   Store the sc% node in the hash table
+  THEN
+;
+
+
+\ Add the constants
+
+3.14158E+0 s" pi"     sc-add
+2.71828E+0 s" euler"  sc-add
+1.61803E+0 s" golden" sc-add
+
+\ Word for printing the scientific constant
+
+: sc-emit ( sc% -- )
+  dup hnn-key@ type ."  -&gt; " sc&gt;value f@ f. cr
+;
+
+
+\ Print all scientific constants
+
+&apos; sc-emit sc-table hnt-execute                \ Execute the word sc-emit for all entries in the hash table
+
+
+\ Example hash table iterator
+
+\ Create the hash table iterator in the dictionary
+
+sc-table hni-create sc-iter                   \ Create an iterator named sc-iter on the sc-table hash table
+
+\ Moving the iterator
+
+sc-iter hni-first                             \ Move the iterator to the first record
+nil&lt;&gt; [IF]                                    \ If record exists Then ..
+  sc-iter hni-key type                        \   Type the key ..
+  .(  =&gt; )
+  sc-iter hni-get sc&gt;value f@ f.              \   .. and the value
+  cr
+[THEN]
+
+sc-iter hni-next                              \ Move the iterator to the next record
+nil&lt;&gt; [IF]                                    \ If record exists Then ..
+  sc-iter hni-key type                        \   Type the key ..
+  .(  =&gt; )
+  sc-iter hni-get sc&gt;value f@ f.              \   .. and the value
+  cr
+[ELSE]
+  .( No next record in the hash table) cr  
+[THEN]
+
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>

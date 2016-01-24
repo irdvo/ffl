@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>car  --  Cell array module </title>
+<meta name='generator' content='fsdocgen'>
+<link rel='stylesheet' href='style.css'>
+</head>
+<body>
+<h2>Module description</h2>
+<dl><dt>car  --  Cell array module </dt>
+<dd>
+The car module implements a dynamic cell array. 
+</dd>
+</dl>
+<hr>
+<h2>Cell Array Structure </h2>
+<dl>
+<dt id='car%'>car% (  -- n  )</dt>
+<dd> Get the required space for a car variable </dd>
+</dl>
+<h2>Array creation, initialisation and destruction </h2>
+<dl>
+<dt id='car-init'>car-init (  +n car --  )</dt>
+<dd> Initialise the array with an initial length n </dd>
+</dl>
+<dl>
+<dt id='car-(free)'>car-(free) (  car --  )</dt>
+<dd> Free the internal data from the heap </dd>
+</dl>
+<dl>
+<dt id='car-create'>car-create (  n "&lt;spaces&gt;name" -- ; -- car  )</dt>
+<dd> Create a cell array in the dictionary with an initial length n </dd>
+</dl>
+<dl>
+<dt id='car-new'>car-new (  n -- car  )</dt>
+<dd> Create a cell array with an initial length n on the heap </dd>
+</dl>
+<dl>
+<dt id='car-free'>car-free (  car --  )</dt>
+<dd> Free the array from the heap </dd>
+</dl>
+<h2>Member words </h2>
+<dl>
+<dt id='car-length@'>car-length@ (  car -- u  )</dt>
+<dd> Get the number of elements in the array </dd>
+</dl>
+<dl>
+<dt id='car-index?'>car-index? (  n car -- flag  )</dt>
+<dd> Check if the index n is valid in the array </dd>
+</dl>
+<dl>
+<dt id='car-size!'>car-size! (  +n car --  )</dt>
+<dd> Insure the size of the array </dd>
+</dl>
+<dl>
+<dt id='car-extra@'>car-extra@ (  car -- u  )</dt>
+<dd> Get the extra space allocated during resizing of the array </dd>
+</dl>
+<dl>
+<dt id='car-extra!'>car-extra! (  u car --  )</dt>
+<dd> Set the extra space allocated during resizing of the array </dd>
+</dl>
+<dl>
+<dt id='car+extra@'>car+extra@ (  -- u  )</dt>
+<dd> Get the initial extra space allocated during resizing of the array </dd>
+</dl>
+<dl>
+<dt id='car+extra!'>car+extra! (  u --  )</dt>
+<dd> Set the initial extra space allocated during resizing of the array </dd>
+</dl>
+<dl>
+<dt id='car-compare@'>car-compare@ (  car -- xt  )</dt>
+<dd> Get the compare execution token for sorting the array </dd>
+</dl>
+<dl>
+<dt id='car-compare!'>car-compare! (  xt car --  )</dt>
+<dd> Set the compare execution token for sorting the array </dd>
+</dl>
+<h2>Array words </h2>
+<dl>
+<dt id='car-clear'>car-clear (  car --  )</dt>
+<dd> Clear the array </dd>
+</dl>
+<dl>
+<dt id='car-set'>car-set (  x n car --  )</dt>
+<dd> Set the cell value x at the nth element </dd>
+</dl>
+<dl>
+<dt id='car-get'>car-get (  n car -- x  )</dt>
+<dd> Get the cell value from the nth element </dd>
+</dl>
+<dl>
+<dt id='car-append'>car-append (  x car --  )</dt>
+<dd> Append the cell value at the end of the array </dd>
+</dl>
+<dl>
+<dt id='car-prepend'>car-prepend (  x car --  )</dt>
+<dd> Prepend the cell value at the start of the array </dd>
+</dl>
+<dl>
+<dt id='car-insert'>car-insert (  x n car --  )</dt>
+<dd> Insert the cell value x at the nth element </dd>
+</dl>
+<dl>
+<dt id='car-delete'>car-delete (  n car -- x  )</dt>
+<dd> Delete the cell value at the nth position, return the previous cell value x </dd>
+</dl>
+<h2>Sorting words </h2>
+<dl>
+<dt id='car-sort'>car-sort (  car --  )</dt>
+<dd> Sort the array using the compare execution token using heap sort </dd>
+</dl>
+<dl>
+<dt id='car-find-sorted'>car-find-sorted (  x car -- n flag  )</dt>
+<dd> Find the cell value x in the already sorted array using binary search, return offset and success </dd>
+</dl>
+<dl>
+<dt id='car-has-sorted?'>car-has-sorted? (  x car -- flag  )</dt>
+<dd> Check if the cell value x is present in an already sorted array </dd>
+</dl>
+<dl>
+<dt id='car-insert-sorted'>car-insert-sorted (  x car --  )</dt>
+<dd> Insert the cell value x sorted in an already sorted array </dd>
+</dl>
+<h2>Fifo/Lifo words </h2>
+<dl>
+<dt id='car-tos'>car-tos (  car -- x  )</dt>
+<dd> Get the cell value at the end of the array, exception if array is empty </dd>
+</dl>
+<dl>
+<dt id='car-push'>car-push (  x car --  )</dt>
+<dd> Push the cell value x at the end of the array </dd>
+</dl>
+<dl>
+<dt id='car-pop'>car-pop (  car -- x  )</dt>
+<dd> Pop the cell value from the end of the array, exception if array is empty </dd>
+</dl>
+<dl>
+<dt id='car-enqueue'>car-enqueue (  x car --  )</dt>
+<dd> Enqueue the cell value x at the start of the array </dd>
+</dl>
+<dl>
+<dt id='car-dequeue'>car-dequeue (  car -- x  )</dt>
+<dd> Dequeue the cell value from the end of the array, exception if array is empty </dd>
+</dl>
+<h2>Special words </h2>
+<dl>
+<dt id='car-count'>car-count (  x car -- u  )</dt>
+<dd> Count the number of occurrences of a cell value x in the array </dd>
+</dl>
+<dl>
+<dt id='car-find'>car-find (  x car -- n  )</dt>
+<dd> Find the offset first occurrence of the cell value x in the array, -1 if not found </dd>
+</dl>
+<dl>
+<dt id='car-has?'>car-has? (  x car -- flag  )</dt>
+<dd> Check if a cell value x is present in the array </dd>
+</dl>
+<dl>
+<dt id='car-execute'>car-execute (  i*x xt car -- j*x  )</dt>
+<dd> Execute the execution token for every cell in the array </dd>
+</dl>
+<dl>
+<dt id='car-execute?'>car-execute? (  i*x xt car -- j*x flag  )</dt>
+<dd> Execute the execution token for every cell in the array or until xt returns true, flag is true if xt returned true </dd>
+</dl>
+<h2>Inspection </h2>
+<dl>
+<dt id='car-dump'>car-dump (  car --  )</dt>
+<dd> Dump the cell array variable </dd>
+</dl>
+<h2>Examples</h2>
+<pre>
+\ ==============================================================================
+\
+\          car_expl - the cell array collection example in the ffl
+\
+\               Copyright (C) 2008  Dick van Oudheusden
+\  
+\ This library is free software; you can redistribute it and/or
+\ modify it under the terms of the GNU General Public
+\ License as published by the Free Software Foundation; either
+\ version 2 of the License, or (at your option) any later version.
+\
+\ This library is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+\ General Public License for more details.
+\
+\ You should have received a copy of the GNU General Public
+\ License along with this library; if not, write to the Free
+\ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+\
+\ ==============================================================================
+\ 
+\  $Date: 2008-02-23 06:40:17 $ $Revision: 1.1 $
+\
+\ ==============================================================================
+
+include ffl/car.fs
+
+
+\ Example: simple numeric values in an array
+
+
+\ Create a dynamic cell array in the dictionary with an initial size of 10
+
+10 car-create values
+
+
+\ Put values in the array
+
+ 7  0 values car-set                             \ Put value 7 on index 0 in values
+ 1  1 values car-set
+ 9  2 values car-set
+ 2  3 values car-set
+ 4  4 values car-set
+ 6  5 values car-set
+ 3  6 values car-set
+ 5  7 values car-set
+ 8  8 values car-set
+ 0 -1 values car-set                             \ Put value 0 on index 9 in values
+
+10  values car-prepend                           \ Prepend value 10 at the start of the array
+11  values car-append                            \ Append value 11 at the end of the array
+
+12 5 values car-insert                           \ Insert value 12 on index 5 in the array
+
+
+\ Get values from the array
+
+.( Value on index 7: ) 7 values car-get . cr     \ Get the value on index 7 (6)
+
+.( Delete second: ) 1 values car-delete . cr     \ Delete the value on index 1 and print this (7)
+
+.( Length: ) values car-length@ . cr             \ Print the length of the array (12)
+
+6 values car-has? [IF]                           \ Check the presence of a value in the array
+  .( Value 6 is in the array.) cr
+[ELSE]
+  .( Value 6 is not in the array.) cr
+[THEN]
+
+9 values car-find dup -1 &lt;&gt; [IF]                 \ Find the index of a value in the array
+  .( Value 9 is in the array on index: ) . cr
+[ELSE]
+  drop
+  .( Value 9 is not in the array.) cr
+[THEN]
+
+values car-sort                                  \ Sort the values in the array
+
+.( Values: ) &apos; . values car-execute cr           \ Print all values in the array
+
+
+
+\ Example 2: store references to date/times in the array
+
+include ffl/dtm.fs
+
+
+\ Allocate a dynamic array with an initial size of 5 on the heap
+
+5 car-new value dates
+
+
+\ Create and add five dates to the array
+
+dtm-new 0 dates car-set
+dtm-new 1 dates car-set
+dtm-new 2 dates car-set
+dtm-new 3 dates car-set
+dtm-new 4 dates car-set
+
+
+\ Set the dates
+
+23 dtm.february 2008  0 dates car-get  dtm-set-date   \ saturday
+ 3 dtm.march    2008  1 dates car-get  dtm-set-date   \ monday
+24 dtm.january  2008  2 dates car-get  dtm-set-date   \ thursday
+14 dtm.april    2008  3 dates car-get  dtm-set-date   \ monday
+ 4 dtm.may      2008  4 dates car-get  dtm-set-date   \ sunday
+
+ 
+\ Sort the dates based on week day
+
+: dates-compare  ( dtm1 dtm2 -- n = Compare two dates for week day )
+  dtm-weekday swap dtm-weekday swap &lt;=&gt;
+;
+
+&apos; dates-compare dates car-compare!                   \ Set the compare word for sorting
+
+dates car-sort                                       \ Sort the array using the dates-compare word
+
+
+\ Print the dates
+
+: dates-print  ( dtm -- = Print the date )
+  &gt;r ." Day:" r@ dtm-day@ 2 .r ."  Month:" r@ dtm-month@ 2 .r ."  Year:" r&gt; dtm-year@ . cr
+;
+
+&apos; dates-print dates car-execute                      \ Print all the dates sorted on week day in the array
+
+
+\ Free the dates from the heap
+
+&apos; dtm-free dates car-execute
+
+
+\ Free the array from the heap
+
+dates car-free
+
+</pre>
+<hr>
+<p>Generated by fsdocgen 0.1.0</p>
+</body>
+</html>
