@@ -38,8 +38,8 @@ include ffl/gzf.fs
 include ffl/gzi.fs
 
 ( zif = gzip file reader )
-( The zif module implements a gzip file reader. See [gzf] for the gzip       )
-( file header information.                                                    )
+( The zif module implements a gzip file reader. See <a href='gzf.html'>gzf</a> )
+( for the gzip file header information.                                        )
 
 
 1 constant zif.version

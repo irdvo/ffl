@@ -35,7 +35,7 @@ include ffl/nct.fs
 
 
 ( nci = n-Tree cell Iterator )
-( The nci module implements an iterator on a cell n-Tree [nct]. )
+( The nci module implements an iterator on a cell n-Tree <a href='nct.html'>nct</a>. )
 
 
 1 constant nci.version

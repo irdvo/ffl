@@ -42,9 +42,9 @@ include ffl/stc.fs
 ( data in the buffer and fetch data from the buffer. Their behavior should   )
 ( match the size of the elements in the buffer.                              )
 ( Important: the cbf-get and cbf-fetch copy data from the buffer to the      )
-( destination address. This is different from the linear buffer [lbf]        )
-( implementation: the lbf-get and lbf-fetch return addresses located         )
-( in the buffer.                                                             )
+( destination address. This is different from the linear buffer              )
+( <a href='lbf.html'>lbf</a> implementation: the lbf-get and lbf-fetch       )
+( return addresses located in the buffer.                                    )
 
 
 1 constant cbf.version

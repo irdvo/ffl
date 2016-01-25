@@ -33,7 +33,7 @@ include ffl/config.fs
 include ffl/stc.fs
 
 ( hnn = Generic Hash Table Node )
-( The hnn module implements a generic node in the hash table [hnt].)
+( The hnn module implements a generic node in the hash table <a href='hnt.html'>hnt</a>. )
 
 
 1 constant hnn.version

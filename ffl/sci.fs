@@ -35,7 +35,7 @@ include ffl/scn.fs
 include ffl/sni.fs
 
 ( sci = Single Linked Cell List Iterator )
-( The sci module implements an iterator on the single linked cell list [scl]. )
+( The sci module implements an iterator on the single linked cell list <a href='scl.html'>scl</a>. )
 
 
 1 constant sci.version

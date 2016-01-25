@@ -35,8 +35,9 @@ include ffl/nfe.fs
 
 ( rgx = Regular expressions )
 ( The rgx module implements regular expressions. It supports words for       )
-( compiling and matching regular expressions. The module uses the [nfe]      )
-( module for the actual expression building and matching.                    )
+( compiling and matching regular expressions. The module uses the            )
+( <a href='nfe.html'>nfe</a> module for the actual expression building and   )
+( matching.                                                                  )
 ( <pre>                                                                      )
 (                                                                            )
 (     This module uses the following syntax:                                 )

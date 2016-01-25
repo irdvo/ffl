@@ -35,7 +35,7 @@ include ffl/dni.fs
 
 
 ( dci = Double Linked Cell List Iterator )
-( The dci module implements an iterator on the double linked cell list [dcl]. )
+( The dci module implements an iterator on the double linked cell list <a href='dcl.html'>dcl</a>. )
 
 
 1 constant dci.version

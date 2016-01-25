@@ -37,7 +37,7 @@ include ffl/ncn.fs
 ( nct = n-Tree cell module )
 ( The nct module implements a n-Tree that can store cell size data. It extends)
 ( the base n-Tree module, with cell based words. For adding and removing cells)
-( to and from the tree, use the iterator [nci].                               )
+( to and from the tree, use the iterator <a href='nci.html'>nci</a>.          )
 
 
 2 constant nct.version

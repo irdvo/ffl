@@ -37,7 +37,8 @@ include ffl/enm.fs
 
 ( gzi = gzip Input Base Module )
 ( The gzi module implements the gzip inflate algorithm. The module is used   )
-( for reading from a gzip file [zif] and, in a future version, stream [zis]. )
+( for reading from a gzip file <a href='zif.html'>zif</a> and, in a future   )
+( version, from a stream <a href='zis.html'>zis</a>.                         )
 
 
 1 constant gzi.version

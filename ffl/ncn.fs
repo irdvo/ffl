@@ -34,7 +34,7 @@ include ffl/nnn.fs
 
 
 ( ncn = n-Tree cell node )
-( The ncn module implements a node in a n-tree [nct] that stores a cell value.)
+( The ncn module implements a node in a n-tree <a href='nct.html'>nct</a> that stores a cell value.)
 
 
 1 constant ncn.version

@@ -34,7 +34,7 @@ include ffl/snn.fs
 
 
 ( scn = Single Linked Cell Node )
-( The scn module implements a node in the single linked list [scl].          )
+( The scn module implements a node in the single linked list <a href='scl.html'>scl</a>. )
 
 
 2 constant scn.version

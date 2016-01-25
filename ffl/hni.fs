@@ -36,7 +36,7 @@ include ffl/hnn.fs
 
 
 ( hni = Generic Hash Table Iterator )
-( The hni module implements an iterator on the generic hash table [hnt]. )
+( The hni module implements an iterator on the generic hash table <a href='hnt.html'>hnt</a>. )
 
 
 1 constant hni.version

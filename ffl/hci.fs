@@ -36,7 +36,7 @@ include ffl/hcn.fs
 
 
 ( hci = Hash Cell Table Iterator )
-( The hci module implements an iterator on the hash cell table [hct]. )
+( The hci module implements an iterator on the hash cell table <a href='hct.html'>hct</a>. )
 
 
 1 constant hci.version

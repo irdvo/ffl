@@ -37,7 +37,7 @@ include ffl/hnn.fs
 ( hnt = Generic Hash Table )
 ( The hnt module implements a generic hash table that can store variable     )
 ( size nodes. It is the base module for more specialized hash tables, for    )
-( example the cell hash table [hct].                                         )
+( example the cell hash table <a href='hct.html'>hct</a>.                    )
   
 
 2 constant hnt.version

@@ -34,7 +34,7 @@ include ffl/nnt.fs
 
 
 ( nni = n-Tree base Iterator )
-( The nni module implements an iterator on the base n-Tree [nnt]. )
+( The nni module implements an iterator on the base n-Tree <a href='nnt.html'>nnt</a>. )
 
 
 1 constant nni.version

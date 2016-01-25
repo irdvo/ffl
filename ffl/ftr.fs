@@ -36,8 +36,8 @@ include ffl/str.fs
 
 
 ( ftr = FSM Transition )
-( The ftr module implements a transition in a Finite State Machine. See [fsm] )
-( for more info about using this module.                                      )
+( The ftr module implements a transition in a Finite State Machine. See       )
+( <a href='fsm.html'>fsm</a> for more info about using this module.           )
 
 
 1 constant ftr.version

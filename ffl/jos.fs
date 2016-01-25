@@ -35,12 +35,13 @@ include ffl/car.fs
 include ffl/enm.fs
 
 ( jos = JSON output stream )
-( The jos module implements an JSON &lb;Javascript Object Notation&rb;       )
-( writer. JSON is a lightweight data interchange format. See                 )
-( [http://www.json.org]. The jos module extends the tos module with extra    )
-( words, so the tos words can be used on a jos variable. The module checks   )
-( the use of the writer words in relation to the syntax. If a word is used   )
-( outside the syntax, an exp-invalid-state exception is thrown.              )
+( The jos module implements an JSON [Javascript Object Notation] writer.     )
+( JSON is a lightweight data interchange format. See                         )
+( <a href='http://www.json.org'>json.org</a>. The jos module extends the     )
+( <a href='tos.html'>tos</a> module with extra words, so the tos words can   )
+( be used on a jos variable. The module checks the use of the writer words   )
+( in relation to the syntax. If a word is used outside the syntax, an        )
+( exp-invalid-state exception is thrown.                                     )
 
 
 1 constant jos.version

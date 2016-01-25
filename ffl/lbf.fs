@@ -49,9 +49,9 @@ include ffl/stc.fs
 ( pointer. The words lbf-get' and lbf-length' use the secondary out pointer. )
 ( Important: the lbf-get and lbf-fetch returning addresses are located       )
 ( in the buffer so the contents of these addresses can change with the next  )
-( call to the buffer. This is different from the circular buffer [cbf]       )
-( implementation: the cbf-get and cbf-fetch words copy data from the buffer  )
-( to the destination addresses. )
+( call to the buffer. This is different from the circular buffer             )
+( <a href='cbf.html'>cbf</a> implementation: the cbf-get and cbf-fetch words )
+( copy data from the buffer to the destination addresses.                    )
 
 
 1 constant lbf.version

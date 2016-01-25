@@ -34,7 +34,7 @@ include ffl/stc.fs
 
 
 ( snn = Generic Single Linked List Node )
-( The snn module implements a node in a generic single linked list [snl].    )
+( The snn module implements a node in a generic single linked list <a href='snl.html'>snl</a>. )
 
 
 1 constant snn.version

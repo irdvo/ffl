@@ -34,7 +34,7 @@ include ffl/dnl.fs
 
 
 ( nnn = Generic n-Tree Node )
-( The nnn module implements a generic node in a n-tree [nnt].                )
+( The nnn module implements a generic node in a n-tree <a href='nnt.html'>nnt</a>. )
 
 
 1 constant nnn.version

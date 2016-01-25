@@ -36,10 +36,11 @@ include ffl/chs.fs
 
 ( nfe = Non-deterministic finite automata expression )
 ( The nfe module implements an expression in a non-deterministic finite      )
-( automata. An expression is a concatenation, repetition or alteration of     )
-( non-deterministic finite automata states [nfs]. An not yet fully built     )
-( expression consists of two cells on the stack: a list with the non resolved)
-( out states and a list of [nfs] states.<br>                                 )
+( automata. An expression is a concatenation, repetition or alteration of    )
+( non-deterministic finite automata states <a href='nfs.html'>nfs</a>. An    )
+( not yet fully built expression consists of two cells on the stack: a list  )
+( with the non resolved out states and a list of <a href='nfs.html'>nfs</a>  )
+( states.<br>                                                                )
 ( The code is based on the Thompson NFA algorithm published by Russ Cox.     )
 
 

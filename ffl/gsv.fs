@@ -72,13 +72,13 @@ str-create gsv.cmd
   over swap
   gsv.out str-get w/o open-file throw 
   >r  
-  r@ write-file throw        ( Call the server, write-line results in a SIGPIPE )
+  r@ write-file throw        \ Call the server, write-line results in a SIGPIPE
   r> close-file throw
   
   gsv.in  str-get r/o open-file throw 
   >r
   dup 256  r@ read-line throw drop
-  r> close-file throw        ( Receive the response )
+  r> close-file throw        \ Receive the response 
   \ ." Receiving:" 2dup type cr
 ;
 [THEN]

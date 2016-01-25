@@ -36,7 +36,7 @@ include ffl/snn.fs
 
 
 ( sni = Generic Single Linked List Iterator )
-( The sni module implements an iterator on the generic single linked list [snl]. )
+( The sni module implements an iterator on the generic single linked list <a href='snl.html'>snl</a>. )
 
 
 1 constant sni.version

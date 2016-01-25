@@ -35,7 +35,8 @@ include ffl/str.fs
 
 ( gzf = gzip File )
 ( The gzf module implements the base definitions for using a gzip file. It   )
-( is  used by the [zif] and, in a future version, [zof] module.              )
+( is  used by the <a href='zif.html'>zif</a> and, in a future version,       )
+( <a href='zof.html'</a> module.                                             )
 
 
 1 constant gzf.version

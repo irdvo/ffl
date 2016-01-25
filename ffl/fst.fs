@@ -37,8 +37,8 @@ include ffl/tos.fs
 
 
 ( fst = FSM State )
-( The fst module implements a state in a Finite State Machine. See [fsm] for )
-( more info about using this module.                                         )
+( The fst module implements a state in a Finite State Machine. See           )
+( <a href='fsm.html'>fsm</a> for more info about using this module.          )
 
 
 1 constant fst.version
