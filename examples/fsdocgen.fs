@@ -212,12 +212,25 @@ state-module-short value file-writer-state
   THEN
 ;
 
+: is-comment-separator ( c-addr -- flag = Is the comment separator at c-addr )
+  false
+  over c@ [char] = = IF
+    over char+ c@ chr-blank? IF
+      over char- c@ chr-blank? IF
+        0=
+      THEN
+    THEN
+  THEN
+  nip
+;
+
+
 : parse-short-module-name ( docu c-addr -- docu = Parse the module name )
-  c@ dup [char] = = IF
+  dup is-comment-separator IF
     drop
     ['] parse-short-module-description to line-parser-state
   ELSE
-    dup [char] ) = IF
+    c@ dup [char] ) = IF
       ['] parse-header-end to line-parser-state
     ELSE
       over docu>module str-append-char
@@ -334,7 +347,7 @@ state-module-short value file-writer-state
 ;
 
 : parse-word-description ( docu c-addr -- docu = Parse the word stack description )
-  dup c@ [char] = = IF
+  dup is-comment-separator IF
     drop
     ['] parse-word-stack to line-parser-state
   ELSE

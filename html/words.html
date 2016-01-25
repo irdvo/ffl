@@ -85,7 +85,7 @@
 <dt><a href='arg.html#arg%'>arg%</a> (  -- n )</dt>
 <dt><a href='arg.html#arg-(free)'>arg-(free)</a> (  arg -- )</dt>
 <dt><a href='arg.html#arg-add-help-option'>arg-add-help-option</a> (  arg -- )</dt>
-<dt><a href='arg.html#arg-add-option'>arg-add-option</a> (  char c-addr1 u1 c-addr2 u2 flag n arg -- = Add an option to the parser with the short option char, the long option c-addr1 u1, the description c-addr2 u2, the switch flag and the identifier n [id)</dt>
+<dt><a href='arg.html#arg-add-option'>arg-add-option</a> (  char c-addr1 u1 c-addr2 u2 flag n arg -- )</dt>
 <dt><a href='arg.html#arg-add-version-option'>arg-add-version-option</a> (  arg -- )</dt>
 <dt><a href='arg.html#arg-create'>arg-create</a> (  c-addr1 u1 c-addr2 u2 c-addr3 u3 c-addr4 u4 "&lt;spaces&gt;name" -- ; -- arg )</dt>
 <dt><a href='arg.html#arg-free'>arg-free</a> (  arg -- )</dt>
@@ -190,7 +190,7 @@
 <dt><a href='bis.html#bis-need-bits'>bis-need-bits</a> (  n bis -- flag )</dt>
 <dt><a href='bis.html#bis-new'>bis-new</a> (  -- bis )</dt>
 <dt><a href='bis.html#bis-next-bits'>bis-next-bits</a> (  n bis -- )</dt>
-<dt><a href='bis.html#bis-read-bytes'>bis-read-bytes</a> (  n1 bis -- false | n2 true = Try reading n1 bytes via the buffer from the stream, return the read number, n1 &lt;)</dt>
+<dt><a href='bis.html#bis-read-bytes'>bis-read-bytes</a> (  n1 bis -- false | n2 true )</dt>
 <dt><a href='bis.html#bis-reset'>bis-reset</a> (  bis -- )</dt>
 <dt><a href='bis.html#bis-set'>bis-set</a> (  c-addr u bis -- )</dt>
 <dt><a href='bni.html#bni%'>bni%</a> (  -- n )</dt>
@@ -566,8 +566,8 @@
 <dt><a href='dom.html#dom-children'>dom-children</a> (  dom -- n )</dt>
 <dt><a href='dom.html#dom-children?'>dom-children?</a> (  dom -- flag )</dt>
 <dt><a href='dom.html#dom-create'>dom-create</a> (  "&lt;spaces&gt;name" -- ; -- dom )</dt>
-<dt><a href='dom.html#dom-document'>dom-document</a> (  dom -- true | false = Move the iterator to the document [)</dt>
-<dt><a href='dom.html#dom-document?'>dom-document?</a> (  dom -- flag = Check if the current node is the document [)</dt>
+<dt><a href='dom.html#dom-document'>dom-document</a> (  dom -- true | false )</dt>
+<dt><a href='dom.html#dom-document?'>dom-document?</a> (  dom -- flag )</dt>
 <dt><a href='dom.html#dom-dump'>dom-dump</a> (  dom - )</dt>
 <dt><a href='dom.html#dom-first'>dom-first</a> (  dom -- n true | false )</dt>
 <dt><a href='dom.html#dom-first?'>dom-first?</a> (  dom -- flag )</dt>
@@ -1026,7 +1026,7 @@
 <dt><a href='lbf.html#lbf-access!'>lbf-access!</a> (  xt1 xt2 lbf -- )</dt>
 <dt><a href='lbf.html#lbf-access@'>lbf-access@</a> (  lbf -- xt1 xt2 )</dt>
 <dt><a href='lbf.html#lbf-clear'>lbf-clear</a> (  lbf -- )</dt>
-<dt><a href='lbf.html#lbf-copy'>lbf-copy</a> (  u1 u2 lbf -- = Copy records u1 times from distance u2, u1 &gt;)</dt>
+<dt><a href='lbf.html#lbf-copy'>lbf-copy</a> (  u1 u2 lbf -- )</dt>
 <dt><a href='lbf.html#lbf-create'>lbf-create</a> (  +n1 +n2 "&lt;spaces&gt;name" -- ; -- lbf )</dt>
 <dt><a href='lbf.html#lbf-dequeue'>lbf-dequeue</a> (  lbf -- i*x true | addr true | false )</dt>
 <dt><a href='lbf.html#lbf-dump'>lbf-dump</a> (  lbf -- )</dt>
@@ -1177,7 +1177,7 @@
 <dt><a href='nfs.html#nfs-out2!'>nfs-out2!</a> (  nfs1 nfs2 -- )</dt>
 <dt><a href='nfs.html#nfs-out2@'>nfs-out2@</a> (  nfs1 -- nfs2 )</dt>
 <dt><a href='nfs.html#nfs-type@'>nfs-type@</a> (  nfs -- n )</dt>
-<dt><a href='nfs.html#nfs-visit!'>nfs-visit!</a> (  n nfs -- = Set the visit number [0&gt;)</dt>
+<dt><a href='nfs.html#nfs-visit!'>nfs-visit!</a> (  n nfs -- )</dt>
 <dt><a href='nfs.html#nfs-visit@'>nfs-visit@</a> (  nfs -- n )</dt>
 <dt><a href='nfs.html#nfs.any'>nfs.any</a> (  -- n )</dt>
 <dt><a href='nfs.html#nfs.char'>nfs.char</a> (  -- n = State type char, data )</dt>
@@ -1238,7 +1238,7 @@
 <dt><a href='tlb.html#r&apos;@'>r&apos;@</a> (  R: x1 x2 -- x1 x2; -- x1 )</dt>
 <dt><a href='rdg.html#rdg%'>rdg%</a> (  -- n )</dt>
 <dt><a href='rdg.html#rdg-beta'>rdg-beta</a> (  F: r1 r2 -- r3 ; rdg -- = Generate a random number with a beta distribution with alpha r1 [&gt;0] and beta r2 [&gt;0], alpha*beta = mean, alpha*beta^2 )</dt>
-<dt><a href='rdg.html#rdg-binomial'>rdg-binomial</a> (  F: r -- ; u1 rdg -- u2 = Generate a random number with a binomial distribution with probability r [0,1] and trails u1 [&gt;)</dt>
+<dt><a href='rdg.html#rdg-binomial'>rdg-binomial</a> (  F: r -- ; u1 rdg -- u2 )</dt>
 <dt><a href='rdg.html#rdg-create'>rdg-create</a> (  x xt "&lt;spaces&gt;name" -- ; -- rdg )</dt>
 <dt><a href='rdg.html#rdg-exponential'>rdg-exponential</a> (  F: r1 -- r2 ; rdg -- )</dt>
 <dt><a href='rdg.html#rdg-free'>rdg-free</a> (  rdg -- )</dt>
@@ -1247,7 +1247,7 @@
 <dt><a href='rdg.html#rdg-new'>rdg-new</a> (  x xt -- rdg )</dt>
 <dt><a href='rdg.html#rdg-normal'>rdg-normal</a> (  F: r1 r2 -- r3 ; rdg -- )</dt>
 <dt><a href='rdg.html#rdg-pareto'>rdg-pareto</a> (  F: r1 r2 -- r3 ; rdg -- )</dt>
-<dt><a href='rdg.html#rdg-poisson'>rdg-poisson</a> (  F: r -- ; rdg -- u = Generate a random number with a Poisson distribution with mean r [&gt;)</dt>
+<dt><a href='rdg.html#rdg-poisson'>rdg-poisson</a> (  F: r -- ; rdg -- u )</dt>
 <dt><a href='rdg.html#rdg-uniform'>rdg-uniform</a> (  F: r1 r2 -- r3 ; rdg -- )</dt>
 <dt><a href='rdg.html#rdg-weibull'>rdg-weibull</a> (  F: r1 r2 -- r3 ; rdg -- )</dt>
 <dt><a href='rgx.html#rgx%'>rgx%</a> (  -- n )</dt>
@@ -1361,10 +1361,10 @@
 <dt><a href='snl.html#snl-append'>snl-append</a> (  snn snl -- )</dt>
 <dt><a href='snl.html#snl-create'>snl-create</a> (  "&lt;spaces&gt;name" -- ; -- snl )</dt>
 <dt><a href='snl.html#snl-delete'>snl-delete</a> (  n snl -- snn )</dt>
-<dt><a href='snl.html#snl-dequeue'>snl-dequeue</a> (  snl -- snn | nil = Dequeue the node at the end of the queue [)</dt>
+<dt><a href='snl.html#snl-dequeue'>snl-dequeue</a> (  snl -- snn | nil )</dt>
 <dt><a href='snl.html#snl-dump'>snl-dump</a> (  snl -- )</dt>
 <dt><a href='snl.html#snl-empty?'>snl-empty?</a> (  snl -- flag )</dt>
-<dt><a href='snl.html#snl-enqueue'>snl-enqueue</a> (  snn snl -- = Enqueue the node snn at the start of the queue [)</dt>
+<dt><a href='snl.html#snl-enqueue'>snl-enqueue</a> (  snn snl -- )</dt>
 <dt><a href='snl.html#snl-execute'>snl-execute</a> (  i*x xt snl -- j*x )</dt>
 <dt><a href='snl.html#snl-execute?'>snl-execute?</a> (  i*x xt snl -- j*x flag )</dt>
 <dt><a href='snl.html#snl-first@'>snl-first@</a> (  snl -- snn | nil  )</dt>
@@ -1377,14 +1377,14 @@
 <dt><a href='snl.html#snl-last@'>snl-last@</a> (  snl -- snn | nil )</dt>
 <dt><a href='snl.html#snl-length@'>snl-length@</a> (  snl -- u )</dt>
 <dt><a href='snl.html#snl-new'>snl-new</a> (  -- snl )</dt>
-<dt><a href='snl.html#snl-pop'>snl-pop</a> (  snl -- snn | nil = Pop the node at the top of the stack [)</dt>
+<dt><a href='snl.html#snl-pop'>snl-pop</a> (  snl -- snn | nil )</dt>
 <dt><a href='snl.html#snl-prepend'>snl-prepend</a> (  snn snl -- )</dt>
-<dt><a href='snl.html#snl-push'>snl-push</a> (  snn snl -- = Push the node snn at the top of the stack [)</dt>
+<dt><a href='snl.html#snl-push'>snl-push</a> (  snn snl -- )</dt>
 <dt><a href='snl.html#snl-remove-after'>snl-remove-after</a> (  snn1 snl -- snn2 | nil )</dt>
 <dt><a href='snl.html#snl-remove-first'>snl-remove-first</a> (  snl -- snn | nil )</dt>
 <dt><a href='snl.html#snl-reverse'>snl-reverse</a> (  snl -- )</dt>
 <dt><a href='snl.html#snl-sort'>snl-sort</a> (  xt snl -- )</dt>
-<dt><a href='snl.html#snl-tos'>snl-tos</a> (  snl -- snn | nil = Get the node at the top of the stack [)</dt>
+<dt><a href='snl.html#snl-tos'>snl-tos</a> (  snl -- snn | nil )</dt>
 <dt><a href='snn.html#snn%'>snn%</a> (  - n )</dt>
 <dt><a href='snn.html#snn-dump'>snn-dump</a> (  snn -- )</dt>
 <dt><a href='snn.html#snn-free'>snn-free</a> (  snn -- )</dt>
@@ -1484,7 +1484,7 @@
 <dt><a href='tis.html#tis-new'>tis-new</a> (  -- tis )</dt>
 <dt><a href='tis.html#tis-next-char'>tis-next-char</a> (  tis -- )</dt>
 <dt><a href='tis.html#tis-next-chars'>tis-next-chars</a> (  n tis -- )</dt>
-<dt><a href='tis.html#tis-pntr!'>tis-pntr!</a> (  n tis -- flag = Set the stream pointer from start {&gt;)</dt>
+<dt><a href='tis.html#tis-pntr!'>tis-pntr!</a> (  n tis -- flag )</dt>
 <dt><a href='tis.html#tis-pntr+!'>tis-pntr+!</a> (  n tis -- flag )</dt>
 <dt><a href='tis.html#tis-pntr@'>tis-pntr@</a> (  tis -- u )</dt>
 <dt><a href='tis.html#tis-read-all'>tis-read-all</a> (  tis -- 0 | c-addr u )</dt>
@@ -1530,7 +1530,7 @@
 <dt><a href='tos.html#tos-msc!'>tos-msc!</a> (  msc tos -- )</dt>
 <dt><a href='tos.html#tos-msc@'>tos-msc@</a> (  tos -- msc | nil )</dt>
 <dt><a href='tos.html#tos-new'>tos-new</a> (  -- tos )</dt>
-<dt><a href='tos.html#tos-pntr!'>tos-pntr!</a> (  n tos -- flag = Set the alignment pointer from start [n&gt;)</dt>
+<dt><a href='tos.html#tos-pntr!'>tos-pntr!</a> (  n tos -- flag )</dt>
 <dt><a href='tos.html#tos-pntr+!'>tos-pntr+!</a> (  n tos -- flag )</dt>
 <dt><a href='tos.html#tos-pntr@'>tos-pntr@</a> (  tos -- u )</dt>
 <dt><a href='tos.html#tos-rewrite'>tos-rewrite</a> (  tos -- )</dt>

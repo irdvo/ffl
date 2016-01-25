@@ -1,3 +1,5 @@
 #/bin/sh
 
-ofcfrth --title="Forth Foundation Library" --dir=../html --wiki=../../ffl-wiki --exa=../examples --api=ffl.api *.fs
+gforth ../examples/fsdocgen.fs ../html/                 ../examples/ *.fs
+gforth ../examples/fsdocgen.fs ../../../github/ffl/docs ../examples/ *.fs
+
