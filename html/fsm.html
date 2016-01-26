@@ -13,8 +13,9 @@ The fsm module implements a Finite State Machine. Use fsm-new-state to add
 states to the machine. Then use fsm-new-transition to add transitions      
 between the states. fsm-new-transition returns the new transition. Use     
 ftr-condition@ on this new transition to get a reference to the condition  
-in the transition. This is actually a bit array, see [bar]. Use the words  
-of the bar module to set the condition. When the whole FSM is built, start 
+in the transition. This is actually a bit array, see                       
+<a href='bar.html'>bar</a>. Use the words of the bar module to set the     
+condition. When the whole FSM is built, start                              
 using the machine by calling fsm-start. By default the first created       
 state is the start state, but this can be changed by fsm-start! After      
 starting the machine, feed events to the machine by fsm-feed. This word    

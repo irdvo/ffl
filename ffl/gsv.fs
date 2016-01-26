@@ -39,7 +39,9 @@ include ffl/scf.fs
 ( The gsv module implements an interface to the gtk-server. This server       )
 ( makes it possible for an ANSish forth engine to show a gtk GUI. Due to the  )
 ( fact that using this module requires an external tool, this module has an   )
-( environmental dependency. See [GTKserver] for how to use this module.       )
+( environmental dependency.                                                   )
+( See <a href='http://irdvo.github.io/ffl/gtkserver.html'>GTKserver</a> for   )
+( how to use this module.                                                     )
 
 1 constant gsv.version
 
