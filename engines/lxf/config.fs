@@ -66,30 +66,6 @@ ffl.endian c@ 0=
 
 ( Extension words )
 
-1 chars 1 = [IF]
-: char/            ( n:aus -- n:chars = Convert address units to chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
-
-: lroll            ( u1 u -- u2 = Rotate u1 u bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-
-: rroll            ( u1 u -- u2 = Rotate u1 u bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
-
 s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
 
@@ -121,15 +97,6 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-: ?free            ( addr -- wior = Free the address if not nil )
-  dup nil<> IF
-    free 
-  ELSE
-    drop 0
-  THEN
-;
-
-
 :m 1+!              ( a-addr -- = Increase contents of address by 1 )
   1 swap +!
 ;
@@ -137,11 +104,6 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 
 :m 1-!              ( a-addr -- = Decrease contents of address by 1 )
   -1 swap +!
-;
-
-
-: @!                ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
-  dup @ -rot !
 ;
 
 
@@ -165,28 +127,6 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  -1 max 1 min
-;
-
-
-: <=>              ( n1 n2 -- n = Compare two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-
-: index2offset     ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
 :m d<>  d= 0= ;
 
 ( Float extension words )
@@ -200,19 +140,6 @@ synonym 1e+0 f1.0 \ 1E+0 fconstant 1e+0  ( -- r = Float constant 1.0 )
 
 :m f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
   fover fover
-;
-
-: f>r              ( r -- ; R: -- r = Push float on the return stack )
-  r> rp@ 1 floats - rp! rp@ f! >r 
-;
-
-: fr>              ( -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ 1 floats rp@ + rp! >r
-;
-
-
-: fr@              ( -- r; R: r -- r = Fetch float of return stack )
-  r> rp@ f@ >r
 ;
 
 
@@ -244,6 +171,12 @@ s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong 
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+[ELSE]
+  drop
 [THEN]
 
 \ ==============================================================================

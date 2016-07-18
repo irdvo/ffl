@@ -34,6 +34,25 @@
 ( The tlb module contains general purpose forth words. )
 
 
+[UNDEFINED] cell [IF]
+: cell             ( - n = Cell size)
+  1 cells
+;
+[THEN]
+
+
+[UNDEFINED] char/ [IF]
+1 chars 1 = [IF]
+: char/            ( n:aus - n:chars = Convert address units to chars )
+; immediate
+[ELSE]
+: char/
+  1 chars /
+;
+[THEN]
+[THEN]
+
+
 [UNDEFINED] 3dup [IF]
 : 3dup    ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 = Duplicate the three cells on stack )
   dup 2over rot
@@ -87,6 +106,20 @@
 [THEN]
 
 
+[UNDEFINED] on [IF]
+: on               ( w - = Set boolean variable to true)
+  true swap !
+;
+[THEN]
+
+
+[UNDEFINED] off [IF]
+: off              ( w - = Set boolean variable to false)
+  false swap !
+;
+[THEN]
+
+
 [UNDEFINED] u<> [IF]
 : u<>              ( u u - f = Check for not equal )
   <>
@@ -97,6 +130,13 @@
 [UNDEFINED] u<= [IF]
 : u<=              ( u u - f = Check for smaller and equal )
   u> 0=
+;
+[THEN]
+
+
+[UNDEFINED] u>= [IF]
+: u>=
+  u< 0=
 ;
 [THEN]
 
@@ -129,7 +169,7 @@
 [THEN]
 
 
-[UNDEFINED] 0! [IF]
+[UNDEFINED] d<> [IF]
 : d<>              ( d d - f = Check if two two double are unequal )
   d= 0=
 ;
@@ -220,6 +260,22 @@
 [THEN]
 
 
+[UNDEFINED] sgn [IF]
+: sgn              ( n1 - n2 = Determine the sign of the number )
+  -1 max 1 min
+;
+[THEN]
+
+
+[UNDEFINED] toupper [IF]
+: toupper          ( char1 -- char2 = Convert the character to upper case )
+  dup [char] a >= over [char] z <= AND IF
+    [ char a char A - ] literal -
+  THEN
+;
+[THEN]
+
+
 [UNDEFINED] icompare [IF]
 : icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
   rot swap 2swap 2over
@@ -237,16 +293,16 @@
 [THEN]
 
 
-[UNDEFINED] ud. [IF]
-: ud.              ( ud -- = Type the unsigned double number )
-  <# #s #> type
+[UNDEFINED] bounds [IF]
+: bounds           ( c-addr u - c-addr+u c-addr = Get end and start address for ?do )
+  over + swap
 ;
 [THEN]
 
 
-[UNDEFINED] sgn [IF]
-: sgn              ( n1 - n2 = Determine the sign of the number )
-  -1 max 1 min
+[UNDEFINED] ud. [IF]
+: ud.              ( ud -- = Type the unsigned double number )
+  <# #s #> type
 ;
 [THEN]
 
@@ -269,6 +325,13 @@
     drop
   THEN
 ;
+[THEN]
+
+
+[UNDEFINED] rdrop [IF]
+: rdrop            ( R: x -- = Drop the first cell on the return stack )
+  postpone r> postpone drop
+; immediate
 [THEN]
 
 
@@ -317,17 +380,20 @@
 ;
 [THEN]
 
+
 [UNDEFINED] fr> [IF]
 : fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
   r> rp@ f@ float rp@ + rp! >r
 ;
 [THEN]
 
+
 [UNDEFINED] fr@ [IF]
 : fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
   r> rp@ f@ >r
 ;
 [THEN]
+
 
 [THEN]
 

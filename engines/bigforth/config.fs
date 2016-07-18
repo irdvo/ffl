@@ -92,15 +92,6 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value of the milliseconds timer )
 
 
-1 chars 1 = [IF]
-: char/            ( n1 -- n2 = Convert n1 address units to n2 chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
 : icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings )
   caps @ >r
   caps on

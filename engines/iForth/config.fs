@@ -72,17 +72,9 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
 
 
-: char/            ( n1 -- n2 = Convert address units to chars )
-;
-
 : rdrop            ( R: x -- )
   -R 
 ; \ relying on the fact that this word is inlined
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
 
 
 : lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
@@ -95,47 +87,8 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 ;
 
 
-: sgn              ( n1 -- n2 = Determine the sign of the number [-1,0,1] )
-  -1 max 1 min
-;
-
-
-0 constant nil     ( -- addr = Nil address )
-
-: nil!   ( a-addr -- = Set address to nil )
-  nil swap !
-;
-
-
-: nil=   ( addr -- flag = Check for nil )
-  nil =
-;
-
-
-: nil<>   ( addr -- flag = Check for unequal to nil )
-  nil <>
-;
-
-: nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-    ?dup ; \ relies on inlining
-
-
 : ?free   ( addr -- ior = Free the address if not nil )
     free ; \ freeing 0 is not an error
-
-: 1+!   ( a-addr -- = Increase contents of address by 1 )
-  1 swap +!
-;
-
-
-: 1-!   ( a-addr -- = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!   ( x1 a-addr -- x2 = First fetch the contents x2 and then store value x1 )
-  dup @ -rot !
-;
 
 
 : icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
@@ -150,23 +103,6 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
   LOOP
   2drop
   - sgn
-;
-
-
-: <=>   ( n1 n2 -- n = Compare the two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-      
-: index2offset   ( n1 n2 -- n3 = Convert the index n1 range [-n2..n2> into offset n3 range [0..n2>, negative values of n1 downward length n2 )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
 ;
 
 
@@ -251,6 +187,10 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [ELSE]
   drop

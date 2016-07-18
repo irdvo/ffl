@@ -76,135 +76,6 @@ ffl.endian c@ 0=
 ; immediate
 
 
-1 chars 1 = [IF]
-: char/            ( n:aus - n:chars = Convert address units to chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
-
-: rdrop            ( R: x -- = Drop the first cell on the return stack ) 
-  postpone r> postpone drop
-; immediate
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
-
-
-: lroll            ( u1 u - u2 = Rotate u1 u bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-
-: rroll            ( u1 u - u2 = Rotate u1 u bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
-
-: cell             ( - n = Cell size)
-  1 cells
-;
-
-
-: >=               ( n1 n2 - n1>=n1 = Greater equal)
-  < 0=
-;
-
-
-: 0>=              ( n - f = Greater equal 0 )
-  0 >=
-;
-
-
-: d<>              ( d d - f = Check if two two double are unequal )
-  d= 0=
-;
-
-
-: sgn              ( n - n = Determine the sign of the number )
-  -1 max 1 min
-;
-
-: on               ( w - = Set boolean variable to true)
-  true swap !
-;
-
-
-: off              ( w - = Set boolean variable to false)
-  false swap !
-;
-
-
-: bounds           ( c-addr u - c-addr+u c-addr = Get end and start address for ?do )
-  over + swap
-;
-
-
-0 constant nil     ( - w = Nil address )
-
-
-: 0!               ( w - = Set zero in address )
-  0 swap !
-;
-
-
-: nil!             ( w - = Set nil in address )
-  nil swap !
-;
-
-
-: nil=             ( w - f = Check for nil )
-  nil =
-;
-
-
-: nil<>            ( w - f = Check for unequal to nil )
-  nil <>
-;
-
-
-: ?free            ( addr - wior = Free the address if not nil )
-  dup nil<> IF
-    free
-  ELSE
-    drop 0
-  THEN
-;
-
-
-: 1+!              ( w - = Increase contents of address by 1 )
-  1 swap +!
-;
-
-
-: 1-!              ( w - = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!               ( w a - w = First fetch the contents and then store the new value )
-  dup @ -rot !
-;
-
-
-: index2offset     ( n:index n:length - n:offset = Convert an index [-length..length> into an offset [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
 : defer            ( C: "name" - = Create a deferred word )
   create 
     ['] abort ,
@@ -246,6 +117,9 @@ s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong 
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
 
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [ELSE]
   drop

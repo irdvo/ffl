@@ -69,11 +69,6 @@ ffl.endian c@ 0=
 
 ( Extension words )
 
-: rdrop
-  r> r> drop >r
-;
-
-
 : [DEFINED] 
   bl word find   nip 
 ; immediate
@@ -95,155 +90,13 @@ ffl.endian c@ 0=
 s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value of the milliseconds timer )
 
 
-1 chars 1 = [IF]
-: char/            ( n1 -- n2 = Convert n1 address units to n2 chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
-
-: u<=
-  u> 0=
-;
-
-
-: u>=
-  u< 0=
-;
-
-
-: 0>=
-  0< 0=
-;
-
-
-: 0<=
-  0> 0=
-;
-
-
-: bounds
-  over + swap
-;
-
-
-: d<>              ( d1 d2 -- flag = Check if two two double are unequal )
-  d= 0=
-;
-
-
 : icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case insensitive )
   caps-compare
 ;
 
 
-: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  dup 0= IF 
-    EXIT 
-  THEN
-  0< 2* 1+
-;
-
-
-0 constant nil     ( -- addr = Nil address )
-
-
-: 0!               ( a-addr -- = Set zero in address )
-  0 swap !
-;
-
-
-: nil!             ( a-addr -- = Set nil in address )
-  nil swap !
-;
-
-
-: nil=             ( addr -- flag = Check for nil )
-  nil =
-;
-
-
-: nil<>            ( addr -- flag = Check for unequal to nil )
-  nil <>
-;
-
-
-0 nil= [IF]
-: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-[ELSE]
-: nil<>?
-  dup nil<> IF
-    true
-  ELSE
-    drop
-    false
-  THEN
-;
-[THEN]  
-
-
-: ?free            ( addr -- wior = Free the address if not nil )
-  dup nil<> IF
-    free 
-  ELSE
-    drop 0
-  THEN
-;
-
-
-: 1+!              ( a-addr -- = Increase contents of address by 1 )
-  1 swap +!
-;
-
-
-: 1-!              ( a-addr -- = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: u<>
-  <>
-;
-
-
-: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
-  dup @ -rot !
-;
-
-
-: <=>              ( n1 n2 -- n3 = Compare the two numbers n1,n2 and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-
-: index2offset     ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
 : is
   postpone to
-; immediate
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
 ; immediate
 
 
@@ -260,35 +113,6 @@ s" MAX-U" environment? drop constant max-ms@            ( -- u = Maximum value o
 
 ( Float extension words )
 
-: f2dup            ( F: r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
-  fover fover
-;
-
-
-: ftuck            ( F: r1 r2 -- r2 r1 r2 = Swap and over )
-  fswap fover
-;
-
-
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counterwise floats )
-  frot frot
-;
-
-
-: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
-  r> rp@ float - rp! rp@ f! >r 
-;
-
-
-: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ float rp@ + rp! >r
-;
-
-
-: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
-  r> rp@ f@ >r
-;
-
 [THEN]
 
 
@@ -304,6 +128,10 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [ELSE]
   drop
