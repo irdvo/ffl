@@ -76,15 +76,6 @@ create overrule:parse\" ( -- = VFX Forth ships with an incompatible parse\" )
 
 ( Extension words )
 
-1 chars 1 = [IF]
-: char/		\ n1 -- n2 = Convert address units to chars
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
 : lroll		\ u1 u2 -- u3 = Rotate u1 u2 bits to the left
   rol  ;
 : rroll		\ u1 u2 -- u3 = Rotate u1 u2 bits to the right
@@ -93,51 +84,12 @@ create overrule:parse\" ( -- = VFX Forth ships with an incompatible parse\" )
 s" MAX-U" environment? drop constant max-ms@	\ -- u
 \ Maximum value of the milliseconds timer
 
-: 0!		\ a-addr -- = Set zero in address
-  0 swap !  ;
-
-0 constant nil	\ -- nil ; Nil constant
-
-: nil!		\ a-addr -- ; Set nil in address )
-  nil swap !  ;
-
-: nil=		\ addr -- flag ; Check for nil
-  nil =  ;
-
-: nil<>		\ addr -- flag = Check for unequal to nil
-  nil <>  ;
-
-: nil<>?	\ addr -- false | addr true
-\ If addr is nil, then return false, else return address with true
-  ?dup  ;
-
-: ?free		\ addr -- wior ; Free the address if not nil
-  dup nil<> IF
-    free
-  ELSE
-    drop 0
-  THEN
-;
-
 : 1+!		\ a-addr -- = Increase contents of address by 1
   incr  ;
 
 : 1-!		\ a-addr -- = Decrease contents of address by 1
   decr  ;
 
-: @!		\ x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
-  dup @ -rot !  ;
-
-[undefined] u<= [if]
-: u<=
-  u> 0=  ;
-[then]
-
-: 0>=
-  0< 0=  ;
-
-: 0<=
-  0> 0=  ;
 
 [UNDEFINED] rdrop [IF]
 : rdrop		\ -- ; R: x -- ; same as R> DROP
@@ -154,45 +106,6 @@ s" MAX-U" environment? drop constant max-ms@	\ -- u
 : ud.		\ ud --
   0 ud.r space  ;
 
-: sgn		\ n1 -- n2
-\ Determine the sign of the number, return [-1,0,1] )
-  -1 max 1 min  ;
-
-(( exists
-: icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings, return [-1,0,1] )
-  rot swap 2swap 2over
-  min 0 ?DO
-    over c@ upc over c@ upc - sgn ?dup IF
-      >r 2drop 2drop r>
-      unloop
-      exit
-    THEN
-    1 chars + swap 1 chars + swap
-  LOOP
-  2drop
-  - sgn
-;
-))
-
-: <=>		\ n1 n2 -- n
-\ Compare two numbers and return the compare result [-1,0,1] )
-  2dup = if
-    2drop 0
-  else
-    < 1 lshift 1 or
-  endif
-;
-
-: index2offset	\ n1 n2 -- n3
-\ Convert the index n1 [-length..length] with length n2 into the
-\ offset n3 [0..length].
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
 
 ( Float extension words )
 
@@ -201,11 +114,6 @@ s" MAX-U" environment? drop constant max-ms@	\ -- u
 0E+0 fconstant 0e+0  ( F: -- r = Float constant 0.0 )
 1E+0 fconstant 1e+0  ( F: -- r = Float constant 1.0 )
 2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
-
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
-;
-
 
 Code f>r	\ F: f -- ; R: -- f
 \ *G Transfer a float to the return stack.
@@ -231,13 +139,6 @@ code fr@	\ R: f -- f ; F: -- f
   fnext,
 end-code
 
-: ftuck		\ F: r1 r2 -- r2 r1 r2
-  fswap fover
-;
-
-: f2dup		\ F: f1 f2 -- f1 f2 f1 f2
-  fover fover  ;
-
 ( Exceptions )
 
 #-2050 #ErrDef exp-index-out-of-range	"Index out of range"
@@ -251,5 +152,12 @@ end-code
 #-2058 #ErrDef exp-wrong-length		"Wrong length"
 #-2059 #ErrDef exp-invalid-data   "Invalid data"
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+[ELSE]
+  drop
+[THEN]
 
 \ ==============================================================================

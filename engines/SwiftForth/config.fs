@@ -65,9 +65,9 @@ ffl.endian c@ 0=
 
 ( gforth words )
 
-0 constant nil
-
 aka r>drop rdrop
+
+0 constant nil
 
 : 0>=  0< INVERT ;
 : 0<=  0> INVERT ;
@@ -117,103 +117,11 @@ argc 1 = [IF]
   2 + argv ;
 [THEN]
 
-: lroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-
-: rroll   ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
-
 aka off 0!   ( a-addr -- = Set address to zero )
-
-: nil!   ( a-addr -- = Set address to nil )
-  nil swap !
-;
-
-
-: nil=   ( addr -- flag = Check for nil )
-  nil =
-;
-
-
-: nil<>   ( addr -- flag = Check for unequal to nil )
-  nil <>
-;
-
-
-0 nil= [IF]
-: nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-[ELSE]
-: nil<>?
-  dup nil<> IF
-    true
-  ELSE
-    drop
-    false
-  THEN
-;
-[THEN]  
-
-
-: ?free   ( addr -- ior = Free the address if not nil )
-  dup nil<> IF
-    free
-  ELSE
-    drop 0
-  THEN
-;
-
 
 aka ++ 1+!   ( a-addr -- = Increase contents of address by 1 )
 
-
-: 1-!   ( a-addr -- = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!   ( x1 a-addr -- x2 = First fetch the contents x2 and then store value x1 )
-  dup @ -rot !
-;
-
-
 aka compare(nc) icompare   ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings and return the result [-1,0,1] )
-
-
-: <=>   ( n1 n2 -- n = Compare the two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-
-: index2offset   ( n1 n2 -- n3 = Convert the index n1 range [-n2..n2> into offset n3 range [0..n2>, negative values of n1 downward length n2 )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
-
 
 cell 4 = [IF] 
 : <w@   ( w-addr -- n = Fetch a word, 16 bit, sign extend )
@@ -237,26 +145,6 @@ cell 4 = [IF]
 
 ( Float extension words )
 
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
-;
-
-: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
-  r> rp@ float - rp! rp@ f! >r 
-;
-
-: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ float rp@ + rp! >r
-;
-
-: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
-  r> rp@ f@ >r
-;
-
-: ftuck            ( F: r1 r2 -- r2 r1 r2 = Rotate counter clockwise three floats )
-  fswap fover
-;
-
 \ FFL's expected fatan2 definitely isn't SwiftForth's.
 : fatan2           ( F: r r -- r )
   f2dup f0< f0< and if fswap fabs fswap [fatan2] fnegate exit then [fatan2] 
@@ -279,6 +167,10 @@ s" Wrong checksum"     >THROW ENUM exp-wrong-checksum     ( -- n = Wrong checksu
 s" Wrong length"       >THROW ENUM exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       >THROW ENUM exp-invalid-data       ( -- n = Invalid data exception number )
 TO THROW#
+
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [ELSE]
   drop

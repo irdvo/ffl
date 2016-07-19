@@ -113,19 +113,6 @@ s" MAX-U" environment? 0= [IF] -1 [THEN] constant max-ms@   ( -- u = Maximum val
 [THEN]
 
 
-
-: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
 : include PARSE-NAME ANSI-FILE::>ZFILENAME INCLUDED ;
 
 
@@ -134,85 +121,11 @@ s" MAX-U" environment? 0= [IF] -1 [THEN] constant max-ms@   ( -- u = Maximum val
 ;
 
 
-: SGN -1 MAX 1 MIN ;
-
 : MS PAUSE ;
 
 : BIN ;
 
-: CHAR/ 1 CHARS / ;
-
-: 0>= 0< 0= ;
-
-: >= < 0= ;
-
-: <= > 0= ;
-
-: D<> D= 0= ;
-
 : UD. D. ;
-
-: NIL 0 ;
-
-: 0<= 0> 0= ;
-
-: U<= U> 0= ;
-
-: bounds OVER + SWAP ;
-
-
-: nil!   ( a-addr -- = Set address to nil )
-  0!
-;
-
-
-: nil=   ( addr -- flag = Check for nil )
-  0=
-;
-
-
-: nil<>   ( addr -- flag = Check for unequal to nil )
-  0 <>
-;
-
-
-0 nil= [IF]
-: nil<>?    ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-[ELSE]
-: nil<>?
-  dup nil<> IF
-    true
-  ELSE
-    drop
-    false
-  THEN
-;
-[THEN]  
-
-
-: ?free   ( addr -- ior = Free the address if not nil )
-  dup nil<> IF
-    free
-   ELSE
-    drop 0
-  THEN
-;
-
-
-: 1-!   ( a-addr -- = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!   ( x1 a-addr -- x2 = First fetch the contents x2 and then store value x1 )
-  dup @ -rot !
-;
 
 MODULE: inner
 [DEFINED] COMPARE-U [IF]
@@ -252,28 +165,6 @@ MODULE: inner
 ;
 
 
-: <=>   ( n1 n2 -- n = Compare the two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-      
-: index2offset   ( n1 n2 -- n3 = Convert the index n1 range [-n2..n2> into offset n3 range [0..n2>, negative values of n1 downward length n2 )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
-
-
 \ size of float value in bytes
 \ float2.f operates with 64-bit floats by default
 8    CONSTANT float
@@ -291,32 +182,6 @@ TRUE CONSTANT FLOATING-EXT
 
 
 ( Float extension words )
-
-: f-rot            ( r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
-;
-
-: ftuck ( f1 f2 -- f2 f1 f2 )
-  FSWAP FOVER 
-;
-
-
-: f2dup            ( r1 r2 -- r1 r2 r1 r2 = Duplicate two floats )
-  fover fover
-;
-
-
-: f>r              ( r -- ; R: -- r = Push float on the return stack )
-  r> rp@ float - rp! rp@ f! >r 
-;
-
-: fr>              ( -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ float rp@ + rp! >r
-;
-
-: fr@              ( -- r ; R: r -- r = Get float from top of return stack )
-  r> rp@ f@ >r
-;
 
 : f>               ( r1 r2 -- flag = Check if r1 > r2 )
   fswap f<
@@ -345,6 +210,10 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
+
+( Toolbelt )
+
+include ffl/tlb.fs
 
 [ELSE]
   drop

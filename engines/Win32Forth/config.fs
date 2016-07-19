@@ -68,152 +68,7 @@ ffl.endian c@ 0=
 
 ( Extension words )
 
-1 chars 1 = [IF]
-: char/            ( n1 -- n2 = Convert address units to chars )
-; immediate
-[ELSE]
-: char/
-  1 chars /
-;
-[THEN]
-
-
-: lroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the left )
-  2dup lshift >r
-  #bits/cell swap - rshift r>
-  or
-;
-
-
-: rroll            ( u1 u2 -- u3 = Rotate u1 u2 bits to the right )
-  2dup rshift >r
-  #bits/cell swap - lshift r>
-  or
-;
-
-
 s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the milliseconds timer )
-
-
-: 0!               ( a-addr -- = Set zero in address )
-  0 swap !
-;
-
-
-0 constant nil     ( -- nil = Nil constant )
-
-
-: nil!             ( a-addr -- = Set nil in address )
-  nil swap !
-;
-
-
-: nil=             ( addr -- flag = Check for nil )
-  nil =
-;
-
-
-: nil<>            ( addr -- flag = Check for unequal to nil )
-  nil <>
-;
-
-
-: nil<>?           ( addr -- false | addr true = If addr is nil, then return false, else return address with true )
-  state @ IF
-    postpone ?dup
-  ELSE
-    ?dup
-  THEN
-; immediate
-
-
-: ?free            ( addr -- wior = Free the address if not nil )
-  dup nil<> IF
-    free 
-  ELSE
-    drop 0
-  THEN
-;
-
-
-: 1+!              ( a-addr -- = Increase contents of address by 1 )
-  1 swap +!
-;
-
-
-: 1-!              ( a-addr -- = Decrease contents of address by 1 )
-  -1 swap +!
-;
-
-
-: @!               ( x1 a-addr -- x2 = First fetch the contents x2 and then store the new value x1 )
-  dup @ -rot !
-;
-
-
-: u<=
-  u> 0=
-;
-
-
-: 0>=
-  0< 0=
-;
-
-
-: 0<=
-  0> 0=
-;
-
-
-[UNDEFINED] rdrop [IF]
-: rdrop            ( R: x -- )
-  r> r> drop >r
-;
-[THEN]
-
-
-: sgn              ( n1 -- n2 = Determine the sign of the number, return [-1,0,1] )
-  -1 max 1 min
-;
-
-
-: icompare         ( c-addr1 u1 c-addr2 u2 -- n = Compare case-insensitive two strings, return [-1,0,1] )
-  rot swap 2swap 2over
-  min 0 ?DO
-    over c@ upc over c@ upc - sgn ?dup IF
-      >r 2drop 2drop r>
-      unloop 
-      exit
-    THEN
-    1 chars + swap 1 chars + swap
-  LOOP
-  2drop
-  - sgn
-;
-
-
-: <=>              ( n1 n2 -- n = Compare two numbers and return the compare result [-1,0,1] )
-  2dup = IF 
-    2drop 0 EXIT 
-  THEN
-  < 2* 1+
-;
-
-
-: index2offset     ( n1 n2 -- n3 = Convert the index n1 [-length..length> with length n2 into the offset n3 [0..length> )
-  over 0< IF
-    +
-  ELSE
-    drop
-  THEN
-;
-
-
-: r'@              ( R: x1 x2 -- x1 x2; -- x1 = Fetch the second cell on the return stack )
-  postpone 2r@ postpone drop
-; immediate
-
 
 ' sw@ alias <w@    ( w-addr -- n = Fetch a word, 16 bit, sign extend )
 
@@ -225,30 +80,7 @@ s" MAX-U" environment? drop constant max-ms@   ( -- u = Maximum value of the mil
 2E+0 fconstant 2e+0  ( F: -- r = Float constant 2.0 )
 
 
-: f-rot            ( F: r1 r2 r3 -- r3 r1 r2 = Rotate counter clockwise three floats )
-  frot frot
-;
-
-
-: f>r              ( F: r -- ; R: -- r = Push float on the return stack )
-  r> rp@ b/float - rp! rp@ f! >r 
-;
-
-
-: fr>              ( F: -- r ; R: r -- = Pop float from the return stack )
-  r> rp@ f@ b/float rp@ + rp! >r
-;
-
-
-: fr@              ( F: -- r ; R: r -- r = Get float from top of return stack )
-  r> rp@ f@ >r
-;
-
-
-: ftuck            ( F: r1 r2 -- r2 r1 r2 = Swap and over )
-  fswap fover
-;
-
+( Exceptions )
 
 variable exp-next  -2050 exp-next !
 
@@ -258,8 +90,6 @@ variable exp-next  -2050 exp-next !
   exp-next 1-!
 ;
 
-
-( Exceptions )
 
 s" Index out of range" exception constant exp-index-out-of-range ( -- n = Index out of range exception number )
 s" Invalid state"      exception constant exp-invalid-state      ( -- n = Invalid state exception number )
@@ -272,6 +102,12 @@ s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong 
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+[ELSE]
+  drop
 [THEN]
 
 \ ==============================================================================
