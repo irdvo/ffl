@@ -103,6 +103,11 @@ s" MAX-U" environment? drop constant max-ms@  ( -- u = Max val of the millisecon
 [THEN]
 
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+
 ( Exceptions )
 
 variable exp-next  -2050 exp-next !
@@ -124,12 +129,6 @@ s" Wrong file data"    exception constant exp-wrong-file-data    ( -- n = Wrong 
 s" Wrong checksum"     exception constant exp-wrong-checksum     ( -- n = Wrong checksum )
 s" Wrong length"       exception constant exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       exception constant exp-invalid-data       ( -- n = Invalid data exception number )
-
-
-( Toolbelt )
-
-include ffl/tlb.fs
-
 
 [ELSE]
  drop

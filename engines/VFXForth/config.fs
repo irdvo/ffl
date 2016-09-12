@@ -139,6 +139,11 @@ code fr@	\ R: f -- f ; F: -- f
   fnext,
 end-code
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+
 ( Exceptions )
 
 #-2050 #ErrDef exp-index-out-of-range	"Index out of range"
@@ -151,10 +156,6 @@ end-code
 #-2057 #ErrDef exp-wrong-checksum	"Wrong checksum"
 #-2058 #ErrDef exp-wrong-length		"Wrong length"
 #-2059 #ErrDef exp-invalid-data   "Invalid data"
-
-( Toolbelt )
-
-include ffl/tlb.fs
 
 [ELSE]
   drop

@@ -153,6 +153,11 @@ cell 4 = [IF]
 [THEN]
 
 
+( Toolbelt )
+
+include ffl/tlb.fs
+
+
 ( Exceptions )
 
 THROW#
@@ -167,10 +172,6 @@ s" Wrong checksum"     >THROW ENUM exp-wrong-checksum     ( -- n = Wrong checksu
 s" Wrong length"       >THROW ENUM exp-wrong-length       ( -- n = Wrong length )
 s" Invalid data"       >THROW ENUM exp-invalid-data       ( -- n = Invalid data exception number )
 TO THROW#
-
-( Toolbelt )
-
-include ffl/tlb.fs
 
 [ELSE]
   drop
