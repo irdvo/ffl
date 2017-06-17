@@ -156,9 +156,15 @@ str-create gsv.cmd
       s"  %s"
     ELSE 2dup s" BASE64" icompare 0= IF
       s"  %s"
+    ELSE 2dup s" CLASS" icompare 0= IF
+      s"  %d"
+    ELSE 2dup s" DATA" icompare 0= IF
+      s"  %d"
+    ELSE 2dup s" ENUM" icompare 0= IF
+      s"  %d"
     ELSE
       ." Unexpected gtk-server type:" 2dup type cr s" "
-    THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN
+    THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN
     r'@ tos-write-string
     2drop
   THEN
