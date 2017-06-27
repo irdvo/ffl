@@ -181,27 +181,21 @@ str-create gsv.cmd
 
 
 : gsv+parse-args  ( tos tis -- = Parse and compile all arguments )
-  2>r
-  [char] , r@ tis-scan-char IF   \ Scan for return type and ignore
+  [char] , over tis-scan-char IF       \ Scan for return type and ignore
     2drop
 
-    r@ tis-skip-spaces drop
-    r@ tis-read-number IF        \ Read number of args: S: n
-      [char] , r@ tis-scan-char IF
-        2drop                    \ Ignore optional comma
+    dup tis-skip-spaces drop
+    dup tis-read-number IF             \ Read number of args: S: n
+      over [char] , swap tis-scan-char IF
+        2drop                          \ Ignore optional comma
       THEN
 
-      BEGIN
-        ?dup
-      WHILE
-        2r@ gsv+parse-arg         \ Parse and compile the arguments
-        1-
-      REPEAT
-    ELSE
-      2drop
+      0 ?DO
+        2dup gsv+parse-arg             \ Parse and compile the arguments
+      LOOP
     THEN
   THEN
-  rdrop rdrop
+  2drop
 ;
 
 
@@ -241,23 +235,19 @@ str-create gsv.cmd
 
 
 : gsv+parse-returns   ( tos tis -- = Parse and compile the return arguments )
-  2>r
-  2r@ gsv+parse-arg              \ Parse and compile return type
+  2dup gsv+parse-arg                   \ Parse and compile return type
 
-  r@ tis-skip-spaces drop
-  r@ tis-read-number IF          \ Read number of args: S: n
-     [char] , r@ tis-scan-char IF
-       2drop                      \ Ignore optional comma
-     THEN
+  dup tis-skip-spaces drop
+  dup tis-read-number IF               \ Read number of args: S: n
+    over [char] , swap  tis-scan-char IF
+      2drop                            \ Ignore optional comma
+    THEN
 
-    BEGIN
-      ?dup
-    WHILE
-      2r@ gsv+parse-return       \ Parse and compile return arguments
-      1-
-    REPEAT
+    0 ?DO
+      2dup gsv+parse-return            \ Parse and compile return arguments
+    LOOP
   THEN
-  rdrop rdrop
+  2drop
 ;
 
 
