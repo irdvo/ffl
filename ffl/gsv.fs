@@ -178,7 +178,32 @@ str-create gsv.cmd
   THEN
   rdrop rdrop
 ;
-  
+
+
+: gsv+parse-args  ( tos tis -- = Parse and compile all arguments )
+  2>r
+  [char] , r@ tis-scan-char IF   \ Scan for return type and ignore
+    2drop
+
+    r@ tis-skip-spaces drop
+    r@ tis-read-number IF        \ Read number of args: S: n
+      [char] , r@ tis-scan-char IF
+        2drop                    \ Ignore optional comma
+      THEN
+
+      BEGIN
+        ?dup
+      WHILE
+        2r@ gsv+parse-arg         \ Parse and compile the arguments
+        1-
+      REPEAT
+    ELSE
+      2drop
+    THEN
+  THEN
+  rdrop rdrop
+;
+
 
 : gsv+parse-return  ( tos tis -- = Parse and compile the return argument )
   2>r
@@ -215,6 +240,27 @@ str-create gsv.cmd
 ;
 
 
+: gsv+parse-returns   ( tos tis -- = Parse and compile the return arguments )
+  2>r
+  2r@ gsv+parse-arg              \ Parse and compile return type
+
+  r@ tis-skip-spaces drop
+  r@ tis-read-number IF          \ Read number of args: S: n
+     [char] , r@ tis-scan-char IF
+       2drop                      \ Ignore optional comma
+     THEN
+
+    BEGIN
+      ?dup
+    WHILE
+      2r@ gsv+parse-return       \ Parse and compile return arguments
+      1-
+    REPEAT
+  THEN
+  rdrop rdrop
+;
+
+
 : gsv+parse-function  ( tos tis -- = Parse and compile a function from the configuration line )
   2>r
   r@ tis-skip-spaces drop
@@ -233,49 +279,18 @@ str-create gsv.cmd
         2drop
         r@ tis-skip-spaces drop
         r@ tis-pntr@                   \ Save position for rescanning returns
-        [char] , r@ tis-scan-char IF   \ Scan for return type and ignore
-          2drop
-          
-          r@ tis-skip-spaces drop
-          r@ tis-read-number IF        \ Read number of args: S: n
-            [char] , r@ tis-scan-char IF
-              2drop                    \ Ignore optional comma
-            THEN
 
-            BEGIN
-              ?dup
-            WHILE
-              2r@ gsv+parse-arg         \ Parse and compile the arguments
-              1-
-            REPEAT
-          ELSE
-            2drop
-          THEN
-        THEN
+        2r@ gsv+parse-args             \ Parse the arguments
         
         s\" \q s\\\q " r'@ tos-write-string
         
         r@ tis-pntr! drop              \ Start scanning again for returns
         
-        2r@ gsv+parse-arg              \ Parse and compile return type
-        
-        r@ tis-skip-spaces drop
-        r@ tis-read-number IF          \ Read number of args: S: n
-          [char] , r@ tis-scan-char IF
-            2drop                      \ Ignore optional comma
-          THEN
+        2r@ gsv+parse-returns          \ Parse the compile the return arguments
 
-          BEGIN
-            ?dup
-          WHILE
-            2r@ gsv+parse-return       \ Parse and compile return arguments
-            1-
-          REPEAT
+        s\" \q gsv+invoke ;" r'@ tos-write-string \ Call gtk-server 
 
-          s\" \q gsv+invoke ;" r'@ tos-write-string \ Call gtk-server 
-
-          r'@ str-get  evaluate       \ compile it
-        THEN
+        r'@ str-get  evaluate       \ compile it
       THEN
     THEN
   THEN
