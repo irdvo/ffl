@@ -170,9 +170,12 @@ str-create gsv.cmd
       s"  %d"
     ELSE 2dup s" ENUM" icompare 0= IF
       s"  %d"
+    ELSE 2dup s" VARARGS" icompare 0= IF
+      s" "
     ELSE
       ." Unexpected gtk-server type:" 2dup type cr s" "
-    THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN
+    THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN
+    THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN THEN
     r'@ tos-write-string
     2drop
   THEN
@@ -186,11 +189,12 @@ str-create gsv.cmd
 
     dup tis-skip-spaces drop
     dup tis-read-number IF             \ Read number of args: S: n
-      over [char] , swap tis-scan-char IF
+      >r
+      [char] , over tis-scan-char IF
         2drop                          \ Ignore optional comma
       THEN
 
-      0 ?DO
+      r> 0 ?DO
         2dup gsv+parse-arg             \ Parse and compile the arguments
       LOOP
     THEN
@@ -239,15 +243,42 @@ str-create gsv.cmd
 
   dup tis-skip-spaces drop
   dup tis-read-number IF               \ Read number of args: S: n
-    over [char] , swap  tis-scan-char IF
+    >r
+    [char] , over tis-scan-char IF
       2drop                            \ Ignore optional comma
     THEN
 
-    0 ?DO
+    r> 0 ?DO
       2dup gsv+parse-return            \ Parse and compile return arguments
     LOOP
   THEN
   2drop
+;
+
+
+: gsv+parse-varargs  ( tis -- f = Parse the configuration line for varargs type )
+  [char] , over tis-scan-char IF       \ Scan for return type and ignore
+    2drop
+
+    dup tis-skip-spaces drop
+    dup tis-read-number IF             \ Ignore number of args
+      drop
+
+      BEGIN
+        [char] , over tis-scan-char    \ Skip all parameters with a trailing comma
+      WHILE
+        2drop
+      REPEAT
+
+      dup tis-skip-spaces drop
+      dup tis-read-all ?dup IF         \ Last parameter
+        -trailing
+        s" VARARGS" icompare 0= nip
+        exit
+      THEN
+    THEN
+  THEN
+  drop false
 ;
 
 
@@ -271,14 +302,21 @@ str-create gsv.cmd
         r@ tis-pntr@                   \ Save position for rescanning returns
 
         2r@ gsv+parse-args             \ Parse the arguments
-        
+
         s\" \q s\\\q " r'@ tos-write-string
-        
-        r@ tis-pntr! drop              \ Start scanning again for returns
-        
+
+        dup r@ tis-pntr! drop          \ Start scanning again for returns
+
         2r@ gsv+parse-returns          \ Parse the compile the return arguments
 
-        s\" \q gsv+invoke ;" r'@ tos-write-string \ Call gtk-server 
+        r@ tis-pntr! drop              \ Start scanning again for varargs
+
+        r@ gsv+parse-varargs IF        \ Check for varargs
+          s\" \q gsv+invoke-vargs ;"
+        ELSE
+          s\" \q gsv+invoke ;"
+        THEN
+        r'@ tos-write-string \ Call gtk-server 
 
         r'@ str-get  evaluate       \ compile it
       THEN
