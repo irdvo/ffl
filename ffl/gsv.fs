@@ -105,10 +105,11 @@ str-create gsv.cmd
 
 : gsv+invoke-vargs ( i*x j*r c-addr1 u1 k*x l*r c-addr2 u2 c-addr3 u3 -- m*x n*r = Call the gtk-server with varargs i*x j*r and format string c-addr1 u1 and fix paramers k*x l*r and format string c-addr2 u2 and return format string c-addr3 u3 )
   2>r
-  gsv.cmd spf-set                \ Format the fixed parameters
-  gsv.cmd spf-append             \ Format the varargs
-  gsv.cmd str-get gsv+call       \ Send the call to the gtk-server and receive the response
-  2r> scf+scan drop              \ Convert the response
+     gsv.cmd spf-set            \ Format the fixed parameters
+  bl gsv.cmd str-append-char    \ Append space seperator
+     gsv.cmd spf-append         \ Format the varargs
+     gsv.cmd str-get gsv+call   \ Send the call to the gtk-server and receive the response
+  2r> scf+scan drop             \ Convert the response
 ;
 
 
